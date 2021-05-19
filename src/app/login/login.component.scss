@@ -1,0 +1,87 @@
+.login {
+    width: 100vw;
+    display: flex;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: rbg(0,0,0,0.5);
+}
+.login h5 {
+    text-align: center;
+    margin: 1em 0;
+}
+
+.login .box {
+    display: inline-block;
+    min-width: 25em;
+    height: 25em;
+    margin: 20vh auto 0;
+    padding: 3em 2em 2em;
+    opacity: 0.85;
+    border: 1px solid #216ec1;
+    border-top: 7px solid #7cd1d1;
+    line-height: 2;
+    border-radius: 6px;
+    background: #113b3c;
+    background: linear-gradient(337deg, #0c6d92 25%, #07468a 81%);
+}
+.login .box input {
+    margin: 3px;
+    padding: 0.2em .5em;
+    line-height: 1.5;
+    font-size: .9em;
+    outline: 0;
+}
+.login .box div {
+    width: 80%;
+    margin: auto;
+}
+.login .box div span {
+    text-align: right;
+    display: inline-block;
+    width: 4.5em;
+    font-size: .85em;
+    font-weight: normal;
+    opacity: .7;
+    margin-right: .3em;
+}
+.login .box button {
+    border: 1px solid #ddd;
+    border-radius: 5em;
+    background-color: #333;
+    color: #fff;
+    padding: 0.1em 4em;
+    margin: 1em auto 0;
+    display: block;
+    cursor: pointer;
+    width: 96%;
+    outline: 0;
+    background-image: linear-gradient(to right, #0a3756 0%, #175a7b 51%, #0a2c43 100%);
+    background-size: 200% auto;
+    box-shadow: 0 0 20px #eee;
+    text-transform: uppercase;
+    transition: 0.5s;
+}
+
+.login .box button:hover {
+    background-position: right center; 
+    color: #fff;
+    text-decoration: none;
+    }
+    
+
+.login .logo {
+    background-color: #fff;
+    width: 6em !important;
+    height: 6em;
+    padding: .3em;
+    display: block;
+    border-radius: 5em;
+    margin: 0 auto;
+}
+.text-danger {
+    display: block;
+    margin-top: 1.5em!important;
+    line-height: 1.1;
+    text-align: center;
+}

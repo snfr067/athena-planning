@@ -1,0 +1,25 @@
+.pink_circle {
+  background-color: #f7176a;
+  color: #fff;
+    z-index: 99999;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    text-align: center;
+    font-size: 13px;
+}
+.blue_circle {
+  background-color: #338aee!important;
+  color: #fff;
+    z-index: 99999;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    text-align: center;
+    font-size: 13px;
+}
+.drag_obj {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+}

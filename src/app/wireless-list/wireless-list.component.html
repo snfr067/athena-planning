@@ -1,0 +1,84 @@
+<h2>{{ 'tasklist.title' | translate }}
+	<span class="example-button-row">
+		<button mat-button (click)="openDialog()"> {{ 'tasklist.add' | translate }}</button>
+	</span>
+</h2>
+	
+<div class="planningList">
+
+	<table>
+		<thead>
+			<tr>
+			<th>{{ 'taskName' | translate }}</th>
+			<th class="stat">{{ 'tasklist.status' | translate }}</th>
+			<th class="date">{{ 'createTime' | translate }}</th>
+			<th class="min">{{ 'tasklist.report' | translate }}</th>
+			<th class="min">{{ 'tasklist.edit' | translate }}</th>
+			<th class="min">{{ 'delete' | translate }}</th>
+			<th class="min">{{ 'tasklist.export' | translate }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let item of taskList">
+				<td>{{ item.taskName }}</td>
+				<td>
+					<span>{{ roundFormat(item.progress * 100) }}%</span> 
+					<mat-progress-bar mode="determinate" value="{{ item.progress * 100 }}"></mat-progress-bar>
+				</td>
+				<td>{{ item.createTime }}</td>
+				<td><i *ngIf="item.progress === 1" class="far fa-file-pdf" (click)="exportPDF(item.taskId, false)" ></i></td>
+				<td><i class="fas fa-pencil-alt" (click)="edit(item.taskId, false)"></i></td>
+				<td><i class="far fa-trash-alt" (click)="delete(item, 'task')"></i></td>
+				<td><i *ngIf="item.progress === 1" class="fas fa-file-download" (click)="exportExcel(item.taskId)"></i></td>
+			</tr>
+			<tr *ngFor="let item of hstList">
+				<td>{{ item.taskName }}</td>
+				<td>
+					<span>100%</span> 
+					<mat-progress-bar mode="determinate" value="{{ item.progress * 100 }}"></mat-progress-bar>
+				</td>
+				<td>{{ item.createTime }}</td>
+				<td><i class="far fa-file-pdf" (click)="exportPDF(item.taskId, true)" ></i></td>
+				<td><i class="fas fa-pencil-alt" (click)="edit(item.taskId, true)"></i></td>
+				<td><i class="far fa-trash-alt" (click)="delete(item, 'hst')"></i></td>
+				<td><i class="fas fa-file-download" (click)="exportHstExcel(item.taskId)"></i></td>
+			</tr>
+			<tr *ngIf="taskList.length === 0 && hstList.length === 0">
+				<td colspan="7" class="text-center">{{ 'notaskList' | translate }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+<div class="footer">
+	<span>{{ 'current.version' | translate }}: 21.5.7</span>
+	<span>
+		{{ 'copyright.1' | translate }}
+	</span>
+	<p>{{ 'copyright.1' | translate }}</p>
+</div>
+<h2 style="display: none;" >{{ 'opertaion.note' | translate }}</h2>
+
+<div id="pdf_area" style="display: none;" >
+	<app-pdf #pdf></app-pdf>
+</div>
+
+<ng-template #confirmAdd>
+	<h4 mat-dialog-title class="generalModal">
+		<i class="material-icons warning">&#xe002;</i>
+		<span>{{ 'tasklist.add.confirm' | translate }}</span>
+	</h4>
+	<mat-dialog-actions class="btn_area">
+		<button type="button" class="btn btn-primary" (click)="useOld()" >
+			{{ 'tasklist.add.useOld' | translate }}
+		</button>
+		<button type="button" class="btn btn-success ml-2" (click)="useNew()" >
+			{{ 'tasklist.add.useNew' | translate }}
+		</button>
+		<button type="button" class="btn btn-default ml-2" cdk-focus-start mat-dialog-close >
+			{{ 'cancel' | translate }}
+		</button>
+	</mat-dialog-actions>
+</ng-template>
+
+

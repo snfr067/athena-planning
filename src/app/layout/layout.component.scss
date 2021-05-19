@@ -1,0 +1,122 @@
+/*span {
+  display: inline-block;
+}*/
+.float-right {
+  float: right;
+}
+.wrap {
+  width: 100%;
+  position: relative;
+}
+.header {
+  display: block;
+  width: 100%;
+  font-size: .8em;
+  height: 54px;
+  color: #fff;
+  padding: 1em;
+}
+.header .mat-button-toggle-appearance-standard {
+  color: #fff;
+  background: transparent;
+  border: none;
+}
+.header .mat-button-toggle-group-appearance-standard, 
+.header .mat-button-toggle-standalone.mat-button-toggle-appearance-standard {
+  border: 0;
+}
+.header .mat-button-toggle-checked {
+  background-color: #666!important;
+  color: #fff!important;
+  border-radius: 5px;
+}
+.header a {
+  color: #fff;
+  display: inline-block;
+  vertical-align: sub;
+  margin-right: 1em;
+}
+h1 {
+  display: inline-block;
+  font-size: 1.5em;
+  margin-left: .5em;
+  font-weight: normal;
+  cursor: pointer;
+  outline: 0;
+}
+h1 .fa-home {
+  display: inline-block;
+  font-size: .7em;
+  margin-left: .5em;
+  opacity: .5;
+}
+h2 {
+  font-size: 1.3em;
+}
+:host ::ng-deep h2 .mat-button,
+:host ::ng-deep h3 .mat-button {
+  color: #fff;
+  background-color: #3183dc;
+  line-height: 2;
+  margin-left: .5em;
+  font-size: .7em;
+
+}
+.headerRightarea {
+  position: absolute;
+  right: 0;
+  top: 0%;
+}
+.content {
+  padding: 2em 2em 0;
+}
+table {
+  margin: 1em 0 3em;
+  width: 100%;
+}
+th,td {
+  line-height: 2em;
+  padding: .3em 1em;
+}
+thead tr {
+  border-bottom: 2px solid rgb(37, 125, 197);
+  background-color: #ddd;
+}
+tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+td i {
+  color: rgb(46, 133, 214);
+  cursor: pointer;
+  font-size: 1.2em;
+}
+.mat-progress-bar {
+  display: inline-block;
+  height: 15px;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 250ms linear;
+  width: 10em;
+  margin-left: .5em;
+}
+.logout {
+  font-size: 1.4em;
+  margin: 0 1em;
+}
+:host ::ng-deep .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 32px;
+  padding: 0 7px;
+  font-size: .85em!important;
+}
+span.headerRightarea {
+  margin: .8em 0 0 0;
+}
+:host ::ng-deep .mat-expansion-panel-header {
+  font-weight: bold;
+  height: 43px!important;
+}
+
+:host ::ng-deep .mat-expansion-panel-header-title {
+  font-size: .9em!important;
+}
+

@@ -1,0 +1,94 @@
+<h2 class="inline-block">{{ 'result.title' | translate }}</h2>
+
+<mat-button-toggle-group >
+  <mat-button-toggle (click)="back()" value="back">{{ 'result.back' | translate }}</mat-button-toggle>
+	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
+	<mat-button-toggle value="export" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
+	<mat-button-toggle value="save" (click)="save(false)">{{ 'save' | translate }}</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="box">
+	<div class="leftArea">
+
+		<!-- 建議方案 -->
+		<app-propose #propose></app-propose>
+        
+		<table style="table-layout: fixed;">
+			<tbody>
+				<tr>
+					<th colspan="2" class="panel center"><label>{{ 'result.sinr_result' | translate }}</label></th>
+				</tr>
+				<tr>
+					<td class="mapType" colspan="2">
+						<label>{{ 'zValue' | translate }}</label>
+						<mat-button-toggle-group [(ngModel)]="zValue" (change)="changeZvalue()" >
+							<mat-button-toggle *ngFor="let item of zValues" [value]="item">{{ item }} {{ 'meter' | translate }}</mat-button-toggle>
+						</mat-button-toggle-group>
+			
+						<label class="mL_1">{{ 'result.img.change' | translate }}</label>
+						<mat-button-toggle-group [(ngModel)]="chartType">
+							<mat-button-toggle  value="SINR" (click)="drawQuality()" selected>{{ 'sinrMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="PCI" (click)="drawCover()">{{ 'connectionMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="RSRP" (click)="drawStrength()">{{ 'rsrpMap' | translate }}</mat-button-toggle>
+						</mat-button-toggle-group>
+
+						<ng-container *ngIf="showUEArea">
+							<label class="mL_1 displayType">
+								<!-- <input type="checkbox" [(ngModel)]="showUE" (change)="switchShowUE()"> -->
+								<mat-checkbox [(ngModel)]="showUE" [color]="'primary'" (ngModelChange)="switchShowUE()">
+									{{ 'show.ue' | translate }}
+								</mat-checkbox>
+							</label>
+						</ng-container>
+
+						<ng-container *ngIf="showObstacleArea">
+							<label class="mL_1 displayType">
+								<!-- <input type="checkbox" [(ngModel)]="showObstacle" (change)="switchShowObstacle()"> -->
+								<mat-checkbox [(ngModel)]="showObstacle" [color]="'primary'" (ngModelChange)="switchShowObstacle()">
+									{{ 'show.obstacle' | translate }}
+								</mat-checkbox>
+							</label>
+						</ng-container>
+
+						<ng-container *ngIf="showCandidateArea">
+							<label class="mL_1 displayType">
+								<!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->
+								<mat-checkbox [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
+									{{ 'show.candidate' | translate }}
+								</mat-checkbox>
+							</label>
+						</ng-container>
+
+						<!-- 訊號品質圖 -->
+						<app-signal-quality *ngIf="showQuality" #quality></app-signal-quality>
+						<!-- 訊號覆蓋圖 -->
+						<app-signal-cover *ngIf="showCover" #cover></app-signal-cover>
+						<!-- 訊號強度圖 -->
+						<app-signal-strength *ngIf="showStrength" #strength></app-signal-strength>
+
+						<div>
+							<label class="m-0">{{ 'result.opacity' | translate }}</label>
+							<ngx-slider [(value)]="opacityValue" [options]="opacityOptions" (userChange)="changeOpacity()"></ngx-slider>
+						</div>
+					
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- 預估效能 -->
+		<app-performance #performance></app-performance>
+		
+		<!-- 統計資訊 -->
+		<app-statistics #statistics></app-statistics>
+
+	</div>
+    
+	<div class="rightArea ds">
+		<!-- 場域設定資訊 -->
+		<app-site-info #siteInfo></app-site-info>
+  </div>
+</div>
+
+<div id="pdf_area" style="display: none;" >
+	<app-pdf #pdf></app-pdf>
+</div>

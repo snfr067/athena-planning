@@ -1,0 +1,66 @@
+<h3>{{ 'planning.new' | translate }}
+  <span class="example-button-row">
+      <button mat-button (click)="importFile.click()">{{ 'planning.import' | translate }}(.xlsx)</button>
+      <input type="file" id="file0" #importFile style="display: none;" (change)="import($event)" accept=".xlsx">
+  </span>
+</h3>
+<div class="modalContent">
+  <table>
+    <tbody>
+      <tr>
+        <td class="th">{{ 'planning.name' | translate }}</td>
+        <td [formGroup]="formGroup">
+            <input type="text" class="w100" [(ngModel)]="this.calculateForm.taskName" formControlName="taskName" required >
+            <div *ngIf="taskName.invalid && (taskName.dirty || taskName.touched)" class="alert alert-danger">
+              <div *ngIf="taskName.errors.required">
+                {{ 'field.required' | translate }}
+              </div>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="th">{{ 'planning.image' | translate }}</td>
+        <td>
+          <button mat-button style="cursor: pointer;" (click)="mapFile.click()">{{ 'file' | translate }}</button>
+          <input type="file" #mapFile style="display: none;" (change)="fileChange($event)" accept="image/jpeg,image/png,image/jpg" >
+          <span *ngIf="this.calculateForm.mapName != ''" class="ml-2">{{ this.calculateForm.mapName }}</span>
+          <span *ngIf="this.calculateForm.mapName == ''" class="ml-2">{{ 'nofile' | translate }}</span>
+          <span class="note ml-2">{{ 'planning.limit' | translate }}...</span>
+          <div *ngIf="showImgMsg" class="alert alert-danger">
+              {{ 'image.required' | translate }}
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="th">{{ 'planning.size' | translate }}</td>
+        <td class="size" [formGroup]="sizeGroup">
+          <span><input type="text" placeholder="{{ 'width' | translate }}" [(ngModel)]="calculateForm.width" formControlName="width" required pattern="^-?[\d.]+(?:e-?\d+)?$">{{ 'meter' | translate }}</span>
+          <span><input type="text" placeholder="{{ 'height' | translate }}" [(ngModel)]="calculateForm.height" formControlName="height" required pattern="^-?[\d.]+(?:e-?\d+)?$">{{ 'meter' | translate }}</span>
+          <span><input type="text" placeholder="{{ 'result.pdf.altitude' | translate }}" [(ngModel)]="calculateForm.altitude" formControlName="altitude" required pattern="^-?[\d.]+(?:e-?\d+)?$">{{ 'meter' | translate }}</span>
+          <div *ngIf="sizeGroup.errors?.sizeRevealed && (sizeGroup.touched || sizeGroup.dirty)" class="alert alert-danger">
+            <div *ngIf="width.errors?.pattern || height.errors?.pattern || altitude.errors?.pattern; else required">
+              {{ 'numeric.enter' | translate }}
+            </div>
+            <ng-template #required>
+              {{ 'field.required' | translate }}
+            </ng-template>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="th">{{ 'planning.net' | translate }}</td>
+        <td>
+          <mat-radio-group [(ngModel)]="calculateForm.objectiveIndex" aria-label="Select an option">
+            <mat-radio-button value="0">4G</mat-radio-button>
+            <mat-radio-button value="1">5G</mat-radio-button>
+            <mat-radio-button value="2">Wifi</mat-radio-button>
+          </mat-radio-group>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="modalFooter">
+    <a href="javascript:void(0)" (click)="ok()">{{ 'planning.ok' | translate }}</a>
+  </div>
+</div>
+

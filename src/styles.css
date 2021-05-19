@@ -1,0 +1,180 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+/*@import "init.css";*/
+@import "darkblue.css" ;
+
+body {
+    /*background-color: #33373c;
+    color: #fff;
+    overflow: hidden;*/
+}
+
+.inline-block {
+    display: inline-block!important;
+  }
+h1 {
+    display: inline-block;
+    font-size: 1.5em;
+    margin-left: 1em;
+}
+h2 {
+    font-size: 1.1em;
+    vertical-align: text-bottom;
+}
+.headerRightarea {
+    position: absolute;
+    right: 0;
+    top: 0%;
+}
+.mL_1{
+    margin-left: 1em!important;
+}
+table {
+    width: 100%;
+    margin-bottom: 1.5em;
+}
+.modalContent table {
+    margin-bottom: 1em;
+}
+.center {
+    text-align: center!important;
+}
+th,td {
+    line-height: 2em;
+    padding: .5em 1.34em;
+}
+td input[type="text"] {
+    margin: .3em .3em 0 0;
+}
+thead tr {
+    border-bottom: 2px solid rgb(37, 125, 197);
+}
+tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+td i {
+    color: #78b6ef;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+.mat-progress-bar {
+    display: inline-block!important;
+    height: 15px!important;
+    overflow: hidden;
+    position: relative;
+    transition: opacity 250ms linear;
+    width: 70%!important;
+    margin-left: .5em!important;
+}
+.logout {
+    font-size: 1.2em;
+    margin: 0 1em;
+}
+
+span.headerRightarea {
+    margin: .8em 0 0 0;
+}
+th.date,
+th.stat {
+    width: 15em;
+}
+th.min {
+    width: 6.5em;
+}
+.w100 {
+    width: 100%;
+}
+.modalFooter {
+    text-align:center;
+}
+.modalFooter a {
+    text-decoration: none;
+    color: #000;
+}
+.w3em {
+    width: 3em;
+}
+
+.xAxis::before {
+    display: inline-block;
+    content: "X 座標";
+    font-size: 1em;
+    color: #999;
+    position: absolute;
+    left: 0;
+}
+.yAxis::before {
+    display: inline-block;
+    content: "Y 座標";
+    font-size: 1em;
+    color: #999;
+    position: absolute;
+    left: 0;
+}
+.mat-tooltip {
+    white-space: pre-line;
+}
+.block {
+    display: block!important;
+}
+.alert {
+    padding: 0!important;
+}
+
+.alert-danger {
+    margin: 0;
+    color: #d31d59;
+    background-color: transparent;
+    border-color: transparent;
+}
+.relative {
+    position: relative;
+}
+button {
+    outline: 0;
+}
+.mat-dialog-container h5 {
+    background-color: #4576bb;
+    color: #fff;
+    font-size: 1.2em;
+    margin: -24px -24px 1em;
+    line-height: 2.5em;
+    padding: 0 1em;
+}
+.mat-dialog-container ul li mat-label {
+    margin-right: .5em;
+    vertical-align: text-bottom;
+}
+::placeholder { /* CSS 3 標準 */
+    color: #6a8f9e;
+  }
+  ::-webkit-input-placeholder { /* Chrome, Safari */
+    color: #6a8f9e;
+  }
+  :-ms-input-placeholder { /* IE 10+ */
+    color: #6a8f9e;
+  }
+  ::-moz-placeholder { /* Firefox 19+ */
+    color: #6a8f9e;
+    opacity: 1;
+  }
+
+
+  .map {
+      width: 100%;
+  }
+  .rightArea {
+    font-size: .9em;
+    width: 25%;
+}
+
+.mat-button-toggle-group button {
+    width: initial!important;
+    
+}
+.btn_area {
+    display: block;
+    width: 100%;
+    text-align: center;}
+.cdk-overlay-pane {
+    overflow: auto;
+}

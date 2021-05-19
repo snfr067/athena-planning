@@ -1,0 +1,91 @@
+<div id="pdf_area">
+	
+	<div class="box">
+		
+		<div class="leftArea">
+			<h2 class="inline-block">{{ 'result.title' | translate }}</h2>
+		
+			<table id="defaultBs_list">
+				<tbody>
+					<tr>
+						<th class="panel center" colspan="4"><label class="bold">{{ 'defaultBs' | translate }}</label></th>
+					</tr>
+					<tr>   
+						<th>{{ 'result.num' | translate }}</th>
+						<th>{{ 'result.propose.candidateBs.X' | translate }}</th>
+						<th>{{ 'result.propose.candidateBs.Y' | translate }}</th>
+						<th>{{ 'result.propose.candidateBs.z' | translate }}</th>
+					</tr>
+					<tr *ngFor="let item of defaultBs; let i = index;">
+						<td class="choose">{{ i + 1 }}</td>
+						<td class="choose">{{ item[0] }}</td>
+						<td class="choose">{{ item[1] }}</td>
+						<td class="choose">{{ item[2] }}</td>
+					</tr>
+					<tr *ngIf="defaultBs.length === 0">
+						<td class="choose center" colspan="4">{{ 'result.no.defaultBs' | translate }}</td>
+					</tr>
+				</tbody>
+			</table>
+		
+			<!-- 建議方案 -->
+			<app-propose #propose></app-propose>
+					
+			<table *ngFor="let zValue of zValues; let idx = index;" id="signal_{{ idx }}">
+				<tbody>
+					<tr>
+						<th colspan="2" class="panel center"><label>{{ 'result.sinr_result' | translate }}</label></th>
+					</tr>
+					<tr>
+						<td class="mapType">
+							<label>{{ 'zValue' | translate }}{{ zValue }} {{ 'meter' | translate }}</label>
+				
+							<label class="mL_1">{{ 'sinrMap' | translate }}</label>
+							<app-signal-quality #quality></app-signal-quality>
+
+							<label class="mL_1">{{ 'connectionMap' | translate }}</label>
+							<app-signal-cover #cover></app-signal-cover>
+
+							<label class="mL_1">{{ 'rsrpMap' | translate }}</label>
+							<app-signal-strength #strength></app-signal-strength>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table *ngFor="let zValue of zValues; let idx = index;" id="view_3d_{{ idx }}">
+				<tbody>
+					<tr>
+						<th colspan="2" class="panel center"><label>3D {{ 'result.sinr_result' | translate }}</label></th>
+					</tr>
+					<tr>
+						<td class="mapType" style="height: 500px;">
+							<label>{{ 'zValue' | translate }}{{ zValue }} {{ 'meter' | translate }}</label>
+				
+							<label class="mL_1">{{ 'sinrMap' | translate }}</label>
+							<app-view3d #view3D1></app-view3d>
+
+							<label class="mL_1">{{ 'connectionMap' | translate }}</label>
+							<app-view3d #view3D2></app-view3d>
+
+							<label class="mL_1">{{ 'rsrpMap' | translate }}</label>
+							<app-view3d #view3D3></app-view3d>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- 預估效能 -->
+			<app-performance #performance></app-performance>
+			
+			<!-- 統計資訊 -->
+			<app-statistics #statistics></app-statistics>
+
+		</div>
+		<div class="rightArea ds">
+			<!-- 場域設定資訊 -->
+			<app-site-info #siteInfo></app-site-info>
+		</div>
+			
+		
+	</div>
+</div>

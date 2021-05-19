@@ -1,0 +1,359 @@
+mat-sidenav-container {
+    margin: -2em -2em 0 2em;
+    padding: 1em 0 0 1em;
+    position: relative;
+    height: 95vh;
+}
+.tool {
+    position: absolute;
+    left: 0px;
+    top: 54px;
+    padding-top: 1em;
+    width: 4em;
+    height: 100%;
+    background-color: #263345;
+    color: #fff;
+    z-index: 1;
+}
+.tool span {
+    display: block;
+    padding: .3em 0;
+    width: 100%;
+    text-align: center;
+    cursor: move;
+}
+
+.tool span:nth-child(1) svg,.tool span:nth-child(2) svg,.tool span:nth-child(3) svg {
+    transform: scale(0.6);
+}
+.tool span:nth-child(4) svg,.tool span:nth-child(5) svg.tool span:nth-child(6) svg {
+    transform: scale(0.8);
+}
+.tool hr {
+    border-color: #545151;
+    width: 55%;
+    margin: .8em auto;
+}
+.tool .svg {
+    margin-bottom: .6em;
+}
+.tool .svg img {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: auto;
+}
+.mat-sidenav {
+    max-width: 30%;
+}
+.toggle {
+    float: right;
+    border: 0;
+    background-color: #2e5480;
+    outline: 0;
+    margin: 0;
+    cursor: pointer;
+    border-radius: 3px 0 0 3px;
+}
+#d_area .toggle .material-icons {
+    font-size: 22px;
+    margin-top: .2em;
+}
+:host ::ng-deep .mat-button-toggle-group {
+    margin-left: 1em;
+}
+.dropDown_area {
+    margin: 1em;
+    width: 90%;
+    min-height: 80vh;
+    display: block;
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: contain;
+    opacity: .4;
+}
+:host ::ng-deep .mat-expansion-panel-body {
+    font-size: .9em;
+}
+:host ::ng-deep  {
+    margin: 0;
+    padding: 0;
+    color: #3b71b5;
+}
+p.subitem + ol {
+    display: none;
+}
+p.subitem.active + ol {
+    display: block;
+}
+:host ::ng-deep .mat-expansion-panel-body p .material-icons {
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.matBadge {
+    max-width: 3em;
+    min-width: 2.3em;
+    height: 2.3em;
+    display: inline-block;
+    line-height: 2.3em;
+    margin-left: 0.3em;
+    font-size: .5em;
+    font-weight: normal;
+    color: #fff;
+    background-color: #3b71b5;
+    text-align: center;
+    border-radius: 9em;
+}
+:host ::ng-deep .mat-expansion-panel-body ul > li {
+    padding: 0 0 1em;
+
+}
+:host ::ng-deep .mat-expansion-panel-body ul > li div {
+    margin-left: 1em;
+}
+:host ::ng-deep .mat-expansion-panel-body p::before,
+.algorithm ul li span::before {
+    font-family: "Material Icons";
+    content:"\e5df";
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+:host ::ng-deep .mat-expansion-panel-body li input[type="text"]{
+    width: 4.5em;
+}
+:host ::ng-deep .mat-expansion-panel-body input[type="text"]{
+    margin-left: .3em;
+    vertical-align:middle;
+    padding-left: .5em;
+    width: 5em;
+    background: transparent;
+    border: transparent;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+}
+:host ::ng-deep .mat-expansion-panel-body ul > li > ul {
+    margin-left: 1em;
+} 
+:host ::ng-deep .mat-expansion-panel-body ul > li > ul li {
+    padding-bottom: 0;
+}
+input[type="text"], select {
+    outline:0;
+}
+ol li::marker {
+    color: rgb(126, 143, 175);
+}
+ol li {
+    display: list-item;
+    list-style: decimal;
+    margin-left: 2.2em;
+    line-height: 2em;
+}
+ol li span {
+    position: relative;
+    display: inline-block;
+}
+ol li label {
+    color: initial;
+    font-size: .7em;
+}
+.w7em {
+    width: 12em!important;
+}
+ul li select ,
+ol li select {
+    background: transparent;
+    border: transparent;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    width: 5em;
+    vertical-align: middle;
+    padding: 0.5em 0 0.5em .5em;
+    margin-left: .3em;
+}
+ol.inline-block li {
+    display: list-item;
+    list-style: decimal;
+    float: left;
+}
+ol.inline-block li input[type="text"] {
+    padding-left: .5em;
+}
+/*span {
+    display: inline-block;
+}*/
+.widthAuto {
+    width: auto!important;
+}
+.target {
+    position: relative;
+}
+.obstacle, .defaultBS, .candidate, .UE {
+    position: absolute;
+    left: 200px;
+    top: 250px;
+    z-index: 9999;
+}
+.mat-tooltip {
+    white-space: pre-line;
+}
+.msg_label {
+    z-index: 9999;
+    border: 1px solid #161718;
+    padding: 1em;
+    position: fixed;
+    background-color: #110f0f;
+    color: #fff;
+    opacity: 0.9;
+}
+input[type="file"] {
+    display: inline-block;
+    margin-left: 0.5em;
+    width: 75%;
+}
+.w22 {
+    padding-left: 2.2em!important;
+}
+.ml_5 {
+    margin-left: .5em;
+}
+.w18 {
+    width: 18em!important;
+}
+.spCell input {
+    width: 6.5em!important;
+}
+.pink_circle {
+    background-color: #f7176a;
+    padding: 0px 7px;
+    color: #fff;
+    z-index: 99999;
+    position: absolute;
+}
+.blue_circle {
+    background-color: #338aee!important;
+    padding: 0px 7px;
+    color: #fff;
+    z-index: 99999;
+    position: absolute;
+}
+
+.highset input {
+    display: inline-block;
+    margin-right: .3em;
+    width: 3em;
+}
+.clearAll {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    text-align: center;
+    color: #5882b1;
+    font-size: .6em;
+    line-height: 1;
+}
+
+.clearAll .material-icons {
+    font-size: 18px;
+    display: block;
+    margin: 0 auto 2px;
+    width: 1em;
+    height: 1em;
+    background-color: #4a86c5;
+    color: #fff;
+    border-radius: 5em;
+}
+p.sub_title {
+    margin-bottom: .5em;
+    display: block;
+}
+p.sub_title + .sub_content {
+    margin-left: 2em!important;
+    transition: all .25s;
+    /*display: none;*/
+  }
+  p.sub_title.active + .sub_content {
+      display: block;
+  }
+ul {
+    margin: 0;
+}
+:host ::ng-deep #d_area mat-button-toggle-group mat-button-toggle button {
+    width: initial!important;
+}
+:host ::ng-deep .mat-expansion-panel-header {
+    padding: 0 24px 0 16px;
+}
+
+.areaSetting mat-expansion-panel {
+    background-color: #ddd;
+    border-color: #c2ccd6;
+
+}
+.areaSetting .mat-expansion-panel-header-title {
+    color: #476a90;
+}
+:host ::ng-deep .areaSetting .mat-expansion-panel-body p {
+    color: #516c8c!important;
+}
+.areaSetting .mat-expansion-panel-header {
+    padding-left: 30px;
+}
+.areaSetting input[type=text],
+.areaSetting select ,
+.areaSetting .mat-expansion-panel {
+    color: initial!important;
+}
+
+:host ::ng-deep .mat-expansion-panel-body {
+    padding: 0;
+    border-radius: 0;
+    border-top: 1px solid #527198;
+}
+:host ::ng-deep .areaSetting .mat-expansion-panel-body {
+    padding: 0;
+    border-radius: 0;
+    border-top: 1px solid #c2ccd6;
+}
+:host ::ng-deep .areaSetting .mat-expansion-panel-body {
+    padding: 1em 1em 0 2em;
+}
+:host ::ng-deep .mat-accordion .mat-expansion-panel:not(.mat-expanded), .mat-accordion .mat-expansion-panel:not(.mat-expansion-panel-spacing) {
+    border-radius: 0!important;
+}
+ 
+:host ::ng-deep .areaSetting .mat-expansion-indicator::after {
+    color: #7997b7;
+}
+:host ::ng-deep .mat-radio-outer-circle {
+    border-color: rgb(181 223 236);
+}
+.panel_content {
+    padding: 1em 0 1em 2em;
+}
+.mat-button-toggle-appearance-standard {
+    padding: 1em 0;
+}
+.s_ue {
+    transform: scale(.5);
+    display: inherit;
+    width: 19px;
+    height: 29px;
+    position: absolute;
+    left: -4.75px;
+    top: -7.25px;
+}
+.cdk-overlay-pane {
+    overflow: auto;
+}
+
+.subTarget {
+    margin-left: 1.5em;
+}
+.subTarget mat-checkbox {
+    display: block;
+}
+.clearOne {
+    top: 5px;
+}
