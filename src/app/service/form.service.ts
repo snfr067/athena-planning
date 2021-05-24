@@ -16,6 +16,7 @@ export class FormService {
    * @param result 
    */
   setHstToForm(result) {
+    console.log(result);
     const calculateForm = new CalculateForm();
     calculateForm.addFixedBsNumber = result['addfixedbsnumber'];
     calculateForm.availableNewBsNumber = result['availablenewbsnumber'];
@@ -26,6 +27,14 @@ export class FormService {
     calculateForm.crossover = result['crossover'];
     calculateForm.defaultBs = result['defaultbs'];
     calculateForm.frequency = result['frequency'];
+    //Add RF Param
+    // console.log(result);
+    // console.log(result['output']['defaultbspower']);
+    // console.log(result['output']['defaultbeamid']);
+    calculateForm.txPower = result['output']['defaultbspower'];
+    calculateForm.beamId = result['output']['defaultbeamid'];
+    calculateForm.bsList = result['defaultbs'];
+
     calculateForm.iteration = result['iteration'];
     calculateForm.zValue = result['mapdepth'];
     calculateForm.altitude = result['mapaltitude'];
@@ -78,8 +87,12 @@ export class FormService {
     output['cqiCount'] = result['cqicount'];
     output['cqiMap'] = JSON.parse(result['cqimap']);
     output['defaultBeamId'] = JSON.parse(result['defaultbeamid']);
-    output['defaultBs'] = JSON.parse(result['defaultbs']);
-    output['defaultBsPower'] = JSON.parse(result['defaultbspower']);
+    // output['defaultBs'] = JSON.parse(result['defaultbs']);
+    // output['defaultBs'] = result['defaultbs'];
+    // output['txPower'] = result['defaultbspower'];
+    // output['beamId'] = result['defaultbeamid'];
+    // output['txPower'] = JSON.parse(result['defaultbspower']);
+    // output['beamId'] = JSON.parse(result['defaultbeamid']);
     output['defaultConnection'] = JSON.parse(result['defaultconnection']);
     output['defaultThroughput'] = JSON.parse(result['defaultthroughput']);
     output['layeredAverageRsrp'] = JSON.parse(result['layeredaveragersrp']);

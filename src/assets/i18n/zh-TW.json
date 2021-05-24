@@ -105,7 +105,7 @@
 	"planning.info": "場域基本資訊",
 	"planning.upload": "上傳圖檔",
 	"planning.obstacleInfo": "場域障礙物資訊",
-	"planning.defaultBs.info": "場域內原有無線基站位置",
+	"planning.defaultBs.info": "場域內無線基站位置",
 	"planning.ue.info": "場域內無線終端分佈資訊",
 	"planning.candidateBs.info": "場域內可安裝無線基站的位置",
 	"planning.model": "場域內無線訊號衰減模型",

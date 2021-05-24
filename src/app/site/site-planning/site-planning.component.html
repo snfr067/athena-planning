@@ -61,7 +61,7 @@
   </span>
   
   <hr>
-  <span class="svg" matTooltip="{{ 'defaultBs' | translate }}" (click)="addMoveable('defaultBS')" >
+  <span *ngIf="planningIndex === '3'" class="svg" matTooltip="{{ 'defaultBs' | translate }}" (click)="addMoveable('defaultBS')" >
     <svg id="svg_04" class="s" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
       <g>
         <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1"/>
@@ -74,7 +74,7 @@
      
   </span>
 
-  <span class="svg" matTooltip="{{ 'candidateBs' | translate }}" (click)="addMoveable('candidate')" >
+  <span *ngIf="planningIndex !== '3'" class="svg" matTooltip="{{ 'candidateBs' | translate }}" (click)="addMoveable('candidate')" >
     <svg id="svg_05" class="s" width="28" height="22" xmlns="http://www.w3.org/2000/svg">
       <g>
         <title>background</title>
@@ -604,7 +604,7 @@
               </ol>
             </mat-expansion-panel>
             
-            <mat-expansion-panel>
+            <mat-expansion-panel *ngIf="planningIndex === '3'">
               <mat-expansion-panel-header>
                 <mat-panel-title>{{ 'planning.defaultBs.info' | translate }}
                   <label class="matBadge">{{ defaultBSList.length }}</label>
@@ -630,6 +630,19 @@
                         <label>Z</label>
                         <input type="text" [(ngModel)]="dragObject[item].z" >
                       </span>
+                      <span>
+                        <label>Txpower</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].txpower" (change)="changeTxBfFreq(item)">
+                        <!-- <input type="text" [(ngModel)]="" > -->
+                      </span>
+                      <span>
+                        <label>Beam</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].beampattern" (change)="changeTxBfFreq(item)">
+                      </span>
+                      <span>
+                        <label>Frequency</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].frequency" (change)="changeTxBfFreq(item)">
+                      </span>
                       <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
                         <span class="material-icons">clear</span>
                       </span>
@@ -637,6 +650,36 @@
                   </ol>
                 </li>
               </ul>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel *ngIf="planningIndex !== '3'">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ 'planning.candidateBs.info' | translate }}
+                  <label class="matBadge">{{ candidateList.length }}</label>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span *ngIf="candidateList.length > 0" class="clearAll" (click)="clearAll('candidate')">
+                <span class="material-icons">clear</span>Clear All
+              </span>
+              <ol>
+                <li *ngFor="let item of candidateList">
+                  <span>
+                    <label>X</label>
+                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
+                  </span>
+                  <span>
+                    <label>Y</label>
+                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
+                  </span>
+                  <span>
+                    <label>Z</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" >
+                  </span>
+                  <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
+                    <span class="material-icons">clear</span>
+                  </span>
+                </li>
+              </ol>
             </mat-expansion-panel>
       
             <mat-expansion-panel>
@@ -673,36 +716,6 @@
                   </ol>
                 </li>
               </ul>
-            </mat-expansion-panel>
-      
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>{{ 'planning.candidateBs.info' | translate }}
-                  <label class="matBadge">{{ candidateList.length }}</label>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <span *ngIf="candidateList.length > 0" class="clearAll" (click)="clearAll('candidate')">
-                <span class="material-icons">clear</span>Clear All
-              </span>
-              <ol>
-                <li *ngFor="let item of candidateList">
-                  <span>
-                    <label>X</label>
-                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
-                  </span>
-                  <span>
-                    <label>Y</label>
-                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
-                  </span>
-                  <span>
-                    <label>Z</label>
-                    <input type="text" [(ngModel)]="dragObject[item].z" >
-                  </span>
-                  <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
-                    <span class="material-icons">clear</span>
-                  </span>
-                </li>
-              </ol>
             </mat-expansion-panel>
       
             <mat-expansion-panel>

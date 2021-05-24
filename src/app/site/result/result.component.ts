@@ -162,13 +162,17 @@ export class ResultComponent implements OnInit {
           // 大小寫不同，各自塞回form
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
+          console.log(this.calculateForm);
         } else {
           this.calculateForm = res['input'];
           this.result = res['output'];
+          console.log(this.calculateForm);
+          console.log(this.result);
         }
-        console.log(this.result);
-
+        // this.calculateForm.defaultBs = this.calculateForm.bsList;
         if (this.calculateForm.defaultBs !== '') {
+          // const defaultBs = this.calculateForm.defaultBs;
+          console.log(this.calculateForm);
           const defaultBs = this.calculateForm.defaultBs.split('|');
           for (const item of defaultBs) {
             const obj = JSON.parse(item);

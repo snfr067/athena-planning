@@ -104,6 +104,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   obstacleList = [];
   /** 互動物件 */
   dragObject = {};
+  /** 基站RF參數 */
+  bsListRfParam = {};
   /** 現有基站 */
   defaultBSList = [];
   /** 新增基站 */
@@ -356,6 +358,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       };
       reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
 
+    // Not import File
     } else {
       
       if (this.taskid !== '') {
@@ -372,11 +375,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           res => {
             if (this.isHst) {
               const result = res;
+              console.log(result);
               const output = this.formService.setHstOutputToResultOutput(result['output']);
-              delete result['output'];
+              // delete result['output'];
               // 大小寫不同，各自塞回form
-              this.calculateForm = this.formService.setHstToForm(result);
+              console.log(result);
               console.log(output);
+              this.calculateForm = this.formService.setHstToForm(result);
+              // this.calculateForm.defaultBs = output['defaultBs'];
+              // this.calculateForm.bsList = output['defaultBs'];
+              console.log(this.calculateForm);
               this.hstOutput['gaResult'] = {};
               this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
               this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
@@ -408,14 +416,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
 
             } else {
               this.calculateForm = res['input'];
+              console.log(this.calculateForm);
+              this.calculateForm.defaultBs = this.calculateForm.bsList;
+              // this.bsListRfParam.txpower = this.calculateForm.bsList;
+              // this.bsListRfParam.frequency = this.calculateForm.bsList;
+              // this.bsListRfParam.beampattern = this.calculateForm.bsList;
             }
             this.zValues = JSON.parse(this.calculateForm.zValue);
 
+            console.log(this.calculateForm);
             if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
               // 從暫存取出
-              this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
+              console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFU');
+              // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
             }
-
+            console.log(this.calculateForm);
+            
             this.initData(false, false);
           },
           err => {
@@ -592,6 +608,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                 // 編輯
                 this.edit();
+                console.log(this.calculateForm);
               }
             });
           };
@@ -629,6 +646,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           // do nothing
         } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
           // 編輯
+          console.log(this.calculateForm);
           this.edit();
         }
       });
@@ -745,6 +763,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.pathStyle[this.svgId] = {
         fill: this.DEFAULT_BS_COLOR
       };
+      //Add bs RF param
+      this.bsListRfParam[this.svgId] = {
+      txpower: 0,
+      beampattern: 0,
+      frequency: 2400
+    }
     } else if (id === 'candidate') {
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
@@ -1258,6 +1282,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Clear
+   */
+  // clearAllDrag() {
+  //   this.dragObject = {};
+  // }
+
+  /**
    * 開始運算
    */
   calculate() {
@@ -1265,7 +1296,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.moveable.destroy();
     } catch (error) {}
 
-    if (Number(this.calculateForm.availableNewBsNumber) === 0) {
+    console.log(this.calculateForm);
+
+    if (Number(this.calculateForm.availableNewBsNumber) === 0 && this.planningIndex !== '3') {
       let msg;
       if (this.calculateForm.objectiveIndex === '2') {
         msg = this.translateService.instant('availableNewBsNumber.wifi');
@@ -1289,8 +1322,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       let url = '';
       if (this.planningIndex !== '3') {
         url = `${this.authService.API_URL}/calculate`;
+        this.calculateForm.isSimulation = false;
       } else {
-        url = `${this.authService.API_URL}/simulate`;
+        url = `${this.authService.API_URL}/simulation`;
+        this.calculateForm.isSimulation = true;
       }
       this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
         res => {
@@ -1399,6 +1434,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       ueCoordinate = '';
     }
     this.calculateForm.ueCoordinate = ueCoordinate;
+
     let defaultBs = '';
     this.calculateForm.defaultBs = defaultBs;
     if (this.defaultBSList.length > 0) {
@@ -1411,7 +1447,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         }
       }
       this.calculateForm.defaultBs = defaultBs;
+      this.calculateForm.bsList = defaultBs;
     }
+    //　現有基站RF參數
+    let txpower = [];
+    let beamId = [];
+    let freqList = [];
+    
+    if(this.defaultBSList.length > 0) {
+      for (let i = 0; i < this.defaultBSList.length; i++) {
+        const obj = this.bsListRfParam[this.defaultBSList[i]];
+        console.log(`obj: ${JSON.stringify(obj)}`)
+        txpower.push(obj.txpower);
+        beamId.push(obj.beampattern);
+        freqList.push(obj.frequency);
+        // if (i < this.defaultBSList.length - 1) {
+        //   txpower += ',';
+        //   beamId += ',';
+        //   freqList += ',';
+        // }
+      }
+      
+      this.calculateForm.txPower = `[${txpower.toString()}]`;
+      this.calculateForm.beamId = `[${beamId.toString()}]`;
+      this.calculateForm.frequencyList = `[${freqList.toString()}]`;
+      console.log(this.calculateForm.txPower);
+      console.log(this.calculateForm.beamId);
+      console.log(this.calculateForm.frequencyList);
+    }
+
     let candidate = '';
     this.calculateForm.candidateBs = candidate;
     if (this.candidateList.length > 0) {
@@ -1437,6 +1501,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // Wifi強制指定為wifi模型
       this.calculateForm.pathLossModelId = 9;
     }
+  }
+
+  /**
+   * BsList Txpower, BeamPattern, Frequency
+   */
+  changeTxBfFreq(item) {
+    console.log(`Bs${item}:${this.bsListRfParam[item]}`);
   }
 
   /**
@@ -1678,12 +1749,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
-    const baseStationData = [['x', 'y', 'z', 'material', 'color']];
+    const baseStationData = [['x', 'y', 'z', 'material', 'color','txpower','beamId','frequency']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
         this.dragObject[item].z, this.dragObject[item].material,
-        this.dragObject[item].color
+        this.dragObject[item].color,
+        this.bsListRfParam[item].txpower,
+        this.bsListRfParam[item].beampattern,
+        this.bsListRfParam[item].frequency
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -1875,7 +1949,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       sheetNameIndex[this.wb.SheetNames[i]] = i;
     }
 
-    const baseStation: string = this.wb.SheetNames[sheetNameIndex['base station']];
+    const baseStation: string = this.wb.SheetNames[sheetNameIndex['base_station']];
     const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
     const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
     if (baseStationData.length > 1) {
@@ -1901,6 +1975,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: material,
           element: this.svgMap['defaultBS'].element
         };
+        this.bsListRfParam[id] = {
+          txpower: baseStationData[i][5],
+          beampattern: baseStationData[i][6],
+          frequency: baseStationData[i][7]
+        };
+        console.log(`AAAAAAAAAAAAAAAAAAAAAAAAA`)
+        console.log(this.dragObject)
         this.defaultBSList.push(id);
         this.spanStyle[id] = {
           left: `${this.pixelXLinear(baseStationData[i][0])}px`,
@@ -2298,14 +2379,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       }
     }
     
-    // defaultBs
+      // defaultBs
+    console.log('VBBBBSDBSDBSDBSSBDBSD');
+    console.log(this.calculateForm);
+    this.calculateForm.defaultBs = this.calculateForm.bsList;
     if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
       const defaultBS = this.calculateForm.defaultBs.split('|');
+      // const defaultBS = this.calculateForm.defaultBs;
+      const bsTxpower = JSON.parse(this.calculateForm.txPower);
+      const bsBeamId = JSON.parse(this.calculateForm.beamId);
+      const bsFreq = JSON.parse(this.calculateForm.frequency);
+      console.log(JSON.parse(this.calculateForm.txPower));
+      // console.log(JSON.parse(bsBeamId));
+      // console.log(JSON.parse(bsFreq));
+
       const defaultBSLen = defaultBS.length;
       for (let i = 0; i < defaultBSLen; i++) {
         const item = JSON.parse(defaultBS[i]);
+        const txpower = bsTxpower[i];
+        const beamId = bsBeamId[i];
+        const freq = bsFreq[i];
         const id = `defaultBS_${this.generateString(10)}`;
         this.defaultBSList.push(id);
+        //20210521
+
+        this.bsListRfParam[id] = {
+          txpower: txpower,
+          beampattern: beamId,
+          frequency: freq
+        }
         this.dragObject[id] = {
           x: item[0],
           y: item[1],
@@ -2455,7 +2557,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.calculateForm.beamMinId = result['beamminid'];
     this.calculateForm.candidateBs = result['candidatebs'];
     this.calculateForm.crossover = result['crossover'];
-    this.calculateForm.defaultBs = result['defaultbs'];
+    this.calculateForm.defaultBs = result['defaultBs'];
     this.calculateForm.frequency = result['frequency'];
     this.calculateForm.iteration = result['iteration'];
     this.calculateForm.zValue = result['mapdepth'];
@@ -2541,17 +2643,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     // 設定預設值
     // console.log(this.planningIndex);
     if (this.planningIndex === '1') {
+      this.clearAll('defaultBS');
+      // this.clearAllDrag();
       if (!this.calculateForm.isAverageSinr && !this.calculateForm.isCoverage) {
         this.calculateForm.isAverageSinr = true;
       }
     } else if (this.planningIndex === '2') {
+      this.clearAll('defaultBS');
+      // this.clearAllDrag();
       if (!this.calculateForm.isUeAvgSinr 
         && !this.calculateForm.isUeAvgThroughput 
         && !this.calculateForm.isUeTpByDistance) {
         this.calculateForm.isUeAvgSinr = true;
       }
     } else {
-      console.log('simulation');
+      this.clearAll('candidate');
+      // this.clearAllDrag();
+      // console.log('simulation');
     }
   }
 

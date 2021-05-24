@@ -1,6 +1,7 @@
 <div class="wrap">
 	<div class="header">
 		<h1 (click)="home()">Athena Planning Portal<i class="fas fa-home"></i></h1>
+		<span style="font-size: 10px;"> Hello, {{authService.userId}}</span>
 
 		<span class="headerRightarea"> 
 			<mat-button-toggle-group name="fontStyle" [(value)]="authService.lang" aria-label="Font Style">

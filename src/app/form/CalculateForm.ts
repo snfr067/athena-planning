@@ -28,11 +28,11 @@ export class CalculateForm {
   beamMinId: number = null;
   objectiveIndex = '2';
   // threshold = null;
+  frequency: number = null; 
   obstacleInfo: string = null;
   availableNewBsNumber: number = 0;
   addFixedBsNumber: number = 0;
   bandwidth: number = null;
-  frequency: number = null;
   isAverageSinr = true;
   sinrRatio: number = 5;
   isAvgThroughput = false;
@@ -58,6 +58,13 @@ export class CalculateForm {
   mctsTime: number = 30;
   mctsTestTime: number = 300;
   mctsTotalTime: number = 500;
+
+  //Simulation
+  bsList: string = null;
+  txPower: string = null;
+  beamId: string = null;
+  frequencyList: string = null;
+  isSimulation: boolean = false;
 
   // constructor(options: {
   //   sessionid?: string,

@@ -18,6 +18,7 @@ export class LayoutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // console.log(this.authService.userId);
   }
 
   /**
