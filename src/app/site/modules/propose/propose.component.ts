@@ -29,6 +29,8 @@ export class ProposeComponent implements OnInit {
   calculateForm = new CalculateForm();
   /** 建議方案 list */
   candidateList = [];
+  /** 既有基站 list */
+  // defaultBsList = [];
   /** 是否PDF頁面 */
   isPDF = false;
 

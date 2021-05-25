@@ -11,7 +11,7 @@
 	"delete": "刪除",
 	"altitude": "高",
 	"altitude.setting": "高度",
-	
+	"rfparam.setting": "RF參數",
 	"notaskList": "沒有任務正在運算中.",
 	"home": "回首頁",
 	"timeout": "用戶未授權或是已過期, 請重新登入.",
@@ -130,6 +130,7 @@
 	"availableNewBsNumber.wifi": "欲佈建的AP數量",
 	"availableNewBsNumber.gen": "欲佈建的基站數量",
 	"must_greater_then": "必須大於",
+	"must_less_then": "必須小於待選位置數量",
 	"view.3d": "3D 顯示",
 
 	"result.title": "規劃結果",
@@ -148,7 +149,7 @@
 	"result.section.rsrp": "切面平均訊號強度",
 	"result.propose": "建議方案",
 	"result.propose.wait_select_1": "待選基站位置",
-	"result.propose.wait_select_2": "( 共{0}處 )",
+	"result.propose.wait_select_2": "(共{0}處)",
 	"result.propose.candidateBs.num": "基站編號",
 	"result.propose.candidateBs.x": "X座標",
 	"result.propose.candidateBs.y": "Y座標",

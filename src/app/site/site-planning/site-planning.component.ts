@@ -286,7 +286,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
   @ViewChild('materialModal') materialModal: TemplateRef<any>;
+  /** RF設定燈箱 */
+  @ViewChild('RfModal') rfModal: TemplateRef<any>;
 
+  
   /** click外部取消moveable */
   @HostListener('document:click', ['$event'])
   clickout(event) {
@@ -458,6 +461,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
 
         this.initData(false, false);
       }
+      
+      setTimeout(()=> {
+        if (this.calculateForm.defaultBs !== "") {
+          this.planningIndex = '3';
+        } else {
+          this.planningIndex = '1';
+        }
+        console.log(this.planningIndex);
+      }, 500);
     }
   }
 
@@ -1203,6 +1215,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.pathStyle[this.svgId].fill = this.color;
     }
   }
+  /**
+   * 開啟RF設定燈箱
+  */
+  openRfParamSetting() {
+    this.matDialog.open(this.rfModal);
+  }
 
   /**
    * 開啟高度設定燈箱
@@ -1298,14 +1316,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
 
     console.log(this.calculateForm);
 
-    if (Number(this.calculateForm.availableNewBsNumber) === 0 && this.planningIndex !== '3') {
+    if (((this.candidateList.length < this.calculateForm.availableNewBsNumber) || Number(this.calculateForm.availableNewBsNumber) === 0) && this.planningIndex !== '3') {
       let msg;
       if (this.calculateForm.objectiveIndex === '2') {
         msg = this.translateService.instant('availableNewBsNumber.wifi');
       } else {
         msg = this.translateService.instant('availableNewBsNumber.gen');
       }
-      msg += ' ' + this.translateService.instant('must_greater_then') + '0';
+      if (this.candidateList.length < this.calculateForm.availableNewBsNumber) {
+        msg += ' ' + this.translateService.instant('must_less_then') + this.candidateList.length;
+      } else { 
+        msg += ' ' + this.translateService.instant('must_greater_then') + '0';
+      }
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg

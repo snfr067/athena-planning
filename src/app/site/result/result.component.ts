@@ -247,7 +247,9 @@ export class ResultComponent implements OnInit {
         this.siteInfo.result = this.result;
         window.setTimeout(() => {
           this.siteInfo.inputBsListCount = candidateBs.length;
-          this.siteInfo.defaultBsCount = this.result['defaultBs'].length;
+          if(this.calculateForm['defaultBs'] !== '') {
+            this.siteInfo.defaultBsCount = this.calculateForm['defaultBs'].split('|').length;
+          }
         }, 0);
 
         this.hstOutput['gaResult'] = {};

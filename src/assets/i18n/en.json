@@ -11,6 +11,7 @@
 	"delete": "Delete",
 	"altitude": "Altitude",
 	"altitude.setting": "Altitude settings",
+	"rfparam.setting": "RF Parameter",
 	"notaskList": "No processing tasks currently",
 	"home": "Back to index page",
 	"timeout": "Invalid user or session expired, please login again",
@@ -129,6 +130,7 @@
 	"availableNewBsNumber.wifi": "New access point number",
 	"availableNewBsNumber.gen": "New basestation number",
 	"must_greater_then": "must be greater than",
+	"must_less_then": "must less than",
 	"view.3d": "3D model",
 
 	"result.title": "Planning report page",

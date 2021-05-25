@@ -302,6 +302,7 @@
         </ng-container>
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS'" mat-menu-item (click)="openRfParamSetting()">{{ 'rfparam.setting' | translate }}</button>
     </ng-template>
   </mat-menu>
   <!-- <mat-menu #mater="matMenu">
@@ -879,4 +880,41 @@
     </ul>
     
   </div>
+</ng-template>
+
+<ng-template #RfModal>
+    <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
+    <!-- <ng-container>
+        <div class="rfTitle">
+          <div class="alignRight">
+            <label for="">Txpower</label><br />
+            <label for="">BeamId</label><br />
+            <label for="">Frequency</label><br />
+          </div>
+        </div>
+        <div class="rfitems">
+          <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower">
+          <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
+          <input type="text" [(ngModel)]="bsListRfParam[svgId].frequency">
+        </div>
+      </div>  
+  </ng-container> -->
+  
+    <ul class="highset">
+      <li>
+        <ng-container>
+          Txpower <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower">
+        </ng-container>
+      </li>
+      <li class="mt-2">
+        <ng-container>
+          BeamId <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
+        </ng-container>
+      </li>
+      <li class="mt-2">
+        <ng-container>
+          Frequency <input type="text" [(ngModel)]="bsListRfParam[svgId].frequency">
+        </ng-container>
+      </li>
+    </ul>
 </ng-template>

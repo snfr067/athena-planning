@@ -37,7 +37,8 @@ export class SiteInfoComponent implements OnInit {
       this.planningObj = JSON.parse(sessionStorage.getItem('planningObj'));
       console.log(this.planningObj);
     }
-    
+    console.log(this.result);
+    // setInterval(()=> {console.log(this.calculateForm);},10000);
   }
 
   /** parse 網路種類 */
