@@ -1142,6 +1142,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
       }
     }
+    this.moveClick(this.target.id);
   }
 
   /**
@@ -2341,7 +2342,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: item[6].toString(),
           element: shape
         };
-
+console.log(item)
         this.spanStyle[id] = {
           left: `${this.pixelXLinear(item[0])}px`,
           top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
@@ -2350,12 +2351,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           transform: `rotate(${this.dragObject[id].rotate}deg)`,
           opacity: 0
         };
+        if (this.dragObject[id].rotate < 0) {
+          this.spanStyle[id]['transform-origin'] = 'top left';
+        } else if (this.dragObject[id].rotate > 0) {
+          this.spanStyle[id]['transform-origin'] = 'bottom right';
+        }
         if (item[5] < 0) {
           // fixed偏移
           window.setTimeout(() => {
             const obj = document.getElementById(id).getBoundingClientRect();
-            this.spanStyle[id].left = `${Number(this.spanStyle[id].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
+            // this.spanStyle[id].left = `${Number(this.spanStyle[id].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
             this.spanStyle[id].opacity = 1;
+            // this.chang
           }, 0);
         } else {
           this.spanStyle[id].opacity = 1;
@@ -2398,6 +2405,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         }
 
         this.obstacleList.push(id);
+        
       }
     }
     
@@ -2410,7 +2418,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // const defaultBS = this.calculateForm.defaultBs;
       const bsTxpower = JSON.parse(this.calculateForm.txPower);
       const bsBeamId = JSON.parse(this.calculateForm.beamId);
-      const bsFreq = JSON.parse(this.calculateForm.frequency);
+      const bsFreq = JSON.parse(this.calculateForm.frequency.toString());
       console.log(JSON.parse(this.calculateForm.txPower));
       // console.log(JSON.parse(bsBeamId));
       // console.log(JSON.parse(bsFreq));

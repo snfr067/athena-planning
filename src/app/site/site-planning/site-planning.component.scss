@@ -2,15 +2,15 @@ mat-sidenav-container {
     margin: -2em -2em 0 2em;
     padding: 1em 0 0 1em;
     position: relative;
-    height: 95vh;
+    height: 94.5vh;
 }
 .tool {
     position: absolute;
-    left: 0px;
+    left: 0;
     top: 54px;
     padding-top: 1em;
     width: 4em;
-    height: 100%;
+    height: 94.5vh;
     background-color: #263345;
     color: #fff;
     z-index: 1;
@@ -21,6 +21,11 @@ mat-sidenav-container {
     width: 100%;
     text-align: center;
     cursor: move;
+}
+@media screen and (max-width:1366px) {
+    .tool , .mat-sidenav-container {
+        height: 91vh;
+    }
 }
 
 .tool span:nth-child(1) svg,.tool span:nth-child(2) svg,.tool span:nth-child(3) svg {

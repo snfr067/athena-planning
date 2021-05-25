@@ -650,6 +650,13 @@ export class SignalQualityComponent implements OnInit {
             ry: height / 2
           };
         }
+
+        if (item.rotate < 0) {
+          item['style']['transform-origin'] = 'top left';
+        } else if (item.rotate > 0) {
+          item['style']['transform-origin'] = 'bottom right';
+        }
+
         
         if (item.rotate < 0) {
           ary.push({
@@ -665,7 +672,7 @@ export class SignalQualityComponent implements OnInit {
       window.setTimeout(() => {
         for (let k = 0; k < ary.length; k++) {
           const obj = this.obstacleElm.toArray()[ary[k].index].nativeElement.getBoundingClientRect();
-          ary[k].obj['style'].left = `${Number(ary[k].obj['style'].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
+          // ary[k].obj['style'].left = `${Number(ary[k].obj['style'].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
         }
       }, 0);
 
