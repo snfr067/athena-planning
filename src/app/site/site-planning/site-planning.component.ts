@@ -289,6 +289,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
 
+  //4G 5G WiFi new attribute
+  duplexMode = "TDD";
+  dlRatio = 70;
+  ulFrequency = "3500";
+  dlFrequency = "3500";
+  wifiProtocol = "0";
+  guardInterval = "0";
+  mimoNum = "0";
+
   
   /** click外部取消moveable */
   @HostListener('document:click', ['$event'])
@@ -779,7 +788,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.bsListRfParam[this.svgId] = {
       txpower: 0,
       beampattern: 0,
-      frequency: 2400
+      frequency: 2400,
+      fddDlFrequency: 0,
+      fddUlFrequency: 0,
+      ulModulationCodScheme: "64QAM-table",
+      dlModulationCodScheme: "64QAM-table",
+      mimoLayer: 1,
+      scalingFact: 1,
+      subcarrier: 15,
+      scsBandwidth: 0,
     }
     } else if (id === 'candidate') {
       color = this.CANDIDATE_COLOR;

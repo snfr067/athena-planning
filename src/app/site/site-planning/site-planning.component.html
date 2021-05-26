@@ -302,7 +302,7 @@
         </ng-container>
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
-      <button *ngIf="dragObject[svgId].type === 'defaultBS'" mat-menu-item (click)="openRfParamSetting()">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" mat-menu-item (click)="openRfParamSetting()">{{ 'rfparam.setting' | translate }}</button>
     </ng-template>
   </mat-menu>
   <!-- <mat-menu #mater="matMenu">
@@ -429,6 +429,55 @@
                     </select>
                   </li>
                 </ng-container>
+
+                <li *ngIf="calculateForm.objectiveIndex == '1'">
+                  <p>{{ 'duplex' | translate }}	</p>
+                  <mat-radio-group [(ngModel)]="duplexMode">
+                    <mat-radio-button value="TDD">TDD</mat-radio-button>
+                    <mat-radio-button value="FDD">FDD</mat-radio-button>
+                  </mat-radio-group>
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'wifiProtocol' | translate }}	</p>
+                  <mat-radio-group [(ngModel)]="wifiProtocol">
+                    <mat-radio-button value="0">{{ 'wifi4' | translate }}</mat-radio-button>
+                    <mat-radio-button value="1">{{ 'wifi5' | translate }}</mat-radio-button>
+                  </mat-radio-group>
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'guardInterval' | translate }}	</p>
+                  <mat-radio-group [(ngModel)]="guardInterval">
+                    <mat-radio-button value="0">400ns</mat-radio-button>
+                    <mat-radio-button value="1">800ns</mat-radio-button>
+                  </mat-radio-group>
+                </li>
+
+                <li>
+                  <p>{{ 'mimoNum' | translate }}	</p>
+                  <select [(ngModel)]="mimoNum" style="width: 100px;" >
+                    <option value="0">1x1</option>
+                    <option value="1">2x2</option>
+                    <option value="2">3x3</option>
+                  </select>
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex !== '2'">
+                  <p>{{ 'upDownRatio' | translate }}	</p>
+                  {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex !== '2'">
+                  <p>{{ 'uplink.frequency' | translate }}</p>
+                  <span>
+                    <input type="text" [(ngModel)]="ulFrequency">
+                  </span>
+                  <p>{{ 'downlink.frequency' | translate }}</p>
+                  <span>
+                    <input type="text" [(ngModel)]="dlFrequency">
+                  </span>
+                </li>
                 
                 <li *ngIf="calculateForm.objectiveIndex == '2'">
                   <p>{{ 'wifiFrequency' | translate }}</p>
@@ -438,6 +487,7 @@
                     <option value="2">5GHz</option>
                   </select>
                 </li>
+                
                 <li>
                   <p>{{ 'bandwidth' | translate }}</p>
                   <span>
@@ -902,19 +952,100 @@
   
     <ul class="highset">
       <li>
-        <ng-container>
-          Txpower <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower">
-        </ng-container>
+        Txpower <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower">
+        BeamId <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
+        Frequency <input type="text" [(ngModel)]="bsListRfParam[svgId].frequency">
+      </li>
+      <li class="mt-2" *ngIf="duplexMode === 'FDD'">
+        {{ 'uplink.frequency' | translate }} 
+        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency">
+        {{ 'downlink.frequency' | translate }}
+        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency">
       </li>
       <li class="mt-2">
-        <ng-container>
-          BeamId <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
-        </ng-container>
+        {{ 'subcarrier' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].subcarrier" style="width: 100px;" >
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="60">60</option>
+          <option value="120">120</option>
+        </select>
+        {{ 'scsBandwidth' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 15">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+        </select>
+        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 30">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="60">60</option>
+          <option value="70">70</option>
+          <option value="80">80</option>
+          <option value="90">90</option>
+          <option value="100">100</option>
+        </select>
+        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 60">
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="60">60</option>
+          <option value="70">70</option>
+          <option value="80">80</option>
+          <option value="90">90</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+        </select>
+        <select [(ngModel)]="bsListRfParam[svgId].scalingFact" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 120">
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="400">400</option>
+        </select>
       </li>
       <li class="mt-2">
-        <ng-container>
-          Frequency <input type="text" [(ngModel)]="bsListRfParam[svgId].frequency">
-        </ng-container>
+        {{ 'ULModulationCodingScheme' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 100px;" >
+          <option value="64QAM">64QAM</option>
+          <option value="256QAM">256QAM</option>
+        </select>
+        {{ 'DLModulationCodingScheme' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 100px;" >
+          <option value="64QAM">64QAM</option>
+          <option value="256QAM">256QAM</option>
+          <option value="64QAM-Low-SE">64QAM-Low-SE</option>
+        </select>
+      </li>
+      <li class="mt-2">
+        {{ 'mimolayer' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].mimoLayer" style="width: 100px;" >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="8">8</option>
+        </select>
+        {{ 'scalingFactor' | translate }}
+        <select [(ngModel)]="bsListRfParam[svgId].scalingFact" style="width: 100px;" >
+          <option value="1">1</option>
+          <option value="0.8">0.8</option>
+          <option value="0.75">0.75</option>
+          <option value="0.4">0.4</option>
+        </select>
       </li>
     </ul>
 </ng-template>
