@@ -2359,10 +2359,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: item[6].toString(),
           element: shape
         };
-console.log(item)
+
+        let leftPosition = this.pixelXLinear(item[0]);
+        if (this.dragObject[id].rotate > 0) {
+          leftPosition = this.pixelXLinear(item[0] - (this.dragObject[id].rotate * (Math.PI / 180)));
+        }
+
         this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
+          left: `${leftPosition}px`,
+          top: `${this.chartHeight - this.pixelYLinear(item[3] + (this.dragObject[id].rotate * (Math.PI / 180))) - this.pixelYLinear(item[1])}px`,
           width: `${this.pixelXLinear(item[2])}px`,
           height: `${this.pixelYLinear(item[3])}px`,
           transform: `rotate(${this.dragObject[id].rotate}deg)`,

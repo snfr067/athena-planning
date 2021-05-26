@@ -551,13 +551,18 @@ export class SignalStrengthComponent implements OnInit {
         if (width < 5) {
           width = 5;
         }
-        let height = pixelYLinear(item['svgStyle'].height);
+        let height = pixelYLinear(item['svgStyle'].height + (item.rotate * (Math.PI / 180)));
         if (height < 5) {
           height = 5;
         }
 
+        let leftPosition = pixelXLinear(item.x);
+        if (item.rotate > 0) {
+          leftPosition = pixelXLinear(item.x - (item.rotate * (Math.PI / 180)));
+        }
+
         item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
-        item['style'].left = `${pixelXLinear(item.x)}px`;
+        item['style'].left = `${leftPosition}px`;
         item['style'].width = `${width}px`;
         item['style'].height = `${height}px`;
         item['svgStyle'].width = `${width}px`;
@@ -580,23 +585,8 @@ export class SignalStrengthComponent implements OnInit {
           item['style']['transform-origin'] = 'bottom right';
         }
         
-        if (item.rotate < 0) {
-          ary.push({
-            obj: item,
-            index: i
-          });
-        }
-        
         i++;
       }
-
-      // fixed斜障礙物position
-      window.setTimeout(() => {
-        for (let k = 0; k < ary.length; k++) {
-          const obj = this.obstacleElm.toArray()[ary[k].index].nativeElement.getBoundingClientRect();
-          // ary[k].obj['style'].left = `${Number(ary[k].obj['style'].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
-        }
-      }, 0);
 
       for (const item of this.defaultBsList) {
         item['style'] = {
