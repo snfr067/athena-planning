@@ -430,9 +430,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
-              // this.bsListRfParam.txpower = this.calculateForm.bsList;
-              // this.bsListRfParam.frequency = this.calculateForm.bsList;
-              // this.bsListRfParam.beampattern = this.calculateForm.bsList;
             }
             this.zValues = JSON.parse(this.calculateForm.zValue);
 
@@ -791,8 +788,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       frequency: 2400,
       fddDlFrequency: 0,
       fddUlFrequency: 0,
-      ulModulationCodScheme: "64QAM-table",
-      dlModulationCodScheme: "64QAM-table",
+      ulModulationCodScheme: "64QAM",
+      dlModulationCodScheme: "64QAM",
       mimoLayer: 1,
       scalingFact: 1,
       subcarrier: 15,
@@ -1236,7 +1233,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   /**
    * 開啟RF設定燈箱
   */
-  openRfParamSetting() {
+  openRfParamSetting(item) {
+    this.svgId = item;
+    // console.log(this.svgId);
+    // console.log(item);
     this.matDialog.open(this.rfModal);
   }
 
@@ -1493,6 +1493,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let txpower = [];
     let beamId = [];
     let freqList = [];
+    //4G and 5G
+    let duplex = this.duplexMode;
+    let tddFrameRatio = this.dlRatio;
+    
+    let dlFrequency = this.ulFrequency; //Array
+    let ulFrequency = this.dlFrequency; //Array
+    //5G
+    let ulMcsTable = []; //Array
+    let dlMcsTable = []; //Array
+    let ulMimoLayer = []; //Array
+    let dlMimoLayer = []; //Array
+    let scalingFactor = 0;
+    // 5G TDD 
+    let scs = []; //Array
+    let bandwidth = []; //Array TDD bandwidth
+    let frequency = []; //Array TDD frequency
+    // 5G FDD
+    let dlScs = []; //Array
+    let ulScs = []; //Array
+    let dlBandwidth = []; //Array
+    let ulBandwidth = []; //Array
+    //WiFi
+    let wifiProtocol = this.wifiProtocol; //Array
+    let guardInterval = this.guardInterval; //Array
+    let wifiMimo = []; //Array
+    let mimoNumber = []; //Array
+    
+
+
+    
     
     if(this.defaultBSList.length > 0) {
       for (let i = 0; i < this.defaultBSList.length; i++) {
@@ -1508,9 +1538,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         // }
       }
       
+      //API body
       this.calculateForm.txPower = `[${txpower.toString()}]`;
       this.calculateForm.beamId = `[${beamId.toString()}]`;
       this.calculateForm.frequencyList = `[${freqList.toString()}]`;
+
       console.log(this.calculateForm.txPower);
       console.log(this.calculateForm.beamId);
       console.log(this.calculateForm.frequencyList);
@@ -2359,15 +2391,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: item[6].toString(),
           element: shape
         };
-
-        let leftPosition = this.pixelXLinear(item[0]);
-        if (this.dragObject[id].rotate > 0) {
-          leftPosition = this.pixelXLinear(item[0] - (this.dragObject[id].rotate * (Math.PI / 180)));
-        }
-
+console.log(item)
         this.spanStyle[id] = {
-          left: `${leftPosition}px`,
-          top: `${this.chartHeight - this.pixelYLinear(item[3] + (this.dragObject[id].rotate * (Math.PI / 180))) - this.pixelYLinear(item[1])}px`,
+          left: `${this.pixelXLinear(item[0])}px`,
+          top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
           width: `${this.pixelXLinear(item[2])}px`,
           height: `${this.pixelYLinear(item[3])}px`,
           transform: `rotate(${this.dragObject[id].rotate}deg)`,
@@ -2432,7 +2459,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     
       // defaultBs
-    console.log('VBBBBSDBSDBSDBSSBDBSD');
     console.log(this.calculateForm);
     this.calculateForm.defaultBs = this.calculateForm.bsList;
     if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
@@ -2458,7 +2484,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.bsListRfParam[id] = {
           txpower: txpower,
           beampattern: beamId,
-          frequency: freq
+          frequency: freq,
+          fddDlFrequency: 0,
+          fddUlFrequency: 0,
+          ulModulationCodScheme: "64QAM",
+          dlModulationCodScheme: "64QAM",
+          mimoLayer: 1,
+          scalingFact: 1,
+          subcarrier: 15,
+          scsBandwidth: 10,
         }
         this.dragObject[id] = {
           x: item[0],

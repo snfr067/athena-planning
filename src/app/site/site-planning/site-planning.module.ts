@@ -18,6 +18,7 @@ import { ColorPickerModule, ColorPickerDirective } from 'ngx-color-picker';
 import { MatRadioModule } from '@angular/material/radio';
 import {MatInputModule} from '@angular/material/input';
 import { MsgDialogModule } from '../../utility/msg-dialog/msg-dialog.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   imports: [
@@ -38,7 +39,8 @@ import { MsgDialogModule } from '../../utility/msg-dialog/msg-dialog.module';
     ColorPickerModule,
     MatRadioModule,
     MatInputModule,
-    MsgDialogModule
+    MsgDialogModule,
+    MatButtonModule
   ],
   declarations: [SitePlanningComponent],
   exports: [SitePlanningComponent],
