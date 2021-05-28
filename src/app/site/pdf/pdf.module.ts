@@ -15,6 +15,8 @@ import { PdfRoutingModule } from './pdf-routing.module';
 import { View3dModule } from '../view3d/view3d.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ColorPickerModule, ColorPickerDirective } from 'ngx-color-picker';
+import { SignalDlThroughputModule } from '../modules/signal-dl-throughput/signal-dl-throughput.module';
+import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal-ul-throughput.module';
 
 
 
@@ -36,6 +38,8 @@ import { ColorPickerModule, ColorPickerDirective } from 'ngx-color-picker';
     View3dModule,
     MatDialogModule,
     ColorPickerModule,
+    SignalDlThroughputModule,
+    SignalUlThroughputModule
   ],
   exports: [PdfComponent],
   providers: [ColorPickerDirective]

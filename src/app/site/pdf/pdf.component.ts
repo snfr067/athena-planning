@@ -17,6 +17,8 @@ import { FormService } from '../../service/form.service';
 import { TranslateService } from '@ngx-translate/core';
 import { View3dComponent } from '../view3d/view3d.component';
 import { ActivatedRoute } from '@angular/router';
+import { SignalDlThroughputComponent } from '../modules/signal-dl-throughput/signal-dl-throughput.component';
+import { SignalUlThroughputComponent } from '../modules/signal-ul-throughput/signal-ul-throughput.component';
 
 declare var Plotly: any;
 
@@ -74,6 +76,10 @@ export class PdfComponent implements OnInit {
   @ViewChildren('view3D2') view3D2: QueryList<View3dComponent>;
   /** 3D訊號強度圖 Component */
   @ViewChildren('view3D3') view3D3: QueryList<View3dComponent>;
+  /** 上行傳輸速率圖 Component */
+  @ViewChildren('ulThroughputMap') ulThroughputMap: QueryList<SignalUlThroughputComponent>;
+  /** 下行傳輸速率圖 Component */
+  @ViewChildren('dlThroughputMap') dlThroughputMap: QueryList<SignalDlThroughputComponent>;
 
   ngOnInit() {
     // this.route.queryParams.subscribe(params => {
@@ -186,6 +192,24 @@ export class PdfComponent implements OnInit {
               index++;
             });
 
+            // 上行傳輸速率圖
+            index = 0;
+            this.ulThroughputMap.forEach(element => {
+              element.calculateForm = this.calculateForm;
+              element.result = this.result;
+              element.draw(true, this.zValues[index]);
+              index++;
+            });
+
+            // 下行傳輸速率圖
+            index = 0;
+            this.dlThroughputMap.forEach(element => {
+              element.calculateForm = this.calculateForm;
+              element.result = this.result;
+              element.draw(true, this.zValues[index]);
+              index++;
+            });
+
 
             this.result['gaResult'] = {};
             this.result['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
@@ -216,7 +240,7 @@ export class PdfComponent implements OnInit {
             this.result['rsrpMax'] = Plotly.d3.max(rsrpAry);
             this.result['rsrpMin'] = Plotly.d3.min(rsrpAry);
 
-            console.log(document.querySelectorAll('.canvas_3d').length)
+            console.log(document.querySelectorAll('.canvas_3d').length);
 
             for (const zValue of this.zValues) {
               // 3D訊號品質圖
@@ -329,6 +353,9 @@ export class PdfComponent implements OnInit {
     const list = [];
     for (let k = 0; k < this.zValues.length; k++) {
       list.push(`signal_${k}`);
+    }
+    for (let k = 0; k < this.zValues.length; k++) {
+      list.push(`signal2_${k}`);
     }
     for (let k = 0; k < this.zValues.length; k++) {
       list.push(`view_3d_${k}`);
@@ -552,6 +579,14 @@ export class PdfComponent implements OnInit {
       }
       if (data.querySelector('#is_strength') != null) {
         // 訊號強度圖等待轉png
+        await this.sleep(1000);
+      }
+      if (data.querySelector('#is_ulThroughputMap') != null) {
+        // 上行傳輸速率圖等待轉png
+        await this.sleep(1000);
+      }
+      if (data.querySelector('#is_dlThroughputMap') != null) {
+        // 下行傳輸速率圖等待轉png
         await this.sleep(1000);
       }
       await html2canvas(data, {

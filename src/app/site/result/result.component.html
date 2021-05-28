@@ -31,6 +31,8 @@
 							<mat-button-toggle  value="SINR" (click)="drawQuality()" selected>{{ 'sinrMap' | translate }}</mat-button-toggle>
 							<mat-button-toggle  value="PCI" (click)="drawCover()">{{ 'connectionMap' | translate }}</mat-button-toggle>
 							<mat-button-toggle  value="RSRP" (click)="drawStrength()">{{ 'rsrpMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="UL_THROUGHPUT" (click)="drawUlThroughputMap()">{{ 'ulThroughputMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="DL_THROUGHPUT" (click)="drawDlThroughputMap()">{{ 'dlThroughputMap' | translate }}</mat-button-toggle>
 						</mat-button-toggle-group>
 
 						<ng-container *ngIf="showUEArea">
@@ -66,7 +68,10 @@
 						<app-signal-cover *ngIf="showCover" #cover></app-signal-cover>
 						<!-- 訊號強度圖 -->
 						<app-signal-strength *ngIf="showStrength" #strength></app-signal-strength>
-
+						<!-- 上行傳輸速率圖 -->
+						<app-signal-ul-throughput *ngIf="showUlThroughputMap" #ulThroughputMap></app-signal-ul-throughput>
+						<!-- 下行傳輸速率圖 -->
+						<app-signal-dl-throughput *ngIf="showDlThroughputMap" #dlThroughputMap></app-signal-dl-throughput>
 						<div>
 							<label class="m-0">{{ 'result.opacity' | translate }}</label>
 							<ngx-slider [(value)]="opacityValue" [options]="opacityOptions" (userChange)="changeOpacity()"></ngx-slider>

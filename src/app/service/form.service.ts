@@ -31,8 +31,10 @@ export class FormService {
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
     // console.log(result['output']['defaultbeamid']);
-    calculateForm.txPower = result['output']['defaultbspower'];
-    calculateForm.beamId = result['output']['defaultbeamid'];
+    // calculateForm.txPower = result['output']['defaultbspower'];
+    // calculateForm.beamId = result['output']['defaultbeamid'];
+    calculateForm.txPower = result['defaultbspower'];
+    calculateForm.beamId = result['defaultbeamid'];
     calculateForm.bsList = result['defaultbs'];
 
     calculateForm.iteration = result['iteration'];
@@ -141,6 +143,8 @@ export class FormService {
       output['ueThroughput'] = null;
     }
     output['ueThroughputIndividual'] = result['uethroughputindividual'];
+    output['ulThroughputMap'] = JSON.parse(result['ulthroughputmap']);
+    output['throughputMap'] = JSON.parse(result['throughputmap']);
 
     return output;
   }

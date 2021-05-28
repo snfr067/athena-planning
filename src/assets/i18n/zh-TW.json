@@ -217,5 +217,8 @@
 	"nofile": "未選擇檔案",
 	"result.performance.field": "場域效能分析",
 	"result.performance.ue": "行動終端效能分析",
-	"result.performance.height": "切面高度分析"
+	"result.performance.height": "切面高度分析",
+	"ulThroughputMap": "上行傳輸速率圖",
+	"dlThroughputMap": "下行傳輸速率圖",
+	"throughput": "傳輸速率"
 }
