@@ -290,13 +290,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
 
   //4G 5G WiFi new attribute
-  duplexMode = "TDD";
+  duplexMode = "FDD";
   dlRatio = 70;
-  ulFrequency = "3500";
-  dlFrequency = "3500";
-  wifiProtocol = "0";
-  guardInterval = "0";
-  mimoNum = "0";
+  mimoNumber4G = '1';
+  // ulFrequency = "3500";
+  // dlFrequency = "3500";
+  // wifiProtocol = "0";
+  // guardInterval = "0";
+  // mimoNum = "0";
 
   
   /** click外部取消moveable */
@@ -436,7 +437,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             console.log(this.calculateForm);
             if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
               // 從暫存取出
-              console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFU');
               // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
             }
             console.log(this.calculateForm);
@@ -788,12 +788,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       frequency: 2400,
       fddDlFrequency: 0,
       fddUlFrequency: 0,
-      ulModulationCodScheme: "64QAM",
-      dlModulationCodScheme: "64QAM",
-      mimoLayer: 1,
+      ulModulationCodScheme: "64QAM-table",
+      dlModulationCodScheme: "64QAM-table",
+      dlmimoLayer: 1,
+      ulmimoLayer: 1,
       scalingFact: 1,
+      //TDD 5G
+      tddscs: '15',
+      tddbandwidth: 5,
+      tddfrequency: '',
+      //FDD 5G
+      dlScs: '15',
+      ulScs: '15',
+      dlBandwidth: '5',
+      ulBandwidth: '5',
+
       subcarrier: 15,
       scsBandwidth: 0,
+
+      //4G Only
+      // mimoNumber4G: '1',
+
+      //Wifi
+      wifiProtocol: 'wifi4',
+      guardInterval: '400ns',
+      wifiMimo: '1x1',
+
     }
     } else if (id === 'candidate') {
       color = this.CANDIDATE_COLOR;
@@ -1506,11 +1526,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let tddFrameRatio = this.dlRatio;
     let dlFrequency = []; //Array
     let ulFrequency = []; //Array
+    //4G
+    let mimoNumber = this.mimoNumber4G; //Array
     //5G
     let ulMcsTable = []; //Array
     let dlMcsTable = []; //Array
-    let ulMimoLayer = []; //Array
-    let dlMimoLayer = []; //Array
+    let ulMimoLayer = []; //Array 上行資料串流數
+    let dlMimoLayer = []; //Array 下行資料串流數
     let scalingFactor = 0;
     // 5G TDD 
     let scs = []; //Array
@@ -1522,10 +1544,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let dlBandwidth = []; //Array
     let ulBandwidth = []; //Array
     //WiFi
-    let wifiProtocol = this.wifiProtocol; //Array
-    let guardInterval = this.guardInterval; //Array
+    let wifiProtocol = []; //Array
+    let guardInterval = []; //Array
     let wifiMimo = []; //Array
-    let mimoNumber = []; //Array
     
     if(this.defaultBSList.length > 0) {
       for (let i = 0; i < this.defaultBSList.length; i++) {
@@ -1534,19 +1555,64 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
         freqList.push(obj.frequency);
-        dlFrequency.push(obj.fddDlFrequency);
-        ulFrequency.push(obj.fddUlFrequency);
         
+        if (mapProtocol !== 'wifi') {
+          if (mapProtocol === '5G') {
+            ulMcsTable.push(obj.ulModulationCodScheme);
+            dlMcsTable.push(obj.dlModulationCodScheme);
+            ulMimoLayer.push(obj.ulmimoLayer);
+            dlMimoLayer.push(obj.dlmimoLayer);
+          } else {
+          }
+          if (duplex === 'TDD') {
+            scs.push(obj.tddscs);
+            bandwidth.push(obj.tddbandwidth);
+            frequency.push(obj.tddfrequency);
+          } else {
+            dlFrequency.push(obj.fddDlFrequency);
+            ulFrequency.push(obj.fddUlFrequency);
+            dlScs.push(obj.dlScs);
+            ulScs.push(obj.ulScs);
+            dlBandwidth.push(obj.dlBandwidth);
+            ulBandwidth.push(obj.ulBandwidth);
+          }
+        } else {
+          guardInterval.push(obj.wifiProtocol);
+          wifiProtocol.push(obj.guardInterval);
+          wifiMimo.push(obj.wifiMimo);
+        }
       }
-      
       //API body
+      this.calculateForm.mapProtocol = mapProtocol;
+      this.calculateForm.duplex = duplex;
+      this.calculateForm.scalingFactor = scalingFactor;
+      this.calculateForm.tddFrameRatio = tddFrameRatio;
+
+      //4G
+      this.calculateForm.mimoNumber = mimoNumber;
+      //5G
+      this.calculateForm.ulMcsTable = `[${ulMcsTable.toString()}]`;
+      this.calculateForm.dlMcsTable = `[${dlMcsTable.toString()}]`;
+      this.calculateForm.ulMimoLayer = `[${ulMimoLayer.toString()}]`;
+      this.calculateForm.dlMimoLayer = `[${dlMimoLayer.toString()}]`;
+      //FDD
+      this.calculateForm.dlFrequency = `[${dlFrequency.toString()}]`;
+      this.calculateForm.ulFrequency = `[${ulFrequency.toString()}]`;
+      this.calculateForm.dlScs = `[${dlScs.toString()}]`;
+      this.calculateForm.ulScs = `[${ulScs.toString()}]`;
+      this.calculateForm.dlBandwidth = `[${dlBandwidth.toString()}]`;
+      this.calculateForm.ulBandwidth = `[${ulBandwidth.toString()}]`;
+      //WiFi
+      this.calculateForm.wifiProtocol = `[${wifiProtocol.toString()}]`;
+      this.calculateForm.guardInterval = `[${guardInterval.toString()}]`;
+      this.calculateForm.wifiMimo = `[${wifiMimo.toString()}]`;
+
       this.calculateForm.txPower = `[${txpower.toString()}]`;
       this.calculateForm.beamId = `[${beamId.toString()}]`;
       this.calculateForm.frequencyList = `[${freqList.toString()}]`;
 
-      console.log(this.calculateForm.txPower);
-      console.log(this.calculateForm.beamId);
-      console.log(this.calculateForm.frequencyList);
+      console.log("calculateForm");
+      console.log(this.calculateForm);
     }
 
     let candidate = '';
@@ -2488,8 +2554,8 @@ console.log(item)
           frequency: freq,
           fddDlFrequency: 0,
           fddUlFrequency: 0,
-          ulModulationCodScheme: "64QAM",
-          dlModulationCodScheme: "64QAM",
+          ulModulationCodScheme: "64QAM-table",
+          dlModulationCodScheme: "64QAM-table",
           mimoLayer: 1,
           scalingFact: 1,
           subcarrier: 15,
