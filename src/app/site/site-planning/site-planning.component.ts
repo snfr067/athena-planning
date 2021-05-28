@@ -1493,12 +1493,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let txpower = [];
     let beamId = [];
     let freqList = [];
+    let mapProtocol = '';
+    if (this.calculateForm.objectiveIndex === '0') {
+      mapProtocol = '4G';
+    } else if (this.calculateForm.objectiveIndex === '1') {
+      mapProtocol = '5G';
+    } else {
+      mapProtocol = 'wifi';
+    }
     //4G and 5G
     let duplex = this.duplexMode;
     let tddFrameRatio = this.dlRatio;
-    
-    let dlFrequency = this.ulFrequency; //Array
-    let ulFrequency = this.dlFrequency; //Array
+    let dlFrequency = []; //Array
+    let ulFrequency = []; //Array
     //5G
     let ulMcsTable = []; //Array
     let dlMcsTable = []; //Array
@@ -1520,10 +1527,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let wifiMimo = []; //Array
     let mimoNumber = []; //Array
     
-
-
-    
-    
     if(this.defaultBSList.length > 0) {
       for (let i = 0; i < this.defaultBSList.length; i++) {
         const obj = this.bsListRfParam[this.defaultBSList[i]];
@@ -1531,11 +1534,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
         freqList.push(obj.frequency);
-        // if (i < this.defaultBSList.length - 1) {
-        //   txpower += ',';
-        //   beamId += ',';
-        //   freqList += ',';
-        // }
+        dlFrequency.push(obj.fddDlFrequency);
+        ulFrequency.push(obj.fddUlFrequency);
+        
       }
       
       //API body

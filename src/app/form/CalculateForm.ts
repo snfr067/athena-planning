@@ -28,11 +28,11 @@ export class CalculateForm {
   beamMinId: number = null;
   objectiveIndex = '2';
   // threshold = null;
-  frequency: number = null; 
   obstacleInfo: string = null;
   availableNewBsNumber: number = 0;
   addFixedBsNumber: number = 0;
-  bandwidth: number = null;
+  
+
   isAverageSinr = true;
   sinrRatio: number = 5;
   isAvgThroughput = false;
@@ -64,7 +64,33 @@ export class CalculateForm {
   txPower: string = null;
   beamId: string = null;
   frequencyList: string = null;
+
   isSimulation: boolean = false;
+
+  //Bandwidth and Frequency
+  frequency: number = null; 
+  bandwidth: number = null;
+
+  //20210527 Add new parameters
+  duplex: string = null;
+  mapProtocol: string = null;
+  tddFrameRatio: number = null;
+  dlFrequency: string = null;
+  ulFrequency: string = null;
+  ulMcsTable: string = null;
+  dlMcsTable: string = null;
+  ulMimoLayer: string = null;
+  dlMimoLayer: string = null;
+  scalingFactor: number = null;
+  scs: string = null;
+  dlScs: string = null;
+  ulScs: string = null;
+  dlBandwidth: string = null;
+  ulBandwidth: string = null;
+  wifiProtocol: string = null;
+  guardInterval: string = null;
+  wifiMimo: string = null;
+  mimoNumber: string = null;
 
   // constructor(options: {
   //   sessionid?: string,
