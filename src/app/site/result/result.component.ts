@@ -267,6 +267,8 @@ export class ResultComponent implements OnInit {
         this.hstOutput['gaResult']['sinrMap'] = this.result['sinrMap'];
         this.hstOutput['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
         this.hstOutput['gaResult']['rsrpMap'] = this.result['rsrpMap'];
+        this.hstOutput['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
+        this.hstOutput['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
 
         const sinrAry = [];
         this.result['sinrMap'].map(v => {
@@ -286,10 +288,32 @@ export class ResultComponent implements OnInit {
           });
         });
 
+        const ulThroughputAry = [];
+        this.result['ulThroughputMap'].map(v => {
+          v.map(m => {
+            m.map(d => {
+              ulThroughputAry.push(d);
+            });
+          });
+        });
+
+        const dlThroughputAry = [];
+        this.result['throughputMap'].map(v => {
+          v.map(m => {
+            m.map(d => {
+              dlThroughputAry.push(d);
+            });
+          });
+        });
+
         this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
         this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
         this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
         this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
+        this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+        this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+        this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+        this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
       }
     );
   }
