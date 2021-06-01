@@ -17,6 +17,8 @@ import { FormService } from '../../service/form.service';
 import { TranslateService } from '@ngx-translate/core';
 import { View3dComponent } from '../view3d/view3d.component';
 import { ActivatedRoute } from '@angular/router';
+import { SignalDlThroughputComponent } from '../modules/signal-dl-throughput/signal-dl-throughput.component';
+import { SignalUlThroughputComponent } from '../modules/signal-ul-throughput/signal-ul-throughput.component';
 
 declare var Plotly: any;
 
@@ -74,6 +76,14 @@ export class PdfComponent implements OnInit {
   @ViewChildren('view3D2') view3D2: QueryList<View3dComponent>;
   /** 3D訊號強度圖 Component */
   @ViewChildren('view3D3') view3D3: QueryList<View3dComponent>;
+  /** 3D訊上行傳輸速率圖 Component */
+  @ViewChildren('view3D4') view3D4: QueryList<View3dComponent>;
+  /** 3D下行傳輸速率圖 Component */
+  @ViewChildren('view3D5') view3D5: QueryList<View3dComponent>;
+  /** 上行傳輸速率圖 Component */
+  @ViewChildren('ulThroughputMap') ulThroughputMap: QueryList<SignalUlThroughputComponent>;
+  /** 下行傳輸速率圖 Component */
+  @ViewChildren('dlThroughputMap') dlThroughputMap: QueryList<SignalDlThroughputComponent>;
 
   ngOnInit() {
     // this.route.queryParams.subscribe(params => {
@@ -186,12 +196,32 @@ export class PdfComponent implements OnInit {
               index++;
             });
 
+            // 上行傳輸速率圖
+            index = 0;
+            this.ulThroughputMap.forEach(element => {
+              element.calculateForm = this.calculateForm;
+              element.result = this.result;
+              element.draw(true, this.zValues[index]);
+              index++;
+            });
+
+            // 下行傳輸速率圖
+            index = 0;
+            this.dlThroughputMap.forEach(element => {
+              element.calculateForm = this.calculateForm;
+              element.result = this.result;
+              element.draw(true, this.zValues[index]);
+              index++;
+            });
+
 
             this.result['gaResult'] = {};
             this.result['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
             this.result['gaResult']['sinrMap'] = this.result['sinrMap'];
             this.result['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
             this.result['gaResult']['rsrpMap'] = this.result['rsrpMap'];
+            this.result['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
+            this.result['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
 
             const sinrAry = [];
             this.result['sinrMap'].map(v => {
@@ -211,12 +241,34 @@ export class PdfComponent implements OnInit {
               });
             });
 
+            const ulThroughputAry = [];
+            this.result['ulThroughputMap'].map(v => {
+              v.map(m => {
+                m.map(d => {
+                  ulThroughputAry.push(d);
+                });
+              });
+            });
+
+            const dlThroughputAry = [];
+            this.result['throughputMap'].map(v => {
+              v.map(m => {
+                m.map(d => {
+                  dlThroughputAry.push(d);
+                });
+              });
+            });
+
             this.result['sinrMax'] = Plotly.d3.max(sinrAry);
             this.result['sinrMin'] = Plotly.d3.min(sinrAry);
             this.result['rsrpMax'] = Plotly.d3.max(rsrpAry);
             this.result['rsrpMin'] = Plotly.d3.min(rsrpAry);
+            this.result['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+            this.result['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+            this.result['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+            this.result['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
 
-            console.log(document.querySelectorAll('.canvas_3d').length)
+            console.log(document.querySelectorAll('.canvas_3d').length);
 
             for (const zValue of this.zValues) {
               // 3D訊號品質圖
@@ -287,6 +339,52 @@ export class PdfComponent implements OnInit {
                 index++;
               });
 
+              // 3D上行傳輸速率圖
+              index = 0;
+              this.view3D4.forEach(element => {
+                if (index === this.zValues.indexOf(zValue)) {
+                  element.calculateForm = this.calculateForm;
+                  element.obstacle = obstacle;
+                  element.defaultBs = bs;
+                  element.candidate = candidateBsAry;
+                  element.ue = ueCoordinate;
+                  element.width = this.calculateForm.width;
+                  element.height = this.calculateForm.height;
+                  element.zValue = this.zValues;
+                  element.planeHeight = zValue.toString();
+                  element.result = this.result;
+                  element.isPDF = true;
+                  element.heatmapType = 3;
+      
+                  element.mounted();
+                  element.switchHeatMap();
+                }
+                index++;
+              });
+
+              // 3D下行傳輸速率圖
+              index = 0;
+              this.view3D5.forEach(element => {
+                if (index === this.zValues.indexOf(zValue)) {
+                  element.calculateForm = this.calculateForm;
+                  element.obstacle = obstacle;
+                  element.defaultBs = bs;
+                  element.candidate = candidateBsAry;
+                  element.ue = ueCoordinate;
+                  element.width = this.calculateForm.width;
+                  element.height = this.calculateForm.height;
+                  element.zValue = this.zValues;
+                  element.planeHeight = zValue.toString();
+                  element.result = this.result;
+                  element.isPDF = true;
+                  element.heatmapType = 4;
+      
+                  element.mounted();
+                  element.switchHeatMap();
+                }
+                index++;
+              });
+
             }
 
             // 統計資訊
@@ -331,7 +429,13 @@ export class PdfComponent implements OnInit {
       list.push(`signal_${k}`);
     }
     for (let k = 0; k < this.zValues.length; k++) {
+      list.push(`signal2_${k}`);
+    }
+    for (let k = 0; k < this.zValues.length; k++) {
       list.push(`view_3d_${k}`);
+    }
+    for (let k = 0; k < this.zValues.length; k++) {
+      list.push(`view_3d2_${k}`);
     }
     // 基站資訊
     let pos = 10;
@@ -552,6 +656,14 @@ export class PdfComponent implements OnInit {
       }
       if (data.querySelector('#is_strength') != null) {
         // 訊號強度圖等待轉png
+        await this.sleep(1000);
+      }
+      if (data.querySelector('#is_ulThroughputMap') != null) {
+        // 上行傳輸速率圖等待轉png
+        await this.sleep(1000);
+      }
+      if (data.querySelector('#is_dlThroughputMap') != null) {
+        // 下行傳輸速率圖等待轉png
         await this.sleep(1000);
       }
       await html2canvas(data, {

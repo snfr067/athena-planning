@@ -18,6 +18,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { View3dComponent } from '../view3d/view3d.component';
 import { FormService } from '../../service/form.service';
 import { Options } from '@angular-slider/ngx-slider/options';
+import { SignalUlThroughputComponent } from '../modules/signal-ul-throughput/signal-ul-throughput.component';
+import { SignalDlThroughputComponent } from '../modules/signal-dl-throughput/signal-dl-throughput.component';
 
 declare var Plotly: any;
 
@@ -55,11 +57,15 @@ export class ResultComponent implements OnInit {
   showCover = false;
   /** 顯示訊號強度圖 */
   showStrength = false;
+  /** 顯示上行傳輸速率圖 */
+  showUlThroughputMap = false;
+  /** 顯示下行傳輸速率圖 */
+  showDlThroughputMap = false;
   /** 高度list */
   zValues = [];
   /** 已選高度 */
   zValue;
-  /** 訊號強度圖/訊號覆蓋圖/訊號強度圖 */
+  /** 訊號強度圖/訊號覆蓋圖/訊號強度圖/上行傳輸速率圖/下行傳輸速率圖 */
   chartType = 'SINR';
   /** Message dialog config */
   msgDialogConfig: MatDialogConfig = new MatDialogConfig();
@@ -126,6 +132,10 @@ export class ResultComponent implements OnInit {
   @ViewChild('statistics') statistics: StatisticsComponent;
   /** 設定資訊 效能分析 */
   @ViewChild('siteInfo') siteInfo: SiteInfoComponent;
+  /** 上行傳輸速率圖 */
+  @ViewChild('ulThroughputMap') ulThroughputMap: SignalUlThroughputComponent;
+  /** 下行傳輸速率圖 */
+  @ViewChild('dlThroughputMap') dlThroughputMap: SignalDlThroughputComponent;
 
   ngOnInit() {
     this.view3dDialogConfig.autoFocus = false;
@@ -257,6 +267,8 @@ export class ResultComponent implements OnInit {
         this.hstOutput['gaResult']['sinrMap'] = this.result['sinrMap'];
         this.hstOutput['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
         this.hstOutput['gaResult']['rsrpMap'] = this.result['rsrpMap'];
+        this.hstOutput['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
+        this.hstOutput['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
 
         const sinrAry = [];
         this.result['sinrMap'].map(v => {
@@ -276,10 +288,32 @@ export class ResultComponent implements OnInit {
           });
         });
 
+        const ulThroughputAry = [];
+        this.result['ulThroughputMap'].map(v => {
+          v.map(m => {
+            m.map(d => {
+              ulThroughputAry.push(d);
+            });
+          });
+        });
+
+        const dlThroughputAry = [];
+        this.result['throughputMap'].map(v => {
+          v.map(m => {
+            m.map(d => {
+              dlThroughputAry.push(d);
+            });
+          });
+        });
+
         this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
         this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
         this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
         this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
+        this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+        this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+        this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+        this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
       }
     );
   }
@@ -337,6 +371,42 @@ export class ResultComponent implements OnInit {
     }, 0);
   }
 
+  /** 上行傳輸速率圖 */
+  drawUlThroughputMap() {
+    this.showQuality = false;
+    this.showCover = false;
+    this.showStrength = false;
+    this.showDlThroughputMap = false;
+    this.showUlThroughputMap = true;
+    window.setTimeout(() => {
+      this.ulThroughputMap.showUE = this.showUE;
+      this.ulThroughputMap.calculateForm = this.calculateForm;
+      this.ulThroughputMap.result = this.result;
+      this.ulThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
+      this.ulThroughputMap.showCandidate = this.showCandidate;
+      this.ulThroughputMap.opacityValue = this.opacityValue;
+      this.ulThroughputMap.draw(false, this.zValue);
+    }, 0);
+  }
+
+  /** 下行傳輸速率圖 */
+  drawDlThroughputMap() {
+    this.showQuality = false;
+    this.showCover = false;
+    this.showStrength = false;
+    this.showDlThroughputMap = true;
+    this.showUlThroughputMap = false;
+    window.setTimeout(() => {
+      this.dlThroughputMap.showUE = this.showUE;
+      this.dlThroughputMap.calculateForm = this.calculateForm;
+      this.dlThroughputMap.result = this.result;
+      this.dlThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
+      this.dlThroughputMap.showCandidate = this.showCandidate;
+      this.dlThroughputMap.opacityValue = this.opacityValue;
+      this.dlThroughputMap.draw(false, this.zValue);
+    }, 0);
+  }
+
   /** change 高度 */
   changeZvalue() {
     if (this.chartType === 'SINR') {
@@ -345,6 +415,10 @@ export class ResultComponent implements OnInit {
       this.drawCover();
     } else if (this.chartType === 'RSRP') {
       this.drawStrength();
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.drawUlThroughputMap();
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.drawDlThroughputMap();
     }
   }
 
@@ -411,6 +485,10 @@ export class ResultComponent implements OnInit {
       this.cover.switchUE(this.showUE);
     } else if (this.chartType === 'RSRP') {
       this.strength.switchUE(this.showUE);
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.ulThroughputMap.switchUE(this.showUE);
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.dlThroughputMap.switchUE(this.showUE);
     }
   }
 
@@ -423,7 +501,12 @@ export class ResultComponent implements OnInit {
       this.cover.switchShowObstacle(visible);
     } else if (this.chartType === 'RSRP') {
       this.strength.switchShowObstacle(visible);
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.ulThroughputMap.switchShowObstacle(visible);
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.dlThroughputMap.switchShowObstacle(visible);
     }
+    
   }
 
   /** ON/OFF 顯示AP */
@@ -435,7 +518,12 @@ export class ResultComponent implements OnInit {
       this.cover.switchShowCandidate(visible);
     } else if (this.chartType === 'RSRP') {
       this.strength.switchShowCandidate(visible);
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.ulThroughputMap.switchShowCandidate(visible);
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.dlThroughputMap.switchShowCandidate(visible);
     }
+    
   }
 
   /** heatmap透明度 */
@@ -449,6 +537,12 @@ export class ResultComponent implements OnInit {
     } else if (this.chartType === 'RSRP') {
       this.strength.opacityValue = this.opacityValue;
       this.strength.changeOpacity();
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.ulThroughputMap.opacityValue = this.opacityValue;
+      this.ulThroughputMap.changeOpacity();
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.dlThroughputMap.opacityValue = this.opacityValue;
+      this.dlThroughputMap.changeOpacity();
     }
   }
 

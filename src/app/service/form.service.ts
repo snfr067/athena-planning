@@ -146,6 +146,8 @@ export class FormService {
       output['ueThroughput'] = null;
     }
     output['ueThroughputIndividual'] = result['uethroughputindividual'];
+    output['ulThroughputMap'] = JSON.parse(result['ulthroughputmap']);
+    output['throughputMap'] = JSON.parse(result['throughputmap']);
 
     return output;
   }

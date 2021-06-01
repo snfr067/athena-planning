@@ -404,6 +404,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
               this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
               this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
+              this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
+              this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
 
               const sinrAry = [];
               output['sinrMap'].map(v => {
@@ -423,10 +425,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
                 });
               });
 
+              const ulThroughputAry = [];
+              output['ulThroughputMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    ulThroughputAry.push(d);
+                  });
+                });
+              });
+
+              const dlThroughputAry = [];
+              output['throughputMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    dlThroughputAry.push(d);
+                  });
+                });
+              });
+
               this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
               this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
               this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
               this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
+              this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+              this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+              this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+              this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
 
             } else {
               this.calculateForm = res['input'];

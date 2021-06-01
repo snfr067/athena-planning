@@ -53,6 +53,26 @@
 				</tbody>
 			</table>
 
+			<table *ngFor="let zValue of zValues; let idx = index;" id="signal2_{{ idx }}">
+				<tbody>
+					<tr>
+						<th colspan="2" class="panel center"><label>{{ 'result.sinr_result' | translate }}</label></th>
+					</tr>
+					<tr>
+						<td class="mapType">
+							<label>{{ 'zValue' | translate }}{{ zValue }} {{ 'meter' | translate }}</label>
+				
+							<!-- 上行傳輸速率圖 -->
+							<label class="mL_1">{{ 'ulThroughputMap' | translate }}</label>
+							<app-signal-ul-throughput #ulThroughputMap></app-signal-ul-throughput>
+							<!-- 下行傳輸速率圖 -->
+							<label class="mL_1">{{ 'dlThroughputMap' | translate }}</label>
+							<app-signal-dl-throughput #dlThroughputMap></app-signal-dl-throughput>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 			<table *ngFor="let zValue of zValues; let idx = index;" id="view_3d_{{ idx }}">
 				<tbody>
 					<tr>
@@ -74,6 +94,26 @@
 					</tr>
 				</tbody>
 			</table>
+
+			<table *ngFor="let zValue of zValues; let idx = index;" id="view_3d2_{{ idx }}">
+				<tbody>
+					<tr>
+						<th colspan="2" class="panel center"><label>3D {{ 'result.sinr_result' | translate }}</label></th>
+					</tr>
+					<tr>
+						<td class="mapType" style="height: 500px;">
+							<label>{{ 'zValue' | translate }}{{ zValue }} {{ 'meter' | translate }}</label>
+				
+							<label class="mL_1">{{ 'ulThroughputMap' | translate }}</label>
+							<app-view3d #view3D4></app-view3d>
+
+							<label class="mL_1">{{ 'dlThroughputMap' | translate }}</label>
+							<app-view3d #view3D5></app-view3d>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 			<!-- 預估效能 -->
 			<app-performance #performance></app-performance>
 			

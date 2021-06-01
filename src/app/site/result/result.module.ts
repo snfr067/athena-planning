@@ -15,6 +15,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { SignalDlThroughputModule } from '../modules/signal-dl-throughput/signal-dl-throughput.module';
+import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal-ul-throughput.module';
 
 @NgModule({
   imports: [
@@ -32,7 +34,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     PdfModule,
     TranslateModule,
     MatCheckboxModule,
-    NgxSliderModule
+    NgxSliderModule,
+    SignalDlThroughputModule,
+    SignalUlThroughputModule
   ],
   declarations: [ResultComponent]
 })
