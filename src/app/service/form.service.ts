@@ -26,14 +26,19 @@ export class FormService {
     calculateForm.candidateBs = result['candidatebs'];
     calculateForm.crossover = result['crossover'];
     calculateForm.defaultBs = result['defaultbs'];
-    calculateForm.frequency = result['frequency'];
+    // calculateForm.frequency = result['frequency'];
+    calculateForm.frequencyList = result['frequency'];
     //Add RF Param
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
     // console.log(result['output']['defaultbeamid']);
+    calculateForm.mapProtocol = result['mapprotocol'];
+    calculateForm.bandwidthList = result['bandwidth'];
     calculateForm.txPower = result['output']['defaultbspower'];
     calculateForm.beamId = result['output']['defaultbeamid'];
     calculateForm.bsList = result['defaultbs'];
+    calculateForm.duplex = result['duplex'];
+
 
     calculateForm.iteration = result['iteration'];
     calculateForm.zValue = result['mapdepth'];

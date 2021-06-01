@@ -212,7 +212,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   numColumnList = ['totalRound', 'crossover', 'mutation', 'iteration', 'seed',
     'width', 'height', 'altitude', 'pathLossModelId', 'useUeCoordinate',
     'powerMaxRange', 'powerMinRange', 'beamMaxId', 'beamMinId', 'objectiveIndex',
-    'availableNewBsNumber', 'addFixedBsNumber', 'bandwidth', 'frequency', 'sinrRatio',
+    'availableNewBsNumber', 'addFixedBsNumber', 'sinrRatio',
     'throughputRatio', 'coverageRatio', 'ueAvgSinrRatio', 'ueAvgThroughputRatio', 'ueTpByDistanceRatio',
     'mctsC', 'mctsMimo', 'ueCoverageRatio', 'ueTpByRsrpRatio',
     'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime'];
@@ -290,9 +290,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
 
   //4G 5G WiFi new attribute
-  duplexMode = "FDD";
+  duplexMode = "tdd";
   dlRatio = 70;
-  mimoNumber4G = '1';
+  scalingFactor = 1;
+  // mimoNumber4G = '1';
   // ulFrequency = "3500";
   // dlFrequency = "3500";
   // wifiProtocol = "0";
@@ -458,11 +459,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         // 頻寬初始值
         this.changeWifiFrequency();
         if (this.calculateForm.objectiveIndex === '0') {
-          this.calculateForm.bandwidth = 3;
+          // this.calculateForm.bandwidth = '[3]';
         } else if (this.calculateForm.objectiveIndex === '1') {
-          this.calculateForm.bandwidth = 5;
+          // this.calculateForm.bandwidth = '[5]';
         } else if (this.calculateForm.objectiveIndex === '2') {
-          this.calculateForm.bandwidth = 1;
+          // this.calculateForm.bandwidth = '[1]';
         }
 
         this.initData(false, false);
@@ -785,18 +786,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.bsListRfParam[this.svgId] = {
       txpower: 0,
       beampattern: 0,
-      frequency: 2400,
-      fddDlFrequency: 0,
-      fddUlFrequency: 0,
+      // frequency: 2400,
+      fddDlFrequency: 2400,
+      fddUlFrequency: 2400,
       ulModulationCodScheme: "64QAM-table",
       dlModulationCodScheme: "64QAM-table",
       dlmimoLayer: 1,
       ulmimoLayer: 1,
-      scalingFact: 1,
+      // scalingFact: 1,
       //TDD 5G
+      // scs: '15',
       tddscs: '15',
       tddbandwidth: 5,
-      tddfrequency: '',
+      tddfrequency: 2400,
       //FDD 5G
       dlScs: '15',
       ulScs: '15',
@@ -807,13 +809,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       scsBandwidth: 0,
 
       //4G Only
-      // mimoNumber4G: '1',
+      mimoNumber4G: '1',
 
       //Wifi
       wifiProtocol: 'wifi4',
       guardInterval: '400ns',
       wifiMimo: '1x1',
 
+    }
+    if (this.calculateForm.objectiveIndex === '0') {
+      this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
+      this.bsListRfParam[this.svgId].ulBandwidth = '1.4';
     }
     } else if (id === 'candidate') {
       color = this.CANDIDATE_COLOR;
@@ -1374,6 +1380,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     } else {
       this.progressNum = 0;
       this.authService.spinnerShowAsHome();
+      console.log(this.calculateForm.bandwidth);
+      console.log(this.calculateForm.frequency);
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
@@ -1512,12 +1520,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     //　現有基站RF參數
     let txpower = [];
     let beamId = [];
-    let freqList = [];
+    // let freqList = [];
     let mapProtocol = '';
     if (this.calculateForm.objectiveIndex === '0') {
-      mapProtocol = '4G';
+      mapProtocol = '4g';
     } else if (this.calculateForm.objectiveIndex === '1') {
-      mapProtocol = '5G';
+      mapProtocol = '5g';
     } else {
       mapProtocol = 'wifi';
     }
@@ -1527,17 +1535,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let dlFrequency = []; //Array
     let ulFrequency = []; //Array
     //4G
-    let mimoNumber = this.mimoNumber4G; //Array
+    let mimoNumber = []; //Array
     //5G
     let ulMcsTable = []; //Array
     let dlMcsTable = []; //Array
     let ulMimoLayer = []; //Array 上行資料串流數
     let dlMimoLayer = []; //Array 下行資料串流數
-    let scalingFactor = 0;
+    let scalingFactor = this.scalingFactor;
     // 5G TDD 
     let scs = []; //Array
-    let bandwidth = []; //Array TDD bandwidth
-    let frequency = []; //Array TDD frequency
+    let bandwidthList = []; //Array TDD bandwidth
+    let frequencyList = []; //Array TDD frequency
     // 5G FDD
     let dlScs = []; //Array
     let ulScs = []; //Array
@@ -1554,20 +1562,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         console.log(`obj: ${JSON.stringify(obj)}`)
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
-        freqList.push(obj.frequency);
+        // freqList.push(obj.frequency);
         
         if (mapProtocol !== 'wifi') {
-          if (mapProtocol === '5G') {
+          if (mapProtocol === '5g') {
             ulMcsTable.push(obj.ulModulationCodScheme);
             dlMcsTable.push(obj.dlModulationCodScheme);
             ulMimoLayer.push(obj.ulmimoLayer);
             dlMimoLayer.push(obj.dlmimoLayer);
+            scs.push(obj.subcarrier);
           } else {
+            mimoNumber.push(obj.mimoNumber4G);
           }
-          if (duplex === 'TDD') {
+          if (duplex === 'tdd') {
             scs.push(obj.tddscs);
-            bandwidth.push(obj.tddbandwidth);
-            frequency.push(obj.tddfrequency);
+            bandwidthList.push(obj.tddbandwidth);
+            frequencyList.push(obj.tddfrequency);
           } else {
             dlFrequency.push(obj.fddDlFrequency);
             ulFrequency.push(obj.fddUlFrequency);
@@ -1589,8 +1599,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.calculateForm.tddFrameRatio = tddFrameRatio;
 
       //4G
-      this.calculateForm.mimoNumber = mimoNumber;
+      this.calculateForm.mimoNumber = `[${mimoNumber.toString()}]`;
       //5G
+      this.calculateForm.scs = `[${scs.toString()}]`;
       this.calculateForm.ulMcsTable = `[${ulMcsTable.toString()}]`;
       this.calculateForm.dlMcsTable = `[${dlMcsTable.toString()}]`;
       this.calculateForm.ulMimoLayer = `[${ulMimoLayer.toString()}]`;
@@ -1609,9 +1620,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
 
       this.calculateForm.txPower = `[${txpower.toString()}]`;
       this.calculateForm.beamId = `[${beamId.toString()}]`;
-      this.calculateForm.frequencyList = `[${freqList.toString()}]`;
+      this.calculateForm.bandwidthList = `[${bandwidthList.toString()}]`;
+      this.calculateForm.frequencyList = `[${frequencyList.toString()}]`;
 
-      console.log("calculateForm");
       console.log(this.calculateForm);
     }
 
@@ -2370,8 +2381,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.calculateForm.powerMinRange = Number(bsParametersData[1][1]);
       this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
       this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
-      this.calculateForm.bandwidth = Number(bsParametersData[1][4]);
-      this.calculateForm.frequency = Number(bsParametersData[1][5]);
+      this.calculateForm.bandwidth = bsParametersData[1][4];
+      this.calculateForm.frequency = bsParametersData[1][5];
+      // this.calculateForm.bandwidth = Number(bsParametersData[1][4]);
+      // this.calculateForm.frequency = Number(bsParametersData[1][5]);
     }
     /* algorithm parameters sheet */
     const algorithmParameters: string = this.wb.SheetNames[sheetNameIndex['algorithm parameters']];
@@ -2395,7 +2408,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     if (this.calculateForm.objectiveIndex === '2') {
       // 切換到2.4Ghz
-      if (Number(this.calculateForm.bandwidth >= 20)) {
+      if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
         this.wifiFrequency = '1';
       }
       this.changeWifiFrequency();
@@ -2458,7 +2471,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: item[6].toString(),
           element: shape
         };
-console.log(item)
+        console.log(item)
         this.spanStyle[id] = {
           left: `${this.pixelXLinear(item[0])}px`,
           top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
@@ -2530,36 +2543,43 @@ console.log(item)
     this.calculateForm.defaultBs = this.calculateForm.bsList;
     if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
       const defaultBS = this.calculateForm.defaultBs.split('|');
-      // const defaultBS = this.calculateForm.defaultBs;
-      const bsTxpower = JSON.parse(this.calculateForm.txPower);
-      const bsBeamId = JSON.parse(this.calculateForm.beamId);
-      const bsFreq = JSON.parse(this.calculateForm.frequency.toString());
-      console.log(JSON.parse(this.calculateForm.txPower));
-      // console.log(JSON.parse(bsBeamId));
-      // console.log(JSON.parse(bsFreq));
-
+      const txpower = JSON.parse(this.calculateForm.txPower);
+      const beamId = JSON.parse(this.calculateForm.beamId);
+      this.dlRatio = this.calculateForm.tddFrameRatio;
       const defaultBSLen = defaultBS.length;
       for (let i = 0; i < defaultBSLen; i++) {
         const item = JSON.parse(defaultBS[i]);
-        const txpower = bsTxpower[i];
-        const beamId = bsBeamId[i];
-        const freq = bsFreq[i];
         const id = `defaultBS_${this.generateString(10)}`;
         this.defaultBSList.push(id);
         //20210521
 
         this.bsListRfParam[id] = {
-          txpower: txpower,
-          beampattern: beamId,
-          frequency: freq,
-          fddDlFrequency: 0,
-          fddUlFrequency: 0,
+          txpower: txpower[i],
+          beampattern: beamId[i],
+          // frequency: frequencyList[i],
           ulModulationCodScheme: "64QAM-table",
           dlModulationCodScheme: "64QAM-table",
           mimoLayer: 1,
-          scalingFact: 1,
+          // scalingFact: 1,
           subcarrier: 15,
           scsBandwidth: 10,
+        }
+        if (this.calculateForm.duplex === 'fdd') {
+          this.duplexMode = 'fdd';
+          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
+          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
+          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
+          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
+        }
+        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
+          this.duplexMode = 'tdd';
+          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
+          // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+        }
+        if (this.calculateForm.mapProtocol === '4g') {
+          // this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+        }
+        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
         }
         this.dragObject[id] = {
           x: item[0],
@@ -2677,7 +2697,7 @@ console.log(item)
 
     if (this.calculateForm.objectiveIndex === '2') {
       // 切換到2.4Ghz
-      if (Number(this.calculateForm.bandwidth >= 20)) {
+      if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
         this.wifiFrequency = '1';
       }
       this.changeWifiFrequency();
@@ -2736,11 +2756,11 @@ console.log(item)
   /** Wifi頻率切換 */
   changeWifiFrequency() {
     if (Number(this.wifiFrequency) === 0) {
-      this.calculateForm.frequency = 950;
+      // this.calculateForm.frequency = '950';
     } else if (Number(this.wifiFrequency) === 1) {
-      this.calculateForm.frequency = 2400;
+      // this.calculateForm.frequency = '2400';
     } else if (Number(this.wifiFrequency) === 2) {
-      this.calculateForm.frequency = 5800;
+      // this.calculateForm.frequency = '5800';
     }
     // 場域內無線訊號衰減模型 default value
     if (Number(this.calculateForm.objectiveIndex) === 2) {
