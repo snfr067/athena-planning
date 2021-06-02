@@ -69,10 +69,10 @@ export class CalculateForm {
   isSimulation: boolean = false;
 
   //Bandwidth and Frequency
-  // frequency: string = null; 
-  // bandwidth: string = null;
-  bandwidth: number = null;
-  frequency: number = null;
+  frequency: string = null; 
+  bandwidth: string = null;
+  // bandwidth: number = null;
+  // frequency: number = null;
 
   //20210527 Add new parameters
   duplex: string = null;

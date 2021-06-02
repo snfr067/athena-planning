@@ -567,7 +567,7 @@
                   </span>
                 </li> -->
 
-                <li>
+                <!-- <li>
                   <p>{{ 'frequency' | translate }}</p>
                   <span>
                     <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else otherFrequency">
@@ -577,7 +577,7 @@
                       <input type="text" [(ngModel)]="calculateForm.frequency">
                     </ng-template>
                   </span>
-                </li>
+                </li> -->
 
                 <li>
                   <p>{{ 'powerRange' | translate }}</p>
@@ -932,6 +932,9 @@
   </div>
 </ng-template>
 
+<!-- ------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------- -->
 <ng-template #RfModal>
     <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
     <ul class="highset">
@@ -1007,14 +1010,14 @@
 
       <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '1'">
         {{ 'dlMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlmimoLayer" style="width: 100px;" >
+        <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="4">4</option>
           <option value="8">8</option>
         </select>
         {{ 'ulMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulmimoLayer" style="width: 100px;" >
+        <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="4">4</option>

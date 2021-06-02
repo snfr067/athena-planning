@@ -29,6 +29,23 @@ export class FormService {
     // calculateForm.frequency = result['frequency'];
     calculateForm.frequencyList = result['frequency'];
     //Add RF Param
+    calculateForm.ulMcsTable = result['ulmcstable'];
+    calculateForm.dlMcsTable = result['dlmcstable'];
+    calculateForm.ulMimoLayer = result['ulmimolayer'];
+    calculateForm.dlMimoLayer = result['dlmimolayer'];
+    calculateForm.dlFrequency = result['dlfrequency'];
+    calculateForm.ulFrequency = result['ulfrequency'];
+    calculateForm.scalingFactor = result['scalingfactor'];
+    calculateForm.scs = result['scs'];
+    calculateForm.dlScs = result['dlscs'];
+    calculateForm.ulScs = result['ulscs'];
+    calculateForm.dlBandwidth = result['dlbandwidth'];
+    calculateForm.ulBandwidth = result['ulbandwidth'];
+    calculateForm.wifiProtocol = result['wifiprotocol'];
+    calculateForm.guardInterval = result['guardinterval'];
+    calculateForm.wifiMimo = result['wifimimo'];
+    calculateForm.mimoNumber = result['mimonumber'];
+  
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
     // console.log(result['output']['defaultbeamid']);
@@ -38,7 +55,6 @@ export class FormService {
     calculateForm.beamId = result['output']['defaultbeamid'];
     calculateForm.bsList = result['defaultbs'];
     calculateForm.duplex = result['duplex'];
-
 
     calculateForm.iteration = result['iteration'];
     calculateForm.zValue = result['mapdepth'];

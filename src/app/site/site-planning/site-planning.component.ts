@@ -290,7 +290,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
 
   //4G 5G WiFi new attribute
-  duplexMode = "tdd";
+  duplexMode = "fdd";
   dlRatio = 70;
   scalingFactor = 1;
   // mimoNumber4G = '1';
@@ -395,6 +395,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               // 大小寫不同，各自塞回form
               console.log(result);
               console.log(output);
+              this.dlRatio = result['tddframeratio'];
               this.calculateForm = this.formService.setHstToForm(result);
               // this.calculateForm.defaultBs = output['defaultBs'];
               // this.calculateForm.bsList = output['defaultBs'];
@@ -815,8 +816,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       fddUlFrequency: 2400,
       ulModulationCodScheme: "64QAM-table",
       dlModulationCodScheme: "64QAM-table",
-      dlmimoLayer: 1,
-      ulmimoLayer: 1,
+      dlMimoLayer: '1',
+      ulMimoLayer: '1',
       // scalingFact: 1,
       //TDD 5G
       // scs: '15',
@@ -1592,14 +1593,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           if (mapProtocol === '5g') {
             ulMcsTable.push(obj.ulModulationCodScheme);
             dlMcsTable.push(obj.dlModulationCodScheme);
-            ulMimoLayer.push(obj.ulmimoLayer);
-            dlMimoLayer.push(obj.dlmimoLayer);
-            scs.push(obj.subcarrier);
+            ulMimoLayer.push(obj.ulMimoLayer);
+            dlMimoLayer.push(obj.dlMimoLayer);
+            scs.push(obj.tddscs);
+            // scs.push(obj.subcarrier);
           } else {
             mimoNumber.push(obj.mimoNumber4G);
           }
           if (duplex === 'tdd') {
-            scs.push(obj.tddscs);
             bandwidthList.push(obj.tddbandwidth);
             frequencyList.push(obj.tddfrequency);
           } else {
@@ -1646,6 +1647,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.calculateForm.beamId = `[${beamId.toString()}]`;
       this.calculateForm.bandwidthList = `[${bandwidthList.toString()}]`;
       this.calculateForm.frequencyList = `[${frequencyList.toString()}]`;
+      this.calculateForm.frequency = `[${frequencyList.toString()}]`;
+      this.calculateForm.bandwidth = `[${bandwidthList.toString()}]`;
 
       console.log(this.calculateForm);
     }
@@ -2569,7 +2572,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       const defaultBS = this.calculateForm.defaultBs.split('|');
       const txpower = JSON.parse(this.calculateForm.txPower);
       const beamId = JSON.parse(this.calculateForm.beamId);
-      this.dlRatio = this.calculateForm.tddFrameRatio;
+      // this.dlRatio = this.calculateForm.tddFrameRatio;
       const defaultBSLen = defaultBS.length;
       for (let i = 0; i < defaultBSLen; i++) {
         const item = JSON.parse(defaultBS[i]);
@@ -2594,14 +2597,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
           this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
           this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
-        }
-        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
+        } else {
           this.duplexMode = 'tdd';
           this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
+        }
+        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
+          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
+          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          
+        }
+        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
           // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
         }
         if (this.calculateForm.mapProtocol === '4g') {
-          // this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+        }
+        if (this.calculateForm.mapProtocol === '5g') {
+          // this.bsListRfParam[id].scs = JSON.parse(this.calculateForm.scs)[i];
+          // console.log(this.calculateForm.ulMcsTable);
+          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
+          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
+          // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
+          // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
+          console.log(this.bsListRfParam[id].ulMimoLayer);
+          console.log(typeof this.bsListRfParam[id].ulMimoLayer);
+          this.scalingFactor = this.calculateForm.scalingFactor;
         }
         if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
         }
