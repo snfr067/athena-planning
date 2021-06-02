@@ -221,5 +221,6 @@
 	"result.performance.height": "切面高度分析",
 	"ulThroughputMap": "上行傳輸速率圖",
 	"dlThroughputMap": "下行傳輸速率圖",
-	"throughput": "傳輸速率"
+	"throughput": "傳輸速率",
+	"wifi.bandwidth": "bandwidth"
 }

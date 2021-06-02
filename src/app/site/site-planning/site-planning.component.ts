@@ -840,8 +840,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       wifiProtocol: 'wifi4',
       guardInterval: '400ns',
       wifiMimo: '1x1',
-
-    }
+      wifiBandwidth: 20
+    };
     if (this.calculateForm.objectiveIndex === '0') {
       this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
       this.bsListRfParam[this.svgId].ulBandwidth = '1.4';
@@ -1404,7 +1404,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      this.authService.spinnerShowAsHome();
+      // this.authService.spinnerShowAsHome();
       console.log(this.calculateForm.bandwidth);
       console.log(this.calculateForm.frequency);
       this.setForm();
@@ -1420,20 +1420,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         url = `${this.authService.API_URL}/simulation`;
         this.calculateForm.isSimulation = true;
       }
-      this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
-        res => {
-          this.taskid = res['taskid'];
-          const percentageVal = document.getElementById('percentageVal');
-          if (percentageVal != null) {
-            percentageVal.innerHTML = '0';
-          }
-          this.getProgress();
-        },
-        err => {
-          this.authService.spinnerHide();
-          console.log(err);
-        }
-      );
+      // this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
+      //   res => {
+      //     this.taskid = res['taskid'];
+      //     const percentageVal = document.getElementById('percentageVal');
+      //     if (percentageVal != null) {
+      //       percentageVal.innerHTML = '0';
+      //     }
+      //     this.getProgress();
+      //   },
+      //   err => {
+      //     this.authService.spinnerHide();
+      //     console.log(err);
+      //   }
+      // );
     }
   }
 
@@ -1547,9 +1547,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let beamId = [];
     // let freqList = [];
     let mapProtocol = '';
-    if (this.calculateForm.objectiveIndex === '0') {
+    if (Number(this.calculateForm.objectiveIndex) === 0) {
       mapProtocol = '4g';
-    } else if (this.calculateForm.objectiveIndex === '1') {
+    } else if (Number(this.calculateForm.objectiveIndex) === 1) {
       mapProtocol = '5g';
     } else {
       mapProtocol = 'wifi';
@@ -1612,9 +1612,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             ulBandwidth.push(obj.ulBandwidth);
           }
         } else {
-          guardInterval.push(obj.wifiProtocol);
-          wifiProtocol.push(obj.guardInterval);
+          guardInterval.push(obj.guardInterval);
+          wifiProtocol.push(obj.wifiProtocol);
           wifiMimo.push(obj.wifiMimo);
+          bandwidthList.push(obj.wifiBandwidth);
         }
       }
       //API body

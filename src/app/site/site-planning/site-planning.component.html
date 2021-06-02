@@ -430,7 +430,7 @@
                   </li>
                 </ng-container>
 
-                <li *ngIf="calculateForm.objectiveIndex !== '2'">
+                <li *ngIf="calculateForm.objectiveIndex != '2'">
                   <p>{{ 'duplex' | translate }}	</p>
                   <mat-radio-group [(ngModel)]="duplexMode">
                     <mat-radio-button value="tdd">TDD</mat-radio-button>
@@ -463,7 +463,7 @@
                   </select>
                 </li> -->
 
-                <li *ngIf="calculateForm.objectiveIndex !== '2' && duplexMode === 'tdd'">
+                <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd'">
                   <p>{{ 'upDownRatio' | translate }}	</p>
                   {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </li>
@@ -949,33 +949,33 @@
       </li>
 
       <li class="mt-2">
-        <label *ngIf="calculateForm.objectiveIndex === '0'">{{ 'mimoNum' | translate }}</label>
-        <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;" *ngIf="calculateForm.objectiveIndex === '0'">
+        <label *ngIf="calculateForm.objectiveIndex == '0'">{{ 'mimoNum' | translate }}</label>
+        <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;" *ngIf="calculateForm.objectiveIndex == '0'">
           <option value=1>1</option>
           <option value=2>2</option>
           <option value=3>3</option>
           <option value=4>4</option>
         </select>
-        <label *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex === '0'">{{ 'tddBandwidth' | translate }}</label>
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex === '0'">
+        <label *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">{{ 'tddBandwidth' | translate }}</label>
+        <input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
       </li>
 
       <!-- WiFi only -->
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '2'">
+      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
         {{ 'wifiProtocol' | translate }} 
         <mat-radio-group [(ngModel)]="bsListRfParam[svgId].wifiProtocol" aria-label="Select an option">
           <mat-radio-button class="ml-2" value="wifi4">{{ 'wifi4' | translate }}</mat-radio-button>
           <mat-radio-button class="ml-2" value="wifi5">{{ 'wifi5' | translate }}</mat-radio-button>
         </mat-radio-group>
       </li>
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '2'">
+      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
         {{ 'guardInterval' | translate }} 
         <mat-radio-group [(ngModel)]="bsListRfParam[svgId].guardInterval" aria-label="Select an option">
           <mat-radio-button class="ml-2" value="400ns">400ns</mat-radio-button>
           <mat-radio-button class="ml-2" value="800ns">800ns</mat-radio-button>
         </mat-radio-group>
       </li>
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '2'">
+      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
         {{ 'mimoNum' | translate }} 
         <select [(ngModel)]="bsListRfParam[svgId].wifiMimo" style="width: 100px;" >
           <option value="1x1">1x1</option>
@@ -994,7 +994,7 @@
         <input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency">
       </li>
 
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '1'">
+      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
         {{ 'ULModulationCodingScheme' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 100px;" >
           <option value="64QAM-table">64QAM</option>
@@ -1008,7 +1008,7 @@
         </select>
       </li>
 
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '1'">
+      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
         {{ 'dlMimolayer' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
           <option value="1">1</option>
@@ -1036,7 +1036,7 @@
       </li> -->
 
       <!-- TDD -->
-      <li class="mt-2" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex === '1'">
+      <li class="mt-2" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
         {{ 'subcarrier' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 100px;" >
           <option value=15>15</option>
@@ -1095,7 +1095,7 @@
       <!-- --- -->
       <!-- FDD -->
       <!-- --- -->
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex === '0'">
+      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
         {{ 'dlBandwidth' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;">
           <option value="1.4">1.4</option>
@@ -1116,7 +1116,7 @@
         </select>
       </li>
       <!-- 5G FDD -->
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex === '1'">
+      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
         {{ 'dlSubcarrier' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].dlScs" style="width: 100px;" >
           <option value=15>15</option>
@@ -1165,14 +1165,14 @@
           <option value="100">100</option>
           <option value="200">200</option>
         </select>
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs === '120'">
+        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '120'">
           <option value="50">50</option>
           <option value="100">100</option>
           <option value="200">200</option>
           <option value="400">400</option>
         </select>
       </li>
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex === '1'">
+      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
         {{ 'ulSubcarrier' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].ulScs" style="width: 100px;" >
           <option value=15>15</option>
@@ -1181,7 +1181,7 @@
           <option value=120>120</option>
         </select>
         {{ 'ulBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs === '15'">
+        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '15'">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="15">15</option>
