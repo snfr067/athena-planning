@@ -221,5 +221,5 @@
 	"ulThroughputMap": "上行傳輸速率圖",
 	"dlThroughputMap": "下行傳輸速率圖",
 	"throughput": "傳輸速率",
-	"wifi.bandwidth": "bandwidth"
+	"wifi.bandwidth": "頻寬"
 }
