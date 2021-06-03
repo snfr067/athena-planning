@@ -344,6 +344,8 @@ export class ResultComponent implements OnInit {
     this.showQuality = false;
     this.showCover = true;
     this.showStrength = false;
+    this.showDlThroughputMap = false;
+    this.showUlThroughputMap = false;
     window.setTimeout(() => {
       this.cover.showUE = this.showUE;
       this.cover.calculateForm = this.calculateForm;
@@ -360,6 +362,8 @@ export class ResultComponent implements OnInit {
     this.showQuality = false;
     this.showCover = false;
     this.showStrength = true;
+    this.showDlThroughputMap = false;
+    this.showUlThroughputMap = false;
     window.setTimeout(() => {
       this.strength.showUE = this.showUE;
       this.strength.calculateForm = this.calculateForm;

@@ -500,7 +500,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         } else {
           this.planningIndex = '1';
         }
-        console.log(this.planningIndex);
       }, 500);
     }
   }
@@ -1420,20 +1419,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         url = `${this.authService.API_URL}/simulation`;
         this.calculateForm.isSimulation = true;
       }
-      // this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
-      //   res => {
-      //     this.taskid = res['taskid'];
-      //     const percentageVal = document.getElementById('percentageVal');
-      //     if (percentageVal != null) {
-      //       percentageVal.innerHTML = '0';
-      //     }
-      //     this.getProgress();
-      //   },
-      //   err => {
-      //     this.authService.spinnerHide();
-      //     console.log(err);
-      //   }
-      // );
+      this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
+        res => {
+          this.taskid = res['taskid'];
+          const percentageVal = document.getElementById('percentageVal');
+          if (percentageVal != null) {
+            percentageVal.innerHTML = '0';
+          }
+          this.getProgress();
+        },
+        err => {
+          this.authService.spinnerHide();
+          console.log(err);
+        }
+      );
     }
   }
 
@@ -1927,7 +1926,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
-    const baseStationData = [['x', 'y', 'z', 'material', 'color','txpower','beamId','frequency']];
+    const baseStationData = [['x', 'y', 'z', 'material',
+    'color','txpower','beamId','tddfrequency', 'tddbandwidth',
+    'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
+    '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
+    'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -1935,7 +1938,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.dragObject[item].color,
         this.bsListRfParam[item].txpower,
         this.bsListRfParam[item].beampattern,
-        this.bsListRfParam[item].frequency
+        // this.bsListRfParam[item].frequency,
+        //4g 5g tdd
+        this.bsListRfParam[item].tddfrequency,
+        this.bsListRfParam[item].tddbandwidth,
+        //4g 5g fdd
+        this.bsListRfParam[item].dlBandwidth,
+        this.bsListRfParam[item].ulBandwidth,
+        this.bsListRfParam[item].fddDlFrequency,
+        this.bsListRfParam[item].fddUlFrequency,
+        //4g only
+        this.bsListRfParam[item].mimoNumber4G,
+        //5g only
+        this.bsListRfParam[item].tddscs,
+        this.bsListRfParam[item].dlModulationCodScheme,
+        this.bsListRfParam[item].ulModulationCodScheme,
+        this.bsListRfParam[item].dlMimoLayer,
+        this.bsListRfParam[item].ulMimoLayer,
+        
+        //5g fdd only
+        this.bsListRfParam[item].dlScs,
+        this.bsListRfParam[item].ulScs,
+        //wifi
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -1983,12 +2007,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
     // bs parameters
     const bsData = [
-      ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
+      ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio'],
+      // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
       [
         this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
+        this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio
         // this.calculateForm.beamMaxId, this.calculateForm.beamMinId,
-        '', '',
-        this.calculateForm.bandwidth, this.calculateForm.frequency
+        //  this.calculateForm.bandwidth, this.calculateForm.frequency
       ]
     ];
     const bsWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(bsData);
@@ -2120,6 +2145,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.defaultBSList.length = 0;
     this.candidateList.length = 0;
     this.ueList.length = 0;
+
+
     const materialReg = new RegExp('[0-4]');
     /* base station sheet */
     const sheetNameIndex = {};
@@ -2131,6 +2158,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
     const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
     if (baseStationData.length > 1) {
+      this.planningIndex = '3';
       for (let i = 1; i < baseStationData.length; i++) {
         const id = `defaultBS_${(i - 1)}`;
         let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
@@ -2153,12 +2181,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: material,
           element: this.svgMap['defaultBS'].element
         };
+        // RF parameter import
         this.bsListRfParam[id] = {
           txpower: baseStationData[i][5],
           beampattern: baseStationData[i][6],
-          frequency: baseStationData[i][7]
+          tddfrequency: baseStationData[i][7],
+          tddbandwidth: baseStationData[i][8],
+          dlBandwidth: baseStationData[i][9],
+          ulBandwidth: baseStationData[i][10],
+          fddDlFrequency: baseStationData[i][11],
+          fddUlFrequency: baseStationData[i][12],
+          mimoNumber4G: baseStationData[i][13],
+          tddscs: baseStationData[i][14],
+          dlModulationCodScheme: baseStationData[i][15],
+          ulModulationCodScheme: baseStationData[i][16],
+          dlMimoLayer: baseStationData[i][17],
+          ulMimoLayer: baseStationData[i][18],
+          dlScs: baseStationData[i][19],
+          ulScs: baseStationData[i][20],
         };
-        console.log(`AAAAAAAAAAAAAAAAAAAAAAAAA`)
+        
+
         console.log(this.dragObject)
         this.defaultBSList.push(id);
         this.spanStyle[id] = {
@@ -2185,6 +2228,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
     const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
     if (candidateData.length > 1) {
+      this.planningIndex = '1';
       for (let i = 1; i < candidateData.length; i++) {
         const id = `candidate_${(i - 1)}`;
         this.candidateList.push(id);
@@ -2407,10 +2451,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (bsParametersData.length > 1) {
       this.calculateForm.powerMaxRange = Number(bsParametersData[1][0]);
       this.calculateForm.powerMinRange = Number(bsParametersData[1][1]);
-      this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
-      this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
-      this.calculateForm.bandwidth = bsParametersData[1][4];
-      this.calculateForm.frequency = bsParametersData[1][5];
+      this.calculateForm.objectiveIndex = bsParametersData[1][2];
+      this.duplexMode = bsParametersData[1][3];
+      this.dlRatio = Number(bsParametersData[1][4]);
+      // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
+      // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
+      // this.calculateForm.bandwidth = bsParametersData[1][4];
+      // this.calculateForm.frequency = bsParametersData[1][5];
       // this.calculateForm.bandwidth = Number(bsParametersData[1][4]);
       // this.calculateForm.frequency = Number(bsParametersData[1][5]);
     }
@@ -2444,6 +2491,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 5G set子載波間距
       this.setSubcarrier();
     }
+
   }
 
   /**
@@ -2592,20 +2640,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           subcarrier: 15,
           scsBandwidth: 10,
         }
+        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
+          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
+          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          
+        }
         if (this.calculateForm.duplex === 'fdd') {
           this.duplexMode = 'fdd';
           this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
           this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
           this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
           this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
+          console.log(this.bsListRfParam[id].dlScs);
+          console.log(this.bsListRfParam[id].dlBandwidth);
+          console.log(this.bsListRfParam[id].ulScs);
+          console.log(this.bsListRfParam[id].ulBandwidth);
         } else {
           this.duplexMode = 'tdd';
           this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
-        }
-        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
-          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
-          
+          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
         }
         if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
           // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
@@ -2616,15 +2669,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (this.calculateForm.mapProtocol === '5g') {
           // this.bsListRfParam[id].scs = JSON.parse(this.calculateForm.scs)[i];
           // console.log(this.calculateForm.ulMcsTable);
+          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
           this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
           this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
           // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
           // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
-          console.log(this.bsListRfParam[id].ulMimoLayer);
-          console.log(typeof this.bsListRfParam[id].ulMimoLayer);
           this.scalingFactor = this.calculateForm.scalingFactor;
-        }
-        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
         }
         this.dragObject[id] = {
           x: item[0],
