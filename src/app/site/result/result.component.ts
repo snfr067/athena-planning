@@ -73,6 +73,10 @@ export class ResultComponent implements OnInit {
   view3dDialogConfig: MatDialogConfig = new MatDialogConfig();
   /** 現有基站 list */
   defaultBSList = [];
+  defaultBSList4gTdd = [];
+  defaultBSList4gFdd = [];
+  defaultBSList5gTdd = [];
+  defaultBSList5gFdd = [];
   /** AP list */
   candidateList = [];
   /** 障礙物 list */
@@ -181,9 +185,114 @@ export class ResultComponent implements OnInit {
         }
         // this.calculateForm.defaultBs = this.calculateForm.bsList;
         if (this.calculateForm.defaultBs !== '') {
-          // const defaultBs = this.calculateForm.defaultBs;
           console.log(this.calculateForm);
+          let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
+          const txpower = JSON.parse(this.calculateForm.txPower);
+          const frequency = JSON.parse(this.calculateForm.frequencyList);
+          const bandwidth = JSON.parse(this.calculateForm.bandwidth);
+          const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
+          const dlFrequency = JSON.parse(this.calculateForm.dlFrequency);
+          const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
+          console.log(this.calculateForm.ulMcsTable);
+          console.log(typeof this.calculateForm.ulMcsTable);
+          // const ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable);
+          // const dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable);
+          const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
+          const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
+          const dlScs = JSON.parse(this.calculateForm.dlScs);
+          const ulScs = JSON.parse(this.calculateForm.ulScs);
+          const scs = JSON.parse(this.calculateForm.scs);
+          const dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth);
+          const ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth);
+          
+          const protocol = this.calculateForm.objectiveIndex;
+          const duplex = this.calculateForm.duplex;
+          for (const item of defaultBs) {
+            const obj = JSON.parse(item);
+            this.defaultBSList.push({
+              x: obj[0],
+              y: obj[1],
+              z: obj[2]
+            });
+          }
+          if (protocol == '0') {
+            if (duplex == 'tdd') {
+              for (const item of defaultBs) {
+                const obj = JSON.parse(item);
+                this.defaultBSList4gTdd.push({
+                  x: obj[0],
+                  y: obj[1],
+                  z: obj[2],
+                  txpower: txpower[i],
+                  frequency: frequency[i],
+                  bandwidth: bandwidth[i],
+                  mimoNumber: mimoNumber[i]
+                });
+                i++;
+              }
+              console.log(this.defaultBSList4gTdd);
+            } else {
+              for (const item of defaultBs) {
+                const obj = JSON.parse(item);
+                this.defaultBSList4gFdd.push({
+                  x: obj[0],
+                  y: obj[1],
+                  z: obj[2],
+                  txpower: txpower[i],
+                  dlFrequency: dlFrequency[i],
+                  ulFrequency: ulFrequency[i],
+                  ulBandwidth: ulBandwidth[i],
+                  dlBandwidth: dlBandwidth[i],
+                  mimoNumber: mimoNumber[i]
+                });
+              }
+            }
+            
+          } else if (protocol == '1') {
+            if (duplex == 'tdd') {
+              for (const item of defaultBs) {
+                const obj = JSON.parse(item);
+                this.defaultBSList5gTdd.push({
+                  x: obj[0],
+                  y: obj[1],
+                  z: obj[2],
+                  txpower: txpower[i],
+                  frequency: frequency[i],
+                  bandwidth: bandwidth[i],
+                  scs: scs[i],
+                  // ulMcsTable: ulMcsTable[i],
+                  // dlMcsTable: dlMcsTable[i],
+                  ulMimoLayer: ulMimoLayer[i],
+                  dlMimoLayer: dlMimoLayer[i],
+
+                });
+              }
+            } else {
+              for (const item of defaultBs) {
+                const obj = JSON.parse(item);
+                this.defaultBSList5gTdd.push({
+                  x: obj[0],
+                  y: obj[1],
+                  z: obj[2],
+                  txpower: txpower[i],
+                  scs: scs[i],
+                  dlScs: dlScs[i],
+                  ulScs: ulScs[i],
+                  // ulMcsTable: ulMcsTable[i],
+                  // dlMcsTable: dlMcsTable[i],
+                  ulMimoLayer: ulMimoLayer[i],
+                  dlMimoLayer: dlMimoLayer[i],
+                  dlFrequency: dlFrequency[i],
+                  ulFrequency: ulFrequency[i],
+                  ulBandwidth: ulBandwidth[i],
+                  dlBandwidth: dlBandwidth[i],
+                });
+              }
+            }
+          } else {
+
+          }
           for (const item of defaultBs) {
             const obj = JSON.parse(item);
             this.defaultBSList.push({
