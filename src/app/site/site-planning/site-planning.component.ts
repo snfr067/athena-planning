@@ -1331,8 +1331,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.svgId = item;
     // console.log(this.svgId);
     // console.log(item);
-    this.matDialog.open(this.rfModal);
-    // this.matDialog.open(this.rfModalTable);
+    // this.matDialog.open(this.rfModal);
+    this.matDialog.open(this.rfModalTable);
   }
 
   /**
