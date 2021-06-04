@@ -385,3 +385,22 @@ ul {
 .clearOne {
     top: 5px;
 }
+
+.rfParamTable {
+    margin: 0;
+    // margin: 0 0 2em 0;
+    display: table;
+    width: 100%;
+    // border:1.5px solid #5aa5e2;
+    vertical-align: top;
+    // background-color: #fff;
+    tr td{
+        // border-bottom: 1.5px solid #5aa5e2;
+    line-height: 1.1;
+}
+    tr td:first-child {
+        text-align: right;
+        background-color: #ddf1fc;
+    }
+    
+}

@@ -947,6 +947,11 @@
         <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency">
       </li>
 
+      <li *ngIf="planningIndex !== '3'">
+        <label *ngIf="duplexMode === 'tdd'">{{ 'frequency' | translate }} </label> 
+        <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency">
+      </li>
+
       <ng-container *ngIf="planningIndex != '3' && calculateForm.objectiveIndex == '2'">
         <label>{{ 'wifi.bandwidth' | translate }} </label> 
         <input type="text" [(ngModel)]="bsListRfParam[svgId].wifiBandwidth">
@@ -974,7 +979,6 @@
             <option value=4>4</option>
             <option value=8>8</option>
           </ng-template>
-          
         </select>
         <label *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">{{ 'tddBandwidth' | translate }}</label>
         <input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
@@ -1009,9 +1013,9 @@
 
       <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'" >
         {{ 'uplink.frequency' | translate }} 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency">
-        {{ 'downlink.frequency' | translate }}
         <input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency">
+        {{ 'downlink.frequency' | translate }}
+        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency">
       </li>
 
       <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
@@ -1265,64 +1269,114 @@
       <!-- ------------------------------------------------------------------ -->
       <!-- ------------------------------------------------------------------ -->
       <!-- ------------------------------------------------------------------ -->
-
-      <!-- <li class="mt-2" *ngIf="calculateForm.objectiveIndex !== '2'">
-        {{ 'subcarrier' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].subcarrier" style="width: 100px;" >
-          <option value="15">15</option>
-          <option value="30">30</option>
-          <option value="60">60</option>
-          <option value="120">120</option>
-        </select>
-        {{ 'scsBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 15">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 30">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].scsBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 60">
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].scalingFact" style="width: 100px;" *ngIf="bsListRfParam[svgId].subcarrier === 120">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="400">400</option>
-        </select>
-      </li> -->
-      
-      
     </ul>
+</ng-template>
+
+<ng-template #RfModalTable>
+  <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
+  <table class="rfParamTable">
+    <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
+      <tr>
+        <td>TxPower</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+      </tr>
+      <tr>
+        <td>BeamId</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern"></td>
+      </tr>
+      <tr>
+        <td>Frequency</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>
+      </tr>
+      <tr>
+        <td>{{ 'tddBandwidth' | translate }}</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>
+      </tr>
+      <tr>
+        <td>{{ 'mimoNum' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;">
+            <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+            </ng-container>
+            <ng-template #otherMimoNumber4G>
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=4>4</option>
+              <option value=8>8</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+      <tr>
+        <td>TxPower</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+      </tr>
+      <tr>
+        <td>BeamId</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern"></td>
+      </tr>
+      <tr>
+        <td>{{ 'uplink.frequency' | translate }}</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>
+      </tr>
+      <tr>
+        <td>{{ 'downlink.frequency' | translate }}</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>
+      </tr>
+      <tr>
+        <td>{{ 'ulBandwidth' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;">
+            <option value="1.4">1.4</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlBandwidth' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;">
+            <option value="1.4">1.4</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'mimoNum' | translate }}</td>
+        <td>
+            <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;">
+                <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+                  <option value=1>1</option>
+                  <option value=2>2</option>
+                  <option value=3>3</option>
+                  <option value=4>4</option>
+                </ng-container>
+                <ng-template #otherMimoNumber4G>
+                  <option value=1>1</option>
+                  <option value=2>2</option>
+                  <option value=4>4</option>
+                  <option value=8>8</option>
+                </ng-template>
+              </select>
+        </td>
+      </tr>
+    </tbody>
+    <tbody></tbody>
+    <tbody></tbody>
+    <tbody></tbody>
+  </table>
 </ng-template>

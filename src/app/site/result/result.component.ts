@@ -194,9 +194,10 @@ export class ResultComponent implements OnInit {
           const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
           const dlFrequency = JSON.parse(this.calculateForm.dlFrequency);
           const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
-          console.log(this.calculateForm.ulMcsTable);
-          console.log(typeof this.calculateForm.ulMcsTable);
-          // const ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable);
+          let ulmsc = this.calculateForm.ulMcsTable;
+          let dlmsc = this.calculateForm.dlMcsTable;
+          const ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+          const dlMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
           // const dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable);
           const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
           const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
@@ -261,8 +262,8 @@ export class ResultComponent implements OnInit {
                   frequency: frequency[i],
                   bandwidth: bandwidth[i],
                   scs: scs[i],
-                  // ulMcsTable: ulMcsTable[i],
-                  // dlMcsTable: dlMcsTable[i],
+                  ulMcsTable: ulMcsTable[i],
+                  dlMcsTable: dlMcsTable[i],
                   ulMimoLayer: ulMimoLayer[i],
                   dlMimoLayer: dlMimoLayer[i],
 
@@ -279,8 +280,8 @@ export class ResultComponent implements OnInit {
                   scs: scs[i],
                   dlScs: dlScs[i],
                   ulScs: ulScs[i],
-                  // ulMcsTable: ulMcsTable[i],
-                  // dlMcsTable: dlMcsTable[i],
+                  ulMcsTable: ulMcsTable[i],
+                  dlMcsTable: dlMcsTable[i],
                   ulMimoLayer: ulMimoLayer[i],
                   dlMimoLayer: dlMimoLayer[i],
                   dlFrequency: dlFrequency[i],

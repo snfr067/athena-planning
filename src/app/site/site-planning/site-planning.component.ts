@@ -288,6 +288,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('materialModal') materialModal: TemplateRef<any>;
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
+  @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
 
   //4G 5G WiFi new attribute
   duplexMode = "fdd";
@@ -1331,6 +1332,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     // console.log(this.svgId);
     // console.log(item);
     this.matDialog.open(this.rfModal);
+    // this.matDialog.open(this.rfModalTable);
   }
 
   /**
