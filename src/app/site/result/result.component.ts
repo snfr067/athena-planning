@@ -189,6 +189,7 @@ export class ResultComponent implements OnInit {
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
           const txpower = JSON.parse(this.calculateForm.txPower);
+          console.log(txpower);
           const frequency = JSON.parse(this.calculateForm.frequencyList);
           const bandwidth = JSON.parse(this.calculateForm.bandwidth);
           const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
@@ -198,11 +199,19 @@ export class ResultComponent implements OnInit {
           let dlmsc = this.calculateForm.dlMcsTable;
           const ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
           const dlMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
-          // const dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable);
           const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
           const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
-          const dlScs = JSON.parse(this.calculateForm.dlScs);
-          const ulScs = JSON.parse(this.calculateForm.ulScs);
+          if (this.calculateForm.objectiveIndex == '1') {
+
+          }
+          let dlScs = [];
+          let ulScs = [];
+          if (this.calculateForm.duplex === "fdd" && this.calculateForm.objectiveIndex == '1') {
+            // console.log(this.calculateForm.duplex);
+            // console.log(this.calculateForm.objectiveIndex);
+            dlScs = JSON.parse(this.calculateForm.dlScs);
+            ulScs = JSON.parse(this.calculateForm.ulScs);
+          }
           const scs = JSON.parse(this.calculateForm.scs);
           const dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth);
           const ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth);
@@ -247,6 +256,7 @@ export class ResultComponent implements OnInit {
                   dlBandwidth: dlBandwidth[i],
                   mimoNumber: mimoNumber[i]
                 });
+                i++;
               }
             }
             
@@ -268,6 +278,7 @@ export class ResultComponent implements OnInit {
                   dlMimoLayer: dlMimoLayer[i],
 
                 });
+                i++;
               }
             } else {
               for (const item of defaultBs) {
@@ -289,6 +300,7 @@ export class ResultComponent implements OnInit {
                   ulBandwidth: ulBandwidth[i],
                   dlBandwidth: dlBandwidth[i],
                 });
+                i++;
               }
             }
           } else {
