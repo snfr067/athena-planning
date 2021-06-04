@@ -579,14 +579,14 @@
                   </span>
                 </li> -->
 
-                <li>
+                <!-- <li>
                   <p>{{ 'powerRange' | translate }}</p>
                   <span>
                     <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
                     ~
                     <input [(ngModel)]="calculateForm.powerMaxRange" type="text" placeholder="{{ 'powerMaxRange' | translate }}">dBm
                   </span>
-                </li>
+                </li> -->
                 
                 <li>
                   <p>{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
@@ -1044,14 +1044,14 @@
 
       <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
         {{ 'dlMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
+        <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="4">4</option>
           <option value="8">8</option>
         </select>
         {{ 'ulMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
+        <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="4">4</option>
