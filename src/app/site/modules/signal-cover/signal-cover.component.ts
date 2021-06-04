@@ -462,9 +462,10 @@ export class SignalCoverComponent implements OnInit {
             top: 0,
             width: oData[2],
             height: oData[3],
-            transform: `rotate(${rotate}deg)`,
+            // transform: `rotate(${rotate}deg)`,
             position: 'absolute',
             visibility: this.showObstacle,
+            opacity: 0
           },
           svgStyle: {
             width: oData[2],
@@ -620,23 +621,18 @@ export class SignalCoverComponent implements OnInit {
         .domain([0, this.calculateForm.height])
         .range([0, rect2.height]);
 
-      const ary = [];
-      let i = 0;
       for (const item of this.rectList) {
         // 障礙物加粗
         let width = pixelXLinear(item['svgStyle'].width);
         if (width < 5) {
           width = 5;
         }
-        let height = pixelYLinear(item['svgStyle'].height + (item.rotate * (Math.PI / 180)));
+        let height = pixelYLinear(item['svgStyle'].height);
         if (height < 5) {
           height = 5;
         }
 
-        let leftPosition = pixelXLinear(item.x);
-        if (item.rotate > 0) {
-          leftPosition = pixelXLinear(item.x - (item.rotate * (Math.PI / 180)));
-        }
+        const leftPosition = pixelXLinear(item.x);
 
         item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
         item['style'].left = `${leftPosition}px`;
@@ -657,13 +653,11 @@ export class SignalCoverComponent implements OnInit {
           };
         }
 
-        if (item.rotate < 0) {
-          item['style']['transform-origin'] = 'top left';
-        } else if (item.rotate > 0) {
-          item['style']['transform-origin'] = 'bottom right';
-        }
-        
-        i++;
+        // 延遲轉角度，讓位置正確
+        window.setTimeout(() => {
+          item['style']['transform'] = `rotate(${item.rotate}deg)`;
+          item['style'].opacity = 1;
+        }, 0);
       }
 
       for (const item of this.defaultBsList) {

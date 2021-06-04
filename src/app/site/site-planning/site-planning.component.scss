@@ -404,3 +404,7 @@ ul {
     }
     
 }
+
+:host ::ng-deep .moveable-origin {
+    opacity: 0;
+}

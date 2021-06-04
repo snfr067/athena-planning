@@ -447,9 +447,11 @@ export class ResultComponent implements OnInit {
 
   /** 訊號品質圖 */
   drawQuality() {
-    this.showQuality = true;
     this.showCover = false;
     this.showStrength = false;
+    this.showDlThroughputMap = false;
+    this.showUlThroughputMap = false;
+    this.showQuality = true;
     window.setTimeout(() => {
       this.quality.showUE = this.showUE;
       this.quality.calculateForm = this.calculateForm;

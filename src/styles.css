@@ -178,3 +178,7 @@ button {
 .cdk-overlay-pane {
     overflow: auto;
 }
+
+.moveable-origin {
+    opacity: 0;
+}

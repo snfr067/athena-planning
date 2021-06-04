@@ -976,12 +976,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.moveable.rotatable = false;
         this.moveable.resizable = false;
       }
-      
+
       this.moveable.ngOnInit();
-      this.setDragData();
-      this.moveNumber(this.svgId);
-      this.hoverObj = this.target;
-      this.setLabel();
+      window.setTimeout(() => {
+        this.setDragData();
+        this.moveNumber(this.svgId);
+        this.hoverObj = this.target;
+        this.setLabel();
+      }, 0);
+      
     }, 0);
 
   }
@@ -1028,9 +1031,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
 
     this.moveable.ngOnInit();
-    this.setDragData();
-    this.hoverObj = this.target;
-    this.setLabel();
+    window.setTimeout(() => {
+      this.setDragData();
+      this.hoverObj = this.target;
+      this.setLabel();
+    }, 0);
   }
 
   /**
@@ -1075,16 +1080,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   setDragData() {
     // const span = this.target.closest('span');
     const rect = this.target.getBoundingClientRect();
-    const rectLeft = rect.left - this.chartLeft;
-    const rectBottom = this.chartBottom - rect.bottom;
-    let xVal = this.roundFormat(this.xLinear(rectLeft));
-    if (xVal < 0) {
-      xVal = 0;
-    }
+    // const rectLeft = rect.left - this.chartLeft;
+    // const rectBottom = this.chartBottom - rect.bottom;
+    // let xVal = this.roundFormat(this.xLinear(rectLeft));
+    // if (xVal < 0) {
+    //   xVal = 0;
+    // }
 
     const type = this.dragObject[this.svgId].element;
 
-    const yVal = this.roundFormat(this.yLinear(rectBottom));
+    // const yVal = this.roundFormat(this.yLinear(rectBottom));
     let wVal;
     let hVal;
     if (Number(type) === 0) {
@@ -1105,8 +1110,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
     }
 
-    this.dragObject[this.svgId].x = xVal;
-    this.dragObject[this.svgId].y = yVal;
+    const moveableOrigin = document.querySelector('.moveable-origin').getBoundingClientRect();
+    const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
+    const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+
+    this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
+    this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
     this.dragObject[this.svgId].width = wVal;
     this.dragObject[this.svgId].height = hVal;
   }
@@ -1156,11 +1165,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
     }
+
     const deg = parseFloat(this.frame.get('transform', 'rotate')) + beforeDelta;
     this.frame.set('transform', 'rotate', `${deg}deg`);
     this.frame.set('left', this.currentLeft);
     this.frame.set('top', this.currentTop);
     this.setTransform(target);
+
     this.dragObject[this.svgId].rotate = Math.ceil(deg);
     this.spanStyle[this.svgId].transform = `rotate(${this.dragObject[this.svgId].rotate}deg)`;
     this.setLabel();
@@ -1448,7 +1459,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      this.authService.spinnerShowAsHome();
+      // this.authService.spinnerShowAsHome();
       console.log(this.calculateForm.bandwidth);
       console.log(this.calculateForm.frequency);
       this.setForm();
@@ -1464,20 +1475,34 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         url = `${this.authService.API_URL}/simulation`;
         this.calculateForm.isSimulation = true;
       }
-      this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
-        res => {
-          this.taskid = res['taskid'];
-          const percentageVal = document.getElementById('percentageVal');
-          if (percentageVal != null) {
-            percentageVal.innerHTML = '0';
-          }
-          this.getProgress();
-        },
-        err => {
-          this.authService.spinnerHide();
-          console.log(err);
-        }
-      );
+
+      
+
+      for (const item of this.obstacleList) {
+        this.dragObject[item].rotate = 0;
+        console.log(item)
+        this.target = document.querySelector(`#${item}`);
+        // this.frame.set('transform', 'rotate', `${this.dragObject[item].rotate}deg`);
+        // this.setTransform(this.target);
+        this.spanStyle[item]['transform'] = `rotate(0deg)`;
+        this.spanStyle[item]['transform-origin'] = 'top left';
+        // this.changeRotate(item);
+      }
+
+      // this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
+      //   res => {
+      //     this.taskid = res['taskid'];
+      //     const percentageVal = document.getElementById('percentageVal');
+      //     if (percentageVal != null) {
+      //       percentageVal.innerHTML = '0';
+      //     }
+      //     this.getProgress();
+      //   },
+      //   err => {
+      //     this.authService.spinnerHide();
+      //     console.log(err);
+      //   }
+      // );
     }
   }
 
@@ -2486,7 +2511,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(obstacleData[i][1])}px`,
             width: `${this.pixelXLinear(obstacleData[i][2])}px`,
             height: `${this.pixelYLinear(obstacleData[i][3])}px`,
-            transform: `rotate(${this.dragObject[id].rotate}deg)`
+            opacity: 0
+            // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
           this.rectStyle[id] = {
             width: this.pixelXLinear(this.dragObject[id].width),
@@ -2499,7 +2525,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             top: `${this.pixelYLinear(this.dragObject[id].y)}px`,
             width: `${this.pixelXLinear(this.dragObject[id].width * 2)}px`,
             height: `${this.pixelYLinear(this.dragObject[id].height * 2)}px`,
-            transform: `rotate(${this.dragObject[id].rotate}deg)`
+            opacity: 0
+            // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
 
           const x = (this.pixelXLinear(this.dragObject[id].width) / 2).toString();
@@ -2517,7 +2544,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             top: `${this.pixelYLinear(this.dragObject[id].y)}`,
             width: this.pixelXLinear(obstacleData[i][2] / 2),
             height: this.pixelYLinear(obstacleData[i][3] / 2),
-            transform: `rotate(${this.dragObject[id].rotate}deg)`
+            opacity: 0
+            // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
           const width = this.pixelXLinear(this.dragObject[id].width);
           const height = this.pixelYLinear(this.dragObject[id].height);
@@ -2532,12 +2560,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             top: `${this.pixelYLinear(this.dragObject[id].y)}`,
             width: this.pixelXLinear(obstacleData[i][2] / 2),
             height: this.pixelYLinear(obstacleData[i][3] / 2),
-            transform: `rotate(${this.dragObject[id].rotate}deg)`
+            opacity: 0
+            // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
           this.trapezoidStyle[id] = {
             fill: this.dragObject[id].color
           };
         }
+        // 延遲轉角度，讓位置正確
+        window.setTimeout(() => {
+          this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
+          this.spanStyle[id].opacity = 1;
+        }, 0);
         this.obstacleList.push(id);
       }
     }
@@ -2628,7 +2662,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (typeof item[7] !== 'undefined') {
           shape = item[7];
         }
-        const id = `${shape}_${this.generateString(10)}`;
+        // const id = `${shape}_${this.generateString(10)}`;
+        const id = `${this.generateString(10)}`;
         
         this.dragObject[id] = {
           x: item[0],
@@ -2644,31 +2679,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           material: item[6].toString(),
           element: shape
         };
-        console.log(item)
+
         this.spanStyle[id] = {
           left: `${this.pixelXLinear(item[0])}px`,
           top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
           width: `${this.pixelXLinear(item[2])}px`,
           height: `${this.pixelYLinear(item[3])}px`,
-          transform: `rotate(${this.dragObject[id].rotate}deg)`,
+          // transform: `rotate(${this.dragObject[id].rotate}deg)`,
           opacity: 0
         };
-        if (this.dragObject[id].rotate < 0) {
-          this.spanStyle[id]['transform-origin'] = 'top left';
-        } else if (this.dragObject[id].rotate > 0) {
-          this.spanStyle[id]['transform-origin'] = 'bottom right';
-        }
-        if (item[5] < 0) {
-          // fixed偏移
-          window.setTimeout(() => {
-            const obj = document.getElementById(id).getBoundingClientRect();
-            // this.spanStyle[id].left = `${Number(this.spanStyle[id].left.replace('px', '')) + ((obj.right - obj.left) / 2)}px`;
-            this.spanStyle[id].opacity = 1;
-            // this.chang
-          }, 0);
-        } else {
+        // 延遲轉角度，讓位置正確
+        window.setTimeout(() => {
+          this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
           this.spanStyle[id].opacity = 1;
-        }
+        }, 0);
   
         const width = this.pixelXLinear(item[2]);
         const height = this.pixelYLinear(item[3]);
