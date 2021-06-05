@@ -161,7 +161,7 @@
             </g>
           </svg>
 
-          <svg *ngIf="dragObject[item].element === 'ellipse' || dragObject[item].element == '1'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
+          <svg *ngIf="dragObject[item].element === 'ellipse' || dragObject[item].element == '2'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
             <g>
             <rect fill="none" id="canvas_background" height="32" width="20" y="-1" x="-1"/>
             <g display="none" id="canvasGrid">
@@ -174,7 +174,7 @@
             </g>
           </svg>
 
-          <svg *ngIf="dragObject[item].element === 'polygon' || dragObject[item].element == '2'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
+          <svg *ngIf="dragObject[item].element === 'polygon' || dragObject[item].element == '1'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
             <g>
             <rect x="-1" y="-1" width="32" height="32" fill="none"/>
             <g id="canvasGrid" display="none">
@@ -182,7 +182,7 @@
             </g>
             </g>
             <g>
-            <rect fill="#000000" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/>
+            <rect fill="rgba(0,0,0,0)" stroke-width="1.5" x="111" y="151" width="41" height="28" />
             <polygon class="drag_rect" [ngStyle]="polygonStyle[item]" [attr.points]="polygonStyle[item].points" />
             </g>
           </svg>

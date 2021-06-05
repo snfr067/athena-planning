@@ -142,13 +142,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       id: 'svg_2',
       title: this.translateService.instant('obstacleInfo'),
       type: 'obstacle',
-      element: '1'
+      element: '2'
     },
     polygon: {
       id: 'svg_3',
       title: this.translateService.instant('obstacleInfo'),
       type: 'obstacle',
-      element: '2'
+      element: '1'
     },
     defaultBS: {
       id: 'svg_4',
@@ -983,7 +983,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.moveNumber(this.svgId);
         this.hoverObj = this.target;
         this.setLabel();
-      }, 0);
+      }, 100);
       
     }, 0);
 
@@ -1096,12 +1096,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 方形
       wVal = this.roundFormat(this.xLinear(this.rectStyle[this.svgId].width));
       hVal = this.roundFormat(this.yLinear(this.rectStyle[this.svgId].height));
-    } else if (Number(type) === 1) {
+    } else if (Number(type) === 2) {
       // 圓形正圓
       wVal = this.roundFormat(this.xLinear(rect.width));
       hVal = this.roundFormat(this.yLinear(rect.width));
 
-    } else if (Number(type) === 2) {
+    } else if (Number(type) === 1) {
       // 三角形
       wVal = this.roundFormat(this.xLinear(this.svgStyle[this.svgId].width));
       hVal = this.roundFormat(this.yLinear(this.svgStyle[this.svgId].height));
@@ -1193,9 +1193,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (height < 5) {
       height = 5;
     }
-    const type = this.dragObject[this.svgId].element;
+    const shape = this.dragObject[this.svgId].element;
 
-    if (Number(type) === 3) {
+    if (Number(shape) === 3) {
       if (width > height) {
         height = width;
       } else {
@@ -1204,7 +1204,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
 
     this.frame.set('width', `${width}px`);
-    if (Number(type) === 1) {
+    if (Number(shape) === 2) {
       // 圓形正圓
       this.frame.set('height', `${width}px`);
     } else {
@@ -1224,11 +1224,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.spanStyle[this.svgId].width = `${width}px`;
     this.spanStyle[this.svgId].height = `${height}px`;
 
-    if (Number(type) === 0) {
+    if (Number(shape) === 0) {
       // 方形
       this.rectStyle[this.svgId].width = width;
       this.rectStyle[this.svgId].height = height;
-    } else if (Number(type) === 1) {
+    } else if (Number(shape) === 2) {
       // 圓形正圓
       const x = (width / 2).toString();
       this.ellipseStyle[this.svgId].rx = x;
@@ -1236,13 +1236,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.ellipseStyle[this.svgId].cx = x;
       this.ellipseStyle[this.svgId].cy = x;
 
-    } else if (Number(type) === 2) {
+    } else if (Number(shape) === 1) {
       // 三角形
       const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
       this.polygonStyle[this.svgId].points = points;
       // dragRect.setAttribute('points', points);
-    } else if (Number(type) === 3) {
-      console.log('..............')
+    } else if (Number(shape) === 3) {
       this.trapezoidStyle[this.svgId].width = width;
       this.trapezoidStyle[this.svgId].height = height;
     }
@@ -1325,9 +1324,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (this.dragObject[this.svgId].type === 'obstacle') {
       if (Number(this.dragObject[this.svgId].element) === 0) {
         this.rectStyle[this.svgId].fill = this.color;
-      } else if (Number(this.dragObject[this.svgId].element) === 1) {
-        this.ellipseStyle[this.svgId].fill = this.color;
       } else if (Number(this.dragObject[this.svgId].element) === 2) {
+        this.ellipseStyle[this.svgId].fill = this.color;
+      } else if (Number(this.dragObject[this.svgId].element) === 1) {
         this.polygonStyle[this.svgId].fill = this.color;
       } else if (Number(this.dragObject[this.svgId].element) === 3) {
         this.trapezoidStyle[this.svgId].fill = this.color;
@@ -1554,14 +1553,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 障礙物資訊
       for (let i = 0; i < this.obstacleList.length; i++) {
         const obj = this.dragObject[this.obstacleList[i]];
-        let shape = 0;
-        if (obj.element === 'polygon') {
-          shape = 1;
-        } else if (obj.element === 'ellipse') {
-          shape = 2;
-        } else if (obj.element === 'trapezoid') {
-          shape = 3;
-        }
+        const shape = this.parseElement(obj.element);
         obstacleInfo += `[${obj.x},${obj.y},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
         if (i < this.obstacleList.length - 1) {
           obstacleInfo += '|';
@@ -1876,14 +1868,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 方形
       dragRect.setAttribute('width', elementWidth.toString());
       dragRect.setAttribute('height', elementHeight.toString());
-    } else if (Number(type) === 1) {
+    } else if (Number(type) === 2) {
       // 圓形
       const val = (Plotly.d3.min([elementWidth, elementHeight]) / 2).toString();
       dragRect.setAttribute('rx', val.toString());
       dragRect.setAttribute('ry', val.toString());
       dragRect.setAttribute('cx', val.toString());
       dragRect.setAttribute('cy', val.toString());
-    } else if (Number(type) === 2) {
+    } else if (Number(type) === 1) {
       // 三角形
       const points = `${elementWidth / 2},0 ${elementWidth}, ${elementHeight} 0, ${elementHeight}`;
       dragRect.setAttribute('points', points);
@@ -2079,7 +2071,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     // obstacle
     const obstacleData = [['x', 'y', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
     for (const item of this.obstacleList) {
-
       const shape = this.parseElement(this.dragObject[item].element);
       obstacleData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -2088,7 +2079,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.dragObject[item].material, this.dragObject[item].color,
         shape
       ]);
-      console.log(shape)
     }
     const obstacleWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(obstacleData);
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
@@ -2442,7 +2432,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         }
         let id;
         let type;
-        let shape = obstacleData[i][8];
+        let shape = this.parseElement(obstacleData[i][8]);
         if (shape === 'rect' || Number(shape) === 0) {
           id = `rect_${this.generateString(10)}`;
           type = 'rect';
@@ -2504,7 +2494,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             height: this.pixelYLinear(this.dragObject[id].height),
             fill: this.dragObject[id].color
           };
-        } else if (shape === 'ellipse' || Number(shape) === 1) {
+        } else if (shape === 'ellipse' || Number(shape) === 2) {
           this.spanStyle[id] = {
             left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
             top: `${this.pixelYLinear(this.dragObject[id].y)}px`,
@@ -2523,7 +2513,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             ry: y,
             fill: this.dragObject[id].color
           };
-        } else if (shape === 'polygon' || Number(shape) === 2) {
+        } else if (shape === 'polygon' || Number(shape) === 1) {
           this.spanStyle[id] = {
             left: `${this.pixelXLinear(this.dragObject[id].x)}`,
             top: `${this.pixelYLinear(this.dragObject[id].y)}`,
@@ -2645,7 +2635,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         const item = JSON.parse(obstacle[i]);
         let shape = '0';
         if (typeof item[7] !== 'undefined') {
-          shape = item[7];
+          shape = this.parseElement(item[7]);
         }
         const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
         
@@ -2693,7 +2683,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             height: height,
             fill: this.dragObject[id].color
           };
-        } else if (Number(shape) === 1) {
+        } else if (Number(shape) === 2) {
           // 圓形
           const x = (width / 2).toString();
           const y = (height / 2).toString();
@@ -2705,13 +2695,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             fill: this.dragObject[id].color
           };
   
-        } else if (Number(shape) === 2) {
+        } else if (Number(shape) === 1) {
           // 三角形
           const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
           this.polygonStyle[id] = {
             points: points,
             fill: this.dragObject[id].color
           };
+        } else if (Number(shape) === 3) {
+          // 梯形
+          this.trapezoidStyle[id] = {
+            fill: this.dragObject[id].color,
+            width: width,
+            height: height
+          };
+          
         }
 
         this.obstacleList.push(id);
@@ -3118,14 +3116,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       };
     } else if (Number(type) === 1) {
       return {
-        id: 'svg_2',
+        id: 'svg_3',
         title: this.translateService.instant('obstacleInfo'),
         type: 'obstacle',
         element: '1'
       };
     } else if (Number(type) === 2) {
       return {
-        id: 'svg_3',
+        id: 'svg_2',
         title: this.translateService.instant('obstacleInfo'),
         type: 'obstacle',
         element: '2'
@@ -3155,9 +3153,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (type === 'rect') {
       return 0;
     } else if (type === 'ellipse') {
-      return 1;
-    } else if (type === 'polygon') {
       return 2;
+    } else if (type === 'polygon') {
+      return 1;
     } else if (type === 'trapezoid') {
       return 3;
     } else {
@@ -3181,9 +3179,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   parseShape(type) {
     if (type === '0') {
       return 'rect';
-    } else if (type === '1') {
-      return 'ellipse';
     } else if (type === '2') {
+      return 'ellipse';
+    } else if (type === '1') {
       return 'polygon';
     } else if (type === '3') {
       return 'trapezoid';
