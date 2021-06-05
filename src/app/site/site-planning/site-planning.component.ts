@@ -1195,7 +1195,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     const type = this.dragObject[this.svgId].element;
 
-    if (type === '3') {
+    if (Number(type) === 3) {
       if (width > height) {
         height = width;
       } else {
@@ -1204,7 +1204,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
 
     this.frame.set('width', `${width}px`);
-    if (type === 'ellipse') {
+    if (Number(type) === 1) {
       // 圓形正圓
       this.frame.set('height', `${width}px`);
     } else {
@@ -1242,6 +1242,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.polygonStyle[this.svgId].points = points;
       // dragRect.setAttribute('points', points);
     } else if (Number(type) === 3) {
+      console.log('..............')
       this.trapezoidStyle[this.svgId].width = width;
       this.trapezoidStyle[this.svgId].height = height;
     }
@@ -1459,7 +1460,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      // this.authService.spinnerShowAsHome();
+      this.authService.spinnerShowAsHome();
       console.log(this.calculateForm.bandwidth);
       console.log(this.calculateForm.frequency);
       this.setForm();
@@ -1476,33 +1477,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.calculateForm.isSimulation = true;
       }
 
-      
-
-      for (const item of this.obstacleList) {
-        this.dragObject[item].rotate = 0;
-        console.log(item)
-        this.target = document.querySelector(`#${item}`);
-        // this.frame.set('transform', 'rotate', `${this.dragObject[item].rotate}deg`);
-        // this.setTransform(this.target);
-        this.spanStyle[item]['transform'] = `rotate(0deg)`;
-        this.spanStyle[item]['transform-origin'] = 'top left';
-        // this.changeRotate(item);
-      }
-
-      // this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
-      //   res => {
-      //     this.taskid = res['taskid'];
-      //     const percentageVal = document.getElementById('percentageVal');
-      //     if (percentageVal != null) {
-      //       percentageVal.innerHTML = '0';
-      //     }
-      //     this.getProgress();
-      //   },
-      //   err => {
-      //     this.authService.spinnerHide();
-      //     console.log(err);
-      //   }
-      // );
+      this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
+        res => {
+          this.taskid = res['taskid'];
+          const percentageVal = document.getElementById('percentageVal');
+          if (percentageVal != null) {
+            percentageVal.innerHTML = '0';
+          }
+          this.getProgress();
+        },
+        err => {
+          this.authService.spinnerHide();
+          console.log(err);
+        }
+      );
     }
   }
 
@@ -2091,12 +2079,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     // obstacle
     const obstacleData = [['x', 'y', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
     for (const item of this.obstacleList) {
-      let shape = '0';
-      if (this.dragObject[item].element === 'polygon') {
-        shape = '1';
-      } else if (this.dragObject[item].element === 'ellipse') {
-        shape = '2';
-      }
+
+      const shape = this.parseElement(this.dragObject[item].element);
       obstacleData.push([
         this.dragObject[item].x, this.dragObject[item].y,
         this.dragObject[item].width, this.dragObject[item].height,
@@ -2104,6 +2088,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.dragObject[item].material, this.dragObject[item].color,
         shape
       ]);
+      console.log(shape)
     }
     const obstacleWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(obstacleData);
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
@@ -2662,8 +2647,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (typeof item[7] !== 'undefined') {
           shape = item[7];
         }
-        // const id = `${shape}_${this.generateString(10)}`;
-        const id = `${this.generateString(10)}`;
+        const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
         
         this.dragObject[id] = {
           x: item[0],
@@ -3188,6 +3172,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   removeObj(id) {
     this.svgId = id;
     this.delete();
+  }
+
+  /**
+   * 障礙物形狀轉換
+   * @param type 形狀
+   */
+  parseShape(type) {
+    if (type === '0') {
+      return 'rect';
+    } else if (type === '1') {
+      return 'ellipse';
+    } else if (type === '2') {
+      return 'polygon';
+    } else if (type === '3') {
+      return 'trapezoid';
+    } else {
+      return type;
+    }
   }
 
 }
