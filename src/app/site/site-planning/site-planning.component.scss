@@ -388,22 +388,69 @@ ul {
 
 .rfParamTable {
     margin: 0;
-    // margin: 0 0 2em 0;
     display: table;
     width: 100%;
-    // border:1.5px solid #5aa5e2;
     vertical-align: top;
-    // background-color: #fff;
     tr td{
         // border-bottom: 1.5px solid #5aa5e2;
-    line-height: 1.1;
-}
+        line-height: 1.1;
+    }
     tr td:first-child {
         text-align: right;
         background-color: #ddf1fc;
     }
+    tr td:last-child {
+        padding-right: 0px;
+    }
+    select{
+        width: 200px;
+    }
     
 }
+
+.altParamTable {
+    margin: 0;
+    display: table;
+    width: 100%;
+    vertical-align: top;
+    tr td{
+        // border-bottom: 1.5px solid #5aa5e2;
+        line-height: 1.1;
+    }
+    tr td:first-child {
+        text-align: right;
+        background-color: #ddf1fc;
+    }
+    tr td:last-child {
+        padding-right: 0px;
+    }
+    select{
+        width: 200px;
+    }
+}
+
+.rightClickBtnGroup {
+    line-height: 1.5;
+    padding: 5px;
+    border: none;
+    width: 100%;
+    display: block;
+    color: rgb(0, 24, 44);
+    font-weight: 800;
+    background-color: #fff;
+    border-bottom: 1px solid #6bc4ff;
+}
+
+.rightClickBtnGroup:last-child {
+    border-bottom: none;
+}
+.rightClickBtnGroup:hover {
+    background-color: #6bc4ff;
+}
+
+// ::ng-deep .mat-menu-content{
+//     padding: 0px;
+// }
 
 :host ::ng-deep .moveable-origin {
     opacity: 0;

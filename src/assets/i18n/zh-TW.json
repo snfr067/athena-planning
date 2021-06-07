@@ -222,5 +222,11 @@
 	"ulThroughputMap": "上行傳輸速率圖",
 	"dlThroughputMap": "下行傳輸速率圖",
 	"throughput": "傳輸速率",
-	"wifi.bandwidth": "頻寬"
+	"wifi.bandwidth": "頻寬",
+
+	"deleteTitle": "刪除",
+	"deletePara": "您確定要刪除嗎",
+	"deleteSure": "確定",
+	"deleteCancel": "取消"
+
 }

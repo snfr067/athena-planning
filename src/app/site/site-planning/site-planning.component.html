@@ -289,20 +289,20 @@
     [matMenuTriggerFor]="rightMenu"></div>
 
   <!-- standard material menu -->
-  <mat-menu #rightMenu="matMenu">
-    <ng-template matMenuContent >
-      <button mat-menu-item (click)="delete()">{{ 'delete' | translate }}</button>
-      <button mat-menu-item 
+  <mat-menu #rightMenu="matMenu" id="rightMenu">
+    <ng-template matMenuContent>
+      <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
+      <button class="rightClickBtnGroup"
         (click)="$event.stopPropagation()" 
         [(colorPicker)]="color" 
         (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button>
-      <button mat-menu-item (click)="openHeightSetting()">
+      <button class="rightClickBtnGroup" (click)="openHeightSetting()">
         <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
           {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
         </ng-container>
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
-      <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" mat-menu-item (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button>
     </ng-template>
   </mat-menu>
   <!-- <mat-menu #mater="matMenu">
@@ -907,15 +907,6 @@
             <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
           </select>
         </ng-container>
-        
-        <!--<mat-form-field>
-          <mat-label>{{ 'altitude.setting' | translate }}2</mat-label>
-          <input matInput >
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>{{ 'altitude.setting' | translate }}3</mat-label>
-          <input matInput >
-        </mat-form-field>-->
       </li>
       <li class="mt-2" *ngIf="dragObject[svgId].type === 'obstacle'">
         <mat-label>{{ 'material.setting' | translate }}</mat-label>
@@ -928,8 +919,45 @@
         </mat-radio-group>
       </li>
     </ul>
-    
   </div>
+</ng-template>
+<ng-template #materialModal2>
+  <h5 *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp" mat-dialog-title>{{ 'altitude.setting' | translate }} / {{ 'material.setting' | translate }} </h5>
+  <ng-template #otherTypeTemp>
+    <h5 mat-dialog-title>{{ 'altitude.setting' | translate }}</h5>
+  </ng-template>
+  <table class="altParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'altitude.setting' | translate }}</td>
+        <td>
+          <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
+            <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'meter' | translate }}
+          </ng-container>
+          <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
+            <input type="text" [(ngModel)]="dragObject[svgId].z">{{ 'cm' | translate }}
+          </ng-container>
+          <ng-container *ngIf="dragObject[svgId].type === 'UE'">
+            <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
+              <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
+            </select>
+          </ng-container>
+        </td>
+      </tr>
+      <tr *ngIf="dragObject[svgId].type === 'obstacle'">
+        <td>{{ 'material.setting' | translate }}</td>
+        <td>
+          <select [(ngModel)]="dragObject[svgId].material">
+            <option value="0">{{ 'material.wood' | translate }}</option>
+            <option value="1">{{ 'material.cement' | translate }}</option>
+            <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
+            <option value="3">{{ 'material.glass' | translate }}</option>
+            <option value="4">{{ 'material.stainless' | translate }}</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </ng-template>
 
 <!-- ------------------------------------------------------------------------- -->
@@ -939,12 +967,12 @@
     <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
     <ul class="highset">
       <li *ngIf="planningIndex == '3'">
-        <label>Txpower </label> 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower">
+        <label>Txower 123</label> 
+        <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"><span>dbm</span>
         <label>BeamId </label> 
         <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
         <label *ngIf="duplexMode === 'tdd'">{{ 'frequency' | translate }} </label> 
-        <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency">
+        <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"><span>MHz</span> 
       </li>
 
       <li *ngIf="planningIndex !== '3'">
@@ -1282,7 +1310,7 @@
     <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
       <tr>
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr>
         <td>BeamId</td>
@@ -1290,11 +1318,11 @@
       </tr>
       <tr>
         <td>Frequency</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'tddBandwidth' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>MHz
       </tr>
       <tr>
         <td>{{ 'mimoNum' | translate }}</td>
@@ -1322,7 +1350,7 @@
     <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
       <tr>
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr>
         <td>BeamId</td>
@@ -1330,16 +1358,16 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulBandwidth' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;">
+          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;">MHz
             <option value="1.4">1.4</option>
             <option value="3">3</option>
             <option value="5">5</option>
@@ -1388,7 +1416,7 @@
     <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
       <tr>
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr>
         <td>BeamId</td>
@@ -1396,7 +1424,7 @@
       </tr>
       <tr>
         <td>Frequency</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
       </tr>
       <!-- <tr>
         <td>{{ 'tddBandwidth' | translate }}</td>
@@ -1412,6 +1440,7 @@
             <option value=120>120</option>
           </select>
         </td>
+        kHz
       </tr>
       <tr>
         <td>{{ 'scsBandwidth' | translate }}</td>
@@ -1462,6 +1491,7 @@
             <option value="200">200</option>
             <option value="400">400</option>
           </select>
+          MHz
         </td>
       </tr>
       <tr>
@@ -1527,7 +1557,7 @@
     <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
       <tr>
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr>
         <td>BeamId</td>
@@ -1535,11 +1565,11 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulMimolayer' | translate }}</td>
@@ -1617,6 +1647,7 @@
             <option value=60>60</option>
             <option value=120>120</option>
           </select>
+          kHz
         </td>
       </tr>
       <tr>
@@ -1668,6 +1699,7 @@
             <option value="200">200</option>
             <option value="400">400</option>
           </select>
+          MHz
         </td>
       </tr>
       <tr>
@@ -1679,6 +1711,7 @@
             <option value=60>60</option>
             <option value=120>120</option>
           </select>
+          kHz
         </td>
       </tr>
       <tr>
@@ -1730,9 +1763,23 @@
             <option value="200">200</option>
             <option value="400">400</option>
           </select>
+          MHz
         </td>
       </tr>
     </tbody>
     <tbody></tbody>
   </table>
 </ng-template>
+
+<ng-template #deleteModal>
+  <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'deletePara' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="delete()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+

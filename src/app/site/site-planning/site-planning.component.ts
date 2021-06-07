@@ -286,9 +286,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
   @ViewChild('materialModal') materialModal: TemplateRef<any>;
+  @ViewChild('materialModal2') materialModal2: TemplateRef<any>;
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+
+  @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
+
+  
 
   //4G 5G WiFi new attribute
   duplexMode = "fdd";
@@ -1316,6 +1321,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     } else if (this.dragObject[this.svgId].type === 'UE') {
       this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
     }
+    this.matDialog.closeAll();
+  }
+
+  notDelete() {
+    this.matDialog.closeAll();
   }
 
   /** change color */
@@ -1346,11 +1356,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.matDialog.open(this.rfModalTable);
   }
 
+  openDeleteSetting() {
+    this.matDialog.open(this.deleteModal);
+  }
+
   /**
    * 開啟高度設定燈箱
    */
   openHeightSetting() {
-    this.matDialog.open(this.materialModal);
+    // this.matDialog.open(this.materialModal);
+    this.matDialog.open(this.materialModal2);
   }
 
   /** 變更材質 */
