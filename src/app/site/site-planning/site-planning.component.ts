@@ -1201,11 +1201,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const shape = this.dragObject[this.svgId].element;
 
     if (Number(shape) === 3) {
-      if (width > height) {
-        height = width;
-      } else {
-        width = height;
-      }
+      // if (width > height) {
+      //   height = width;
+      // } else {
+      //   width = height;
+      // }
+      this.frame.set('height', `${height}px`);
     }
 
     this.frame.set('width', `${width}px`);

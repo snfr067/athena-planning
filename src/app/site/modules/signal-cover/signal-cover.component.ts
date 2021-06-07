@@ -62,6 +62,17 @@ export class SignalCoverComponent implements OnInit {
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
       autosize: true
+    }).then(gd => {
+
+      let layoutWidth = gd.clientWidth;
+      const layoutHeight = gd.clientHeight;
+      layoutWidth = layoutHeight + 150;
+
+      const layoutOption = {
+        width: layoutWidth,
+        height: layoutHeight
+      };
+      Plotly.relayout(this.chartId, layoutOption);
     });
   }
 
@@ -507,14 +518,14 @@ export class SignalCoverComponent implements OnInit {
             yref: 'y',
             x0: item.x,
             y0: item.y,
-            x1: item.x + Number(xLinear(30)),
+            x1: item.x + Number(xLinear(50)),
             y1: item.y + Number(yLinear(18)),
             fillcolor: '#000',
             visible: this.showCandidate
           });
 
           this.annotations.push({
-            x: item.x + Number(xLinear(15)),
+            x: item.x + Number(xLinear(25)),
             y: item.y + Number(yLinear(9)),
             xref: 'x',
             yref: 'y',
@@ -529,64 +540,25 @@ export class SignalCoverComponent implements OnInit {
         }
       }
 
+      let layoutWidth = gd.clientWidth;
+      const layoutHeight = gd.clientHeight;
+      layoutWidth = layoutHeight + 150;
+
+      layoutOption = {
+        width: layoutWidth,
+        height: layoutHeight,
+        shapes: this.shapes,
+        annotations: this.annotations
+      };
+
       if (images.length > 0) {
         const image = new Image();
         image.src = images[0].source;
         image.onload = () => {
-          // const maxHeight = window.innerHeight - 170;
-          // let imgHeight = image.height;
-          // if (imgHeight > maxHeight) {
-          //   imgHeight = maxHeight;
-          // }
-          // if (image.width > imgHeight) {
-          //   const height = (imgHeight / (image.width * 0.9)) * rect.width;
-          //   layoutOption = {
-          //     height: height
-          //   };
-          // } else {
-          //   const width = (image.width / (imgHeight * 0.9)) * rect.height;
-          //   layoutOption = {
-          //     width: width
-          //   };
-          // }
-
-          const main = gd.getBoundingClientRect();
-          console.log(`img width: ${image.width}, img height: ${image.height}`);
-          console.log(`gd width: ${main.width}, gd height: ${main.height}`);
-          let imgWidth = image.width;
-          let imgHeight = image.height;
-          if (imgWidth >= main.width) {
-            for (let i = 0.99; i >= 0; i -= 0.01) {
-              imgHeight = image.height * i;
-              imgWidth = image.width * i;
-              if (imgWidth <= main.width) {
-                break;
-              }
-            }
-          } else {
-            const maxMain = main.width;
-            for (let i = 1.01; i < 2; i += 0.01) {
-              imgHeight = image.height * i;
-              imgWidth = image.width * i;
-              if (imgWidth >= maxMain) {
-                break;
-              }
-            }
-          }
-          console.log(`width: ${imgWidth}, height: ${imgHeight}`);
-          layoutOption = {
-            width: imgWidth,
-            height: imgHeight
-          };
-
-          layoutOption['shapes'] = this.shapes;
-          layoutOption['annotations'] = this.annotations;
           this.reLayout(id, layoutOption);
         };
-
+        
       } else {
-        layoutOption['shapes'] = this.shapes;
-        layoutOption['annotations'] = this.annotations;
         this.reLayout(id, layoutOption);
       }
     });
