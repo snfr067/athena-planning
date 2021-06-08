@@ -96,6 +96,14 @@
 										<td class="choose">{{ item['bandwidth'] }}</td>
 										<td class="choose">{{ item['mimoNumber'] }}</td>
 									</tr>
+									<tr *ngFor="let item of candidateTable4gTdd; let i = index" [attr.data-index]="i">
+										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['frequency'] }}</td>
+										<td class="choose">{{ item['bandwidth'] }}</td>
+										<td class="choose">{{ item['mimoNumber'] }}</td>
+									</tr>
 									<tr *ngIf="calculateForm.duplex == 'fdd'">
 										<th>{{ 'result.propose.candidateBs.num' | translate }}</th>
 										<th>{{ 'result.propose.candidateBs.xy' | translate }}</th>
@@ -108,6 +116,16 @@
 									</tr>
 									<tr *ngFor="let item of defaultBSList4gFdd; let i = index" [attr.data-index]="i">
 										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['ulFrequency'] }}</td>
+										<td class="choose">{{ item['dlFrequency'] }}</td>
+										<td class="choose">{{ item['ulBandwidth'] }}</td>
+										<td class="choose">{{ item['dlBandwidth'] }}</td>
+										<td class="choose">{{ item['mimoNumber'] }}</td>
+									</tr>
+									<tr *ngFor="let item of candidateTable4gFdd; let i = index" [attr.data-index]="i">
+										<td class="choose">{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>
@@ -142,6 +160,18 @@
 										<td class="choose">{{ item['ulMimoLayer'] }}</td>
 										<td class="choose">{{ item['dlMimoLayer'] }}</td>
 									</tr>
+									<tr *ngFor="let item of candidateTable5gTdd; let i = index" [attr.data-index]="i">
+										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['frequency'] }}</td>
+										<td class="choose">{{ item['scs'] }}</td>
+										<td class="choose">{{ item['bandwidth'] }}</td>
+										<td class="choose">{{ item['ulMcsTable'] }}</td>
+										<td class="choose">{{ item['dlMcsTable'] }}</td>
+										<td class="choose">{{ item['ulMimoLayer'] }}</td>
+										<td class="choose">{{ item['dlMimoLayer'] }}</td>
+									</tr>
 									<tr *ngIf="calculateForm.duplex == 'fdd'">
 										<th>{{ 'result.propose.candidateBs.num' | translate }}</th>
 										<th>{{ 'result.propose.candidateBs.xy' | translate }}</th>
@@ -160,6 +190,22 @@
 									</tr>
 									<tr *ngFor="let item of defaultBSList5gFdd let i = index" [attr.data-index]="i">
 										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['ulFrequency'] }}</td>
+										<td class="choose">{{ item['dlFrequency'] }}</td>
+										<td class="choose">{{ item['ulBandwidth'] }}</td>
+										<td class="choose">{{ item['dlBandwidth'] }}</td>
+										<td class="choose">{{ item['scs'] }}</td>
+										<td class="choose">{{ item['ulScs'] }}</td>
+										<td class="choose">{{ item['dlScs'] }}</td>
+										<td class="choose">{{ item['ulMcsTable'] }}</td>
+										<td class="choose">{{ item['dlMcsTable'] }}</td>
+										<td class="choose">{{ item['ulMimoLayer'] }}</td>
+										<td class="choose">{{ item['dlMimoLayer'] }}</td>
+									</tr>
+									<tr *ngFor="let item of candidateTable5gFdd; let i = index" [attr.data-index]="i">
+										<td class="choose">{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>

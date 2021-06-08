@@ -28,8 +28,8 @@
       <span *ngIf="this.defaultBsCount !== 0"><label>{{ 'defaultBs' | translate }}</label>{{ getBsCount() }}</span>
       <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.dbm.range' | translate }}</label>	{{ calculateForm.powerMinRange }} dBm ~ {{ calculateForm.powerMaxRange }} dBm</span>
       <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.beam.range' | translate }}</label>	0 ~ 30</span>
-      <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'bandwidth' | translate }}(MHz)</label>	{{ calculateForm.bandwidth }} MHz</span>
-      <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'frequency' | translate }}(MHz)</label>	{{ calculateForm.frequency }} MHz</span>
+      <!-- <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'bandwidth' | translate }}(MHz)</label>	{{ calculateForm.bandwidth }} MHz</span> -->
+      <!-- <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'frequency' | translate }}(MHz)</label>	{{ calculateForm.frequency }} MHz</span> -->
     </li>
   </ul>
 </div>

@@ -79,6 +79,10 @@ export class ResultComponent implements OnInit {
   defaultBSList5gFdd = [];
   /** AP list */
   candidateList = [];
+  candidateTable4gTdd = [];
+  candidateTable4gFdd = [];
+  candidateTable5gTdd = [];
+  candidateTable5gFdd = [];
   /** 障礙物 list */
   obstacleList = [];
   /** 行動終端 list */
@@ -119,6 +123,8 @@ export class ResultComponent implements OnInit {
       { value: 1 }
     ]
   };
+  /* 是否為模擬 */
+  isSimulate = false;
 
   /** PDF Component */
   @ViewChild('pdf') pdf: PdfComponent;
@@ -177,12 +183,19 @@ export class ResultComponent implements OnInit {
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
           console.log(this.calculateForm);
+          console.log(this.result);
+          // setTimeout(() => {
+          this.getCandidateList();
+          // }, 3000);
+          
         } else {
           this.calculateForm = res['input'];
           this.result = res['output'];
           console.log(this.calculateForm);
           console.log(this.result);
         }
+        //是否為模擬
+        this.isSimulate = this.calculateForm.isSimulation;
         // this.calculateForm.defaultBs = this.calculateForm.bsList;
         if (this.calculateForm.defaultBs !== '') {
           console.log(this.calculateForm);
@@ -207,8 +220,6 @@ export class ResultComponent implements OnInit {
           let dlScs = [];
           let ulScs = [];
           if (this.calculateForm.duplex === "fdd" && this.calculateForm.objectiveIndex == '1') {
-            // console.log(this.calculateForm.duplex);
-            // console.log(this.calculateForm.objectiveIndex);
             dlScs = JSON.parse(this.calculateForm.dlScs);
             ulScs = JSON.parse(this.calculateForm.ulScs);
           }
@@ -303,6 +314,7 @@ export class ResultComponent implements OnInit {
                 i++;
               }
             }
+          //WiFi below
           } else {
 
           }
@@ -438,6 +450,159 @@ export class ResultComponent implements OnInit {
         this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
       }
     );
+    // this.getCandidateList();
+  }
+
+  getCandidateList() {
+    let index = 1;
+    const numMap = {};
+    const xyMap = {};
+    const x = [];
+    const y = [];
+    const text = [];
+    // const color = [];
+
+    if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
+      const candidateBs = this.calculateForm.candidateBs.split('|');
+      for (let i = 0; i < candidateBs.length; i++) {
+        const candidate = JSON.parse(candidateBs[i]);
+        numMap[candidate] = index;
+        xyMap[candidate] = {
+          x: candidate[0],
+          y: candidate[1]
+        };
+        x.push(candidate[0]);
+        y.push(candidate[1]);
+        text.push(index);
+        // color.push('#7083d6');
+        index++;
+      }
+      console.log(numMap);
+      console.log(xyMap);
+    }
+    // 被選中的bs index
+    const chosenNum = [];
+    this.candidateList.length = 0;
+    for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
+      if (typeof numMap[this.result['chosenCandidate'][i].toString()] !== 'undefined') {
+        this.candidateList.push([
+          numMap[this.result['chosenCandidate'][i].toString()],
+          xyMap[this.result['chosenCandidate'][i].toString()].x,
+          xyMap[this.result['chosenCandidate'][i].toString()].y,
+          this.result['candidateBsPower'][i],
+          this.result['candidateBeamId'][i]
+        ]);
+        // color[numMap[this.result['chosenCandidate'][i]] - 1] = 'red';
+        chosenNum.push(numMap[this.result['chosenCandidate'][i].toString()]);
+      }
+    }
+    // console.log(xyMap);
+    // console.log(numMap);
+    // console.log(chosenNum);
+    // this.candidateTable = [];
+    const txpower = this.result['candidateBsPower'];
+    const beamId = this.result['candidateBeamId'];
+    const frequency = JSON.parse(this.calculateForm.frequencyList);
+    const bandwidth = JSON.parse(this.calculateForm.bandwidth);
+    const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
+    const dlFrequency = JSON.parse(this.calculateForm.dlFrequency);
+    const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
+    let ulmsc = this.calculateForm.ulMcsTable;
+    let dlmsc = this.calculateForm.dlMcsTable;
+    const ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+    const dlMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+    const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
+    const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
+    let dlScs = [];
+    let ulScs = [];
+    let i = 0;
+    if (this.calculateForm.duplex === "fdd" && this.calculateForm.objectiveIndex == '1') {
+      dlScs = JSON.parse(this.calculateForm.dlScs);
+      ulScs = JSON.parse(this.calculateForm.ulScs);
+    }
+    const scs = JSON.parse(this.calculateForm.scs);
+    const dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth);
+    const ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth);
+    const protocol = this.calculateForm.objectiveIndex;
+    const duplex = this.calculateForm.duplex;
+    if (protocol == '0') {
+      if (duplex == 'tdd') {
+        for (const item of chosenNum) {
+          this.candidateTable4gTdd.push({
+            num: item,
+            x: xyMap[this.result['chosenCandidate'][i].toString()].x,
+            y: xyMap[this.result['chosenCandidate'][i].toString()].y,
+            txpower: txpower[i],
+            frequency: frequency[item-1],
+            bandwidth: bandwidth[item-1],
+            mimoNumber: mimoNumber[item-1]
+          });
+          i++;
+        }
+        console.log(chosenNum);
+        console.log(txpower);
+        console.log(frequency);
+        console.log(bandwidth);
+      } else {
+        for (const item of chosenNum) {
+          this.candidateTable4gFdd.push({
+            num: item,
+            x: xyMap[this.result['chosenCandidate'][i].toString()].x,
+            y: xyMap[this.result['chosenCandidate'][i].toString()].y,
+            txpower: txpower[i],
+            dlFrequency: dlFrequency[item-1],
+            ulFrequency: ulFrequency[item-1],
+            ulBandwidth: ulBandwidth[item-1],
+            dlBandwidth: dlBandwidth[item-1],
+            mimoNumber: mimoNumber[item-1]
+          });
+          i++;
+        }
+      }
+    } else if (protocol == '1') {
+      if (duplex == 'tdd') {
+        for (const item of chosenNum) {
+          this.candidateTable5gTdd.push({
+            num: item,
+            x: xyMap[this.result['chosenCandidate'][i].toString()].x,
+            y: xyMap[this.result['chosenCandidate'][i].toString()].y,
+            txpower: txpower[i],
+            frequency: frequency[item-1],
+            bandwidth: bandwidth[item-1],
+            scs: scs[item-1],
+            ulMcsTable: ulMcsTable[item-1],
+            dlMcsTable: dlMcsTable[item-1],
+            ulMimoLayer: ulMimoLayer[item-1],
+            dlMimoLayer: dlMimoLayer[item-1],
+          });
+          i++;
+        }
+      } else {
+        for (const item of chosenNum) {
+          this.candidateTable5gFdd.push({
+            num: item,
+            x: xyMap[this.result['chosenCandidate'][i].toString()].x,
+            y: xyMap[this.result['chosenCandidate'][i].toString()].y,
+            txpower: txpower[i],
+            dlFrequency: dlFrequency[item-1],
+            ulFrequency: ulFrequency[item-1],
+            ulBandwidth: ulBandwidth[item-1],
+            dlBandwidth: dlBandwidth[item-1],
+            mimoNumber: mimoNumber[item-1],
+            scs: scs[item-1],
+            dlScs: dlScs[item-1],
+            ulScs: ulScs[item-1],
+            ulMcsTable: ulMcsTable[item-1],
+            dlMcsTable: dlMcsTable[item-1],
+            ulMimoLayer: ulMimoLayer[item-1],
+            dlMimoLayer: dlMimoLayer[item-1],
+          });
+          i++;
+        }
+      }
+    } else {
+
+    }
   }
 
   /** export PDF */
