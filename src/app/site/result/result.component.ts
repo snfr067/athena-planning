@@ -193,6 +193,7 @@ export class ResultComponent implements OnInit {
           this.result = res['output'];
           console.log(this.calculateForm);
           console.log(this.result);
+          this.getCandidateList();
         }
         //是否為模擬
         this.isSimulate = this.calculateForm.isSimulation;
@@ -350,9 +351,16 @@ export class ResultComponent implements OnInit {
             this.obstacleList.push({
               x: obj[0],
               y: obj[1],
+              // z: 0,
               width: obj[2],
               height: obj[3],
-              altitude: obj[4]
+              altitude: obj[4],
+              color: "#73805c",
+              // type: "obstacle",
+              // title: "障礙物",
+              // material: "0",
+              // element: 0,
+              rotate: 0,
             });
           }
         }
@@ -758,6 +766,7 @@ export class ResultComponent implements OnInit {
    * View 3D
    */
   view3D() {
+    console.log(this.obstacleList);
     this.view3dDialogConfig.data = {
       calculateForm: this.calculateForm,
       obstacleList: this.obstacleList,

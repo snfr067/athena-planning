@@ -1995,6 +1995,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     for (const item of this.obstacleList) {
       obstacle.push(this.dragObject[item]);
     }
+    console.log(obstacle);
     const ue = [];
     for (const item of this.ueList) {
       ue.push(this.dragObject[item]);
@@ -2078,12 +2079,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
     // candidate
-    const candidateData = [['x', 'y', 'z', 'material', 'color']];
+    const candidateData = [['x', 'y', 'z', 'material', 'color',
+    'txpower','beamId','tddfrequency', 'tddbandwidth',
+    'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
+    '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
+    'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
         this.dragObject[item].z, this.dragObject[item].material,
-        this.dragObject[item].color
+        this.dragObject[item].color,
+        //4g 5g tdd
+        this.bsListRfParam[item].tddfrequency,
+        this.bsListRfParam[item].tddbandwidth,
+        //4g 5g fdd
+        this.bsListRfParam[item].dlBandwidth,
+        this.bsListRfParam[item].ulBandwidth,
+        this.bsListRfParam[item].fddDlFrequency,
+        this.bsListRfParam[item].fddUlFrequency,
+        //4g only
+        this.bsListRfParam[item].mimoNumber4G,
+        //5g only
+        this.bsListRfParam[item].tddscs,
+        this.bsListRfParam[item].dlModulationCodScheme,
+        this.bsListRfParam[item].ulModulationCodScheme,
+        this.bsListRfParam[item].dlMimoLayer,
+        this.bsListRfParam[item].ulMimoLayer,
+        
+        //5g fdd only
+        this.bsListRfParam[item].dlScs,
+        this.bsListRfParam[item].ulScs,
       ]);
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
@@ -2361,6 +2386,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           element: this.svgMap['candidate'].element
         };
 
+        this.bsListRfParam[id] = {
+          txpower: candidateData[i][3],
+          beampattern: candidateData[i][4],
+          tddfrequency: candidateData[i][5],
+          tddbandwidth: candidateData[i][6],
+          dlBandwidth: candidateData[i][7],
+          ulBandwidth: candidateData[i][8],
+          fddDlFrequency: candidateData[i][9],
+          fddUlFrequency: candidateData[i][10],
+          mimoNumber4G: candidateData[i][11],
+          tddscs: candidateData[i][12],
+          dlModulationCodScheme: candidateData[i][13],
+          ulModulationCodScheme: candidateData[i][14],
+          dlMimoLayer: candidateData[i][15],
+          ulMimoLayer: candidateData[i][16],
+          dlScs: candidateData[i][17],
+          ulScs: candidateData[i][18],
+        };
+
         this.spanStyle[id] = {
           left: `${this.pixelXLinear(candidateData[i][0])}px`,
           top: `${this.chartHeight - this.candidateHeight - this.pixelYLinear(candidateData[i][1])}px`,
@@ -2381,24 +2425,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         }, 0);
 
         // RF parameter import
-        this.bsListRfParam[id] = {
-          txpower: baseStationData[i][5],
-          beampattern: baseStationData[i][6],
-          tddfrequency: baseStationData[i][7],
-          tddbandwidth: baseStationData[i][8],
-          dlBandwidth: baseStationData[i][9],
-          ulBandwidth: baseStationData[i][10],
-          fddDlFrequency: baseStationData[i][11],
-          fddUlFrequency: baseStationData[i][12],
-          mimoNumber4G: baseStationData[i][13],
-          tddscs: baseStationData[i][14],
-          dlModulationCodScheme: baseStationData[i][15],
-          ulModulationCodScheme: baseStationData[i][16],
-          dlMimoLayer: baseStationData[i][17],
-          ulMimoLayer: baseStationData[i][18],
-          dlScs: baseStationData[i][19],
-          ulScs: baseStationData[i][20],
-        };
+        // this.bsListRfParam[id] = {
+        //   txpower: baseStationData[i][5],
+        //   beampattern: baseStationData[i][6],
+        //   tddfrequency: baseStationData[i][7],
+        //   tddbandwidth: baseStationData[i][8],
+        //   dlBandwidth: baseStationData[i][9],
+        //   ulBandwidth: baseStationData[i][10],
+        //   fddDlFrequency: baseStationData[i][11],
+        //   fddUlFrequency: baseStationData[i][12],
+        //   mimoNumber4G: baseStationData[i][13],
+        //   tddscs: baseStationData[i][14],
+        //   dlModulationCodScheme: baseStationData[i][15],
+        //   ulModulationCodScheme: baseStationData[i][16],
+        //   dlMimoLayer: baseStationData[i][17],
+        //   ulMimoLayer: baseStationData[i][18],
+        //   dlScs: baseStationData[i][19],
+        //   ulScs: baseStationData[i][20],
+        // };
       }
     }
     /* UE sheet */
