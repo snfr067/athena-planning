@@ -15,6 +15,7 @@ import * as XLSX from 'xlsx';
 import { MsgDialogComponent } from '../../utility/msg-dialog/msg-dialog.component';
 import { FormService } from '../../service/form.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ChartService } from '../../service/chart.service';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
@@ -36,6 +37,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     private matDialog: MatDialog,
     private formService: FormService,
     private translateService: TranslateService,
+    private chartService: ChartService,
     private http: HttpClient) {
     }
 
@@ -676,28 +678,40 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         config: defaultPlotlyConfiguration
       }).then((gd) => {
 
-        const xy2: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
-        const rect2 = xy2.getBoundingClientRect();
-        // drag範圍
-        this.bounds = {
-          left: rect2.left,
-          top: rect2.top,
-          right: rect2.right,
-          bottom: rect2.top + rect2.height
+        // 無image時圖長寬
+        const sizes = this.chartService.calSize(this.calculateForm, gd);
+        const layoutOption = {
+          width: sizes[0],
+          height: sizes[1]
         };
 
-        // 計算比例尺
-        this.calScale(gd);
-        // import xlsx
-        if (isImportXls) {
-          this.setImportData();
-        } else if (isImportImg) {
-          // do nothing
-        } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-          // 編輯
-          console.log(this.calculateForm);
-          this.edit();
-        }
+        // 重設長寬
+        Plotly.relayout('chart', layoutOption).then((gd2) => {
+          const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
+          const rect2 = xy2.getBoundingClientRect();
+          // drag範圍
+          this.bounds = {
+            left: rect2.left,
+            top: rect2.top,
+            right: rect2.right,
+            bottom: rect2.top + rect2.height
+          };
+  
+          // 計算比例尺
+          this.calScale(gd2);
+          // import xlsx
+          if (isImportXls) {
+            this.setImportData();
+          } else if (isImportImg) {
+            // do nothing
+          } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+            // 編輯
+            console.log(this.calculateForm);
+            this.edit();
+          }
+        });
+
+        
       });
     }
   }
@@ -1213,6 +1227,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (Number(shape) === 2) {
       // 圓形正圓
       this.frame.set('height', `${width}px`);
+      width = height;
     } else {
       this.frame.set('height', `${height}px`);
     }
