@@ -2,6 +2,7 @@ import { Component, OnInit, Input, HostListener, ViewChildren, QueryList, Elemen
 import { AuthService } from '../../../service/auth.service';
 import { CalculateForm } from '../../../form/CalculateForm';
 import { TranslateService } from '@ngx-translate/core';
+import { ChartService } from '../../../service/chart.service';
 
 declare var Plotly: any;
 
@@ -17,7 +18,8 @@ export class SignalStrengthComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private chartService: ChartService
   ) { }
 
   /** 結果form */
@@ -65,13 +67,10 @@ export class SignalStrengthComponent implements OnInit {
       autosize: true
     }).then(gd => {
 
-      let layoutWidth = gd.clientWidth;
-      const layoutHeight = gd.clientHeight;
-      layoutWidth = layoutHeight + 150;
-
+      const sizes = this.chartService.calSize(this.calculateForm, gd);
       const layoutOption = {
-        width: layoutWidth,
-        height: layoutHeight
+        width: sizes[0],
+        height: sizes[1]
       };
       Plotly.relayout(this.chartId, layoutOption);
     });
@@ -478,13 +477,10 @@ export class SignalStrengthComponent implements OnInit {
         }
       }
 
-      let layoutWidth = gd.clientWidth;
-      const layoutHeight = gd.clientHeight;
-      layoutWidth = layoutHeight + 150;
-
+      const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: layoutWidth,
-        height: layoutHeight,
+        width: sizes[0],
+        height: sizes[1],
         shapes: this.shapes,
         annotations: this.annotations
       };

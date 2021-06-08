@@ -51,8 +51,14 @@ export class FormService {
     // console.log(result['output']['defaultbeamid']);
     calculateForm.mapProtocol = result['mapprotocol'];
     calculateForm.bandwidthList = result['bandwidth'];
-    calculateForm.txPower = result['output']['defaultbspower'];
-    calculateForm.beamId = result['output']['defaultbeamid'];
+    try {
+      calculateForm.txPower = result['output']['defaultbspower'];
+      calculateForm.beamId = result['output']['defaultbeamid'];  
+    } catch (error) {
+      calculateForm.txPower = result['defaultbspower'];
+      calculateForm.beamId = result['defaultbeamid'];
+    }
+    
     calculateForm.bsList = result['defaultbs'];
     calculateForm.duplex = result['duplex'];
 

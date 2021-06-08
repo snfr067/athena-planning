@@ -202,11 +202,14 @@ export class View3dComponent implements OnInit {
     for (const id of this.defaultBs) {
       // const bs = this.defaultBs[id];
       const bs = this.dragObject[id];
-      const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', {size: 1}, scene);
-      bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
-      bsBox.material = defaultBsMat;
-
-      this.defaultBsGroup.push(bsBox);
+      if (typeof bs !== 'undefined') {
+        const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', {size: 1}, scene);
+        bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
+        bsBox.material = defaultBsMat;
+  
+        this.defaultBsGroup.push(bsBox);
+      }
+      
     }
 
     const candidateMat = new BABYLON.StandardMaterial('candidateMaterial', scene);
