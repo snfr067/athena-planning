@@ -228,5 +228,8 @@
 	"deleteTitle": "Delete",
 	"deletePara": "Are you sure that you wanna delete it?",
 	"deleteSure": "YES",
-	"deleteCancel": "Cancel"
+	"deleteCancel": "Cancel",
+
+	"bs": "BS"
+
 }

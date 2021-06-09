@@ -302,7 +302,8 @@
         </ng-container>
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
-      <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button>
+      <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
     </ng-template>
   </mat-menu>
   <!-- <mat-menu #mater="matMenu">
@@ -389,7 +390,9 @@
                   <input type="text" [(ngModel)]="calculateForm.taskName" class="w18">
                 </li>
                 <li>
-                  <p>{{ 'planning.upload' | translate }}</p><input type="file" (change)="fileChange($event)">
+                  <p style="margin-right: 5px;">{{ 'planning.upload' | translate }}</p>
+                  <label id="uploadFileLabel" for="upload-file">檔案上傳
+                  <input type="file" id="upload-file" (change)="fileChange($event)" title="" hidden="hidden"></label>
                   <span style="margin-left: 2em;" *ngIf="showFileName">{{ calculateForm.mapName }}</span>
                 </li>
                 <li>
@@ -935,7 +938,7 @@
             <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'meter' | translate }}
           </ng-container>
           <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-            <input type="text" [(ngModel)]="dragObject[svgId].z">{{ 'cm' | translate }}
+            <input type="text" [(ngModel)]="dragObject[svgId].z">{{ 'meter' | translate }}
           </ng-container>
           <ng-container *ngIf="dragObject[svgId].type === 'UE'">
             <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
@@ -1301,7 +1304,7 @@
     </ul>
 </ng-template>
 
-<ng-template #RfModalTable>
+<ng-template #RfModalTable *ngIf="calculateForm.isSimulation === true">
   <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
   <table class="rfParamTable">
     <!------------------------------>

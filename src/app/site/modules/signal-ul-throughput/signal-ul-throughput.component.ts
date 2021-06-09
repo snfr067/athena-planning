@@ -361,7 +361,7 @@ export class SignalUlThroughputComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `AP ${num}`
+            ap: `BS ${num}`
           });
 
           candidateX.push(xdata);

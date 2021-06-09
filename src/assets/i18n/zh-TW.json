@@ -50,7 +50,7 @@
 	"powerMaxRange": "最大傳輸功率",
 	"show.ue": "顯示行動終端",
 	"show.obstacle": "顯示障礙物",
-	"show.candidate": "顯示AP",
+	"show.candidate": "顯示基地台",
 	"obstacleInfo": "障礙物",
 	"defaultBs": "現有基站",
 	"import": "匯入",
@@ -227,6 +227,8 @@
 	"deleteTitle": "刪除",
 	"deletePara": "您確定要刪除嗎",
 	"deleteSure": "確定",
-	"deleteCancel": "取消"
+	"deleteCancel": "取消",
+
+	"bs": "基地台"
 
 }

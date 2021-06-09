@@ -194,7 +194,7 @@ export class SignalCoverComponent implements OnInit {
             console.log(item);
           }
           
-          zText[i][yIndex][xIndex] = `AP ${(Math.round(yData[i] * 100) / 100)}`;
+          zText[i][yIndex][xIndex] = `BS ${(Math.round(yData[i] * 100) / 100)}`;
           yIndex++;
           allZ[i].push(yData[i]);
         }
@@ -294,7 +294,7 @@ export class SignalCoverComponent implements OnInit {
           traces.push({
             x: [0],
             y: [0],
-            name: `AP ${k}`,
+            name: `BS ${k}`,
             marker: {
               color: color,
             },
@@ -303,7 +303,7 @@ export class SignalCoverComponent implements OnInit {
             showlegend: true
           });
 
-          apMap[z] = `AP ${k}`;
+          apMap[z] = `BS ${k}`;
         }
         k++;
       }
@@ -406,7 +406,7 @@ export class SignalCoverComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `AP ${num}`
+            ap: `BS ${num}`
           });
 
           candidateX.push(xdata);

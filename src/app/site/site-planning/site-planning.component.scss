@@ -452,6 +452,20 @@ ul {
 //     padding: 0px;
 // }
 
+#uploadFileLabel {
+    padding: 0 5px;
+    font-size: 12px;
+    border-radius: 5px;
+    color: #333;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+#upload-file {
+    display: block;
+    // margin-top: 100px;
+}
+
 :host ::ng-deep .moveable-origin {
     opacity: 0;
 }
