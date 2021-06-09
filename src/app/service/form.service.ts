@@ -45,6 +45,7 @@ export class FormService {
     calculateForm.guardInterval = result['guardinterval'];
     calculateForm.wifiMimo = result['wifimimo'];
     calculateForm.mimoNumber = result['mimonumber'];
+    calculateForm.isSimulation = JSON.parse(result['issimulation']);
   
     // console.log(result);
     // console.log(result['output']['defaultbspower']);

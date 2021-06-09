@@ -26,7 +26,7 @@ export class CalculateForm {
   powerMinRange: number = null;
   beamMaxId: number = null;
   beamMinId: number = null;
-  objectiveIndex = '2';
+  objectiveIndex = '1';
   // threshold = null;
   obstacleInfo: string = null;
   availableNewBsNumber: number = 0;

@@ -775,7 +775,8 @@ export class ResultComponent implements OnInit {
    * View 3D
    */
   view3D() {
-    console.log(this.obstacleList);
+    console.log(this.defaultBSList);
+    console.log(this.candidateList);
     this.view3dDialogConfig.data = {
       calculateForm: this.calculateForm,
       obstacleList: this.obstacleList,

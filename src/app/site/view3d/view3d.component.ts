@@ -106,7 +106,7 @@ export class View3dComponent implements OnInit {
 
   ngOnInit() {
     // this.draw();
-    
+    console.log(this.calculateForm);
   }
 
   /**
@@ -199,12 +199,16 @@ export class View3dComponent implements OnInit {
 
     const defaultBsMat = new BABYLON.StandardMaterial('defaultBsMaterial', scene);
     defaultBsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-    for (const id of this.defaultBs) {
+    for (const bs of this.defaultBs) {
       // const bs = this.defaultBs[id];
-      const bs = this.dragObject[id];
+      // const bs = this.dragObject[id];
+      // console.log(bs);
+      // console.log(id);
+      // console.log(this.defaultBs);
       if (typeof bs !== 'undefined') {
         const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', {size: 1}, scene);
-        bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
+        bsBox.position = new BABYLON.Vector3(bs.x + offsetX, bs.z + offsetY, bs.y + offsetZ);
+        // bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
         bsBox.material = defaultBsMat;
   
         this.defaultBsGroup.push(bsBox);
