@@ -380,6 +380,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       };
       reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
 
+      sessionStorage.removeItem('importFile');
+
     // Not import File
     } else {
       
