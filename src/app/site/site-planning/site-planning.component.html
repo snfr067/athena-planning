@@ -432,7 +432,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex != '2'">
                   <p>{{ 'duplex' | translate }}	</p>
-                  <mat-radio-group [(ngModel)]="duplexMode">
+                  <mat-radio-group [(ngModel)]="duplexMode" (ngModelChange)="clearAll('bsAndCand')">
                     <mat-radio-button value="tdd">TDD</mat-radio-button>
                     <mat-radio-button value="fdd">FDD</mat-radio-button>
                   </mat-radio-group>
