@@ -1976,6 +1976,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.candidateList.length = 0;
     } else if (type === 'UE') {
       this.ueList.length = 0;
+    } else if (type === 'bsAndCand') {
+      this.defaultBSList.length = 0;
+      this.candidateList.length = 0;
     }
   }
 
