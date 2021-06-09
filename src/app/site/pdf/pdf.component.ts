@@ -242,22 +242,30 @@ export class PdfComponent implements OnInit {
             });
 
             const ulThroughputAry = [];
-            this.result['ulThroughputMap'].map(v => {
-              v.map(m => {
-                m.map(d => {
-                  ulThroughputAry.push(d);
+            try {
+              this.result['ulThroughputMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    ulThroughputAry.push(d);
+                  });
                 });
               });
-            });
-
+            } catch(e) {
+              console.log('No ulThorughput data, it may be an old record');
+            }
+    
             const dlThroughputAry = [];
-            this.result['throughputMap'].map(v => {
-              v.map(m => {
-                m.map(d => {
-                  dlThroughputAry.push(d);
+            try {
+              this.result['throughputMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    dlThroughputAry.push(d);
+                  });
                 });
               });
-            });
+            } catch(e){
+              console.log('No dlThorughput data, it may be an old record');
+            }
 
             this.result['sinrMax'] = Plotly.d3.max(sinrAry);
             this.result['sinrMin'] = Plotly.d3.min(sinrAry);

@@ -435,22 +435,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               });
 
               const ulThroughputAry = [];
-              output['ulThroughputMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    ulThroughputAry.push(d);
+              try {
+                this.result['ulThroughputMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      ulThroughputAry.push(d);
+                    });
                   });
                 });
-              });
-
+              } catch(e) {
+                console.log('No ulThorughput data, it may be an old record');
+              }
+      
               const dlThroughputAry = [];
-              output['throughputMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    dlThroughputAry.push(d);
+              try {
+                this.result['throughputMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      dlThroughputAry.push(d);
+                    });
                   });
                 });
-              });
+              } catch(e){
+                console.log('No dlThorughput data, it may be an old record');
+              }
 
               this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
               this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
