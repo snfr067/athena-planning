@@ -358,9 +358,10 @@ export class ResultComponent implements OnInit {
               color: "#73805c",
               // type: "obstacle",
               // title: "障礙物",
-              // material: "0",
               // element: 0,
-              rotate: 0,
+              rotate: obj[5],
+              material: obj[6],
+              element: obj[7],
             });
           }
         }

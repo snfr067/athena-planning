@@ -2080,7 +2080,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
     // candidate
     const candidateData = [['x', 'y', 'z', 'material', 'color',
-    'txpower','beamId','tddfrequency', 'tddbandwidth',
+    'tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
@@ -2387,8 +2387,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         };
 
         this.bsListRfParam[id] = {
-          txpower: candidateData[i][3],
-          beampattern: candidateData[i][4],
+          // txpower: candidateData[i][3],
+          // beampattern: candidateData[i][4],
           tddfrequency: candidateData[i][5],
           tddbandwidth: candidateData[i][6],
           dlBandwidth: candidateData[i][7],
