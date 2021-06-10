@@ -2910,10 +2910,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
           this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
           this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
-          console.log(this.bsListRfParam[id].dlScs);
-          console.log(this.bsListRfParam[id].dlBandwidth);
-          console.log(this.bsListRfParam[id].ulScs);
-          console.log(this.bsListRfParam[id].ulBandwidth);
+          // console.log(this.bsListRfParam[id].dlScs);
+          // console.log(this.bsListRfParam[id].dlBandwidth);
+          // console.log(this.bsListRfParam[id].ulScs);
+          // console.log(this.bsListRfParam[id].ulBandwidth);
         } else {
           this.duplexMode = 'tdd';
           this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
@@ -2926,8 +2926,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
         }
         if (this.calculateForm.mapProtocol === '5g') {
-          // this.bsListRfParam[id].scs = JSON.parse(this.calculateForm.scs)[i];
-          // console.log(this.calculateForm.ulMcsTable);
+          let ulmsc = this.calculateForm.ulMcsTable;
+          let dlmsc = this.calculateForm.dlMcsTable;
+          this.bsListRfParam[id].ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
+          this.bsListRfParam[id].dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
           this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
           this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
           this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
@@ -3031,6 +3033,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           this.tempCalParamSet.mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
         }
         if (this.calculateForm.mapProtocol === '5g') {
+          let ulmsc = this.calculateForm.ulMcsTable;
+          let dlmsc = this.calculateForm.dlMcsTable;
+          this.tempCalParamSet.ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
+          this.tempCalParamSet.dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
           this.tempCalParamSet.tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
           this.tempCalParamSet.ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
           this.tempCalParamSet.dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
