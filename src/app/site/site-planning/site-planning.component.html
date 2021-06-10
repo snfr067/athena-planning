@@ -368,9 +368,326 @@
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
-          <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
+          <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
             <input type="text" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
+          <h5 *ngIf="planningIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</h5>
+          <h5 *ngIf="planningIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</h5>
+          <h5 *ngIf="planningIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</h5>
+          <h5 *ngIf="planningIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</h5>
+          <h5 *ngIf="planningIndex == '2'">wifiFrequency</h5>
+          <table *ngIf="planningIndex !== '3'" class="tempCalParamTable">
+            <tbody>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
+                <td>Frequency</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'tddBandwidth' | translate }}</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.tddbandwidth">MHz</td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'uplink.frequency' | translate }}</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.fddUlFrequency">MHz</td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'downlink.frequency' | translate }}</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.fddDlFrequency">MHz</td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'ulBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" style="width: 100px;">
+                    <option value="1.4">1.4</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'dlBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth" style="width: 100px;">
+                    <option value="1.4">1.4</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '0'">
+                <td>{{ 'mimoNum' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.mimoNumber4G" style="width: 100px;">
+                    <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                      <option value=3>3</option>
+                      <option value=4>4</option>
+                    </ng-container>
+                    <ng-template #otherMimoNumber4G>
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                      <option value=4>4</option>
+                      <option value=8>8</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'subcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.tddscs" style="width: 100px;" >
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                    <option value=120>120</option>
+                  </select>kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'scsBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth" style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth" style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth" style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth" style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '120'">
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                  </select>
+                  MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulMimolayer' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulMimoLayer" style="width: 100px;" >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlMimolayer' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlMimoLayer" style="width: 100px;" >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ULModulationCodingScheme' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulModulationCodScheme" style="width: 150px;" >
+                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+                      <option value="64QAM-table">64QAM</option>
+                      <option value="256QAM-table">256QAM</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-container>
+                    <ng-template #othterUlModulationCodScheme>
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'DLModulationCodingScheme' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlModulationCodScheme" style="width: 150px;" >
+                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+                      <option value="64QAM-table">64QAM</option>
+                      <option value="256QAM-table">256QAM</option>
+                      <option value="64QAM-Low-SE">64QAM-Low-SE</option>
+                    </ng-container>
+                    <ng-template #othterUlModulationCodScheme>
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulSubcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulScs" style="width: 100px;" >
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                    <option value=120>120</option>
+                  </select>
+                  kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '120'">
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                  </select>
+                  MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlSubcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlScs" style="width: 100px;" >
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                    <option value=120>120</option>
+                  </select>
+                  kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth" style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '120'">
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                  </select>
+                  MHz
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </mat-expansion-panel>
       
@@ -963,10 +1280,7 @@
   </table>
 </ng-template>
 
-<!-- ------------------------------------------------------------------------- -->
-<!-- ------------------------------------------------------------------------- -->
-<!-- ------------------------------------------------------------------------- -->
-<ng-template #RfModal>
+<!-- <ng-template #RfModal>
     <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
     <ul class="highset">
       <li *ngIf="planningIndex == '3'">
@@ -1014,8 +1328,6 @@
         <label *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">{{ 'tddBandwidth' | translate }}</label>
         <input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
       </li>
-
-      <!-- WiFi only -->
       <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
         {{ 'wifiProtocol' | translate }} 
         <mat-radio-group [(ngModel)]="bsListRfParam[svgId].wifiProtocol" aria-label="Select an option">
@@ -1038,10 +1350,6 @@
           <option value="3x3">3x3</option>
         </select>
       </li>
-
-      <!-- 0.0 -->
-      <!-- 0.0 -->
-
       <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'" >
         {{ 'uplink.frequency' | translate }} 
         <input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency">
@@ -1093,19 +1401,7 @@
           <option value="4">4</option>
           <option value="8">8</option>
         </select>
-        
       </li>
-      <!-- <li class="mt-2" *ngIf="calculateForm.objectiveIndex === '1'">
-        {{ 'scalingFactor' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].scalingFact" style="width: 100px;" >
-          <option value="1">1</option>
-          <option value="0.8">0.8</option>
-          <option value="0.75">0.75</option>
-          <option value="0.4">0.4</option>
-        </select>
-      </li> -->
-
-      <!-- TDD -->
       <li class="mt-2" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
         {{ 'subcarrier' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 100px;" >
@@ -1162,9 +1458,6 @@
           <option value="400">400</option>
         </select>
       </li>
-      <!-- --- -->
-      <!-- FDD -->
-      <!-- --- -->
       <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
         {{ 'dlBandwidth' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;">
@@ -1185,7 +1478,6 @@
           <option value="20">20</option>
         </select>
       </li>
-      <!-- 5G FDD -->
       <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
         {{ 'dlSubcarrier' | translate }}
         <select [(ngModel)]="bsListRfParam[svgId].dlScs" style="width: 100px;" >
@@ -1298,13 +1590,10 @@
           <option value="400">400</option>
         </select>
       </li>
-      <!-- ------------------------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------ -->
-      <!-- ------------------------------------------------------------------ -->
     </ul>
-</ng-template>
+</ng-template> -->
 
-<ng-template #RfModalTable *ngIf="calculateForm.isSimulation === true">
+<ng-template #RfModalTable *ngIf="planningIndex == '3'">
   <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
   <table class="rfParamTable">
     <!------------------------------>

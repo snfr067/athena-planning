@@ -301,12 +301,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   duplexMode = "fdd";
   dlRatio = 70;
   scalingFactor = 1;
-  // mimoNumber4G = '1';
-  // ulFrequency = "3500";
-  // dlFrequency = "3500";
-  // wifiProtocol = "0";
-  // guardInterval = "0";
-  // mimoNum = "0";
+  tempCalParamSet = {
+    txpower: 0,
+    beampattern: 0,
+    fddDlFrequency: 2400,
+    fddUlFrequency: 2400,
+    ulModulationCodScheme: "64QAM-table",
+    dlModulationCodScheme: "64QAM-table",
+    dlMimoLayer: '1',
+    ulMimoLayer: '1',
+    tddscs: '15',
+    tddbandwidth: 5,
+    tddfrequency: 2400,
+    dlScs: '15',
+    ulScs: '15',
+    dlBandwidth: '5',
+    ulBandwidth: '5',
+    // subcarrier: 15,
+    scsBandwidth: 0,
+    mimoNumber4G: '1',
+    // wifiProtocol: 'wifi4',
+    // guardInterval: '400ns',
+    // wifiMimo: '1x1',
+    // wifiBandwidth: 20
+  }
 
   
   /** click外部取消moveable */
@@ -417,6 +435,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
               this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
               this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
+              if (this.calculateForm.isSimulation) {
+                this.planningIndex = '3';
+              } else {
+                this.planningIndex = '1';
+              }
 
               const sinrAry = [];
               output['sinrMap'].map(v => {
@@ -472,6 +495,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
 
             } else {
+              if (this.calculateForm.isSimulation) {
+                this.planningIndex = '3';
+              } else {
+                this.planningIndex = '1';
+              }
               this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
@@ -512,13 +540,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.initData(false, false);
       }
       
-      setTimeout(()=> {
-        if (this.calculateForm.defaultBs !== "") {
-          this.planningIndex = '3';
-        } else {
-          this.planningIndex = '1';
-        }
-      }, 500);
+      // setTimeout(()=> {
+      //   if (this.calculateForm.defaultBs !== "") {
+      //     this.planningIndex = '3';
+      //     console.log('Simulation')
+      //   } else {
+      //     this.planningIndex = '1';
+      //     console.log('Calculation')
+      //   }
+      // }, 1000);
     }
   }
 
@@ -907,13 +937,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         ulScs: '15',
         dlBandwidth: '5',
         ulBandwidth: '5',
-
         subcarrier: 15,
         scsBandwidth: 0,
-
         //4G Only
         mimoNumber4G: '1',
-
         //Wifi
         wifiProtocol: 'wifi4',
         guardInterval: '400ns',
