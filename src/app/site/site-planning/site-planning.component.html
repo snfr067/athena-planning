@@ -415,6 +415,10 @@
                 <td>Frequency</td>
                 <td><input type="text" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
               </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'scalingFactor' | translate }}</td>
+                <td><input type="text" [(ngModel)]="scalingFactor"></td>
+              </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'tddBandwidth' | translate }}</td>
                 <td><input type="text" [(ngModel)]="tempCalParamSet.tddbandwidth">MHz</td>
@@ -818,6 +822,11 @@
                 <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd' && planningIndex == '3'">
                   <p>{{ 'upDownRatio' | translate }}	</p>
                   {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
+                  <p>{{ 'scalingFactor' | translate }}	</p>
+                  <input type="text" [(ngModel)]="scalingFactor">
                 </li>
 
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
