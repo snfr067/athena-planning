@@ -378,6 +378,39 @@
           <h5 *ngIf="planningIndex == '2'">wifiFrequency</h5>
           <table *ngIf="planningIndex !== '3'" class="tempCalParamTable">
             <tbody>
+              <tr>
+                <td>{{ 'planning.net' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="calculateForm.objectiveIndex" (change)="changeWifiFrequency()">
+                    <option value="0">4G</option>
+                    <option value="1">5G</option>
+                    <option value="2">Wifi</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>{{ 'duplex' | translate }}</td>
+                <td>
+                  <mat-radio-group [(ngModel)]="duplexMode" (ngModelChange)="clearAll('bsAndCand')">
+                    <mat-radio-button value="tdd">TDD</mat-radio-button>
+                    <mat-radio-button value="fdd">FDD</mat-radio-button>
+                  </mat-radio-group>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd'">
+                <td>{{ 'upDownRatio' | translate }}</td>
+                <td>
+                  {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                </td>
+              </tr>
+              <tr>
+                <td>{{ 'powerRange' | translate }}</td>
+                <td>
+                  <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
+                  ~
+                  <input [(ngModel)]="calculateForm.powerMaxRange" type="text" placeholder="{{ 'powerMaxRange' | translate }}">dBm
+                </td>
+              </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
                 <td>Frequency</td>
                 <td><input type="text" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
@@ -439,7 +472,7 @@
                   </select>
                 </td>
               </tr>
-              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'subcarrier' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.tddscs" style="width: 100px;" >
@@ -729,7 +762,7 @@
                     </li>
                   </ul>
                 </li>
-                <li>
+                <li *ngIf="planningIndex == '3'">
                   <p>{{ 'planning.net' | translate }}	</p>
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="changeWifiFrequency()">
                     <option value="0">4G</option>
@@ -737,8 +770,7 @@
                     <option value="2">Wifi</option>
                   </select>
                 </li>
-                <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
-                  <!-- 5G -->
+                <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
                   <li>
                     <p>{{ 'subcarrier' | translate }}	</p>
                     <select [(ngModel)]="subcarrier" style="width: 100px;" >
@@ -748,9 +780,9 @@
                       <option value="120">120</option>
                     </select>
                   </li>
-                </ng-container>
+                </ng-container> -->
 
-                <li *ngIf="calculateForm.objectiveIndex != '2'">
+                <li *ngIf="calculateForm.objectiveIndex != '2' && planningIndex == '3'">
                   <p>{{ 'duplex' | translate }}	</p>
                   <mat-radio-group [(ngModel)]="duplexMode" (ngModelChange)="clearAll('bsAndCand')">
                     <mat-radio-button value="tdd">TDD</mat-radio-button>
@@ -783,7 +815,7 @@
                   </select>
                 </li> -->
 
-                <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd'">
+                <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd' && planningIndex == '3'">
                   <p>{{ 'upDownRatio' | translate }}	</p>
                   {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </li>
@@ -899,7 +931,7 @@
                   </span>
                 </li> -->
 
-                <li>
+                <li *ngIf="calculateForm.objectiveIndex == '2'">
                   <p>{{ 'powerRange' | translate }}</p>
                   <span>
                     <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
