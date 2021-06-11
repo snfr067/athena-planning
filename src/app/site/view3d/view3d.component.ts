@@ -175,21 +175,7 @@ export class View3dComponent implements OnInit {
       obstacle.rotation.z = Math.PI / 2;
       // console.log(item)
       if (item.rotate !== 0) {
-        // if (item.rotate < 0) {
-          
-        // }
         obstacle.rotation.y = item.rotate * (Math.PI / 180);
-        // console.log(item.rotate)
-        if (item.rotate < 0 || item.rotate > 90) {
-          obstacle.position.z = item.y + offsetZ - (obstacle.rotation.y);
-        } else {
-          obstacle.position.z = item.y + offsetZ + 7;
-        }
-        obstacle.position.x = item.x + offsetX + 2;
-        // console.log(item.rotate, obstacle.rotation.y, obstacle.position.z)
-        // obstacle.rotate(obstacleData[3], item.rotate);
-        // obstacle.addRotation(item.rotate, 0, 0);
-        
       }
       
       obstacle.material = obstacleMat;
@@ -487,7 +473,8 @@ export class View3dComponent implements OnInit {
   genUlThroughputMapData(zIndex) {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['ulThroughputMax'] - this.result['ulThroughputMin'];
-    for (let j = 0; j < this.height; j++) {
+    if (this.result['gaResult'].ulThroughputMap != null && this.result['gaResult'].ulThroughputMap.length > 0) {
+      for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
             if (typeof this.result['gaResult'].ulThroughputMap[i][j] === 'undefined') {
@@ -517,7 +504,9 @@ export class View3dComponent implements OnInit {
                 colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
             }
         }
+      }
     }
+    
     return colorMap;
   }
 
@@ -527,38 +516,41 @@ export class View3dComponent implements OnInit {
    */
   genDlThroughputMapData(zIndex) {
     const colorMap = new Uint8Array(this.width * this.height * 3);
-    const totalDelta = this.result['dlThroughputMax'] - this.result['dlThroughputMin'];
-    for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.width; i++) {
-            const n = (j * this.width + i) * 3;
-            if (typeof this.result['gaResult'].dlThroughputMap[i][j] === 'undefined') {
-              continue;
-            }
-            const value = this.result['gaResult'].dlThroughputMap[i][j][zIndex];
-            const offset = (value - this.result['dlThroughputMin']) / totalDelta;
-            if (offset < 0.25) {
-                const mixRatio = offset / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
-            } else if (offset < 0.5) {
-                const mixRatio = (offset - 0.25) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-            } else if (offset < 0.75) {
-                const mixRatio = (offset - 0.5) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
-            } else {
-                const mixRatio = (offset - 0.75) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
-            }
-        }
+    if (this.result['gaResult'].dlThroughputMap != null && this.result['gaResult'].dlThroughputMap.length > 0) {
+      const totalDelta = this.result['dlThroughputMax'] - this.result['dlThroughputMin'];
+      for (let j = 0; j < this.height; j++) {
+          for (let i = 0; i < this.width; i++) {
+              const n = (j * this.width + i) * 3;
+              if (typeof this.result['gaResult'].dlThroughputMap[i][j] === 'undefined') {
+                continue;
+              }
+              const value = this.result['gaResult'].dlThroughputMap[i][j][zIndex];
+              const offset = (value - this.result['dlThroughputMin']) / totalDelta;
+              if (offset < 0.25) {
+                  const mixRatio = offset / 0.25;
+                  colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+              } else if (offset < 0.5) {
+                  const mixRatio = (offset - 0.25) / 0.25;
+                  colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+              } else if (offset < 0.75) {
+                  const mixRatio = (offset - 0.5) / 0.25;
+                  colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+              } else {
+                  const mixRatio = (offset - 0.75) / 0.25;
+                  colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+              }
+          }
+      }
     }
+    
     return colorMap;
   }
 

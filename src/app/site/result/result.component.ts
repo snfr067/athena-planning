@@ -526,8 +526,8 @@ export class ResultComponent implements OnInit {
     const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
     let ulmsc = this.calculateForm.ulMcsTable;
     let dlmsc = this.calculateForm.dlMcsTable;
-    const ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
-    const dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
+    const ulMcsTable = (ulmsc != null) ? ulmsc.substring(1,(ulmsc.length)-1).split(',') : [];
+    const dlMcsTable = (dlmsc != null) ? dlmsc.substring(1,(dlmsc.length)-1).split(',') : [];
     const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
     const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
     let dlScs = [];
