@@ -371,11 +371,11 @@
           <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
             <input type="text" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
-          <h5 *ngIf="planningIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</h5>
-          <h5 *ngIf="planningIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</h5>
-          <h5 *ngIf="planningIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</h5>
-          <h5 *ngIf="planningIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</h5>
-          <h5 *ngIf="planningIndex == '2'">wifiFrequency</h5>
+          <p class="block" *ngIf="planningIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex == '2'">wifiFrequency</p>
           <table *ngIf="planningIndex !== '3'" class="tempCalParamTable">
             <tbody>
               <tr>
@@ -1154,7 +1154,7 @@
                           <option value="7">ITU commercial 900MHz</option>
                           <option value="8">ITU commercial 1.2~1.3, 1.8~2, 4GHz</option>
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
-                          <option value="1000">{{ 'planning.user_define' | translate }}</option>
+                          <!-- <option value="1000">{{ 'planning.user_define' | translate }}</option> -->
                         </ng-template>
                       </select>
                     </span>
@@ -1210,7 +1210,7 @@
       
 
 
-      <mat-expansion-panel>
+      <mat-expansion-panel *ngIf="0">
         <mat-expansion-panel-header>
           <mat-panel-title>{{ 'planning.algorithm' | translate }}</mat-panel-title>
         </mat-expansion-panel-header>
@@ -1766,7 +1766,7 @@
       <tr>
         <td>{{ 'subcarrier' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 100px;" >
+          <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 175px;" >
             <option value=15>15</option>
             <option value=30>30</option>
             <option value=60>60</option>
@@ -1778,7 +1778,7 @@
       <tr>
         <td>{{ 'scsBandwidth' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '15'">
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs === '15'">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
@@ -1788,7 +1788,7 @@
             <option value="40">40</option>
             <option value="50">50</option>
           </select>
-          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '30'">
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs === '30'">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
@@ -1803,7 +1803,7 @@
             <option value="90">90</option>
             <option value="100">100</option>
           </select>
-          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '60'">
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs === '60'">
             <option value="10">10</option>
             <option value="15">15</option>
             <option value="20">20</option>
@@ -1818,19 +1818,19 @@
             <option value="100">100</option>
             <option value="200">200</option>
           </select>
-          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '120'">
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs === '120'">
             <option value="50">50</option>
             <option value="100">100</option>
             <option value="200">200</option>
             <option value="400">400</option>
           </select>
-          MHz
         </td>
+        MHz
       </tr>
       <tr>
         <td>{{ 'ulMimolayer' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
+          <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 175px;" >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="4">4</option>
@@ -1841,7 +1841,7 @@
       <tr>
         <td>{{ 'dlMimolayer' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
+          <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 175px;" >
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="4">4</option>
@@ -1852,7 +1852,7 @@
       <tr>
         <td>{{ 'ULModulationCodingScheme' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 150px;" >
+          <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 175px;" >
             <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
               <option value="64QAM-table">64QAM</option>
               <option value="256QAM-table">256QAM</option>
@@ -1869,7 +1869,7 @@
       <tr>
         <td>{{ 'DLModulationCodingScheme' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 150px;" >
+          <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 175px;" >
             <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
               <option value="64QAM-table">64QAM</option>
               <option value="256QAM-table">256QAM</option>

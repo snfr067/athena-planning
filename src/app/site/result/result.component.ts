@@ -624,6 +624,7 @@ export class ResultComponent implements OnInit {
 
   /** export PDF */
   async exportPDF() {
+    console.log(this.calculateForm.isSimulation)
     this.pdf.export(this.taskId, this.isHst);
   }
 

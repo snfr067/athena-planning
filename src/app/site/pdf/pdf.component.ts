@@ -163,6 +163,7 @@ export class PdfComponent implements OnInit {
             }
           }
 
+          console.log(this.calculateForm.isSimulation)
           this.zValues = JSON.parse(this.calculateForm.zValue);
           window.setTimeout(() => {
             this.propose.calculateForm = this.calculateForm;
