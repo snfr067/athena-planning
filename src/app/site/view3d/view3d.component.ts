@@ -359,25 +359,13 @@ export class View3dComponent implements OnInit {
             const value = this.result['gaResult'].connectionMapAll[i][j][zIndex];
             const offset = (value + 1) / blockCount;
             if (offset < 0.25) {
-                const mixRatio = offset / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - 255) + 255;
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - 255) + 255;
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - 255) + 255;
-            } else if (offset < 0.5) {
-                const mixRatio = (offset - 0.25) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-            } else if (offset < 0.75) {
-                const mixRatio = (offset - 0.5) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+                colorMap[n] = 12;
+                colorMap[n + 1] = 51;
+                colorMap[n + 2] = 131;
             } else {
-                const mixRatio = (offset - 0.75) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+                colorMap[n] = 217;
+                colorMap[n + 1] = 30;
+                colorMap[n + 2] = 30;
             }
         }
     }
@@ -481,7 +469,7 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].ulThroughputMap[i][j][zIndex];
-            const offset = (value - this.result['ulThroughputMin']) / totalDelta;
+            const offset = value / 1200;
             if (offset < 0.25) {
                 const mixRatio = offset / 0.25;
                 colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
@@ -525,7 +513,7 @@ export class View3dComponent implements OnInit {
                 continue;
               }
               const value = this.result['gaResult'].dlThroughputMap[i][j][zIndex];
-              const offset = (value - this.result['dlThroughputMin']) / totalDelta;
+              const offset = value / 1200;
               if (offset < 0.25) {
                   const mixRatio = offset / 0.25;
                   colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
