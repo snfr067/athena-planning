@@ -25,7 +25,7 @@
 	"sinrMap": "訊號品質圖",
 	"connectionMap": "訊號覆蓋圖",
 	"rsrpMap": "訊號強度圖",
-	"candidateBs": "新增AP",
+	"candidateBs": "新增BS",
 	"bsPower": "發射功率",
 	"signalStrength": "訊號強度",
 	"isAverageSinr": "強化整體場域內整體訊號品質",
@@ -230,6 +230,7 @@
 	"deleteCancel": "取消",
 
 	"bs": "基地台",
-	"parameterSetting": "基地台參數設定"
+	"parameterSetting": "基地台參數設定",
+	"wifiParam": "wifi參數設定"
 
 }

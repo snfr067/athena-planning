@@ -371,11 +371,11 @@
           <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
             <input type="text" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
-          <p class="block" *ngIf="planningIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
-          <p class="block" *ngIf="planningIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
-          <p class="block" *ngIf="planningIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</p>
-          <p class="block" *ngIf="planningIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</p>
-          <p class="block" *ngIf="planningIndex == '2'">wifiFrequency</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '2'">{{ 'wifiParam' | translate }}</p>
           <table *ngIf="planningIndex !== '3'" class="tempCalParamTable">
             <tbody>
               <tr>
