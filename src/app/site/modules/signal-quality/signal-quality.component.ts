@@ -49,6 +49,8 @@ export class SignalQualityComponent implements OnInit {
   showObstacle = 'visible';
   /** AP顯示 */
   showCandidate = true;
+  /** BS顯示 */
+  showBs = 'visible';
   /** slide */
   opacityValue: number = 0.8;
   /** AP */
@@ -330,6 +332,7 @@ export class SignalQualityComponent implements OnInit {
     traces.push(trace);
 
     // 現有基站
+    // if (0) {
     if (this.calculateForm.defaultBs !== '') {
       const list = this.calculateForm.defaultBs.split('|');
       const cx = [];
@@ -352,7 +355,14 @@ export class SignalQualityComponent implements OnInit {
           x: xdata,
           y: ydata,
           color: 'green',
-          hover: text
+          hover: text,
+          style: {
+            visibility: this.showBs,
+            opacity: 0
+          },
+          circleStyle: {
+            visibility: this.showBs
+          }
         });
 
       }
@@ -624,12 +634,14 @@ export class SignalQualityComponent implements OnInit {
         item['style'] = {
           left: `${pixelXLinear(item.x)}px`,
           bottom: `${pixelYLinear(item.y)}px`,
-          position: 'absolute'
+          position: 'absolute',
+          // visibility: this.showBs
         };
         item['circleStyle'] = {
           left: `${pixelXLinear(item.x) + 15}px`,
           bottom: `${pixelYLinear(item.y) + 25}px`,
-          position: 'absolute'
+          position: 'absolute',
+          // visibility: this.showBs
         };
       }
       // 新增基站
@@ -687,6 +699,18 @@ export class SignalQualityComponent implements OnInit {
   switchShowObstacle(visible) {
     for (const item of this.rectList) {
       item.style['visibility'] = visible;
+    }
+  }
+
+  /**
+   * show/hide BS
+   * @param visible 
+   */
+  switchShowBs(visible) {
+    for (const item of this.defaultBsList) {
+      // console.log(item.style);
+      item.style['visibility'] = visible;
+      item.circleStyle['visibility'] = visible;
     }
   }
 

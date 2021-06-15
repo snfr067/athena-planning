@@ -50,6 +50,8 @@ export class SignalCoverComponent implements OnInit {
   zValue = '1';
   /** 障礙物顯示 */
   showObstacle = 'visible';
+  /** BS顯示 */
+  showBs = 'visible';
   /** AP顯示 */
   showCandidate = true;
   /** slide */
@@ -365,7 +367,14 @@ export class SignalCoverComponent implements OnInit {
           x: xdata,
           y: ydata,
           color: 'green',
-          hover: text
+          hover: text,
+          style: {
+            visibility: this.showBs,
+            opacity: 0
+          },
+          circleStyle: {
+            visibility: this.showBs
+          }
         });
 
       }
@@ -695,6 +704,17 @@ export class SignalCoverComponent implements OnInit {
   switchShowObstacle(visible) {
     for (const item of this.rectList) {
       item.style['visibility'] = visible;
+    }
+  }
+
+  /**
+   * show/hide BS
+   * @param visible 
+   */
+  switchShowBs(visible) {
+    for (const item of this.defaultBsList) {
+      item.style['visibility'] = visible;
+      item.circleStyle['visibility'] = visible;
     }
   }
 

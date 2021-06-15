@@ -179,6 +179,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   };
   /** 當下互動物件的id */
   svgId;
+  svgNum;
   /** 互動物件的真實id，避免互動時id錯亂用 */
   realId;
   /** 互動物件的tooltip */
@@ -1350,8 +1351,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param event 
    * @param svgId 
    */
-  onRightClick(event: MouseEvent, svgId) {
+  onRightClick(event: MouseEvent, svgId, i) {
     this.svgId = svgId;
+    this.svgNum = i+1;
     // preventDefault avoids to show the visualization of the right-click menu of the browser
     event.preventDefault();
     // we record the mouse position in our object

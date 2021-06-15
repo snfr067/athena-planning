@@ -25,6 +25,8 @@ export class SignalDlThroughputComponent implements OnInit {
   result = {};
   /** 障礙物list */
   rectList = [];
+  /** BS顯示 */
+  showBs = 'visible';
   /** AP list */
   candidateList = [];
   /** 現有基站 list */
@@ -320,7 +322,14 @@ export class SignalDlThroughputComponent implements OnInit {
           x: xdata,
           y: ydata,
           color: 'green',
-          hover: text
+          hover: text,
+          style: {
+            visibility: this.showBs,
+            opacity: 0
+          },
+          circleStyle: {
+            visibility: this.showBs
+          }
         });
 
       }
@@ -655,6 +664,17 @@ export class SignalDlThroughputComponent implements OnInit {
   switchShowObstacle(visible) {
     for (const item of this.rectList) {
       item.style['visibility'] = visible;
+    }
+  }
+
+  /**
+   * show/hide BS
+   * @param visible 
+   */
+  switchShowBs(visible) {
+    for (const item of this.defaultBsList) {
+      item.style['visibility'] = visible;
+      item.circleStyle['visibility'] = visible;
     }
   }
 

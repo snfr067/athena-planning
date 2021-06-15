@@ -231,6 +231,9 @@
 	"deleteCancel": "Cancel",
 
 	"bs": "BS",
-	"parameterSetting": "BS Parameter Config"
+	"parameterSetting": "BS Parameter Config",
+	"wifiParam": "WiFi parameter Config",
+	"for": "'s"
+
 
 }

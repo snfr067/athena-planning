@@ -54,6 +54,15 @@
 							</label>
 						</ng-container>
 
+						<ng-container *ngIf="showBsArea">
+							<label class="mL_1 displayType">
+								<!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->
+								<mat-checkbox [(ngModel)]="showBs" [color]="'primary'" (ngModelChange)="switchShowBs()">
+									{{ 'show.candidate' | translate }}
+								</mat-checkbox>
+							</label>
+						</ng-container>
+
 						<ng-container *ngIf="showCandidateArea">
 							<label class="mL_1 displayType">
 								<!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->

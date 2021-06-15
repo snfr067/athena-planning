@@ -147,7 +147,7 @@
     </div> -->
     <div #chart id="chart" style="position: relative;">
       <div #dragArea [ngStyle]="dragStyle">
-        <span *ngFor="let item of obstacleList" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item)" >
+        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
             <g>
             <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/>
@@ -202,7 +202,7 @@
           
         </span>
         
-        <span *ngFor="let item of defaultBSList" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="defaultBS" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item)" >
+        <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="defaultBS" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1"/>
@@ -214,7 +214,7 @@
           </svg>
         </span>
         <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle blue_circle" >{{ (i + 1) }}</span>
-        <span *ngFor="let item of candidateList" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="candidate" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item)" >
+        <span *ngFor="let item of candidateList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="candidate" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" id="canvas_background" height="3" width="25" y="-1" x="-1"/>
@@ -236,7 +236,7 @@
           </svg>
         </span>
         <span *ngFor="let item of candidateList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle pink_circle" >{{ (i + 1) }}</span>
-        <span *ngFor="let item of ueList" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item)" >
+        <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg class="s_ue" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" height="10" width="29" y="-1" x="-1"/>
@@ -1635,7 +1635,7 @@
 </ng-template> -->
 
 <ng-template #RfModalTable *ngIf="planningIndex == '3'">
-  <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
+  <h5 mat-dialog-title>BaseStation {{svgNum}}{{'for' | translate}} {{ 'rfparam.setting' | translate }}</h5>
   <table class="rfParamTable">
     <!------------------------------>
     <!--   TDD              4G    -->

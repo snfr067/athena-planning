@@ -97,12 +97,15 @@ export class ResultComponent implements OnInit {
   showUEArea = false;
   /** 有障礙物 */
   showObstacleArea = false;
+  /** 有BS */
+  showBsArea = false;
   /** 有AP */
   showCandidateArea = false;
   /** 障礙物顯示 */
   showObstacle = true;
   /** AP顯示 */
   showCandidate = true;
+  showBs = true;
   /** slide heatmapw透明度 */
   opacityValue: number = 0.8;
   /** slide heatmapw透明度清單 */
@@ -199,6 +202,7 @@ export class ResultComponent implements OnInit {
         this.isSimulate = this.calculateForm.isSimulation;
         // this.calculateForm.defaultBs = this.calculateForm.bsList;
         if (this.calculateForm.defaultBs !== '') {
+          this.showBsArea = true;
           console.log(this.calculateForm);
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
@@ -822,7 +826,23 @@ export class ResultComponent implements OnInit {
     
   }
 
-  /** ON/OFF 顯示AP */
+  /** ON/OFF 顯示BS */
+  switchShowBs() {
+    const visible = this.showBs ? 'visible' : 'hidden';
+    if (this.chartType === 'SINR') {
+      this.quality.switchShowBs(visible);
+    } else if (this.chartType === 'PCI') {
+      this.cover.switchShowBs(visible);
+    } else if (this.chartType === 'RSRP') {
+      this.strength.switchShowBs(visible);
+    } else if (this.chartType === 'UL_THROUGHPUT') {
+      this.ulThroughputMap.switchShowBs(visible);
+    } else if (this.chartType === 'DL_THROUGHPUT') {
+      this.dlThroughputMap.switchShowBs(visible);
+    }
+  }
+
+  /** ON/OFF 顯示Candidate */
   switchShowCandidate() {
     const visible = this.showCandidate;
     if (this.chartType === 'SINR') {
@@ -836,7 +856,6 @@ export class ResultComponent implements OnInit {
     } else if (this.chartType === 'DL_THROUGHPUT') {
       this.dlThroughputMap.switchShowCandidate(visible);
     }
-    
   }
 
   /** heatmap透明度 */
