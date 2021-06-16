@@ -284,7 +284,7 @@ export class SignalDlThroughputComponent implements OnInit {
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('throughput')}: %{text}Mbps<extra></extra>`,
       // showscale: false,
       opacity: this.opacityValue,
-      zsmooth: 'best',
+      zsmooth: 'fast',
       zmin: 100,
       zmax: 1200,
       colorbar: {

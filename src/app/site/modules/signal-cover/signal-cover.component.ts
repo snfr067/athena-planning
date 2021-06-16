@@ -375,7 +375,7 @@ export class SignalCoverComponent implements OnInit {
       type: 'heatmap',
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('ap.num')}: %{text}<extra></extra>`,
       showscale: false,
-      zsmooth: 'best',
+      zsmooth: 'fast',
       opacity: this.opacityValue
     };
     traces.push(trace);

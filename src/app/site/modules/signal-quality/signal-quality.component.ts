@@ -316,7 +316,7 @@ export class SignalQualityComponent implements OnInit {
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('signal.quality')}: %{text}dB<extra></extra>`,
       // showscale: false,
       opacity: this.opacityValue,
-      zsmooth: 'best',
+      zsmooth: 'fast',
       zmin: -8,
       zmax: 24,
       colorbar: {

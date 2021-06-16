@@ -272,7 +272,7 @@ export class SignalStrengthComponent implements OnInit {
       // showscale: false,
       zmax: -44,
       zmin: -140,
-      zsmooth: 'best',
+      zsmooth: 'fast',
       opacity: this.opacityValue,
       colorbar: {
         autotick: false,
