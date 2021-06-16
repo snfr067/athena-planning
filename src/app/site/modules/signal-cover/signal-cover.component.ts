@@ -258,9 +258,25 @@ export class SignalCoverComponent implements OnInit {
       });
     }
 
+    let hasBS = false;
+    if (this.calculateForm.isSimulation) {
+      if (this.calculateForm.bsList !== '') {
+        hasBS = true;
+      }
+    } else {
+      if (this.calculateForm.candidateBs !== '') {
+        hasBS = true;
+      }
+    }
+
     // 圖區右邊建議基站
-    if (this.calculateForm.candidateBs !== '') {
-      const list = this.calculateForm.candidateBs.split('|');
+    if (hasBS) {
+      let list;
+      if (this.calculateForm.isSimulation) {
+        list = this.calculateForm.bsList.split('|');
+      } else {
+        list = this.calculateForm.candidateBs.split('|');
+      }
       const cx = [];
       const cy = [];
       let k = 1;
