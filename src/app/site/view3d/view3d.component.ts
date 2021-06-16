@@ -4,6 +4,8 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as BABYLON from 'babylonjs';
 import * as Earcut from 'earcut';
 
+declare var Plotly: any;
+
 /**
  * View 3D
  */
@@ -350,6 +352,21 @@ export class View3dComponent implements OnInit {
   genPciMapData(zIndex) {
     const blockCount = this.defaultBs.length + this.result['gaResult'].chosenCandidate.length;
     const colorMap = new Uint8Array(this.width * this.height * 3);
+
+    const ary = [];
+    this.result['gaResult']['connectionMapAll'].map(v => {
+      v.map(m => {
+        m.map(d => {
+          ary.push(d);
+        });
+      });
+    });
+
+    const max = Plotly.d3.max(ary);
+    const min = Plotly.d3.min(ary);
+
+    const totalDelta = max - min;
+    // console.log(totalDelta, max, min)
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
@@ -357,20 +374,39 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].connectionMapAll[i][j][zIndex];
-            const offset = (value + 1) / blockCount;
+            let offset;
+            if (totalDelta === 0) {
+              offset = (value - min);
+            } else {
+              offset = (value - min) / totalDelta;
+            }
+            // const offset = (value + 1) / blockCount;
+            // console.log(value, offset);
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
               colorMap[n + 2] = 255;
             } else if (offset < 0.25) {
-                colorMap[n] = 12;
-                colorMap[n + 1] = 51;
-                colorMap[n + 2] = 131;
-            } else {
-                colorMap[n] = 217;
-                colorMap[n + 1] = 30;
-                colorMap[n + 2] = 30;
-            }
+              const mixRatio = offset / 0.25;
+              colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+              colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+              colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+          } else if (offset < 0.5) {
+              const mixRatio = (offset - 0.25) / 0.25;
+              colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+              colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+              colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+          } else if (offset < 0.75) {
+              const mixRatio = (offset - 0.5) / 0.25;
+              colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+              colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+              colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+          } else {
+              const mixRatio = (offset - 0.75) / 0.25;
+              colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+              colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+              colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+          }
         }
     }
     return colorMap;
@@ -392,12 +428,6 @@ export class View3dComponent implements OnInit {
             const value = this.result['gaResult'].sinrMap[i][j][zIndex];
             const offset = (value - this.result['sinrMin']) / totalDelta;
 
-        //     [0, 'rgb(12,51,131)'],
-        // [0.2, 'rgb(10,136,186)'],
-        // [0.3, 'rgb(136, 224, 53)'],
-        // [0.4, 'rgb(242,211,56)'],
-        // [0.75, 'rgb(242,143,56)'],
-        // [1, 'rgb(217,30,30)'],
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
