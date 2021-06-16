@@ -53,10 +53,10 @@
 	"show.candidate": "顯示基地台",
 	"obstacleInfo": "障礙物",
 	"defaultBs": "現有基站",
-	"import": "匯入",
+	"import": "匯入專案檔",
 	"width": "長",
 	"height": "寬",
-	"wifiFrequency": "Wifi頻率",
+	"wifiFrequency": "WiFi頻率",
 	"pathLossModelId": "預設無線模型",
 	"mctsC": "C 值",
 	"mctsMimo": "天線數",
@@ -231,7 +231,7 @@
 
 	"bs": "基地台",
 	"parameterSetting": "基地台參數設定",
-	"wifiParam": "wifi參數設定",
+	"wifiParam": "wiFi參數設定",
 	"for": "的"
 
 }

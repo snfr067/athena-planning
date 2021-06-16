@@ -2408,7 +2408,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           z: baseStationData[i][2],
           width: this.xLinear(30),
           height: this.yLinear(30),
-          altitude: 50,
+          altitude: baseStationData[i][2],
           rotate: 0,
           title: this.svgMap['defaultBS'].title,
           type: this.svgMap['defaultBS'].type,
@@ -2479,7 +2479,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           z: candidateData[i][2],
           width: this.xLinear(this.candidateWidth),
           height: this.yLinear(this.candidateHeight),
-          altitude: 50,
+          altitude: candidateData[i][2],
           rotate: 0,
           title: this.svgMap['candidate'].title,
           type: this.svgMap['candidate'].type,
@@ -2583,7 +2583,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
             z: ueData[i][2],
             width: this.xLinear(this.ueWidth),
             height: this.yLinear(this.ueHeight),
-            altitude: 50,
+            altitude: ueData[i][2],
             rotate: 0,
             title: this.svgMap['UE'].title,
             type: this.svgMap['UE'].type,
@@ -3013,6 +3013,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         const item = JSON.parse(candidate[i]);
         const id = `candidate_${this.generateString(10)}`;
         this.candidateList.push(id);
+        console.log(item[2]);
         this.dragObject[id] = {
           x: item[0],
           y: item[1],
@@ -3133,7 +3134,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           z: item[2],
           width: this.ueWidth,
           height: this.ueHeight,
-          altitude: 50,
+          altitude: item[2],
           rotate: 0,
           title: this.svgMap['UE'].title,
           type: this.svgMap['UE'].type,
