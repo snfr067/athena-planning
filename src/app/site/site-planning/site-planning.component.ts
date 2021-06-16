@@ -1126,8 +1126,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       title += `${this.translateService.instant('width')}: ${this.dragObject[id].width}<br>`;
       title += `${this.translateService.instant('height')}: ${this.dragObject[id].height}<br>`;
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+    } else if (this.dragObject[id].type === 'defaultBS' || this.dragObject[id].type === 'candidate') {
+      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
     } else {
-      title += `Z: ${this.dragObject[id].z}<br>`;
+      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
     }
     if (this.dragObject[id].type === 'obstacle') {
       title += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(this.dragObject[id].material)}`;

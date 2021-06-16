@@ -1287,7 +1287,8 @@
 <ng-template #materialModal2>
   <h5 *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp" mat-dialog-title>{{ 'altitude.setting' | translate }} / {{ 'material.setting' | translate }} </h5>
   <ng-template #otherTypeTemp>
-    <h5 mat-dialog-title>{{ 'altitude.setting' | translate }}</h5>
+    <h5 *ngIf="dragObject[svgId].type === 'obstacle' || dragObject[svgId].type === 'UE'" mat-dialog-title>{{ 'altitude.setting' | translate }}</h5>
+    <h5 *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" mat-dialog-title>BS {{svgNum}}{{'for' | translate}} {{ 'altitude.setting' | translate }}</h5>
   </ng-template>
   <table class="altParamTable">
     <tbody>
@@ -2109,7 +2110,7 @@
 <ng-template #deleteModal>
   <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
   <div mat-dialog-content>
-    <p>{{ 'deletePara' | translate }}</p>
+    <p>{{ 'deletePara' | translate }} BS{{ svgNum }}?</p>
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
