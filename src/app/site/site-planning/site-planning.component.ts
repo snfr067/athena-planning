@@ -1662,7 +1662,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 現有基站
       for (let i = 0; i < this.defaultBSList.length; i++) {
         const obj = this.dragObject[this.defaultBSList[i]];
-        defaultBs += `[${obj.x},${obj.y},${obj.z}]`;
+        defaultBs += `[${obj.x},${obj.y},${obj.altitude}]`;
+        // defaultBs += `[${obj.x},${obj.y},${obj.z}]`;
         if (i < this.defaultBSList.length - 1) {
           defaultBs += '|';
         }
@@ -1751,7 +1752,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       if (this.candidateList.length > 0) {
         for (let i = 0; i < this.candidateList.length; i++) {
           const canObj = this.dragObject[this.candidateList[i]];
-          candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
+          candidate += `[${canObj.x},${canObj.y},${canObj.altitude}]`;
+          // candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
           if (i < this.candidateList.length - 1) {
             candidate += '|';
           }
@@ -2137,7 +2139,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].z, this.dragObject[item].material,
+        this.dragObject[item].altitude, this.dragObject[item].material,
         this.dragObject[item].color,
         this.bsListRfParam[item].txpower,
         this.bsListRfParam[item].beampattern,
@@ -2176,7 +2178,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].z, this.dragObject[item].material,
+        this.dragObject[item].altitude, this.dragObject[item].material,
         this.dragObject[item].color,
         //4g 5g tdd
         this.tempCalParamSet.tddfrequency,
