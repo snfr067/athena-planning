@@ -191,11 +191,11 @@ export class SignalCoverComponent implements OnInit {
             zText[i][yIndex] = [];
           }
           zData[i][yIndex][xIndex] = yData[i];
-          if (yData[i] == null) {
-            console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
-            console.log(item);
-          }
-          
+          // if (yData[i] == null) {
+          //   console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
+          //   // console.log(item);
+          // }
+
           zText[i][yIndex][xIndex] = `BS ${(Math.round(yData[i] * 100) / 100)}`;
           yIndex++;
           allZ[i].push(yData[i]);
@@ -315,7 +315,11 @@ export class SignalCoverComponent implements OnInit {
         for (let i = 0; i < zLen; i++) {
           let yIndex = 0;
           for (const yData of item) {
-            zText[i][yIndex][xIndex] = apMap[yData[i]];
+            if (typeof apMap[yData[i]] === 'undefined') {
+              zText[i][yIndex][xIndex] = '無';
+            } else {
+              zText[i][yIndex][xIndex] = apMap[yData[i]];
+            }
             yIndex++;
           }
         }
