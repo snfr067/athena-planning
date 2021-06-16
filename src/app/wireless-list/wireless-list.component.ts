@@ -66,6 +66,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
   confirmAdd: TemplateRef<any>;
 
   ngOnInit(): void {
+    
     this.matDialogConfig = new MatDialogConfig();
     this.matDialogConfig.autoFocus = false;
     this.msgDialogConfig = new MatDialogConfig();
@@ -78,8 +79,10 @@ export class WirelessListComponent implements OnInit, OnDestroy {
     this.http.get(`${this.authService.API_URL}/history/${this.authService.userId}/${this.authService.userToken}`).subscribe(
       res => {
         this.hstList = res['history'];
+        this.authService.spinnerHide();
       }, err => {
         console.log(err);
+        this.authService.spinnerHide();
       }
     );
   }
@@ -101,12 +104,14 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       this.http.get(`${this.authService.API_URL}/taskList/${this.authService.userId}/${this.authService.userToken}`).subscribe(
         res => {
           this.taskList = res;
+          this.authService.spinnerHide();
           window.clearTimeout(this.timeInterval);
           this.timeInterval = window.setTimeout(() => {
             this.getList();
           }, 5000);
         }, err => {
           console.log(err);
+          this.authService.spinnerHide();
           this.router.navigate(['/logon']);
         }
       );

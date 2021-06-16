@@ -43,8 +43,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         } else {
           // login fail
           this.showMsg = true;
+          this.authService.spinnerHide();
         }
-        this.authService.spinnerHide();
       },
       err => {
         this.authService.spinnerHide();
