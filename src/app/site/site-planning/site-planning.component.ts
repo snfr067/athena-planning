@@ -1403,8 +1403,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   /**
    * 開啟RF設定燈箱
   */
-  openRfParamSetting(item) {
+  openRfParamSetting(item, i, isNav) {
     this.svgId = item;
+    if (isNav) {
+      this.svgNum = i + 1;
+    } else {
+      this.svgNum = i;
+    }
     // console.log(this.svgId);
     // console.log(item);
     // this.matDialog.open(this.rfModal);

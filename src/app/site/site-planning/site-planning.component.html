@@ -302,7 +302,7 @@
         </ng-container>
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
-      <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
       <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
     </ng-template>
   </mat-menu>
@@ -1026,7 +1026,7 @@
               <ul>
                 <li>
                   <ol>
-                    <li *ngFor="let item of defaultBSList">
+                    <li *ngFor="let item of defaultBSList; let i = index;">
                       <span>
                         <label>X</label>
                         <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
@@ -1051,7 +1051,7 @@
                         <label>Frequency</label>
                         <input type="text" [(ngModel)]="bsListRfParam[item].frequency" (change)="changeTxBfFreq(item)">
                       </span> -->
-                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item)">{{ 'rfParamLink' | translate }}</button>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
                       <!-- <span (click)="openRfParamSetting(item)">
                         <span class="material-icons">{{ 'rfParamLink' | translate }}</span>
                       </span> -->
