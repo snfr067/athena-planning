@@ -327,6 +327,8 @@ export class StatisticsComponent implements OnInit {
       });
     }
 
+    console.log(traces);
+
     Plotly.newPlot(id, {
       data: traces,
       layout: layout,

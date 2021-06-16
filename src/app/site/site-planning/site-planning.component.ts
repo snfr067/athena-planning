@@ -989,6 +989,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       height: height
     };
 
+    // console.log(this.calculateForm.altitude);
+
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
@@ -2041,6 +2043,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.candidateList.length = 0;
     }
   }
+
+  /**
+   * 切換tdd fdd 4G 5G時補上參數
+   * @param type 物件類別
+   */
+  changeProtoOrDuplex() {
+    console.log(this.bsListRfParam);
+    if (this.calculateForm.objectiveIndex == '1') {
+      if (this.duplexMode == 'tdd') {
+
+      } else {
+
+      }
+    } else {
+      if (this.duplexMode == 'tdd') {
+
+      } else {
+
+      }
+    }
+  }
+
 
   /**
    * View 3D
