@@ -343,18 +343,35 @@ export class SignalCoverComponent implements OnInit {
       }
     }
 
+    let allZero = true;
+    for (const item of zData[zValues.indexOf(Number(this.zValue))]) {
+      for (const d of item) {
+        if (d != null && d !== 0) {
+          allZero = false;
+        }
+      }
+    }
+
+    let colorscale = [
+      ['0', 'rgb(12,51,131)'],
+      ['0.25', 'rgb(10,136,186)'],
+      ['0.5', 'rgb(242,211,56)'],
+      ['0.75', 'rgb(242,143,56)'],
+      ['1', 'rgb(217,30,30)']
+    ];
+    if (allZero) {
+      colorscale = [
+        ['0', 'rgb(12,51,131)'],
+        ['1', 'rgb(12,51,131)']
+      ];
+    }
+
     const trace = {
       x: x,
       y: y,
       z: zData[zValues.indexOf(Number(this.zValue))],
       text: zText[zValues.indexOf(this.zValue)],
-      colorscale: [
-        ['0.0', 'rgb(12,51,131)'],
-        ['0.25', 'rgb(10,136,186)'],
-        ['0.5', 'rgb(242,211,56)'],
-        ['0.75', 'rgb(242,143,56)'],
-        ['1', 'rgb(217,30,30)'],
-      ],
+      colorscale: colorscale,
       type: 'heatmap',
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('ap.num')}: %{text}<extra></extra>`,
       showscale: false,
