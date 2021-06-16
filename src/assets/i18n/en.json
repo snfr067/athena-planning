@@ -213,7 +213,7 @@
 	"ap.num": "connection target",
 	"confirm.delete": "Are You sure to delete",
 	"delete.fail": "delete failed!",
-	"planning.algorithm.model": "Wifi model",
+	"planning.algorithm.model": "Show Chwan Hospital model",
 	"signal.quality": "Signal quality",
 	"file": "select map file",
 	"nofile": "file name",
