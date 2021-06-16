@@ -48,7 +48,7 @@ export class SiteInfoComponent implements OnInit {
     } else if (Number(type) === 1) {
       return '5G';
     } else if (Number(type) === 2) {
-      return 'Wifi';
+      return 'WiFi';
     }
   }
 

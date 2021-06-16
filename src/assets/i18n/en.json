@@ -56,7 +56,7 @@
 	"import": "Import",
 	"width": "Width",
 	"height": "Length",
-	"wifiFrequency": "Wifi frequency",
+	"wifiFrequency": "WiFi frequency",
 	"pathLossModelId": "Default pathloss model",
 	"mctsC": "C value",
 	"mctsMimo": "MIMO number",
