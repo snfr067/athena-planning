@@ -1039,10 +1039,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.moveable.ngOnInit();
       window.setTimeout(() => {
         this.setDragData();
-        this.moveNumber(this.svgId);
         this.hoverObj = this.target;
         this.setLabel();
       }, 100);
+
+      window.setTimeout(() => {
+        this.moveNumber(this.svgId);
+      }, 0);
       
     }, 0);
 
