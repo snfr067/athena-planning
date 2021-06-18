@@ -285,6 +285,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   pgInterval = 0;
   /** 英文亂數用 */
   characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  /** 移動前紀錄物件 */
+  ognDragObject;
+  /** 移動過程產生error */
+  moveError = false;
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -827,7 +831,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     window.setTimeout(() => {
       this.live = true;
     }, 0);
-
+    this.moveError = false;
     let color;
     let width = 30;
     let height = 30;
@@ -1063,6 +1067,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     window.setTimeout(() => {
       this.live = true;
     }, 0);
+    this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
     this.realId = _.cloneDeep(id);
@@ -1189,7 +1194,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param e 
    */
   dragStart(e: any) {
-    // e.bounds = this.bounds;
+    if (this.svgId !== this.realId) {
+      this.svgId = _.cloneDeep(this.realId);
+    }
+    // 紀錄移動前位置
+    this.moveError = false;
+    this.ognDragObject = _.cloneDeep(this.dragObject[this.svgId]);
   }
 
   /**
@@ -1201,23 +1211,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
     }
-    this.target = target;
-    this.frame.set('left', `${left}px`);
-    this.frame.set('top', `${top}px`);
-    this.frame.set('z-index', 9999999);
-    this.setTransform(target);
-    
-    this.spanStyle[this.svgId].left = `${left}px`;
-    this.spanStyle[this.svgId].top = `${top}px`;
+    try {
+      this.target = target;
+      this.frame.set('left', `${left}px`);
+      this.frame.set('top', `${top}px`);
+      this.frame.set('z-index', 9999999);
+      this.setTransform(target);
+      
+      this.spanStyle[this.svgId].left = `${left}px`;
+      this.spanStyle[this.svgId].top = `${top}px`;
 
-    this.setDragData();
-    if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate') {
-      this.circleStyle[this.svgId] = {
-        top: `${top - 20}px`,
-        left: `${left + 20}px`
-      };
+      this.setDragData();
+      if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate') {
+        this.circleStyle[this.svgId] = {
+          top: `${top - 20}px`,
+          left: `${left + 20}px`
+        };
+      }
+      this.setLabel();
+    } catch (error) {
+      console.log(error);
+      // 發生error，onEnd還原位置
+      this.moveError = true;
     }
-    this.setLabel();
+    
   }
 
   /**
@@ -1326,6 +1343,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         // 其他障礙物有時會跟著動，keep住
         this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
       }
+    }
+    if (this.moveError) {
+      // 移動過程error，回到移動前位置
+      this.dragObject[this.svgId] = _.cloneDeep(this.ognDragObject);
+      this.spanStyle[this.svgId] = _.cloneDeep(this.ognSpanStyle[this.svgId]);
     }
     this.moveClick(this.target.id);
   }
@@ -2831,6 +2853,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (typeof item[7] !== 'undefined') {
           shape = this.parseElement(item[7]);
         }
+        console.log(shape)
         const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
         
         this.dragObject[id] = {
@@ -3394,13 +3417,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param type 形狀
    */
   parseShape(type) {
-    if (type === '0') {
+    if (type.toString() === '0') {
       return 'rect';
-    } else if (type === '2') {
+    } else if (type.toString() === '2') {
       return 'ellipse';
-    } else if (type === '1') {
+    } else if (type.toString() === '1') {
       return 'polygon';
-    } else if (type === '3') {
+    } else if (type.toString() === '3') {
       return 'trapezoid';
     } else {
       return type;
