@@ -439,7 +439,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               if (this.calculateForm.isSimulation) {
                 this.planningIndex = '3';
               } else {
-                this.planningIndex = '1';
+                if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                  this.planningIndex = '1';
+                } else {
+                  this.planningIndex = '2';
+                }
               }
 
               const sinrAry = [];
@@ -499,13 +503,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               if (this.calculateForm.isSimulation) {
                 this.planningIndex = '3';
               } else {
-                this.planningIndex = '1';
+                if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                  this.planningIndex = '1';
+                } else {
+                  this.planningIndex = '2';
+                }
               }
               this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
             }
             this.zValues = JSON.parse(this.calculateForm.zValue);
+            
 
             console.log(this.calculateForm);
             if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
@@ -1581,7 +1590,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (this.planningIndex === '1') {
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
-      this.calculateForm.isUeTpByDistance = false;
+      this.calculateForm.isUeCoverage = false;
     } else {
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;
@@ -1591,7 +1600,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       isCoverage: this.calculateForm.isCoverage,
       isUeAvgSinr: this.calculateForm.isUeAvgSinr,
       isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
-      isUeTpByDistance: this.calculateForm.isUeTpByDistance
+      isUeCoverage: this.calculateForm.isUeCoverage
     };
     sessionStorage.setItem('planningObj', JSON.stringify(planningObj));
   }
@@ -1612,6 +1621,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     if (typeof this.calculateForm.isUeAvgThroughput === 'undefined') {
       this.calculateForm.isUeAvgThroughput = false;
+    }
+    if (typeof this.calculateForm.isUeCoverage === 'undefined') {
+      this.calculateForm.isUeCoverage = false;
     }
     if (typeof this.calculateForm.isUeTpByDistance === 'undefined') {
       this.calculateForm.isUeTpByDistance = false;
@@ -2930,8 +2942,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           txpower: txpower[i],
           beampattern: beamId[i],
           // frequency: frequencyList[i],
-          ulModulationCodScheme: "64QAM-table",
-          dlModulationCodScheme: "64QAM-table",
+          // ulModulationCodScheme: "64QAM-table",
+          // dlModulationCodScheme: "64QAM-table",
           mimoLayer: 1,
           // scalingFact: 1,
           subcarrier: 15,
@@ -2966,8 +2978,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (this.calculateForm.mapProtocol === '5g') {
           let ulmsc = this.calculateForm.ulMcsTable;
           let dlmsc = this.calculateForm.dlMcsTable;
-          this.bsListRfParam[id].ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
-          this.bsListRfParam[id].dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
+          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
+          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
+          console.log(this.bsListRfParam[id].dlMcsTable);
           this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
           this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
           this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();

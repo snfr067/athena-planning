@@ -32,13 +32,14 @@ export class CalculateForm {
   availableNewBsNumber: number = 0;
   addFixedBsNumber: number = 0;
   
-
+  //Field related target
   isAverageSinr = true;
   sinrRatio: number = 5;
   isAvgThroughput = false;
   throughputRatio: number = 5;
   isCoverage: boolean = false;
   coverageRatio: number = 0.95;
+  //UE related target
   isUeCoverage = false;
   ueCoverageRatio: number = 0.95;
   isUeAvgSinr: boolean = true;

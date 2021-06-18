@@ -28,7 +28,7 @@ export class SiteInfoComponent implements OnInit {
     isCoverage: false,
     isUeAvgSinr: false,
     isUeAvgThroughput: false,
-    isUeTpByDistance: false
+    isUeCoverage: false
   };
 
   ngOnInit(): void {
