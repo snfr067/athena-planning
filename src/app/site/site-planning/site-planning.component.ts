@@ -1181,14 +1181,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
     }
 
-    const moveableOrigin = document.querySelector('.moveable-origin').getBoundingClientRect();
-    const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
-    const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
-
-    this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
-    this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
-    this.dragObject[this.svgId].width = wVal;
-    this.dragObject[this.svgId].height = hVal;
+    const mOrigin = document.querySelector('.moveable-origin');
+    if (mOrigin != null) {
+      // 有找到中心點
+      const moveableOrigin = mOrigin.getBoundingClientRect();
+      const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
+      const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+  
+      this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
+      this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
+      this.dragObject[this.svgId].width = wVal;
+      this.dragObject[this.svgId].height = hVal;
+    }
+    
   }
 
   /**
