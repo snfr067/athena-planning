@@ -286,7 +286,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   /** 英文亂數用 */
   characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   /** 移動前紀錄物件 */
-  ognDragObject;
+  ognDragObject = {};
   /** 移動過程產生error */
   moveError = false;
   /** 畫圖物件 */
@@ -1028,6 +1028,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
 
     window.setTimeout(() => {
       this.target = document.getElementById(`${this.svgId}`);
@@ -1087,6 +1088,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
 
     this.live = true;
     if (this.dragObject[id].type === 'obstacle') {
@@ -1199,7 +1201,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     // 紀錄移動前位置
     this.moveError = false;
-    this.ognDragObject = _.cloneDeep(this.dragObject[this.svgId]);
+    this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
   }
 
   /**
@@ -1346,8 +1348,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
     if (this.moveError) {
       // 移動過程error，回到移動前位置
-      this.dragObject[this.svgId] = _.cloneDeep(this.ognDragObject);
+      this.dragObject[this.svgId] = _.cloneDeep(this.ognDragObject[this.svgId]);
       this.spanStyle[this.svgId] = _.cloneDeep(this.ognSpanStyle[this.svgId]);
+    } else {
+      this.ognSpanStyle[this.svgId] = _.cloneDeep(this.spanStyle[this.svgId]);
+      this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
     }
     this.moveClick(this.target.id);
   }
@@ -1566,6 +1571,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.authService.spinnerShowAsHome();
       console.log(this.calculateForm.bandwidth);
       console.log(this.calculateForm.frequency);
+
+      // 障礙物計算時若莫名移動，還原位置
+      for (const item of this.obstacleList) {
+        if (this.dragObject[item].x !== this.ognDragObject[item].x
+          || this.dragObject[item].y !== this.ognDragObject[item].y) {
+            this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
+            this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
+          }
+      }
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
@@ -2814,6 +2828,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.setSubcarrier();
     }
 
+    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
+
   }
 
   /**
@@ -2853,7 +2870,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         if (typeof item[7] !== 'undefined') {
           shape = this.parseElement(item[7]);
         }
-        console.log(shape)
         const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
         
         this.dragObject[id] = {
@@ -3194,6 +3210,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       }
       this.changeWifiFrequency();
     }
+
+    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
 
   }
 
