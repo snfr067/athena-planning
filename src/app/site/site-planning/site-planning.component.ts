@@ -285,6 +285,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   pgInterval = 0;
   /** 英文亂數用 */
   characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  /** 移動前紀錄物件 */
+  ognDragObject = {};
+  /** 移動過程產生error */
+  moveError = false;
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -839,7 +843,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     window.setTimeout(() => {
       this.live = true;
     }, 0);
-
+    this.moveError = false;
     let color;
     let width = 30;
     let height = 30;
@@ -1036,6 +1040,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
 
     window.setTimeout(() => {
       this.target = document.getElementById(`${this.svgId}`);
@@ -1075,6 +1080,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     window.setTimeout(() => {
       this.live = true;
     }, 0);
+    this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
     this.realId = _.cloneDeep(id);
@@ -1094,6 +1100,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
 
     this.live = true;
     if (this.dragObject[id].type === 'obstacle') {
@@ -1186,14 +1193,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
     }
 
-    const moveableOrigin = document.querySelector('.moveable-origin').getBoundingClientRect();
-    const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
-    const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
-
-    this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
-    this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
-    this.dragObject[this.svgId].width = wVal;
-    this.dragObject[this.svgId].height = hVal;
+    const mOrigin = document.querySelector('.moveable-origin');
+    if (mOrigin != null) {
+      // 有找到中心點
+      const moveableOrigin = mOrigin.getBoundingClientRect();
+      const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
+      const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+  
+      this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
+      this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
+      this.dragObject[this.svgId].width = wVal;
+      this.dragObject[this.svgId].height = hVal;
+    }
+    
   }
 
   /**
@@ -1201,7 +1213,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param e 
    */
   dragStart(e: any) {
-    // e.bounds = this.bounds;
+    if (this.svgId !== this.realId) {
+      this.svgId = _.cloneDeep(this.realId);
+    }
+    // 紀錄移動前位置
+    this.moveError = false;
+    this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
   }
 
   /**
@@ -1213,23 +1230,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
     }
-    this.target = target;
-    this.frame.set('left', `${left}px`);
-    this.frame.set('top', `${top}px`);
-    this.frame.set('z-index', 9999999);
-    this.setTransform(target);
-    
-    this.spanStyle[this.svgId].left = `${left}px`;
-    this.spanStyle[this.svgId].top = `${top}px`;
+    try {
+      this.target = target;
+      this.frame.set('left', `${left}px`);
+      this.frame.set('top', `${top}px`);
+      this.frame.set('z-index', 9999999);
+      this.setTransform(target);
+      
+      this.spanStyle[this.svgId].left = `${left}px`;
+      this.spanStyle[this.svgId].top = `${top}px`;
 
-    this.setDragData();
-    if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate') {
-      this.circleStyle[this.svgId] = {
-        top: `${top - 20}px`,
-        left: `${left + 20}px`
-      };
+      this.setDragData();
+      if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate') {
+        this.circleStyle[this.svgId] = {
+          top: `${top - 20}px`,
+          left: `${left + 20}px`
+        };
+      }
+      this.setLabel();
+    } catch (error) {
+      console.log(error);
+      // 發生error，onEnd還原位置
+      this.moveError = true;
     }
-    this.setLabel();
+    
   }
 
   /**
@@ -1338,6 +1362,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         // 其他障礙物有時會跟著動，keep住
         this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
       }
+    }
+    if (this.moveError) {
+      // 移動過程error，回到移動前位置
+      this.dragObject[this.svgId] = _.cloneDeep(this.ognDragObject[this.svgId]);
+      this.spanStyle[this.svgId] = _.cloneDeep(this.ognSpanStyle[this.svgId]);
+    } else {
+      this.ognSpanStyle[this.svgId] = _.cloneDeep(this.spanStyle[this.svgId]);
+      this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
     }
     this.moveClick(this.target.id);
   }
@@ -1556,6 +1588,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.authService.spinnerShowAsHome();
       console.log(this.calculateForm.bandwidth);
       console.log(this.calculateForm.frequency);
+
+      // 障礙物計算時若莫名移動，還原位置
+      for (const item of this.obstacleList) {
+        if (this.dragObject[item].x !== this.ognDragObject[item].x
+          || this.dragObject[item].y !== this.ognDragObject[item].y) {
+            this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
+            this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
+          }
+      }
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
@@ -2824,6 +2865,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.setSubcarrier();
     }
 
+    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
+
   }
 
   /**
@@ -3206,6 +3250,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.changeWifiFrequency();
     }
 
+    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+    this.ognDragObject = _.cloneDeep(this.dragObject);
+
   }
 
   /** 運算結果 */
@@ -3428,13 +3475,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param type 形狀
    */
   parseShape(type) {
-    if (type === '0') {
+    if (type.toString() === '0') {
       return 'rect';
-    } else if (type === '2') {
+    } else if (type.toString() === '2') {
       return 'ellipse';
-    } else if (type === '1') {
+    } else if (type.toString() === '1') {
       return 'polygon';
-    } else if (type === '3') {
+    } else if (type.toString() === '3') {
       return 'trapezoid';
     } else {
       return type;

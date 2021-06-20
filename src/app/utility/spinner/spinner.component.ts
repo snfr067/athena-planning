@@ -25,6 +25,10 @@ export class SpinnerComponent {
   show() {
     this.showCal = false;
     this.showLoad = true;
+    const percentageVal = document.getElementById('percentageVal');
+    if (percentageVal != null) {
+      percentageVal.innerHTML = '0';
+    }
     this.spinner.show();
   }
 
@@ -38,6 +42,10 @@ export class SpinnerComponent {
     this.showLoad = false;
     this.showCal = true;
     this.showHome = true;
+    const percentageVal = document.getElementById('percentageVal');
+    if (percentageVal != null) {
+      percentageVal.innerHTML = '0';
+    }
     this.spinner.show();
   }
 
@@ -45,6 +53,10 @@ export class SpinnerComponent {
   showCalculating() {
     this.showLoad = false;
     this.showCal = true;
+    const percentageVal = document.getElementById('percentageVal');
+    if (percentageVal != null) {
+      percentageVal.innerHTML = '0';
+    }
     this.spinner.show();
   }
 
