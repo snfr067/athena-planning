@@ -179,6 +179,8 @@
 	"result.propose": "建議方案",
 	"result.propose.wait_select_1": "待選基站位置",
 	"result.propose.wait_select_2": "(共{0}處)",
+	"result.propose.defaultBs": "既有基站",
+	"result.propose.candidateBs": "待選基站",
 	"result.propose.candidateBs.num": "基站編號",
 	"result.propose.candidateBs.x": "X座標",
 	"result.propose.candidateBs.y": "Y座標",

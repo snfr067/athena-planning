@@ -428,7 +428,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.calculateForm = this.formService.setHstToForm(result);
               // this.calculateForm.defaultBs = output['defaultBs'];
               // this.calculateForm.bsList = output['defaultBs'];
-              console.log(this.calculateForm);
+              this.calculateForm.availableNewBsNumber = this.calculateForm.availableNewBsNumber - this.calculateForm.defaultBs.split('|').length;
+              
+              
               this.hstOutput['gaResult'] = {};
               this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
               this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
@@ -509,6 +511,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
                   this.planningIndex = '2';
                 }
               }
+              this.calculateForm.availableNewBsNumber = this.calculateForm.availableNewBsNumber - this.calculateForm.defaultBs.split('|').length;
               this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
@@ -1557,6 +1560,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       // 規劃目標
       this.setPlanningObj();
 
+      let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
+
+      apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
+
       console.log(this.calculateForm);
       let url = '';
       if (this.planningIndex !== '3') {
@@ -1567,7 +1574,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.calculateForm.isSimulation = true;
       }
 
-      this.http.post(url, JSON.stringify(this.calculateForm)).subscribe(
+      console.log(this.calculateForm);
+
+      this.http.post(url, JSON.stringify(apiBody)).subscribe(
         res => {
           this.taskid = res['taskid'];
           const percentageVal = document.getElementById('percentageVal');
@@ -1726,41 +1735,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     let wifiMimo = []; //Array
     
     if(this.defaultBSList.length > 0 || this.candidateList.length > 0) {
-      for (let i = 0; i < this.defaultBSList.length; i++) {
-        const obj = this.bsListRfParam[this.defaultBSList[i]];
-        console.log(`obj: ${JSON.stringify(obj)}`)
-        txpower.push(obj.txpower);
-        beamId.push(obj.beampattern);
-        // freqList.push(obj.frequency);
-        
-        if (mapProtocol !== 'wifi') {
-          if (mapProtocol === '5g') {
-            ulMcsTable.push(obj.ulModulationCodScheme);
-            dlMcsTable.push(obj.dlModulationCodScheme);
-            ulMimoLayer.push(obj.ulMimoLayer);
-            dlMimoLayer.push(obj.dlMimoLayer);
-            scs.push(obj.tddscs);
-            // scs.push(obj.subcarrier);
-          } else {
-            mimoNumber.push(obj.mimoNumber4G);
-          }
-          if (duplex === 'tdd') {
-            bandwidthList.push(obj.tddbandwidth);
-            frequencyList.push(obj.tddfrequency);
-          } else {
-            dlFrequency.push(obj.fddDlFrequency);
-            ulFrequency.push(obj.fddUlFrequency);
-            dlScs.push(obj.dlScs);
-            ulScs.push(obj.ulScs);
-            dlBandwidth.push(obj.dlBandwidth);
-            ulBandwidth.push(obj.ulBandwidth);
-          }
-        } else {
-          guardInterval.push(obj.guardInterval);
-          wifiProtocol.push(obj.wifiProtocol);
-          wifiMimo.push(obj.wifiMimo);
-        }
-      }
 
       let candidate = '';
       this.calculateForm.candidateBs = candidate;
@@ -1804,12 +1778,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               ulScs.push(this.tempCalParamSet.ulScs);
               dlBandwidth.push(this.tempCalParamSet.dlBandwidth);
               ulBandwidth.push(this.tempCalParamSet.ulBandwidth);
-              // dlFrequency.push(obj.fddDlFrequency);
-              // ulFrequency.push(obj.fddUlFrequency);
-              // dlScs.push(obj.dlScs);
-              // ulScs.push(obj.ulScs);
-              // dlBandwidth.push(obj.dlBandwidth);
-              // ulBandwidth.push(obj.ulBandwidth);
             }
           } else {
             // guardInterval.push(this.tempCalParamSet.guardInterval);
@@ -1823,6 +1791,42 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
           }
         }
         this.calculateForm.candidateBs = candidate;
+      }
+
+      for (let i = 0; i < this.defaultBSList.length; i++) {
+        const obj = this.bsListRfParam[this.defaultBSList[i]];
+        console.log(`obj: ${JSON.stringify(obj)}`)
+        txpower.push(obj.txpower);
+        beamId.push(obj.beampattern);
+        // freqList.push(obj.frequency);
+        
+        if (mapProtocol !== 'wifi') {
+          if (mapProtocol === '5g') {
+            ulMcsTable.push(obj.ulModulationCodScheme);
+            dlMcsTable.push(obj.dlModulationCodScheme);
+            ulMimoLayer.push(obj.ulMimoLayer);
+            dlMimoLayer.push(obj.dlMimoLayer);
+            scs.push(obj.tddscs);
+            // scs.push(obj.subcarrier);
+          } else {
+            mimoNumber.push(obj.mimoNumber4G);
+          }
+          if (duplex === 'tdd') {
+            bandwidthList.push(obj.tddbandwidth);
+            frequencyList.push(obj.tddfrequency);
+          } else {
+            dlFrequency.push(obj.fddDlFrequency);
+            ulFrequency.push(obj.fddUlFrequency);
+            dlScs.push(obj.dlScs);
+            ulScs.push(obj.ulScs);
+            dlBandwidth.push(obj.dlBandwidth);
+            ulBandwidth.push(obj.ulBandwidth);
+          }
+        } else {
+          guardInterval.push(obj.guardInterval);
+          wifiProtocol.push(obj.wifiProtocol);
+          wifiMimo.push(obj.wifiMimo);
+        }
       }
 
       //API body
@@ -2259,11 +2263,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
     // bs parameters
     const bsData = [
-      ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio'],
+      ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
+      'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
       // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
       [
         this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
-        this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio
+        this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio,
+        this.calculateForm.isAverageSinr,this.calculateForm.isCoverage,
+        this.calculateForm.isAvgThroughput,this.calculateForm.isUeAvgSinr,
+        this.calculateForm.isUeAvgThroughput,this.calculateForm.isUeCoverage
         // this.calculateForm.beamMaxId, this.calculateForm.beamMinId,
         //  this.calculateForm.bandwidth, this.calculateForm.frequency
       ]
@@ -2766,6 +2774,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.calculateForm.objectiveIndex = bsParametersData[1][2];
       this.duplexMode = bsParametersData[1][3];
       this.dlRatio = Number(bsParametersData[1][4]);
+      this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
+      this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
+      this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][8]);
+      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][9]);
+      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][10]);
+      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
+        this.planningIndex = '1';
+      } else {
+        this.planningIndex = '2';
+      }
+      
       // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
       // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
       // this.calculateForm.bandwidth = bsParametersData[1][4];
@@ -2923,104 +2943,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       }
     }
     
-      // defaultBs
-    console.log(this.calculateForm);
-    this.calculateForm.defaultBs = this.calculateForm.bsList;
-    if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
-      const defaultBS = this.calculateForm.defaultBs.split('|');
-      const txpower = JSON.parse(this.calculateForm.txPower);
-      const beamId = JSON.parse(this.calculateForm.beamId);
-      // this.dlRatio = this.calculateForm.tddFrameRatio;
-      const defaultBSLen = defaultBS.length;
-      for (let i = 0; i < defaultBSLen; i++) {
-        const item = JSON.parse(defaultBS[i]);
-        const id = `defaultBS_${this.generateString(10)}`;
-        this.defaultBSList.push(id);
-        //20210521
-
-        this.bsListRfParam[id] = {
-          txpower: txpower[i],
-          beampattern: beamId[i],
-          // frequency: frequencyList[i],
-          // ulModulationCodScheme: "64QAM-table",
-          // dlModulationCodScheme: "64QAM-table",
-          mimoLayer: 1,
-          // scalingFact: 1,
-          subcarrier: 15,
-          scsBandwidth: 10,
-        };
-        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
-          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
-          
-        }
-        if (this.calculateForm.duplex === 'fdd') {
-          this.duplexMode = 'fdd';
-          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
-          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
-          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
-          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
-          // console.log(this.bsListRfParam[id].dlScs);
-          // console.log(this.bsListRfParam[id].dlBandwidth);
-          // console.log(this.bsListRfParam[id].ulScs);
-          // console.log(this.bsListRfParam[id].ulBandwidth);
-        } else {
-          this.duplexMode = 'tdd';
-          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
-          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-        }
-        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
-          // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-        }
-        if (this.calculateForm.mapProtocol === '4g') {
-          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
-        }
-        if (this.calculateForm.mapProtocol === '5g') {
-          let ulmsc = this.calculateForm.ulMcsTable;
-          let dlmsc = this.calculateForm.dlMcsTable;
-          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
-          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
-          console.log(this.bsListRfParam[id].dlMcsTable);
-          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
-          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
-          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
-          // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
-          // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
-          this.scalingFactor = this.calculateForm.scalingFactor;
-        }
-        this.dragObject[id] = {
-          x: item[0],
-          y: item[1],
-          z: item[2],
-          width: 30,
-          height: 30,
-          altitude: item[2],
-          rotate: 0,
-          title: this.svgMap['defaultBS'].title,
-          type: this.svgMap['defaultBS'].type,
-          color: this.DEFAULT_BS_COLOR,
-          material: '0',
-          element: 'defaultBS'
-        };
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - 30 - this.pixelYLinear(item[1])}px`,
-          width: `30px`,
-          height: `30px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: 30,
-          height: 30
-        };
-        this.pathStyle[id] = {
-          fill: this.dragObject[id].color
-        };
-        window.setTimeout(() => {
-          this.moveNumber(id);
-        }, 0);
-      }
-    }
+    
     // candidate
     if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
       const candidate = this.calculateForm.candidateBs.split('|');
@@ -3136,6 +3059,104 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         // }
       }
       
+    }
+
+    // defaultBs
+    this.calculateForm.defaultBs = this.calculateForm.bsList;
+    if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
+      const defaultBS = this.calculateForm.defaultBs.split('|');
+      const txpower = JSON.parse(this.calculateForm.txPower);
+      const beamId = JSON.parse(this.calculateForm.beamId);
+      // this.dlRatio = this.calculateForm.tddFrameRatio;
+      const defaultBSLen = defaultBS.length;
+      for (let i = 0; i < defaultBSLen; i++) {
+        const item = JSON.parse(defaultBS[i]);
+        const id = `defaultBS_${this.generateString(10)}`;
+        this.defaultBSList.push(id);
+        //20210521
+
+        this.bsListRfParam[id] = {
+          txpower: txpower[i],
+          beampattern: beamId[i],
+          // frequency: frequencyList[i],
+          // ulModulationCodScheme: "64QAM-table",
+          // dlModulationCodScheme: "64QAM-table",
+          mimoLayer: 1,
+          // scalingFact: 1,
+          subcarrier: 15,
+          scsBandwidth: 10,
+        };
+        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
+          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
+          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          
+        }
+        if (this.calculateForm.duplex === 'fdd') {
+          this.duplexMode = 'fdd';
+          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
+          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
+          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
+          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
+          // console.log(this.bsListRfParam[id].dlScs);
+          // console.log(this.bsListRfParam[id].dlBandwidth);
+          // console.log(this.bsListRfParam[id].ulScs);
+          // console.log(this.bsListRfParam[id].ulBandwidth);
+        } else {
+          this.duplexMode = 'tdd';
+          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
+          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+        }
+        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
+          // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+        }
+        if (this.calculateForm.mapProtocol === '4g') {
+          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+        }
+        if (this.calculateForm.mapProtocol === '5g') {
+          let ulmsc = this.calculateForm.ulMcsTable;
+          let dlmsc = this.calculateForm.dlMcsTable;
+          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
+          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
+          console.log(this.bsListRfParam[id].dlMcsTable);
+          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
+          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
+          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
+          // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
+          // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
+          this.scalingFactor = this.calculateForm.scalingFactor;
+        }
+        this.dragObject[id] = {
+          x: item[0],
+          y: item[1],
+          z: item[2],
+          width: 30,
+          height: 30,
+          altitude: item[2],
+          rotate: 0,
+          title: this.svgMap['defaultBS'].title,
+          type: this.svgMap['defaultBS'].type,
+          color: this.DEFAULT_BS_COLOR,
+          material: '0',
+          element: 'defaultBS'
+        };
+        this.spanStyle[id] = {
+          left: `${this.pixelXLinear(item[0])}px`,
+          top: `${this.chartHeight - 30 - this.pixelYLinear(item[1])}px`,
+          width: `30px`,
+          height: `30px`
+        };
+        this.svgStyle[id] = {
+          display: 'inherit',
+          width: 30,
+          height: 30
+        };
+        this.pathStyle[id] = {
+          fill: this.dragObject[id].color
+        };
+        window.setTimeout(() => {
+          this.moveNumber(id);
+        }, 0);
+      }
     }
     
     // UE

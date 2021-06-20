@@ -99,7 +99,7 @@
 										<th>{{ 'mimoNum' | translate }}</th>
 									</tr>
 									<tr *ngFor="let item of defaultBSList4gTdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['frequency'] }}</td>
@@ -107,7 +107,7 @@
 										<td class="choose">{{ item['mimoNumber'] }}</td>
 									</tr>
 									<tr *ngFor="let item of candidateTable4gTdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['frequency'] }}</td>
@@ -125,7 +125,7 @@
 										<th>{{ 'mimoNum' | translate }}</th>
 									</tr>
 									<tr *ngFor="let item of defaultBSList4gFdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>
@@ -135,7 +135,7 @@
 										<td class="choose">{{ item['mimoNumber'] }}</td>
 									</tr>
 									<tr *ngFor="let item of candidateTable4gFdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>
@@ -159,7 +159,7 @@
 										<th>{{ 'dlMimolayer' | translate }}</th>
 									</tr>
 									<tr *ngFor="let item of defaultBSList5gTdd let i = index" [attr.data-index]="i">
-										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['frequency'] }}</td>
@@ -171,7 +171,7 @@
 										<td class="choose">{{ item['dlMimoLayer'] }}</td>
 									</tr>
 									<tr *ngFor="let item of candidateTable5gTdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['frequency'] }}</td>
@@ -199,7 +199,7 @@
 										<th>{{ 'dlMimolayer' | translate }}</th>
 									</tr>
 									<tr *ngFor="let item of defaultBSList5gFdd let i = index" [attr.data-index]="i">
-										<td class="choose">{{ i+1 }}</td>
+										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>
@@ -215,7 +215,7 @@
 										<td class="choose">{{ item['dlMimoLayer'] }}</td>
 									</tr>
 									<tr *ngFor="let item of candidateTable5gFdd; let i = index" [attr.data-index]="i">
-										<td class="choose">{{ item['num'] }}</td>
+										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['ulFrequency'] }}</td>
