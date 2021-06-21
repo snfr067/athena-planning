@@ -445,7 +445,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               if (this.calculateForm.isSimulation) {
                 this.planningIndex = '3';
               } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
                   this.planningIndex = '1';
                 } else {
                   this.planningIndex = '2';
@@ -509,7 +510,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               if (this.calculateForm.isSimulation) {
                 this.planningIndex = '3';
               } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
                   this.planningIndex = '1';
                 } else {
                   this.planningIndex = '2';
@@ -1660,9 +1662,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     if (typeof this.calculateForm.isAverageSinr === 'undefined') {
       this.calculateForm.isAverageSinr = false;
     }
-    if (typeof this.calculateForm.isAvgThroughput === 'undefined') {
-      this.calculateForm.isAvgThroughput = false;
-    }
+    // if (typeof this.calculateForm.isAvgThroughput === 'undefined') {
+    //   this.calculateForm.isAvgThroughput = false;
+    // }
     if (typeof this.calculateForm.isCoverage === 'undefined') {
       this.calculateForm.isCoverage = false;
     }
@@ -2305,13 +2307,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     // bs parameters
     const bsData = [
       ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
-      'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+      'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+      // 'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
       // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
       [
         this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
         this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio,
         this.calculateForm.isAverageSinr,this.calculateForm.isCoverage,
-        this.calculateForm.isAvgThroughput,this.calculateForm.isUeAvgSinr,
+        this.calculateForm.isUeAvgSinr,
         this.calculateForm.isUeAvgThroughput,this.calculateForm.isUeCoverage
         // this.calculateForm.beamMaxId, this.calculateForm.beamMinId,
         //  this.calculateForm.bandwidth, this.calculateForm.frequency
@@ -2817,11 +2820,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       this.dlRatio = Number(bsParametersData[1][4]);
       this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
       this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
-      this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][8]);
-      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][9]);
-      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][10]);
-      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
+      // this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
+      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
+      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
+      // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
         this.planningIndex = '1';
       } else {
         this.planningIndex = '2';
@@ -3364,16 +3368,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   /** 規劃目標切換 */
   changePlanningIndex() {
     // 設定預設值
-    // console.log(this.planningIndex);
     if (this.planningIndex === '1') {
-      this.clearAll('defaultBS');
-      // this.clearAllDrag();
+      // this.clearAll('defaultBS');
       if (!this.calculateForm.isAverageSinr && !this.calculateForm.isCoverage) {
         this.calculateForm.isAverageSinr = true;
       }
     } else if (this.planningIndex === '2') {
-      this.clearAll('defaultBS');
-      // this.clearAllDrag();
+      // this.clearAll('defaultBS');
       if (!this.calculateForm.isUeAvgSinr 
         && !this.calculateForm.isUeAvgThroughput 
         && !this.calculateForm.isUeTpByDistance) {
@@ -3382,7 +3383,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     } else {
       this.clearAll('candidate');
       // this.clearAllDrag();
-      // console.log('simulation');
     }
   }
 

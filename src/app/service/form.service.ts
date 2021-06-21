@@ -89,7 +89,7 @@ export class FormService {
     calculateForm.isUeCoverage = JSON.parse(result['isuecoverage']);
     calculateForm.isCoverage = JSON.parse(result['iscoverage']);
     calculateForm.isAverageSinr = JSON.parse(result['isaveragesinr']);
-    calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
+    // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     return calculateForm;
   }

@@ -345,9 +345,9 @@
             <mat-checkbox [(ngModel)]="calculateForm.isCoverage" matTooltip="{{ 'isCoverage.tooltip' | translate }}">
               {{ 'isCoverage' | translate }}
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
               {{ 'isAverageThroughput' | translate }}
-            </mat-checkbox>
+            </mat-checkbox> -->
           </div>
 
           <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
@@ -2119,7 +2119,9 @@
 <ng-template #deleteModal>
   <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
   <div mat-dialog-content>
-    <p>{{ 'deletePara' | translate }} BS{{ svgNum }}?</p>
+    <p *ngIf="dragObject[svgId].type === 'defaultBS'">{{ 'deletePara' | translate }} {{ 'defaultBs' | translate }}{{ svgNum }}?</p>
+    <p *ngIf="dragObject[svgId].type === 'candidate'">{{ 'deletePara' | translate }} {{ 'result.propose.candidateBs' | translate }}{{ svgNum }}?</p>
+    <p *ngIf="dragObject[svgId].type !== 'defaultBS' && dragObject[svgId].type !== 'candidate'">{{ 'deletePara' | translate }}?</p>
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
