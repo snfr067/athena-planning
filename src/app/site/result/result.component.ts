@@ -215,8 +215,11 @@ export class ResultComponent implements OnInit {
           const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
           let ulmsc = this.calculateForm.ulMcsTable;
           let dlmsc = this.calculateForm.dlMcsTable;
-          const ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
-          const dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
+          let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+          ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+          let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
+          dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+          console.log(ulMcsTable);
           const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
           const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
           if (this.calculateForm.objectiveIndex == '1') {
@@ -481,10 +484,11 @@ export class ResultComponent implements OnInit {
     const x = [];
     const y = [];
     const text = [];
+    let candidateBs = [];
     // const color = [];
 
     if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
-      const candidateBs = this.calculateForm.candidateBs.split('|');
+      candidateBs = this.calculateForm.candidateBs.split('|');
       for (let i = 0; i < candidateBs.length; i++) {
         const candidate = JSON.parse(candidateBs[i]);
         numMap[candidate] = index;
@@ -530,8 +534,10 @@ export class ResultComponent implements OnInit {
     const ulFrequency = JSON.parse(this.calculateForm.ulFrequency);
     let ulmsc = this.calculateForm.ulMcsTable;
     let dlmsc = this.calculateForm.dlMcsTable;
-    const ulMcsTable = (ulmsc != null) ? ulmsc.substring(1,(ulmsc.length)-1).split(',') : [];
-    const dlMcsTable = (dlmsc != null) ? dlmsc.substring(1,(dlmsc.length)-1).split(',') : [];
+    let ulMcsTable = (ulmsc != null) ? ulmsc.substring(1,(ulmsc.length)-1).split(',') : [];
+    let dlMcsTable = (dlmsc != null) ? dlmsc.substring(1,(dlmsc.length)-1).split(',') : [];
+    // ulMcsTable = ulMcsTable.slice(candidateBs.length-1);
+    // dlMcsTable = dlMcsTable.slice(candidateBs.length-1);
     const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
     const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
     let dlScs = [];
