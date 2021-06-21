@@ -16,6 +16,7 @@ import { MsgDialogComponent } from '../../utility/msg-dialog/msg-dialog.componen
 import { FormService } from '../../service/form.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartService } from '../../service/chart.service';
+import { AbsoluteSourceSpan } from '@angular/compiler';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
@@ -289,6 +290,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   ognDragObject = {};
   /** 移動過程產生error */
   moveError = false;
+  bgdivStyle = {
+    width: '0px',
+    height: '0px',
+    'z-index': '0',
+    position: 'absolute',
+    top: 0,
+    left: 0
+  };
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -507,6 +516,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
 
             } else {
+              console.log(res)
+              this.calculateForm = res['input'];
+
               if (this.calculateForm.isSimulation) {
                 this.planningIndex = '3';
               } else {
@@ -518,7 +530,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
                 }
               }
               this.calculateForm.availableNewBsNumber = this.calculateForm.availableNewBsNumber - this.calculateForm.defaultBs.split('|').length;
-              this.calculateForm = res['input'];
+              // this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
             }
@@ -1039,6 +1051,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       }
     });
 
+    // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
+    this.bgdivStyle.width = `${window.innerWidth}px`;
+    this.bgdivStyle.height = `${window.innerHeight}px`;
+    this.bgdivStyle['z-index'] = `999999999999`;
+
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
@@ -1054,12 +1071,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         this.moveable.rotatable = false;
         this.moveable.resizable = false;
       }
-
+      this.dragObject[this.svgId].y = this.yLinear(this.target.getBoundingClientRect().top);
       this.moveable.ngOnInit();
       window.setTimeout(() => {
         this.setDragData();
         this.hoverObj = this.target;
+        // 障礙物若莫名移動，還原位置
+        this.backObstacle();
         this.setLabel();
+        // 還原蓋子
+        this.bgdivStyle.width = `0px`;
+        this.bgdivStyle.height = `0px`;
+        this.bgdivStyle['z-index'] = `0`;
       }, 100);
 
       window.setTimeout(() => {
@@ -1196,6 +1219,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
 
     const mOrigin = document.querySelector('.moveable-origin');
+    console.log(mOrigin)
     if (mOrigin != null) {
       // 有找到中心點
       const moveableOrigin = mOrigin.getBoundingClientRect();
@@ -3485,6 +3509,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
       return 'trapezoid';
     } else {
       return type;
+    }
+  }
+
+  /** 障礙物若莫名移動，還原位置 */
+  backObstacle() {
+    for (const item of this.obstacleList) {
+      if (this.dragObject[item].x !== this.ognDragObject[item].x
+        || this.dragObject[item].y !== this.ognDragObject[item].y) {
+          this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
+          this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
+        }
     }
   }
 

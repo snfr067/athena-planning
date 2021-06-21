@@ -172,6 +172,44 @@ export class SignalCoverComponent implements OnInit {
     }
     this.chartId = id;
 
+    const defaultBs = [];
+    // 現有基站
+    if (this.calculateForm.defaultBs !== '') {
+      const list = this.calculateForm.defaultBs.split('|');
+      const cx = [];
+      const cy = [];
+      const ctext = [];
+      for (const item of list) {
+        const oData = JSON.parse(item);
+        defaultBs.push(oData);
+        const xdata = oData[0];
+        const ydata = oData[1];
+        const zdata = oData[2];
+        cx.push(xdata);
+        cy.push(ydata);
+
+        const text = `${this.translateService.instant('defaultBs')}
+        X: ${xdata}
+        Y: ${ydata}
+        ${this.translateService.instant('altitude')}: ${zdata}`;
+        ctext.push(text);
+        this.defaultBsList.push({
+          x: xdata,
+          y: ydata,
+          color: 'green',
+          hover: text,
+          style: {
+            visibility: this.showBs,
+            opacity: 0
+          },
+          circleStyle: {
+            visibility: this.showBs
+          }
+        });
+
+      }
+    }
+
     const zLen = zValues.length;
     const zData = [];
     const allZ = [];
@@ -191,10 +229,6 @@ export class SignalCoverComponent implements OnInit {
             zText[i][yIndex] = [];
           }
           zData[i][yIndex][xIndex] = yData[i];
-          // if (yData[i] == null) {
-          //   console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
-          //   // console.log(item);
-          // }
 
           zText[i][yIndex][xIndex] = `BS ${(Math.round(yData[i] * 100) / 100)}`;
           yIndex++;
@@ -325,6 +359,22 @@ export class SignalCoverComponent implements OnInit {
         }
         k++;
       }
+
+      k = 1;
+      if (defaultBs.length > 0) {
+        const candidateidx = this.result['candidateidx'];
+        
+        for (let i = 0; i < defaultBs.length; i++) {
+          const oData = JSON.parse(list[i]);
+          if (candidateidx.includes((i + 1))) {
+            const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+  
+            apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
+          }
+          k++;
+        }
+      }
+
       // 重新指定連線對象tooltip
       xIndex = 0;
       for (const item of this.result['connectionMapAll']) {
@@ -380,42 +430,6 @@ export class SignalCoverComponent implements OnInit {
     };
     traces.push(trace);
     console.log(traces);
-
-    // 現有基站
-    if (this.calculateForm.defaultBs !== '') {
-      const list = this.calculateForm.defaultBs.split('|');
-      const cx = [];
-      const cy = [];
-      const ctext = [];
-      for (const item of list) {
-        const oData = JSON.parse(item);
-        const xdata = oData[0];
-        const ydata = oData[1];
-        const zdata = oData[2];
-        cx.push(xdata);
-        cy.push(ydata);
-
-        const text = `${this.translateService.instant('defaultBs')}
-        X: ${xdata}
-        Y: ${ydata}
-        ${this.translateService.instant('altitude')}: ${zdata}`;
-        ctext.push(text);
-        this.defaultBsList.push({
-          x: xdata,
-          y: ydata,
-          color: 'green',
-          hover: text,
-          style: {
-            visibility: this.showBs,
-            opacity: 0
-          },
-          circleStyle: {
-            visibility: this.showBs
-          }
-        });
-
-      }
-    }
 
     // 新增基站
     if (this.calculateForm.candidateBs !== '') {
