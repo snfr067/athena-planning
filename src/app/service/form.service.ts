@@ -178,7 +178,7 @@ export class FormService {
     output['ueThroughputIndividual'] = result['uethroughputindividual'];
     output['ulThroughputMap'] = JSON.parse(result['ulthroughputmap']);
     output['throughputMap'] = JSON.parse(result['throughputmap']);
-    output['candidateidx'] = JSON.parse(result['candidateidx']);
+    output['candidateIdx'] = JSON.parse(result['candidateidx']);
 
     return output;
   }

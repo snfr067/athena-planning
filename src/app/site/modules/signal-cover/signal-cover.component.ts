@@ -362,15 +362,11 @@ export class SignalCoverComponent implements OnInit {
 
       k = 1;
       if (defaultBs.length > 0) {
-        const candidateidx = this.result['candidateidx'];
-        
+        const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
-          const oData = JSON.parse(list[i]);
-          if (candidateidx.includes((i + 1))) {
-            const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-  
-            apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
-          }
+          const oData = defaultBs[i];
+          const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+          apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           k++;
         }
       }
