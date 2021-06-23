@@ -329,7 +329,7 @@ export class SignalCoverComponent implements OnInit {
 
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
           const max = zMax[zValues.indexOf(Number(this.zValue))];
-
+          // legend
           let color;
           if (z < max * 0.25) {
             color = 'rgb(12,51,131)';
@@ -346,7 +346,7 @@ export class SignalCoverComponent implements OnInit {
           traces.push({
             x: [0],
             y: [0],
-            name: `BS ${k}`,
+            name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
             marker: {
               color: color,
             },
@@ -355,22 +355,45 @@ export class SignalCoverComponent implements OnInit {
             showlegend: true
           });
 
-          apMap[z] = `BS ${k}`;
+          apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${k}`;
         }
         k++;
       }
 
       k = 1;
       if (defaultBs.length > 0) {
-        const candidateidx = this.result['candidateidx'];
-        
+        const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
-          const oData = JSON.parse(list[i]);
-          if (candidateidx.includes((i + 1))) {
-            const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-  
-            apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
+          const oData = defaultBs[i];
+          const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+          apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
+          const max = zMax[zValues.indexOf(Number(this.zValue))];
+          // legend
+          let color;
+          if (z < max * 0.25) {
+            color = 'rgb(12,51,131)';
+          } else if (z >= max * 0.25 && z < max * 0.5) {
+            color = 'rgb(10,136,186)';
+          } else if (z >= max * 0.5 && z < max * 0.75) {
+            color = 'rgb(242,211,56)';
+          } else if (z >= max * 0.75 && z < max) {
+            color = 'rgb(242,143,56)';
+          } else if (z === max) {
+            color = 'rgb(217,30,30)';
           }
+
+          traces.push({
+            x: [0],
+            y: [0],
+            name: `${this.translateService.instant('defaultBs')} ${k}`,
+            marker: {
+              color: color,
+            },
+            type: 'bar',
+            hoverinfo: 'none',
+            showlegend: true
+          });
+
           k++;
         }
       }
@@ -466,7 +489,7 @@ export class SignalCoverComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `BS ${num}`
+            ap: `${this.translateService.instant('result.propose.candidateBs')} ${num}`
           });
 
           candidateX.push(xdata);
@@ -588,7 +611,7 @@ export class SignalCoverComponent implements OnInit {
             y: item.y + Number(yLinear(9)),
             xref: 'x',
             yref: 'y',
-            text: item.ap,
+            text: item.ap.replace(this.translateService.instant('result.propose.candidateBs'), 'BS'),
             showarrow: false,
             font: {
               color: '#fff',
