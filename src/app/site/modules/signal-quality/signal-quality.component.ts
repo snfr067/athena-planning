@@ -50,7 +50,7 @@ export class SignalQualityComponent implements OnInit {
   /** AP顯示 */
   showCandidate = true;
   /** BS顯示 */
-  showBs = 'visible';
+  showBs = 'hidden';
   /** slide */
   opacityValue: number = 0.8;
   /** AP */
@@ -338,6 +338,8 @@ export class SignalQualityComponent implements OnInit {
       const cx = [];
       const cy = [];
       const ctext = [];
+      let num = 1;
+
       for (const item of list) {
         const oData = JSON.parse(item);
         const xdata = oData[0];
@@ -345,7 +347,6 @@ export class SignalQualityComponent implements OnInit {
         const zdata = oData[2];
         cx.push(xdata);
         cy.push(ydata);
-
         const text = `${this.translateService.instant('defaultBs')}
         X: ${xdata}
         Y: ${ydata}
@@ -355,17 +356,39 @@ export class SignalQualityComponent implements OnInit {
           x: xdata,
           y: ydata,
           color: '#000000',
+          ap: `既有${num}`,
           hover: text,
           style: {
-            visibility: this.showBs,
+            // visibility: this.showBs,
+            visibility: 'hidden',
             opacity: 0
           },
           circleStyle: {
-            visibility: this.showBs
+            // visibility: this.showBs
+            visibility: 'hidden',
           }
         });
-
+        num++;
       }
+      // traces.push({
+      //   x: cx,
+      //   y: cy,
+      //   text: ctext,
+      //   textfont: {
+      //     color: '#fff'
+      //   },
+      //   type: 'scatter',
+      //   mode: 'markers',
+      //   marker: {
+      //     size: 25,
+      //     color: '#000'
+      //   },
+      //   hovertemplate: `X: %{x}<br>Y: %{y}<br>%{text}<extra></extra>`,
+      //   showlegend: false,
+      //   visible: this.showBs,
+      //   uid: `BS`,
+      //   opacity: 0
+      // });
     }
 
     // 新增基站
@@ -403,7 +426,7 @@ export class SignalQualityComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `BS ${num}`
+            ap: `待選${num}`
           });
 
           candidateX.push(xdata);
@@ -486,7 +509,10 @@ export class SignalQualityComponent implements OnInit {
       }
     }
 
+    console.log(traces);
+
     Plotly.newPlot(id, {
+      // data: {},
       data: traces,
       layout: layout,
       config: defaultPlotlyConfiguration
@@ -506,10 +532,8 @@ export class SignalQualityComponent implements OnInit {
         const yLinear = Plotly.d3.scale.linear()
           .domain([0, rect.height])
           .range([0, this.calculateForm.height]);
-
         
         for (const item of this.candidateList) {
-          
           this.shapes.push({
             type: 'rect',
             xref: 'x',
@@ -518,7 +542,7 @@ export class SignalQualityComponent implements OnInit {
             y0: item.y,
             x1: item.x + Number(xLinear(50)),
             y1: item.y + Number(yLinear(18)),
-            fillcolor: '#000',
+            fillcolor: '#003060',
             visible: this.showCandidate
           });
 
@@ -536,6 +560,36 @@ export class SignalQualityComponent implements OnInit {
             visible: this.showCandidate
           });
         }
+
+        for (const item of this.defaultBsList) {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(50)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: '#005959',
+            bordercolor: '#005959',
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(25)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
+        }
+
       }
 
       const sizes = this.chartService.calSize(this.calculateForm, gd);
@@ -707,11 +761,33 @@ export class SignalQualityComponent implements OnInit {
    * @param visible 
    */
   switchShowBs(visible) {
-    for (const item of this.defaultBsList) {
-      // console.log(item.style);
-      item.style['visibility'] = visible;
-      item.circleStyle['visibility'] = visible;
+
+    if (visible == 'visible') {visible = true;} else {visible = false;}
+
+    Plotly.restyle(this.chartId, {
+      visible: visible
+    }, [2]);
+
+    for (const item of this.shapes) {
+      if (item.type == 'circle') {
+        item.visible = visible;
+      }
     }
+    for (const item of this.annotations) {
+      if (item.text[0] == '既') {
+        item.visible = visible;
+      }
+    }
+
+    Plotly.relayout(this.chartId, {
+      shapes: this.shapes,
+      annotations: this.annotations
+    });
+
+    // for (const item of this.defaultBsList) {
+    //   item.style['visibility'] = visible;
+    //   item.circleStyle['visibility'] = visible;
+    // }
   }
 
   /**
@@ -724,10 +800,14 @@ export class SignalQualityComponent implements OnInit {
     }, [2]);
 
     for (const item of this.shapes) {
-      item.visible = visible;
+      if (item.type == 'rect') {
+        item.visible = visible;
+      }
     }
     for (const item of this.annotations) {
-      item.visible = visible;
+      if (item.text[0] == '待') {
+        item.visible = visible;
+      }
     }
 
     Plotly.relayout(this.chartId, {
