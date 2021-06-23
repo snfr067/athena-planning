@@ -302,6 +302,7 @@ export class SignalDlThroughputComponent implements OnInit {
     // 現有基站
     if (this.calculateForm.defaultBs !== '') {
       const list = this.calculateForm.defaultBs.split('|');
+      let num = 1;
       const cx = [];
       const cy = [];
       const ctext = [];
@@ -321,6 +322,7 @@ export class SignalDlThroughputComponent implements OnInit {
         this.defaultBsList.push({
           x: xdata,
           y: ydata,
+          ap: `既有${num}`,
           color: 'green',
           hover: text,
           style: {
@@ -331,7 +333,7 @@ export class SignalDlThroughputComponent implements OnInit {
             visibility: this.showBs
           }
         });
-
+        num++;
       }
     }
 
@@ -370,7 +372,7 @@ export class SignalDlThroughputComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `BS ${num}`
+            ap: `待選${num}`
           });
 
           candidateX.push(xdata);
@@ -485,7 +487,7 @@ export class SignalDlThroughputComponent implements OnInit {
             y0: item.y,
             x1: item.x + Number(xLinear(50)),
             y1: item.y + Number(yLinear(18)),
-            fillcolor: '#000',
+            fillcolor: '#003060',
             visible: this.showCandidate
           });
 
@@ -502,6 +504,35 @@ export class SignalDlThroughputComponent implements OnInit {
             },
             visible: this.showCandidate
           });
+
+          for (const item of this.defaultBsList) {
+            this.shapes.push({
+              type: 'circle',
+              xref: 'x',
+              yref: 'y',
+              x0: item.x,
+              y0: item.y,
+              x1: item.x + Number(xLinear(50)),
+              y1: item.y + Number(yLinear(18)),
+              fillcolor: '#005959',
+              bordercolor: '#005959',
+              visible: this.showBs
+            });
+  
+            this.annotations.push({
+              x: item.x + Number(xLinear(25)),
+              y: item.y + Number(yLinear(9)),
+              xref: 'x',
+              yref: 'y',
+              text: item.ap,
+              showarrow: false,
+              font: {
+                color: '#fff',
+                size: 10
+              },
+              visible: this.showBs
+            });
+          }
         }
       }
 
@@ -672,10 +703,27 @@ export class SignalDlThroughputComponent implements OnInit {
    * @param visible 
    */
   switchShowBs(visible) {
-    for (const item of this.defaultBsList) {
-      item.style['visibility'] = visible;
-      item.circleStyle['visibility'] = visible;
+    if (visible == 'visible') {visible = true;} else {visible = false;}
+
+    Plotly.restyle(this.chartId, {
+      visible: visible
+    }, [2]);
+
+    for (const item of this.shapes) {
+      if (item.type == 'circle') {
+        item.visible = visible;
+      }
     }
+    for (const item of this.annotations) {
+      if (item.text[0] == '既') {
+        item.visible = visible;
+      }
+    }
+
+    Plotly.relayout(this.chartId, {
+      shapes: this.shapes,
+      annotations: this.annotations
+    });
   }
 
   /**
@@ -688,10 +736,14 @@ export class SignalDlThroughputComponent implements OnInit {
     }, [2]);
 
     for (const item of this.shapes) {
-      item.visible = visible;
+      if (item.type == 'rect') {
+        item.visible = visible;
+      }
     }
     for (const item of this.annotations) {
-      item.visible = visible;
+      if (item.text[0] == '待') {
+        item.visible = visible;
+      }
     }
 
     Plotly.relayout(this.chartId, {

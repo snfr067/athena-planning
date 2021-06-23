@@ -50,7 +50,7 @@ export class SignalQualityComponent implements OnInit {
   /** AP顯示 */
   showCandidate = true;
   /** BS顯示 */
-  showBs = 'hidden';
+  showBs = 'visible';
   /** slide */
   opacityValue: number = 0.8;
   /** AP */
