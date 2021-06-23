@@ -354,7 +354,7 @@ export class SignalQualityComponent implements OnInit {
         this.defaultBsList.push({
           x: xdata,
           y: ydata,
-          color: 'green',
+          color: '#000000',
           hover: text,
           style: {
             visibility: this.showBs,

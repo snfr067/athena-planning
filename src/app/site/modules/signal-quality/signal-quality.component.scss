@@ -11,7 +11,7 @@
 .blue_circle {
   background-color: #338aee!important;
   color: #fff;
-    z-index: 99999;
+    z-index: 9999!important;
     width: 1.5em;
     height: 1.5em;
     line-height: 1.5em;
@@ -19,6 +19,7 @@
     font-size: 13px;
 }
 .drag_obj {
+  z-index: 9999!important;
   position: absolute;
   left: 0px;
   bottom: 0px;

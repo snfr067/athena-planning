@@ -158,6 +158,7 @@
 	"wifi5": "WiFi5以上",
 	"availableNewBsNumber.wifi": "欲佈建的AP數量",
 	"availableNewBsNumber.gen": "欲佈建的基站數量",
+	"ue.Mandatory": "以行動終端為規劃目標，行動終端數量不可為0",
 	"must_greater_then": "必須大於",
 	"must_less_then": "必須小於待選位置數量",
 	"view.3d": "3D 顯示",

@@ -158,6 +158,7 @@
 	"wifi5": "more than WiFi5",
 	"availableNewBsNumber.wifi": "New access point number",
 	"availableNewBsNumber.gen": "New basestation number",
+	"ue.Mandatory": "以行動終端為規劃目標，行動終端數量不可為0",
 	"must_greater_then": "must be greater than",
 	"must_less_then": "must less than",
 	"view.3d": "3D model",

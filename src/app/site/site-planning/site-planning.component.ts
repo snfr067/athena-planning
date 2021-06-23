@@ -3,6 +3,7 @@ import { OnPinch, OnScale, OnDrag, OnRotate, OnResize, OnWarp, MoveableGroupInte
 import { Frame } from 'scenejs';
 import { NgxMoveableComponent } from 'ngx-moveable';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
@@ -29,7 +30,7 @@ declare var Plotly: any;
   templateUrl: './site-planning.component.html',
   styleUrls: ['./site-planning.component.scss']
 })
-export class SitePlanningComponent implements OnInit, OnDestroy {
+export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private authService: AuthService,
@@ -383,6 +384,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     }
   }
 
+  // @Input()
+  // duplexMode = "fdd";
+  // tempDuplexMode;
+
+  ngOnChanges(changes) {
+    console.log(changes);
+  }
+
   ngOnInit() {
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
@@ -441,7 +450,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
               this.calculateForm = this.formService.setHstToForm(result);
               // this.calculateForm.defaultBs = output['defaultBs'];
               // this.calculateForm.bsList = output['defaultBs'];
-              this.calculateForm.availableNewBsNumber = this.calculateForm.availableNewBsNumber - this.calculateForm.defaultBs.split('|').length;
+              let tempBsNum = 0;
+              if (this.calculateForm.defaultBs == "") {
+                tempBsNum = 0;
+              } else {
+                tempBsNum = this.calculateForm.defaultBs.split('|').length;
+              }
+              this.calculateForm.availableNewBsNumber -= tempBsNum;
               
               
               this.hstOutput['gaResult'] = {};
@@ -529,7 +544,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
                   this.planningIndex = '2';
                 }
               }
-              this.calculateForm.availableNewBsNumber = this.calculateForm.availableNewBsNumber - this.calculateForm.defaultBs.split('|').length;
+
+              let tempBsNum = 0;
+              if (this.calculateForm.defaultBs == "") {
+                tempBsNum = 0;
+              } else {
+                tempBsNum = this.calculateForm.defaultBs.split('|').length;
+              }
+              this.calculateForm.availableNewBsNumber -= tempBsNum;
               // this.calculateForm = res['input'];
               console.log(this.calculateForm);
               this.calculateForm.defaultBs = this.calculateForm.bsList;
@@ -1583,12 +1605,102 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
   // }
 
   /**
+   * 檢查參數是否完整
+   */
+  checkRFParamIsEmpty(protocol, duplex) {
+    let error = false;
+    let msg = '<br>';
+     if (protocol == '1') { //5G
+      if (duplex == 'tdd') {
+        for (let i = 0; i < this.defaultBSList.length; i++) {
+          const obj = this.bsListRfParam[this.defaultBSList[i]];
+          // console.log(obj);
+          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
+          // if (obj.txpower) { msg = '' }
+          // if (obj.beampattern) { msg = '' }
+          if (obj.tddbandwidth == undefined) { msg += `頻寬,` }
+          if (obj.tddscs == undefined) { msg += `子載波間距,` }
+          if (obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,` }
+          if (obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,` }
+          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,` }
+          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,` }
+          if (obj.tddfrequency == undefined) { msg += `中心頻率` }
+          msg+= '</p>'
+        }
+      } else {
+        for (let i = 0; i < this.defaultBSList.length; i++) {
+          const obj = this.bsListRfParam[this.defaultBSList[i]];
+          // console.log(obj);
+          // if (obj.txpower) { msg = '' }
+          // if (obj.beampattern) { msg = '' }
+          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
+          if (obj.dlBandwidth == undefined) { msg += `下行頻寬,` }
+          if (obj.ulBandwidth == undefined) { msg += `上行頻寬,` }
+          if (obj.dlScs == undefined) { msg += `下行子載波間距,` }
+          if (obj.ulScs == undefined) { msg += `上行子載波間距,` }
+          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,` }
+          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,` }
+          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,` }
+          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,` }
+          if (obj.fddDlFrequency == undefined) { msg += `下行頻率,` }
+          if (obj.fddUlFrequency == undefined) { msg += `上行頻率` }
+          msg+= '</p>'
+        }
+      }
+     } else {
+      if (duplex == 'tdd') {
+        for (let i = 0; i < this.defaultBSList.length; i++) {
+          const obj = this.bsListRfParam[this.defaultBSList[i]];
+          // if (obj.txpower) { msg = `請填上${i+1}的` }
+          // if (obj.beampattern) { msg = `請填上${i+1}的` }
+          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
+          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,` }
+          if (obj.tddbandwidth == undefined) { msg += `頻寬,` }
+          if (obj.tddfrequency == undefined) { msg += `中心頻率,` }
+          msg+= '</p>'
+        }
+      } else {
+        for (let i = 0; i < this.defaultBSList.length; i++) {
+          const obj = this.bsListRfParam[this.defaultBSList[i]];
+          // if (obj.txpower) { msg = `請填上${i+1}的` }
+          // if (obj.beampattern) { msg = `請填上${i+1}的` }
+          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
+          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,` }
+          if (obj.dlBandwidth == undefined) { msg += `上行頻寬,` }
+          if (obj.ulBandwidth == undefined) { msg += `下行頻寬,` }
+          if (obj.fddDlFrequency == undefined) { msg += `下行中心頻率,` }
+          if (obj.fddUlFrequency == undefined) { msg += `上行中心頻率` }
+          msg+= '</p>'
+        }
+      }
+     }
+     if (msg != '') {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        error = true;
+      }
+     return error;
+  }
+
+  /**
    * 開始運算
    */
   calculate() {
     try {
       this.moveable.destroy();
     } catch (error) {}
+
+    // 檢查是否有參數未被填入
+    if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
+      return;
+    }
+    // Candidate
+    // DefaultBs [重要!!]
+    
+    // ---------- 我是分隔線 ----------
 
     console.log(this.calculateForm);
 
@@ -1609,11 +1721,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    } else if (this.ueList.length == 0 && this.planningIndex == '2') {
+      let msg = this.translateService.instant('ue.Mandatory');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
       this.authService.spinnerShowAsHome();
-      console.log(this.calculateForm.bandwidth);
-      console.log(this.calculateForm.frequency);
+      // console.log(this.calculateForm.bandwidth);
+      // console.log(this.calculateForm.frequency);
 
       // 障礙物計算時若莫名移動，還原位置
       for (const item of this.obstacleList) {
@@ -2139,20 +2258,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
    * @param type 物件類別
    */
   changeProtoOrDuplex() {
-    console.log(this.bsListRfParam);
-    if (this.calculateForm.objectiveIndex == '1') {
-      if (this.duplexMode == 'tdd') {
-
-      } else {
-
-      }
-    } else {
-      if (this.duplexMode == 'tdd') {
-
-      } else {
-
-      }
-    }
+    let msg = "切換雙工模式後請記得檢查是否填入基站RF參數";
+    this.msgDialogConfig.data = {
+      type: 'error',
+      infoMessage: msg
+    };
+    this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
   }
 
 
@@ -3331,8 +3442,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy {
     this.calculateForm.beamMaxId = result['beammaxid'];
   }
 
+  protocolSwitchWarning() {
+    if (this.defaultBSList.length !== 0 ) {
+      let msg = "切換協定後請記得檢查是否填入基站RF參數";
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+
   /** Wifi頻率切換 */
   changeWifiFrequency() {
+
     if (Number(this.wifiFrequency) === 0) {
       // this.calculateForm.frequency = '950';
     } else if (Number(this.wifiFrequency) === 1) {
