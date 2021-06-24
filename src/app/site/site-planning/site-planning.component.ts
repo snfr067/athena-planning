@@ -1616,68 +1616,83 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       if (duplex == 'tdd') {
         for (let i = 0; i < this.defaultBSList.length; i++) {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
+          let bsMsg = '';
           // console.log(obj);
-          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
-          if (obj.tddbandwidth == undefined) { msg += `頻寬,`; error = true; }
-          if (obj.tddscs == undefined) { msg += `子載波間距,`; error = true; }
-          if (obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,`; error = true; }
-          if (obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,`; error = true; }
-          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,`; error = true; }
-          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,`; error = true; }
-          if (obj.tddfrequency == undefined) { msg += `中心頻率`; error = true; }
-          msg+= '</p>'
+          if (obj.tddbandwidth == undefined || obj.tddbandwidth == '') { bsMsg += `頻寬,`; error = true; }
+          if (obj.tddscs == undefined || obj.tddscs == '') { bsMsg += `子載波間距,`; error = true; }
+          if (obj.ulModulationCodScheme == undefined || obj.ulModulationCodScheme == '') { bsMsg += `上行調變能力,`; error = true; }
+          if (obj.dlModulationCodScheme == undefined || obj.dlModulationCodScheme == '') { bsMsg += `下行調變能力,`; error = true; }
+          if (obj.ulMimoLayer == undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數,`; error = true; }
+          if (obj.dlMimoLayer == undefined || obj.dlMimoLayer == '') { bsMsg += `下行資料串流層數,`; error = true; }
+          if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率`; error = true; }
+          if (bsMsg != '') {
+            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= bsMsg;
+            msg+= '</p>';
+          }
         }
       } else {
         for (let i = 0; i < this.defaultBSList.length; i++) {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
+          let bsMsg = '';
           // console.log(obj);
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
-          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.dlBandwidth == undefined) { msg += `下行頻寬,`; error = true; }
-          if (obj.ulBandwidth == undefined) { msg += `上行頻寬,`; error = true; }
-          if (obj.dlScs == undefined) { msg += `下行子載波間距,`; error = true; }
-          if (obj.ulScs == undefined) { msg += `上行子載波間距,`; error = true; }
-          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,`; error = true; }
-          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,`; error = true; }
-          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,`; error = true; }
-          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,`; error = true; }
-          if (obj.fddDlFrequency == undefined) { msg += `下行頻率,`; error = true; }
-          if (obj.fddUlFrequency == undefined) { msg += `上行頻率`; error = true; }
-          msg+= '</p>'
+          if (obj.dlBandwidth == undefined || obj.dlBandwidth == '') { bsMsg += `下行頻寬,`; error = true; }
+          if (obj.ulBandwidth == undefined || obj.ulBandwidth == '') { bsMsg += `上行頻寬,`; error = true; }
+          if (obj.dlScs == undefined || obj.dlScs == '') { bsMsg += `下行子載波間距,`; error = true; }
+          if (obj.ulScs == undefined || obj.ulScs == '') { bsMsg += `上行子載波間距,`; error = true; }
+          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { bsMsg += `下行調變能力,`; error = true; }
+          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { bsMsg += `上行調變能力,`; error = true; }
+          if (obj.dlMimoLayer == undefined || obj.dlMimoLayer == '') { bsMsg += `下行資料串流層數,`; error = true; }
+          if (obj.ulMimoLayer == undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數,`; error = true; }
+          if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行頻率,`; error = true; }
+          if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行頻率`; error = true; }
+          if (bsMsg != '') {
+            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= bsMsg;
+            msg+= '</p>';
+          }
         }
       }
      } else {
       if (duplex == 'tdd') {
         for (let i = 0; i < this.defaultBSList.length; i++) {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
+          let bsMsg = '';
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
-          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,`; error = true; }
-          if (obj.tddbandwidth == undefined) { msg += `頻寬,`; error = true; }
-          if (obj.tddfrequency == undefined) { msg += `中心頻率,`; error = true; }
-          msg+= '</p>'
+          if (obj.mimoNumber4G == undefined || obj.mimoNumber4G == '') { bsMsg += `MIMO天線數,`; error = true; }
+          if (obj.tddbandwidth == undefined || obj.tddbandwidth == '') { bsMsg += `頻寬,`; error = true; }
+          if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率,`; error = true; }
+          if (bsMsg != '') {
+            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= bsMsg;
+            msg+= '</p>';
+          }
         }
       } else {
         for (let i = 0; i < this.defaultBSList.length; i++) {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
+          let bsMsg = '';
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
-          msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,`; error = true; }
-          if (obj.dlBandwidth == undefined) { msg += `上行頻寬,`; error = true; }
-          if (obj.ulBandwidth == undefined) { msg += `下行頻寬,`; error = true; }
-          if (obj.fddDlFrequency == undefined) { msg += `下行中心頻率,`; error = true; }
-          if (obj.fddUlFrequency == undefined) { msg += `上行中心頻率`; error = true; }
-          msg+= '</p>'
+          if (obj.mimoNumber4G == undefined || obj.mimoNumber4G == '') { bsMsg += `MIMO天線數,`; error = true; }
+          if (obj.dlBandwidth == undefined || obj.dlBandwidth == '') { bsMsg += `上行頻寬,`; error = true; }
+          if (obj.ulBandwidth == undefined || obj.ulBandwidth == '') { bsMsg += `下行頻寬,`; error = true; }
+          if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行中心頻率,`; error = true; }
+          if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行中心頻率`; error = true; }
+          if (bsMsg != '') {
+            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= bsMsg;
+            msg+= '</p>';
+          }
         }
       }
      }
      if (error) {
-       console.log('sfdsfssf');
        console.log(msg);
         this.msgDialogConfig.data = {
           type: 'error',
@@ -1701,7 +1716,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    console.log('Heeeerrrrrreeeeee');
     // Candidate
     // DefaultBs [重要!!]
     
@@ -1735,18 +1749,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      this.authService.spinnerShowAsHome();
+      // this.authService.spinnerShowAsHome();
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
 
       // 障礙物計算時若莫名移動，還原位置
-      for (const item of this.obstacleList) {
-        if (this.dragObject[item].x !== this.ognDragObject[item].x
-          || this.dragObject[item].y !== this.ognDragObject[item].y) {
-            this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
-            this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
-          }
-      }
+      // for (const item of this.obstacleList) {
+      //   if (this.dragObject[item].x !== this.ognDragObject[item].x
+      //     || this.dragObject[item].y !== this.ognDragObject[item].y) {
+      //       this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
+      //       this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
+      //     }
+      // }
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
