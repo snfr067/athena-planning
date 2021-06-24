@@ -640,6 +640,8 @@ export class ResultComponent implements OnInit {
 
   /** 訊號品質圖 */
   drawQuality() {
+    console.log(this.calculateForm);
+    console.log(this.result);
     this.showCover = false;
     this.showStrength = false;
     this.showDlThroughputMap = false;

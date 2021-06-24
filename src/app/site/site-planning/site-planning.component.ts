@@ -1608,6 +1608,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * 檢查參數是否完整
    */
   checkRFParamIsEmpty(protocol, duplex) {
+    console.log('checkRFParamIsEmpty');
+
     let error = false;
     let msg = '<br>';
      if (protocol == '1') { //5G
@@ -1698,6 +1700,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
       return;
     }
+
+    console.log('Heeeerrrrrreeeeee');
     // Candidate
     // DefaultBs [重要!!]
     

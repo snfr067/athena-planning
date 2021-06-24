@@ -524,7 +524,7 @@ export class SignalQualityComponent implements OnInit {
       this.shapes.length = 0;
       this.annotations.length = 0;
       // 新增基站
-      if (this.calculateForm.candidateBs !== '') {
+      if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '') {
         const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
@@ -589,7 +589,6 @@ export class SignalQualityComponent implements OnInit {
             visible: this.showBs
           });
         }
-
       }
 
       const sizes = this.chartService.calSize(this.calculateForm, gd);
