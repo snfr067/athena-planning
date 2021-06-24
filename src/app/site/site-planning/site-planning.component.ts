@@ -1618,13 +1618,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           msg+= `請補上BS${i+1}:<br><p style="color: red;">`
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
-          if (obj.tddbandwidth == undefined) { msg += `頻寬,` }
-          if (obj.tddscs == undefined) { msg += `子載波間距,` }
-          if (obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,` }
-          if (obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,` }
-          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,` }
-          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,` }
-          if (obj.tddfrequency == undefined) { msg += `中心頻率` }
+          if (obj.tddbandwidth == undefined) { msg += `頻寬,`; error = true; }
+          if (obj.tddscs == undefined) { msg += `子載波間距,`; error = true; }
+          if (obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,`; error = true; }
+          if (obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,`; error = true; }
+          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,`; error = true; }
+          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,`; error = true; }
+          if (obj.tddfrequency == undefined) { msg += `中心頻率`; error = true; }
           msg+= '</p>'
         }
       } else {
@@ -1634,16 +1634,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
           msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.dlBandwidth == undefined) { msg += `下行頻寬,` }
-          if (obj.ulBandwidth == undefined) { msg += `上行頻寬,` }
-          if (obj.dlScs == undefined) { msg += `下行子載波間距,` }
-          if (obj.ulScs == undefined) { msg += `上行子載波間距,` }
-          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,` }
-          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,` }
-          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,` }
-          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,` }
-          if (obj.fddDlFrequency == undefined) { msg += `下行頻率,` }
-          if (obj.fddUlFrequency == undefined) { msg += `上行頻率` }
+          if (obj.dlBandwidth == undefined) { msg += `下行頻寬,`; error = true; }
+          if (obj.ulBandwidth == undefined) { msg += `上行頻寬,`; error = true; }
+          if (obj.dlScs == undefined) { msg += `下行子載波間距,`; error = true; }
+          if (obj.ulScs == undefined) { msg += `上行子載波間距,`; error = true; }
+          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { msg += `下行調變能力,`; error = true; }
+          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { msg += `上行調變能力,`; error = true; }
+          if (obj.dlMimoLayer == undefined) { msg += `下行資料串流層數,`; error = true; }
+          if (obj.ulMimoLayer == undefined) { msg += `上行資料串流層數,`; error = true; }
+          if (obj.fddDlFrequency == undefined) { msg += `下行頻率,`; error = true; }
+          if (obj.fddUlFrequency == undefined) { msg += `上行頻率`; error = true; }
           msg+= '</p>'
         }
       }
@@ -1654,9 +1654,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
           msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,` }
-          if (obj.tddbandwidth == undefined) { msg += `頻寬,` }
-          if (obj.tddfrequency == undefined) { msg += `中心頻率,` }
+          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,`; error = true; }
+          if (obj.tddbandwidth == undefined) { msg += `頻寬,`; error = true; }
+          if (obj.tddfrequency == undefined) { msg += `中心頻率,`; error = true; }
           msg+= '</p>'
         }
       } else {
@@ -1665,22 +1665,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
           msg+= `請補上BS${i+1}:<br><p style="color: red;">`
-          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,` }
-          if (obj.dlBandwidth == undefined) { msg += `上行頻寬,` }
-          if (obj.ulBandwidth == undefined) { msg += `下行頻寬,` }
-          if (obj.fddDlFrequency == undefined) { msg += `下行中心頻率,` }
-          if (obj.fddUlFrequency == undefined) { msg += `上行中心頻率` }
+          if (obj.mimoNumber4G == undefined) { msg += `MIMO天線數,`; error = true; }
+          if (obj.dlBandwidth == undefined) { msg += `上行頻寬,`; error = true; }
+          if (obj.ulBandwidth == undefined) { msg += `下行頻寬,`; error = true; }
+          if (obj.fddDlFrequency == undefined) { msg += `下行中心頻率,`; error = true; }
+          if (obj.fddUlFrequency == undefined) { msg += `上行中心頻率`; error = true; }
           msg+= '</p>'
         }
       }
      }
-     if (msg != '') {
+     if (error) {
+       console.log('sfdsfssf');
+       console.log(msg);
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
         };
         this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        error = true;
       }
      return error;
   }
