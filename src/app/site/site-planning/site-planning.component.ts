@@ -1749,7 +1749,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      // this.authService.spinnerShowAsHome();
+      this.authService.spinnerShowAsHome();
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
 
