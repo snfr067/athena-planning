@@ -1608,7 +1608,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * 檢查參數是否完整
    */
   checkRFParamIsEmpty(protocol, duplex) {
-    console.log('checkRFParamIsEmpty');
 
     let error = false;
     let msg = '<br>';
@@ -1628,7 +1627,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           if (obj.dlMimoLayer == undefined || obj.dlMimoLayer == '') { bsMsg += `下行資料串流層數,`; error = true; }
           if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率`; error = true; }
           if (bsMsg != '') {
-            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
           }
@@ -1651,9 +1650,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行頻率,`; error = true; }
           if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行頻率`; error = true; }
           if (bsMsg != '') {
-            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
+          } else if (obj.fddDlFrequency == obj.fddUlFrequency ) {
+            msg+= `BS${i+1}:上行頻率與下行頻率不可相同，請修改`
+            msg+= '</p>';
+            error = true;
           }
         }
       }
@@ -1668,7 +1671,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           if (obj.tddbandwidth == undefined || obj.tddbandwidth == '') { bsMsg += `頻寬,`; error = true; }
           if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率,`; error = true; }
           if (bsMsg != '') {
-            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
           }
@@ -1685,9 +1688,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行中心頻率,`; error = true; }
           if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行中心頻率`; error = true; }
           if (bsMsg != '') {
-            msg+= `請補上BS${i+1}:<br><p style="color: red;">`;
+            msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
+          } else if (obj.fddDlFrequency == obj.fddUlFrequency ) {
+            msg+= `BS${i+1}:上行頻率與下行頻率不可相同，請修改`
+            msg+= '</p>';
+            error = true;
           }
         }
       }
@@ -1703,6 +1710,41 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
      return error;
   }
 
+  checkDlUlDiff() {
+    if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  hintDlUlDiff(uldl) {
+    let msg = '';
+    if (uldl == 'ul') {
+      if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+        msg = '上行頻率跟下行頻率重複了，請修改上行頻率'
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        // this.tempCalParamSet.fddUlFrequency = 0;
+      }
+    } else {
+      if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+        if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+          msg = '下行頻率跟上行頻率重複了，請修改下行頻率'
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: msg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          // this.tempCalParamSet.fddDlFrequency = 0;
+        }
+      }
+    }
+  }
+
   /**
    * 開始運算
    */
@@ -1713,6 +1755,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     // 檢查是否有參數未被填入
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
+      return;
+    }
+
+    if (this.planningIndex != '3' && this.checkDlUlDiff()) {
+      let msg = '上行頻率跟下行頻率重複了，請修改'
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       return;
     }
 

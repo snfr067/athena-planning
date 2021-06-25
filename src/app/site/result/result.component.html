@@ -3,14 +3,13 @@
 <mat-button-toggle-group >
   <mat-button-toggle (click)="back()" value="back">{{ 'result.back' | translate }}</mat-button-toggle>
 	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
-	<mat-button-toggle value="export" disabled>{{ 'result.export' | translate }}</mat-button-toggle>
-	<!-- <mat-button-toggle value="export" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle> -->
+	<!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
+	<mat-button-toggle value="export" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
 	<mat-button-toggle value="save" (click)="save(false)">{{ 'save' | translate }}</mat-button-toggle>
 </mat-button-toggle-group>
 
 <div class="box">
 	<div class="leftArea">
-
 		<!-- 建議方案 -->
 		<app-propose #propose *ngIf="calculateForm.candidateBs !== ''"></app-propose>
 		<!-- <app-propose #propose></app-propose> -->

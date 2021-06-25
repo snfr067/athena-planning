@@ -436,11 +436,11 @@
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'uplink.frequency' | translate }}</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.fddUlFrequency">MHz</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.fddUlFrequency" (change)="hintDlUlDiff('ul')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'downlink.frequency' | translate }}</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.fddDlFrequency">MHz</td>
+                <td><input type="text" [(ngModel)]="tempCalParamSet.fddDlFrequency" (change)="hintDlUlDiff('dl')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'ulBandwidth' | translate }}</td>

@@ -123,6 +123,7 @@ export class PdfComponent implements OnInit {
             this.calculateForm = this.formService.setHstToForm(form);
             this.result['inputWidth'] = this.calculateForm.width;
             this.result['inputHeight'] = this.calculateForm.height;
+            console.log(this.calculateForm);
           } else {
             this.calculateForm = res['input'];
             this.result = res['output'];
@@ -284,6 +285,7 @@ export class PdfComponent implements OnInit {
               index = 0;
               this.view3D1.forEach(element => {
                 if (index === this.zValues.indexOf(zValue)) {
+                  element.isSimulation = this.calculateForm.isSimulation;
                   element.calculateForm = this.calculateForm;
                   element.obstacle = obstacle;
                   element.defaultBs = bs;
@@ -306,6 +308,7 @@ export class PdfComponent implements OnInit {
               index = 0;
               this.view3D2.forEach(element => {
                 if (index === this.zValues.indexOf(zValue)) {
+                  element.isSimulation = this.calculateForm.isSimulation;
                   element.calculateForm = this.calculateForm;
                   element.obstacle = obstacle;
                   element.defaultBs = bs;
@@ -329,6 +332,7 @@ export class PdfComponent implements OnInit {
               index = 0;
               this.view3D3.forEach(element => {
                 if (index === this.zValues.indexOf(zValue)) {
+                  element.isSimulation = this.calculateForm.isSimulation;
                   element.calculateForm = this.calculateForm;
                   element.obstacle = obstacle;
                   element.defaultBs = bs;
@@ -352,6 +356,7 @@ export class PdfComponent implements OnInit {
               index = 0;
               this.view3D4.forEach(element => {
                 if (index === this.zValues.indexOf(zValue)) {
+                  element.isSimulation = this.calculateForm.isSimulation;
                   element.calculateForm = this.calculateForm;
                   element.obstacle = obstacle;
                   element.defaultBs = bs;
@@ -375,6 +380,7 @@ export class PdfComponent implements OnInit {
               index = 0;
               this.view3D5.forEach(element => {
                 if (index === this.zValues.indexOf(zValue)) {
+                  element.isSimulation = this.calculateForm.isSimulation;
                   element.calculateForm = this.calculateForm;
                   element.obstacle = obstacle;
                   element.defaultBs = bs;
