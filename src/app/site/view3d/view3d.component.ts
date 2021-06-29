@@ -21,7 +21,7 @@ export class View3dComponent implements OnInit {
     @Optional() @Inject(MAT_DIALOG_DATA) public data) {
 
       if (data != null) {
-        this.isSimulation = data.isSimulation;
+        // this.isSimulation = data.isSimulation;
         this.calculateForm = data.calculateForm;
         this.obstacle = data.obstacleList;
         this.defaultBs = data.defaultBSList;
@@ -40,7 +40,6 @@ export class View3dComponent implements OnInit {
 
     }
 
-  isSimulation = false;
   /** 結果form */
   calculateForm: CalculateForm;
   /** 障礙物 */

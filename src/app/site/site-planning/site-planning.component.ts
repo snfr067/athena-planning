@@ -1721,7 +1721,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   hintDlUlDiff(uldl) {
     let msg = '';
     if (uldl == 'ul') {
-      if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+      if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
         msg = '上行頻率跟下行頻率重複了，請修改上行頻率'
         this.msgDialogConfig.data = {
           type: 'error',
@@ -1731,7 +1731,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         // this.tempCalParamSet.fddUlFrequency = 0;
       }
     } else {
-      if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+      if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
         if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
           msg = '下行頻率跟上行頻率重複了，請修改下行頻率'
           this.msgDialogConfig.data = {
@@ -1758,7 +1758,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    if (this.planningIndex != '3' && this.checkDlUlDiff()) {
+    if (this.planningIndex != '3' && this.duplexMode == 'fdd' && this.checkDlUlDiff()) {
       let msg = '上行頻率跟下行頻率重複了，請修改'
       this.msgDialogConfig.data = {
         type: 'error',

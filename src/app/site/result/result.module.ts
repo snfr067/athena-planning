@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ResultComponent } from './result.component';
 import { RouterModule } from '@angular/router';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonModule } from '@angular/material/button';
 import { PerformanceModule } from '../modules/performance/performance.module';
 import { ProposeModule } from '../modules/propose/propose.module';
 import { SignalCoverModule } from '../modules/signal-cover/signal-cover.module';
@@ -24,6 +25,7 @@ import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal
     RouterModule,
     FormsModule,
     MatButtonToggleModule,
+    MatButtonModule,
     PerformanceModule,
     ProposeModule,
     SignalCoverModule,
