@@ -164,13 +164,15 @@ export class PdfComponent implements OnInit {
             }
           }
 
-          console.log(this.calculateForm.isSimulation)
           this.zValues = JSON.parse(this.calculateForm.zValue);
+          
           window.setTimeout(() => {
-            this.propose.calculateForm = this.calculateForm;
-            this.propose.result = this.result;
-            this.propose.isPDF = true;
-            this.propose.drawLayout(true);
+            if (candidateBsAry.length != 0) {
+              this.propose.calculateForm = this.calculateForm;
+              this.propose.result = this.result;
+              this.propose.isPDF = true;
+              this.propose.drawLayout(true);
+            }
             // 訊號品質圖
             let index = 0;
             this.quality.forEach(element => {
@@ -647,19 +649,22 @@ export class PdfComponent implements OnInit {
 
     // 建議方案
     pdf.addPage();
-    const proposeData = <HTMLDivElement> area.querySelector(`#propose`);
-    await html2canvas(proposeData, {
-      useCORS: true,
-      // allowTaint: true,
-    }).then(canvas => {
-      console.log('propose to img');
-      // Few necessary setting options
-      const imgWidth = 182;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      const contentDataURL = canvas.toDataURL('image/png');
-      const position = 10;
-      pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
-    });
+    if (this.inputBsList.length > 0) {
+      const proposeData = <HTMLDivElement> area.querySelector(`#propose`);
+      await html2canvas(proposeData, {
+        useCORS: true,
+        // allowTaint: true,
+      }).then(canvas => {
+        console.log('propose to img');
+        // Few necessary setting options
+        const imgWidth = 182;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const contentDataURL = canvas.toDataURL('image/png');
+        const position = 10;
+        pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+      });
+    }
+    
 
     for (const id of list) {
       pdf.addPage();

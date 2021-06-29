@@ -29,7 +29,7 @@
 			</table>
 		
 			<!-- 建議方案 -->
-			<app-propose #propose></app-propose>
+			<app-propose #propose *ngIf="inputBsList.length != 0"></app-propose>
 					
 			<table *ngFor="let zValue of zValues; let idx = index;" id="signal_{{ idx }}">
 				<tbody>
