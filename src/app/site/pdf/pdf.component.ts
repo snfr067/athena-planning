@@ -562,32 +562,35 @@ export class PdfComponent implements OnInit {
       halign: 'center'
     });
     // 新增基站
-    pdf.addPage();
-    const candidateHeader = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('candidateBs'), 100, 12);
-    };
-    const candidateTitle = [
-      this.translateService.instant('result.num'), 
-      this.translateService.instant('result.propose.candidateBs.x'),
-      this.translateService.instant('result.propose.candidateBs.y'),
-      this.translateService.instant('result.propose.candidateBs.z'),
-    ];
-    const candidateData = [];
-    for (let k = 0; k < this.inputBsList.length; k++) {
-      candidateData.push([
-        (k + 1), this.inputBsList[k][0], this.inputBsList[k][1], this.inputBsList[k][2]
-      ]);
+    if (this.inputBsList.length > 0) {
+      pdf.addPage();
+      const candidateHeader = (data) => {
+        pdf.setFontSize(12);
+        pdf.setTextColor(255);
+        pdf.setFontStyle('normal');
+        pdf.setFillColor(42, 58, 93);
+        pdf.rect(14, 7, 182, 7, 'F');
+        pdf.text(this.translateService.instant('candidateBs'), 100, 12);
+      };
+      const candidateTitle = [
+        this.translateService.instant('result.num'), 
+        this.translateService.instant('result.propose.candidateBs.x'),
+        this.translateService.instant('result.propose.candidateBs.y'),
+        this.translateService.instant('result.propose.candidateBs.z'),
+      ];
+      const candidateData = [];
+      for (let k = 0; k < this.inputBsList.length; k++) {
+        candidateData.push([
+          (k + 1), this.inputBsList[k][0], this.inputBsList[k][1], this.inputBsList[k][2]
+        ]);
+      }
+      pdf.autoTable(candidateTitle, candidateData, {
+        styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+        headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+        beforePageContent: candidateHeader
+      });
     }
-    pdf.autoTable(candidateTitle, candidateData, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
-      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: candidateHeader
-    });
+    
     // 障礙物資訊
     pdf.addPage();
     const obstacleHeader = (data) => {
@@ -648,8 +651,8 @@ export class PdfComponent implements OnInit {
     });
 
     // 建議方案
-    pdf.addPage();
     if (this.inputBsList.length > 0) {
+      pdf.addPage();
       const proposeData = <HTMLDivElement> area.querySelector(`#propose`);
       await html2canvas(proposeData, {
         useCORS: true,
