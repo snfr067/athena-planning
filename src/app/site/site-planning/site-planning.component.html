@@ -393,7 +393,7 @@
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
                     <option value="0">4G</option>
                     <option value="1">5G</option>
-                    <option value="2">WiFi</option>
+                    <option value="2" disabled>WiFi</option>
                   </select>
                 </td>
               </tr>
@@ -782,7 +782,7 @@
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
                     <option value="0">4G</option>
                     <option value="1">5G</option>
-                    <option value="2">WiFi</option>
+                    <option value="2" disabled>WiFi</option>
                   </select>
                 </li>
                 <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
