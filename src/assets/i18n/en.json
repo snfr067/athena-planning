@@ -133,6 +133,8 @@
 	"material.light_steel_frame": "Metal grid",
 	"material.glass": "Glass",
 	"material.stainless": "Light metal wall",
+	"material.fireproof": "Fireproof",
+	"material.fireSoundproof": "Fire&Sound proof",
 	"subcarrier": "Subcarrier space(kHz)",
 	"duplex": "Duplex Techonology",
 	"upDownRatio": "UL-DL Ratio",
