@@ -466,17 +466,15 @@ export class SignalUlThroughputComponent implements OnInit {
       let layoutOption = {};
       this.shapes.length = 0;
       this.annotations.length = 0;
-      // 新增基站
-      if (this.calculateForm.candidateBs !== '') {
-        const xLinear = Plotly.d3.scale.linear()
+      const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
 
         const yLinear = Plotly.d3.scale.linear()
           .domain([0, rect.height])
           .range([0, this.calculateForm.height]);
-
-        
+      // 新增基站
+      if (this.calculateForm.candidateBs !== '') {
         for (const item of this.candidateList) {
           
           this.shapes.push({
@@ -505,7 +503,10 @@ export class SignalUlThroughputComponent implements OnInit {
             visible: this.showCandidate
           });
         }
+        
+      }
 
+      if (this.calculateForm.defaultBs !== '') {
         for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',

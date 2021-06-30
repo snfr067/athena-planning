@@ -308,64 +308,70 @@ export class SignalCoverComponent implements OnInit {
 
     // 圖區右邊建議基站
     if (hasBS) {
-      let list;
-      if (this.calculateForm.isSimulation) {
-        list = this.calculateForm.bsList.split('|');
-      } else {
-        list = this.calculateForm.candidateBs.split('|');
-      }
-      const cx = [];
-      const cy = [];
-      let k = 1;
-
-      const chosenCandidate = [];
-      for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
-        chosenCandidate.push(this.result['chosenCandidate'][i].toString());
-      }
-
+      
+      // if (this.calculateForm.isSimulation) { //isSimulation works
+      //   list = this.calculateForm.bsList.split('|');
+      // } else {
+      //   list = this.calculateForm.candidateBs.split('|');
+      // }
       const apMap = {};
-      for (let i = 0; i < list.length; i++) {
-        const oData = JSON.parse(list[i]);
-        if (chosenCandidate.includes(oData.toString())) {
-          cx.push(oData[0]);
-          cy.push(oData[1]);
 
-          const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-          const max = zMax[zValues.indexOf(Number(this.zValue))];
-          // legend
-          let color;
-          if (z < max * 0.25) {
-            color = 'rgb(12,51,131)';
-          } else if (z >= max * 0.25 && z < max * 0.5) {
-            color = 'rgb(10,136,186)';
-          } else if (z >= max * 0.5 && z < max * 0.75) {
-            color = 'rgb(242,211,56)';
-          } else if (z >= max * 0.75 && z < max) {
-            color = 'rgb(242,143,56)';
-          } else if (z === max) {
-            color = 'rgb(217,30,30)';
-          }
+      if (this.calculateForm.candidateBs != "") {
+        let list;
+        list = this.calculateForm.candidateBs.split('|');
+        const cx = [];
+        const cy = [];
+        let k = 1;
 
-          traces.push({
-            x: [0],
-            y: [0],
-            name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
-            marker: {
-              color: color,
-            },
-            type: 'bar',
-            hoverinfo: 'none',
-            showlegend: true
-          });
-
-          apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${k}`;
+        const chosenCandidate = [];
+        for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
+          chosenCandidate.push(this.result['chosenCandidate'][i].toString());
         }
-        k++;
-      }
 
-      k = 1;
+        for (let i = 0; i < list.length; i++) {
+          const oData = JSON.parse(list[i]);
+          if (chosenCandidate.includes(oData.toString())) {
+            cx.push(oData[0]);
+            cy.push(oData[1]);
+
+            const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+            const max = zMax[zValues.indexOf(Number(this.zValue))];
+            // legend
+            let color;
+            if (z < max * 0.25) {
+              color = 'rgb(12,51,131)';
+            } else if (z >= max * 0.25 && z < max * 0.5) {
+              color = 'rgb(10,136,186)';
+            } else if (z >= max * 0.5 && z < max * 0.75) {
+              color = 'rgb(242,211,56)';
+            } else if (z >= max * 0.75 && z < max) {
+              color = 'rgb(242,143,56)';
+            } else if (z === max) {
+              color = 'rgb(217,30,30)';
+            }
+
+            traces.push({
+              x: [0],
+              y: [0],
+              name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
+              marker: {
+                color: color,
+              },
+              type: 'bar',
+              hoverinfo: 'none',
+              showlegend: true
+            });
+
+            apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${k}`;
+          }
+          k++;
+        }
+      }
+      
+      
+      let k = 1;
       if (defaultBs.length > 0) {
-        const candidateidx = this.result['candidateIdx'];
+        // const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
           const oData = defaultBs[i];
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
@@ -585,15 +591,17 @@ export class SignalCoverComponent implements OnInit {
       let layoutOption = {};
       this.shapes.length = 0;
       this.annotations.length = 0;
-      // 新增基站
-      if (this.calculateForm.candidateBs !== '') {
-        const xLinear = Plotly.d3.scale.linear()
+
+      const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
 
         const yLinear = Plotly.d3.scale.linear()
           .domain([0, rect.height])
           .range([0, this.calculateForm.height]);
+      // 新增基站
+      if (this.calculateForm.candidateBs !== '') {
+        
 
         
         for (const item of this.candidateList) {
@@ -622,37 +630,38 @@ export class SignalCoverComponent implements OnInit {
             },
             visible: this.showCandidate
           });
-
-          for (const item of this.defaultBsList) {
-            this.shapes.push({
-              type: 'circle',
-              xref: 'x',
-              yref: 'y',
-              x0: item.x,
-              y0: item.y,
-              x1: item.x + Number(xLinear(50)),
-              y1: item.y + Number(yLinear(18)),
-              fillcolor: '#005959',
-              bordercolor: '#005959',
-              visible: this.showBs
-            });
-  
-            this.annotations.push({
-              x: item.x + Number(xLinear(25)),
-              y: item.y + Number(yLinear(9)),
-              xref: 'x',
-              yref: 'y',
-              text: item.ap,
-              showarrow: false,
-              font: {
-                color: '#fff',
-                size: 10
-              },
-              visible: this.showBs
-            });
-          }
         }
+      }
 
+      if (this.calculateForm.defaultBs !== '') {
+        for (const item of this.defaultBsList) {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(50)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: '#005959',
+            bordercolor: '#005959',
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(25)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
+        }
       }
 
       const sizes = this.chartService.calSize(this.calculateForm, gd);

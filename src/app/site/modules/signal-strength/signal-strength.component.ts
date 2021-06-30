@@ -449,17 +449,16 @@ export class SignalStrengthComponent implements OnInit {
       let layoutOption = {};
       this.shapes.length = 0;
       this.annotations.length = 0;
-      // 新增基站
-      if (this.calculateForm.candidateBs !== '') {
-        const xLinear = Plotly.d3.scale.linear()
+
+      const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
 
         const yLinear = Plotly.d3.scale.linear()
           .domain([0, rect.height])
           .range([0, this.calculateForm.height]);
-
-        
+      // 新增基站
+      if (this.calculateForm.candidateBs !== '') {
         for (const item of this.candidateList) {
           this.shapes.push({
             type: 'rect',
@@ -486,35 +485,37 @@ export class SignalStrengthComponent implements OnInit {
             },
             visible: this.showCandidate
           });
+        }
+      }
 
-          for (const item of this.defaultBsList) {
-            this.shapes.push({
-              type: 'circle',
-              xref: 'x',
-              yref: 'y',
-              x0: item.x,
-              y0: item.y,
-              x1: item.x + Number(xLinear(50)),
-              y1: item.y + Number(yLinear(18)),
-              fillcolor: '#005959',
-              bordercolor: '#005959',
-              visible: this.showBs
-            });
-  
-            this.annotations.push({
-              x: item.x + Number(xLinear(25)),
-              y: item.y + Number(yLinear(9)),
-              xref: 'x',
-              yref: 'y',
-              text: item.ap,
-              showarrow: false,
-              font: {
-                color: '#fff',
-                size: 10
-              },
-              visible: this.showBs
-            });
-          }
+      if (this.calculateForm.defaultBs !== '') {
+        for (const item of this.defaultBsList) {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(50)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: '#005959',
+            bordercolor: '#005959',
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(25)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
         }
       }
 
