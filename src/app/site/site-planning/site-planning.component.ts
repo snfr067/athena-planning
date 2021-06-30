@@ -444,8 +444,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
               const output = this.formService.setHstOutputToResultOutput(result['output']);
               // delete result['output'];
               // 大小寫不同，各自塞回form
-              console.log(result);
-              console.log(output);
+              // console.log(result);
+              // console.log(output);
               this.dlRatio = result['tddframeratio'];
               this.calculateForm = this.formService.setHstToForm(result);
               // this.calculateForm.defaultBs = output['defaultBs'];
@@ -611,6 +611,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {
     this.setForm();
     // 暫存
+    localStorage.clear();
     if (this.taskid !== '') {
       window.sessionStorage.setItem(`form_${this.taskid}`, JSON.stringify(this.calculateForm));
     } else {
@@ -1787,6 +1788,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       } else { 
         msg += ' ' + this.translateService.instant('must_greater_then') + '0';
       }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    } else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
+      let msg = "模擬模式既有基站數量不可小於0"
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
