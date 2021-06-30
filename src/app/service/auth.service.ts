@@ -129,9 +129,9 @@ export class AuthService {
     } else if (val === '4' || val === 4) {
       return '不鏽鋼/其它金屬類';
     } else if (val === '5' || val === 5) {
-      return '防火';
+      return '石膏';
     } else if (val === '6' || val === 6) {
-      return '防火隔音';
+      return '岩綿';
     }
   }
 
