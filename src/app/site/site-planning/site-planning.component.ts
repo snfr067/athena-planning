@@ -2967,15 +2967,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             fill: this.dragObject[id].color
           };
         } else if (shape === 'ellipse' || Number(shape) === 2) {
+          console.log(this.dragObject[id]);
           this.spanStyle[id] = {
             left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-            top: `${this.pixelYLinear(this.dragObject[id].y)}px`,
+            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) -  this.pixelYLinear(this.dragObject[id].y)}px`,
             width: `${this.pixelXLinear(this.dragObject[id].width * 2)}px`,
             height: `${this.pixelYLinear(this.dragObject[id].height * 2)}px`,
             opacity: 0
             // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
-
+          console.log(this.spanStyle[id]);
           const x = (this.pixelXLinear(this.dragObject[id].width) / 2).toString();
           const y = (this.pixelYLinear(this.dragObject[id].height) / 2).toString();
           this.ellipseStyle[id] = {
@@ -2986,14 +2987,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             fill: this.dragObject[id].color
           };
         } else if (shape === 'polygon' || Number(shape) === 1) {
+          console.log(this.dragObject[id]);
           this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}`,
-            top: `${this.pixelYLinear(this.dragObject[id].y)}`,
-            width: this.pixelXLinear(obstacleData[i][2] / 2),
-            height: this.pixelYLinear(obstacleData[i][3] / 2),
+            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
+            width: `${this.pixelXLinear(obstacleData[i][2] / 2)}px`,
+            height: `${this.pixelYLinear(obstacleData[i][3] / 2)}px`,
             opacity: 0
             // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
+          console.log(this.spanStyle[id]);
           const width = this.pixelXLinear(this.dragObject[id].width);
           const height = this.pixelYLinear(this.dragObject[id].height);
           const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
@@ -3002,15 +3005,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             fill: this.dragObject[id].color
           };
         } else if (shape === 'trapezoid' || Number(shape) === 3) {
+          console.log(this.svgStyle[id]);
+          console.log(this.dragObject[id]);
           this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}`,
-            top: `${this.pixelYLinear(this.dragObject[id].y)}`,
-            width: this.pixelXLinear(obstacleData[i][2] / 2),
-            height: this.pixelYLinear(obstacleData[i][3] / 2),
+            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
+            width: `${this.pixelXLinear(obstacleData[i][2] / 2)}px`,
+            height: `${this.pixelYLinear(obstacleData[i][3] / 2)}px`,
             opacity: 0
             // transform: `rotate(${this.dragObject[id].rotate}deg)`
           };
+          console.log(this.spanStyle[id]);
+          // const width = this.pixelXLinear(this.dragObject[id].width);
+          // const height = this.pixelYLinear(this.dragObject[id].height);
+          // const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
           this.trapezoidStyle[id] = {
+            // points: points,
             fill: this.dragObject[id].color
           };
         }

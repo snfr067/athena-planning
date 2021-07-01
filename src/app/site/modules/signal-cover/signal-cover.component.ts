@@ -77,6 +77,9 @@ export class SignalCoverComponent implements OnInit {
     });
   }
 
+  //test
+  traces = [];
+
   ngOnInit(): void {
   }
 
@@ -202,11 +205,11 @@ export class SignalCoverComponent implements OnInit {
           hover: text,
           ap: `既有${num}`,
           style: {
-            visibility: this.showBs,
+            // visibility: this.showBs,
             opacity: 0
           },
           circleStyle: {
-            visibility: this.showBs
+            // visibility: this.showBs
           }
         });
         num++;
@@ -461,6 +464,9 @@ export class SignalCoverComponent implements OnInit {
       opacity: this.opacityValue
     };
     traces.push(trace);
+
+    // test
+    this.traces = traces;
     console.log(traces);
 
     // 新增基站
@@ -780,13 +786,13 @@ export class SignalCoverComponent implements OnInit {
           left: `${candisateXLinear(item.x)}px`,
           bottom: `${candisateYLinear(item.y)}px`,
           position: 'absolute',
-          visibility: this.showCandidate
+          // visibility: this.showCandidate
         };
         item['circleStyle'] = {
           left: `${candisateXLinear(item.x) + 15}px`,
           bottom: `${candisateYLinear(item.y) + 25}px`,
           position: 'absolute',
-          visibility: this.showCandidate
+          // visibility: this.showCandidate
         };
       }
 
@@ -830,9 +836,9 @@ export class SignalCoverComponent implements OnInit {
   switchShowBs(visible) {
     if (visible == 'visible') {visible = true;} else {visible = false;}
 
-    Plotly.restyle(this.chartId, {
-      visible: visible
-    }, [2]);
+    // Plotly.restyle(this.chartId, {
+    //   visible: visible
+    // }, [4]);
 
     for (const item of this.shapes) {
       if (item.type == 'circle') {
@@ -856,9 +862,9 @@ export class SignalCoverComponent implements OnInit {
    * @param visible 
    */
   switchShowCandidate(visible) {
-    Plotly.restyle(this.chartId, {
-      visible: visible
-    }, [4]);
+    // Plotly.restyle(this.chartId, {
+    //   visible: visible
+    // }, [4]);
 
     for (const item of this.shapes) {
       if (item.type == 'rect') {
