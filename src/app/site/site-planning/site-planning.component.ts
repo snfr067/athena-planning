@@ -1773,6 +1773,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
+    if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange || this.calculateForm.powerMinRange > this.calculateForm.powerMaxRange) {
+      let msg = '';
+      if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange) {
+        msg = '最大功率與最小功率值相同，請修改';
+      } else {
+        msg = '最大功率不可小於最小功率，請修改';
+      }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+
     // Candidate
     // DefaultBs [重要!!]
     

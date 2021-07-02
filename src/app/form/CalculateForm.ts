@@ -22,8 +22,8 @@ export class CalculateForm {
   pathLossModelId: number = 0;
   ueCoordinate: string = null;
   useUeCoordinate: number = 1;
-  powerMaxRange: number = null;
-  powerMinRange: number = null;
+  powerMaxRange: number = 10;
+  powerMinRange: number = 0;
   beamMaxId: number = null;
   beamMinId: number = null;
   objectiveIndex = '1';
