@@ -566,7 +566,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             }
             console.log(this.calculateForm);
             
-            this.initData(false, false);
+            this.initData(false, false, false);
           },
           err => {
             this.msgDialogConfig.data = {
@@ -590,7 +590,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // this.calculateForm.bandwidth = '[1]';
         }
 
-        this.initData(false, false);
+        this.initData(false, false, false);
       }
       
       // setTimeout(()=> {
@@ -633,7 +633,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * @param isImportXls 是否import xlxs
    * @param isImportImg 是否import image
    */
-  initData(isImportXls, isImportImg) {
+  initData(isImportXls, isImportImg, isChangeFieldParam) {
     if (typeof this.chart !== 'undefined') {
       this.chart.nativeElement.style.opacity = 0;
     }
@@ -752,7 +752,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                 // do noting
               } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                 // 編輯
-                this.edit();
+                if (!isChangeFieldParam) {
+                  this.edit();
+                }
                 console.log(this.calculateForm);
               }
             });
@@ -801,7 +803,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
             // 編輯
             console.log(this.calculateForm);
-            this.edit();
+            if (!isChangeFieldParam) {
+              this.edit();
+            }
           }
         });
 
@@ -1576,7 +1580,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     reader.readAsDataURL(file);
     reader.onload = () => {
       this.calculateForm.mapImage = reader.result.toString();
-      this.initData(false, true);
+      this.initData(false, true, false);
     };
   }
 
@@ -2638,7 +2642,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
   
-      this.initData(true, false);
+      this.initData(true, false, false);
     } catch (error) {
       console.log(error);
       // fail xlsx
@@ -3051,8 +3055,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
       // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
         this.planningIndex = '1';
-      } else {
+      } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
         this.planningIndex = '2';
+      } else {
+        this.planningIndex = '3';
       }
       
       // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
@@ -3207,15 +3213,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             width: width,
             height: height
           };
-          
         }
-
         this.obstacleList.push(id);
-        
       }
     }
-    
-    
     // candidate
     if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
       const candidate = this.calculateForm.candidateBs.split('|');
@@ -3330,9 +3331,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         //   this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i].toString();
         // }
       }
-      
     }
-
     // defaultBs
     this.calculateForm.defaultBs = this.calculateForm.bsList;
     if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
@@ -3346,7 +3345,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         const id = `defaultBS_${this.generateString(10)}`;
         this.defaultBSList.push(id);
         //20210521
-
         this.bsListRfParam[id] = {
           txpower: txpower[i],
           beampattern: beamId[i],
@@ -3361,7 +3359,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
           this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
           this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
-          
         }
         if (this.calculateForm.duplex === 'fdd') {
           this.duplexMode = 'fdd';
