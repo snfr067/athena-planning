@@ -3648,6 +3648,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       // this.clearAll('defaultBS');
       if (!this.calculateForm.isAverageSinr && !this.calculateForm.isCoverage) {
         this.calculateForm.isAverageSinr = true;
+        this.calculateForm.isUeCoverage = false;
+        this.calculateForm.isUeAvgSinr = false;
+        this.calculateForm.isUeAvgThroughput = false;
       }
     } else if (this.planningIndex === '2') {
       // this.clearAll('defaultBS');
@@ -3655,9 +3658,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         && !this.calculateForm.isUeAvgThroughput 
         && !this.calculateForm.isUeTpByDistance) {
         this.calculateForm.isUeAvgSinr = true;
+        this.calculateForm.isAverageSinr = false;
+        this.calculateForm.isCoverage = false;
       }
     } else {
       this.clearAll('candidate');
+      this.calculateForm.isAverageSinr = false;
+      this.calculateForm.isCoverage = false;
+      this.calculateForm.isUeCoverage = false;
+      this.calculateForm.isUeAvgSinr = false;
+      this.calculateForm.isUeAvgThroughput = false;
       // this.clearAllDrag();
     }
   }

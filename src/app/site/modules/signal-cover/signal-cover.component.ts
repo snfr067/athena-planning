@@ -384,14 +384,19 @@ export class SignalCoverComponent implements OnInit {
           let color;
           if (z < max * 0.25) {
             color = 'rgb(12,51,131)';
+            console.log('1');
           } else if (z >= max * 0.25 && z < max * 0.5) {
             color = 'rgb(10,136,186)';
+            console.log('2');
           } else if (z >= max * 0.5 && z < max * 0.75) {
             color = 'rgb(242,211,56)';
+            console.log('3');
           } else if (z >= max * 0.75 && z < max) {
             color = 'rgb(242,143,56)';
+            console.log('4');
           } else if (z === max) {
             color = 'rgb(217,30,30)';
+            console.log('5');
           }
 
           traces.push({

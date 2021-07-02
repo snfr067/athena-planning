@@ -29,7 +29,7 @@ export class CalculateForm {
   objectiveIndex = '1';
   // threshold = null;
   obstacleInfo: string = null;
-  availableNewBsNumber: number = 0;
+  availableNewBsNumber: number = 1;
   addFixedBsNumber: number = 0;
   
   //Field related target
