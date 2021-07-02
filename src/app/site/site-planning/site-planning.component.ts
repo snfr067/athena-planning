@@ -1785,7 +1785,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange || this.calculateForm.powerMinRange > this.calculateForm.powerMaxRange) {
+
+    console.log(typeof this.calculateForm.powerMaxRange);
+    console.log(typeof this.calculateForm.powerMinRange);
+
+    if (Number(this.calculateForm.powerMaxRange) == Number(this.calculateForm.powerMinRange) || 
+    Number(this.calculateForm.powerMinRange) > Number(this.calculateForm.powerMaxRange)) {
       let msg = '';
       if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange) {
         msg = '最大功率與最小功率值相同，請修改';
@@ -1863,11 +1868,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       console.log(this.calculateForm);
       let url = '';
       if (this.planningIndex !== '3') {
-        url = `${this.authService.API_URL}/calculate`;
         this.calculateForm.isSimulation = false;
+        url = `${this.authService.API_URL}/calculate`;
       } else {
-        url = `${this.authService.API_URL}/simulation`;
         this.calculateForm.isSimulation = true;
+        url = `${this.authService.API_URL}/simulation`;
       }
 
       console.log(this.calculateForm);
@@ -2730,6 +2735,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: material,
           element: this.svgMap['defaultBS'].element
         };
+        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+          this.dragObject[id].altitude = this.calculateForm.altitude;
+        }
         // RF parameter import
         this.bsListRfParam[id] = {
           txpower: baseStationData[i][5],
@@ -2802,6 +2810,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           element: this.svgMap['candidate'].element
         };
 
+        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+          this.dragObject[id].altitude = this.calculateForm.altitude;
+        }
         // this.bsListRfParam[id] = {
         //   tddfrequency: candidateData[i][5],
         //   tddbandwidth: candidateData[i][6],
@@ -2978,6 +2989,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: material,
           element: shape
         };
+
+        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+          this.dragObject[id].altitude = this.calculateForm.altitude;
+        }
+
         this.svgStyle[id] = {
           display: 'inherit',
           width: this.pixelXLinear(this.dragObject[id].width),
