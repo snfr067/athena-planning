@@ -605,6 +605,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  checkAltitude(zValue, zValueArr) {
+    console.log('Check altitdue function works:'+ zValue + ' Field altitude:' + this.calculateForm.altitude);
+    let msg = '';
+    if (zValue > this.calculateForm.altitude) {
+      msg = '不可大於場域高度';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+    
+  }
+
   /**
    * 離開頁面
    */
@@ -1045,8 +1059,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       width: width,
       height: height
     };
-
-    // console.log(this.calculateForm.altitude);
 
     this.dragObject[this.svgId] = {
       x: 0,
