@@ -164,19 +164,47 @@ export class View3dComponent implements OnInit {
       // const item = this.obstacle[id];
       // const item = this.dragObject[id];
       const depth = item.altitude / 2;
-      const obstacleData = [
+      let obstacleData;
+      let obstacle;
+      if (item.element === 0) {
+        obstacleData = [
           new BABYLON.Vector3(-depth, 0, 0),
           new BABYLON.Vector3(depth, 0, 0),
           new BABYLON.Vector3(depth, 0, item.height),
           new BABYLON.Vector3(-depth, 0, item.height)
-      ];
+        ];
 
-      const obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.width}, scene, Earcut);
+        obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.width}, scene, Earcut);
+      } else if (item.element === 1) {
+        // 三角形
+        obstacleData = [
+          new BABYLON.Vector3(0, 0, 0),
+          new BABYLON.Vector3(item.width, 0, 0),
+          new BABYLON.Vector3(item.width / 2, 0, item.height)
+        ];
+        obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
+
+      } else if (item.element === 2) {
+        // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
+        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.width, item.width, 99, 1, scene);
+      } else if (item.element === 3) {
+        // 梯形
+        obstacleData = [
+          new BABYLON.Vector3(0, 0, 0),
+          new BABYLON.Vector3(item.width, 0, 0),
+          new BABYLON.Vector3(item.width * 0.67, 0, item.height),
+          new BABYLON.Vector3(item.width * 0.33, 0, item.height)
+        ];
+        obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
+
+      }
+
       obstacle.position.x = item.x + offsetX;
       obstacle.position.y = depth + offsetY;
       obstacle.position.z = item.y + offsetZ;
-      obstacle.rotation.z = Math.PI / 2;
-      // console.log(item)
+      if (item.element === 0) {
+        obstacle.rotation.z = Math.PI / 2;
+      }
       if (item.rotate !== 0) {
         obstacle.rotation.y = item.rotate * (Math.PI / 180);
       }

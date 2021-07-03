@@ -3,6 +3,7 @@ import { AuthService } from '../../../service/auth.service';
 import { CalculateForm } from '../../../form/CalculateForm';
 import { TranslateService } from '@ngx-translate/core';
 import html2canvas from 'html2canvas';
+import { ChartService } from '../../../service/chart.service';
 
 declare var Plotly: any;
 
@@ -18,7 +19,8 @@ export class ProposeComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private chartService: ChartService
   ) { }
 
   /** 圖layout */
@@ -219,38 +221,15 @@ export class ProposeComponent implements OnInit {
       layout: this.plotLayout,
       config: defaultPlotlyConfiguration
     }).then((gd) => {
-      const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
-      const rect = xy.getBoundingClientRect();
 
-      if (images.length > 0) {
-        const image = new Image();
-        image.src = images[0].source;
-        image.onload = () => {
-          let layoutOption;
-          if (image.width > image.height) {
-            const height = (image.height / image.width) * rect.width;
-            layoutOption = {
-              height: height
-            };
-          } else {
-            const width = (image.width / image.height) * rect.height;
-            layoutOption = {
-              width: width
-            };
-          }
-
-          Plotly.relayout(id, layoutOption).then((gd) => {
-            this.layoutChart.nativeElement.style.opacity = 1;
-            if (isPDF) {
-              window.setTimeout(() => {
-                this.toImg();
-              }, 0);
-            }
-            
-            console.log('layout plot done.');
-          });
-        };
-      } else {
+      // 計算長寬
+      const sizes = this.chartService.calSize(this.calculateForm, gd);
+      const layoutOption = {
+        width: sizes[0],
+        height: sizes[1]
+      };
+      // 重新指定圖的長寬
+      Plotly.relayout(id, layoutOption).then((gd2) => {
         this.layoutChart.nativeElement.style.opacity = 1;
         if (isPDF) {
           window.setTimeout(() => {
@@ -258,7 +237,7 @@ export class ProposeComponent implements OnInit {
           }, 0);
         }
         console.log('layout plot done.');
-      }
+      });
 
     });
   }
