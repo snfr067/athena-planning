@@ -192,8 +192,8 @@ export class View3dComponent implements OnInit {
         obstacleData = [
           new BABYLON.Vector3(0, 0, 0),
           new BABYLON.Vector3(item.width, 0, 0),
-          new BABYLON.Vector3(item.width * 0.67, 0, item.height),
-          new BABYLON.Vector3(item.width * 0.33, 0, item.height)
+          new BABYLON.Vector3(item.width * 0.75, 0, item.height),
+          new BABYLON.Vector3(item.width * 0.25, 0, item.height)
         ];
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
 
