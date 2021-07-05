@@ -607,6 +607,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
   checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
     console.log('Check altitdue function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
+    altitude = Number(altitude);
     let msg = '';
     if (altitude < 0 || altitude > this.calculateForm.altitude) {
       if (altitude < 0) {
@@ -1826,7 +1827,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     console.log(typeof this.calculateForm.powerMaxRange);
     console.log(typeof this.calculateForm.powerMinRange);
 
-    if (Number(this.calculateForm.powerMaxRange) == Number(this.calculateForm.powerMinRange) || 
+    if (this.planningIndex !='3' && Number(this.calculateForm.powerMaxRange) == Number(this.calculateForm.powerMinRange) || 
     Number(this.calculateForm.powerMinRange) > Number(this.calculateForm.powerMaxRange)) {
       let msg = '';
       if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange) {
@@ -3420,6 +3421,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       const txpower = JSON.parse(this.calculateForm.txPower);
       const beamId = JSON.parse(this.calculateForm.beamId);
       // this.dlRatio = this.calculateForm.tddFrameRatio;
+      let candidateNum = 0;
+      if (this.candidateList.length != 0) {candidateNum = this.candidateList.length;}
+
       const defaultBSLen = defaultBS.length;
       for (let i = 0; i < defaultBSLen; i++) {
         const item = JSON.parse(defaultBS[i]);
@@ -3427,8 +3431,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         this.defaultBSList.push(id);
         //20210521
         this.bsListRfParam[id] = {
-          txpower: txpower[i],
-          beampattern: beamId[i],
+          txpower: txpower[i+candidateNum],
+          beampattern: beamId[i+candidateNum],
           // frequency: frequencyList[i],
           // ulModulationCodScheme: "64QAM-table",
           // dlModulationCodScheme: "64QAM-table",
@@ -3438,39 +3442,39 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           scsBandwidth: 10,
         };
         if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
-          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
+          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
         }
         if (this.calculateForm.duplex === 'fdd') {
           this.duplexMode = 'fdd';
-          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
-          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
-          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
-          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
+          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i+candidateNum];
+          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i+candidateNum];
+          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i+candidateNum];
+          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i+candidateNum];
           // console.log(this.bsListRfParam[id].dlScs);
           // console.log(this.bsListRfParam[id].dlBandwidth);
           // console.log(this.bsListRfParam[id].ulScs);
           // console.log(this.bsListRfParam[id].ulBandwidth);
         } else {
           this.duplexMode = 'tdd';
-          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
-          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
+          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
         }
         if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
           // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
         }
         if (this.calculateForm.mapProtocol === '4g') {
-          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i+candidateNum];
         }
         if (this.calculateForm.mapProtocol === '5g') {
           let ulmsc = this.calculateForm.ulMcsTable;
           let dlmsc = this.calculateForm.dlMcsTable;
-          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
-          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
+          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
+          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
           console.log(this.bsListRfParam[id].dlMcsTable);
-          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
-          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
-          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
+          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
+          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
+          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();
           // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
           // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
           this.scalingFactor = this.calculateForm.scalingFactor;

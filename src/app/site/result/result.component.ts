@@ -202,11 +202,20 @@ export class ResultComponent implements OnInit {
         this.isSimulate = this.calculateForm.isSimulation;
         // this.calculateForm.defaultBs = this.calculateForm.bsList;
         if (this.calculateForm.defaultBs !== '') {
+          let candidateNum = 0;
+          if (this.candidateList.length != 0) {candidateNum = this.calculateForm.candidateBs.split('|').length;}
+          console.log(candidateNum);
           this.showBsArea = true;
           console.log(this.calculateForm);
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
-          const txpower = JSON.parse(this.calculateForm.txPower);
+          let txpower = [];
+          if (this.isHst) {
+            txpower = JSON.parse(this.calculateForm.txPower);
+          } else {
+            console.log(this.result);
+            txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          }
           console.log(txpower);
           const frequency = JSON.parse(this.calculateForm.frequencyList);
           const bandwidth = JSON.parse(this.calculateForm.bandwidth);
@@ -222,9 +231,9 @@ export class ResultComponent implements OnInit {
           console.log(ulMcsTable);
           const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
           const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
-          if (this.calculateForm.objectiveIndex == '1') {
+          // if (this.calculateForm.objectiveIndex == '1') {
 
-          }
+          // }
           let dlScs = [];
           let ulScs = [];
           if (this.calculateForm.duplex === "fdd" && this.calculateForm.objectiveIndex == '1') {
@@ -254,13 +263,13 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
-                  frequency: frequency[i],
-                  bandwidth: bandwidth[i],
-                  mimoNumber: mimoNumber[i]
+                  frequency: frequency[i+candidateNum],
+                  bandwidth: bandwidth[i+candidateNum],
+                  mimoNumber: mimoNumber[i+candidateNum]
                 });
                 i++;
               }
-              console.log(this.defaultBSList4gTdd);
+              // console.log(this.defaultBSList4gTdd);
             } else {
               for (const item of defaultBs) {
                 const obj = JSON.parse(item);
@@ -269,11 +278,11 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
-                  dlFrequency: dlFrequency[i],
-                  ulFrequency: ulFrequency[i],
-                  ulBandwidth: ulBandwidth[i],
-                  dlBandwidth: dlBandwidth[i],
-                  mimoNumber: mimoNumber[i]
+                  dlFrequency: dlFrequency[i+candidateNum],
+                  ulFrequency: ulFrequency[i+candidateNum],
+                  ulBandwidth: ulBandwidth[i+candidateNum],
+                  dlBandwidth: dlBandwidth[i+candidateNum],
+                  mimoNumber: mimoNumber[i+candidateNum]
                 });
                 i++;
               }
@@ -288,18 +297,19 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
-                  frequency: frequency[i],
-                  bandwidth: bandwidth[i],
-                  scs: scs[i],
+                  frequency: frequency[i+candidateNum],
+                  bandwidth: bandwidth[i+candidateNum],
+                  scs: scs[i+candidateNum],
                   ulMcsTable: ulMcsTable[i],
                   dlMcsTable: dlMcsTable[i],
-                  ulMimoLayer: ulMimoLayer[i],
-                  dlMimoLayer: dlMimoLayer[i],
+                  ulMimoLayer: ulMimoLayer[i+candidateNum],
+                  dlMimoLayer: dlMimoLayer[i+candidateNum],
 
                 });
                 i++;
               }
             } else {
+              console.log(txpower);
               for (const item of defaultBs) {
                 const obj = JSON.parse(item);
                 this.defaultBSList5gFdd.push({
@@ -307,17 +317,17 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
-                  scs: scs[i],
-                  dlScs: dlScs[i],
-                  ulScs: ulScs[i],
+                  scs: scs[i+candidateNum],
+                  dlScs: dlScs[i+candidateNum],
+                  ulScs: ulScs[i+candidateNum],
                   ulMcsTable: ulMcsTable[i],
                   dlMcsTable: dlMcsTable[i],
-                  ulMimoLayer: ulMimoLayer[i],
-                  dlMimoLayer: dlMimoLayer[i],
-                  dlFrequency: dlFrequency[i],
-                  ulFrequency: ulFrequency[i],
-                  ulBandwidth: ulBandwidth[i],
-                  dlBandwidth: dlBandwidth[i],
+                  ulMimoLayer: ulMimoLayer[i+candidateNum],
+                  dlMimoLayer: dlMimoLayer[i+candidateNum],
+                  dlFrequency: dlFrequency[i+candidateNum],
+                  ulFrequency: ulFrequency[i+candidateNum],
+                  ulBandwidth: ulBandwidth[i+candidateNum],
+                  dlBandwidth: dlBandwidth[i+candidateNum],
                 });
                 i++;
               }
