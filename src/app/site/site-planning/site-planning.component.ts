@@ -1898,9 +1898,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       // 規劃目標
       this.setPlanningObj();
 
-      let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
+      // let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
 
-      apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
 
       console.log(this.calculateForm);
       let url = '';
@@ -1911,6 +1910,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         this.calculateForm.isSimulation = true;
         url = `${this.authService.API_URL}/simulation`;
       }
+      let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
+      apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
 
       console.log(this.calculateForm);
 
