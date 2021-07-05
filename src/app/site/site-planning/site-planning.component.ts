@@ -605,18 +605,40 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  checkAltitude(zValue, zValueArr) {
-    console.log('Check altitdue function works:'+ zValue + ' Field altitude:' + this.calculateForm.altitude);
+  checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
+    console.log('Check altitdue function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
     let msg = '';
-    if (zValue > this.calculateForm.altitude) {
-      msg = '不可大於場域高度';
+    if (altitude < 0 || altitude > this.calculateForm.altitude) {
+      if (altitude < 0) {
+        msg = '高度不可小於0';
+      } else {
+        msg = '不可大於場域高度';
+      }
+      if (fieldOrId.length > 1) {
+        this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
+      } else {
+        this.zValues[Number(fieldOrId)] = this.calculateForm.altitude.toString();
+      }
+    }
+    if (fieldOrId.length == 1) {
+      for (let i = 0; i < 3; i++) {
+        if (Number(fieldOrId) == i) {
+          continue;
+        } else {
+          if (Number(this.zValues[i]) == altitude) {
+            this.zValues[Number(fieldOrId)] = '';
+            msg = '已有重複高度';
+          }
+        }
+      }
+    }
+    if (msg != '') {
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
-    
   }
 
   /**
@@ -650,6 +672,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   initData(isImportXls, isImportImg, isChangeFieldParam) {
     if (typeof this.chart !== 'undefined') {
       this.chart.nativeElement.style.opacity = 0;
+    }
+    if (this.calculateForm.height < 0 || this.calculateForm.altitude < 0 || this.calculateForm.width < 0) {
+      if (this.calculateForm.height < 0) {
+        this.calculateForm.height = 100;
+      } else if (this.calculateForm.altitude < 0) {
+        this.calculateForm.altitude = 3;
+      } else {
+        this.calculateForm.width = 100;
+      }
+      let msg = '場域高度不可小於0,將為您恢復成預設值';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
     // Plotly繪圖config
     const defaultPlotlyConfiguration = {
