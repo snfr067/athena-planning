@@ -627,11 +627,77 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           continue;
         } else {
           if (Number(this.zValues[i]) == altitude) {
-            this.zValues[Number(fieldOrId)] = '';
+            delete this.zValues[Number(fieldOrId)];
+            // this.zValues[Number(fieldOrId)] = '';
             msg = '已有重複高度';
+            if (i == 0 && this.zValues[1] == undefined && this.zValues[2] == undefined) {
+              this.zValues.length = 1;
+              console.log(this.zValues);
+            } else if (i == 0 && this.zValues[1] != undefined && this.zValues[2] == undefined){
+              this.zValues.length = 2;
+            } else if (i == 0 && this.zValues[1] == undefined && this.zValues[2] == undefined){
+              this.zValues.length = 3;
+            } else if (i == 1){
+              this.zValues.length = 2;
+              console.log(this.zValues);
+            }
           }
         }
       }
+      console.log(this.zValues);
+      if (this.zValues[0] == undefined || this.zValues[0] == '') {
+        if (this.zValues[1] == undefined && this.zValues[2] == undefined) {
+          this.zValues[0] = '0';
+          this.zValues.length = 1;
+        } else if (this.zValues[1] != undefined && this.zValues[2] != undefined) {
+          this.zValues[0] = this.zValues[1];
+          this.zValues[1] = this.zValues[2];
+          delete this.zValues[2];
+          this.zValues.length = 2;
+        } else if (this.zValues[1] == undefined && this.zValues[2] != undefined) {
+          this.zValues[0] = this.zValues[2];
+          delete this.zValues[2];
+          this.zValues.length = 1;
+        } else if (this.zValues[1] != undefined && this.zValues[2] == undefined) {
+          this.zValues[0] = this.zValues[1];
+          delete this.zValues[1];
+          this.zValues.length = 1;
+        }
+      } else if (this.zValues[1] == undefined || this.zValues[1] == '') {
+        if (this.zValues[0] == undefined && this.zValues[2] == undefined) {
+          this.zValues[0] = '0';
+          this.zValues.length = 1;
+        } else if (this.zValues[0] != undefined && this.zValues[2] != undefined) {
+          this.zValues[1] = this.zValues[2];
+          delete this.zValues[2];
+          this.zValues.length = 2;
+        } else if (this.zValues[0] == undefined && this.zValues[2] != undefined) {
+          this.zValues[0] = this.zValues[2];
+          delete this.zValues[2];
+          this.zValues.length = 1;
+        }
+      } else {
+        if (this.zValues[0] == undefined && this.zValues[1] == undefined) {
+          this.zValues[0] = '0';
+          this.zValues.length = 1;
+        } else if (this.zValues[0] == undefined && this.zValues[1] != undefined) {
+          this.zValues[0] = this.zValues[1];
+          delete this.zValues[1];
+          this.zValues.length = 1;
+        }
+      }
+      for (let i = 0;i < 3;i++) {
+        for (let j = 0;j < 3;j++) {
+          if (Number(this.zValues[i]) < Number(this.zValues[j])) {
+            let temp = this.zValues[i];
+            this.zValues[i] = this.zValues[j];
+            this.zValues[j] = temp;
+          }
+        }
+      }
+      console.log(this.zValues);
+      console.log(this.zValues.length);
+      //Todo: UE是否全部重設初始高度，或跳提醒
     }
     if (msg != '') {
       this.msgDialogConfig.data = {
@@ -676,15 +742,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     //檢查有沒有場域長寬高被改成負數
-    if (this.calculateForm.height < 0 || this.calculateForm.altitude < 0 || this.calculateForm.width < 0) {
+    if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
       if (this.calculateForm.height < 0) {
         this.calculateForm.height = 100;
-      } else if (this.calculateForm.altitude < 0) {
+      } else if (this.calculateForm.altitude <= 0) {
         this.calculateForm.altitude = 3;
       } else {
         this.calculateForm.width = 100;
       }
-      let msg = '場域高度不可小於0,將為您恢復成預設值';
+      let msg = '場域高度不可小於等於0,將為您恢復成預設值';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
