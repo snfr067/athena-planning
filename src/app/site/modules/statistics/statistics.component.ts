@@ -300,13 +300,24 @@ export class StatisticsComponent implements OnInit {
       }
       k++;
     }
+    // show value text position
+    const textposition = [];
+    for (let i = 0; i < x.length; i++) {
+      if (i === 0) {
+        textposition.push('top right');
+      } else if (i === x.length - 1) {
+        textposition.push('top left');
+      } else {
+        textposition.push('top');
+      }
+    }
 
     for (let i = 0; i < yData.length; i++) {
       const sum = Plotly.d3.sum(yData[i]);
       for (const item of yData[i]) {
         percentage[i] = item / sum + percentage[i];
         y[i].push(percentage[i]);
-        text[i].push(this.fmt(percentage[i]));
+        text[i].push(`${this.fmt(percentage[i])}`);
       }
       traces.push({
         type: 'scatter',
@@ -314,7 +325,7 @@ export class StatisticsComponent implements OnInit {
         x: x,
         y: y[i],
         text: text[i],
-        textposition: 'top',
+        textposition: textposition,
         name: this.zValues[i] + 'm',
         hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
         textfont: {
@@ -637,6 +648,18 @@ export class StatisticsComponent implements OnInit {
       k++;
     }
 
+    // show value text position
+    const textposition = [];
+    for (let i = 0; i < x.length; i++) {
+      if (i === 0) {
+        textposition.push('top right');
+      } else if (i === x.length - 1) {
+        textposition.push('top left');
+      } else {
+        textposition.push('top');
+      }
+    }
+
     for (let i = 0; i < yData.length; i++) {
       const sum = Plotly.d3.sum(yData[i]);
       for (const item of yData[i]) {
@@ -650,7 +673,7 @@ export class StatisticsComponent implements OnInit {
         x: x,
         y: y[i],
         text: text[i],
-        textposition: 'top',
+        textposition: textposition,
         name: this.zValues[i] + 'm',
         hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
         textfont: {
@@ -757,13 +780,25 @@ export class StatisticsComponent implements OnInit {
       text.push(fmt(percentage));
     }
 
+    // show value text position
+    const textposition = [];
+    for (let i = 0; i < x.length; i++) {
+      if (i === 0) {
+        textposition.push('top right');
+      } else if (i === x.length - 1) {
+        textposition.push('top left');
+      } else {
+        textposition.push('top');
+      }
+    }
+
     traces.push({
       type: 'scatter',
       mode: 'lines+text',
       x: x,
       y: y,
       text: text,
-      textposition: 'top',
+      textposition: textposition,
       textfont: {
         size: 14,
         color: this.textColor
@@ -951,13 +986,25 @@ export class StatisticsComponent implements OnInit {
       text.push(fmt(percentage));
     }
 
+    // show value text position
+    const textposition = [];
+    for (let i = 0; i < x.length; i++) {
+      if (i === 0) {
+        textposition.push('top right');
+      } else if (i === x.length - 1) {
+        textposition.push('top left');
+      } else {
+        textposition.push('top');
+      }
+    }
+
     traces.push({
       type: 'scatter',
       mode: 'lines+text',
       x: x,
       y: y,
       text: text,
-      textposition: 'top',
+      textposition: textposition,
       textfont: {
         size: 14,
         color: this.textColor

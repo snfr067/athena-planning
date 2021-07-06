@@ -216,30 +216,33 @@ export class ProposeComponent implements OnInit {
       }
     }
 
-    Plotly.newPlot(id, {
-      data: traces,
-      layout: this.plotLayout,
-      config: defaultPlotlyConfiguration
-    }).then((gd) => {
-
-      // 計算長寬
-      const sizes = this.chartService.calSize(this.calculateForm, gd);
-      const layoutOption = {
-        width: sizes[0],
-        height: sizes[1]
-      };
-      // 重新指定圖的長寬
-      Plotly.relayout(id, layoutOption).then((gd2) => {
-        this.layoutChart.nativeElement.style.opacity = 1;
-        if (isPDF) {
-          window.setTimeout(() => {
-            this.toImg();
-          }, 0);
-        }
-        console.log('layout plot done.');
+    if (id != null) {
+      Plotly.newPlot(id, {
+        data: traces,
+        layout: this.plotLayout,
+        config: defaultPlotlyConfiguration
+      }).then((gd) => {
+  
+        // 計算長寬
+        const sizes = this.chartService.calSize(this.calculateForm, gd);
+        const layoutOption = {
+          width: sizes[0],
+          height: sizes[1]
+        };
+        // 重新指定圖的長寬
+        Plotly.relayout(id, layoutOption).then((gd2) => {
+          this.layoutChart.nativeElement.style.opacity = 1;
+          if (isPDF) {
+            window.setTimeout(() => {
+              this.toImg();
+            }, 0);
+          }
+          console.log('layout plot done.');
+        });
+  
       });
-
-    });
+    }
+    
   }
 
   /**

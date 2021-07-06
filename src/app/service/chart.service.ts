@@ -17,10 +17,10 @@ export class ChartService {
     
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
-    if (calculateForm.width < calculateForm.height) {
+    if (Number(calculateForm.width) < Number(calculateForm.height)) {
       const ratio = calculateForm.width / calculateForm.height;
       layoutWidth = layoutHeight * ratio + 160;
-    } else if (calculateForm.width > calculateForm.height) {
+    } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
       layoutHeight = layoutWidth * ratio;
       const winHeight = window.innerHeight - 150;
@@ -33,7 +33,7 @@ export class ChartService {
         }
       }
     } else {
-      layoutWidth = layoutHeight + 160;
+      layoutWidth = layoutHeight + 180;
     }
     return [layoutWidth, layoutHeight];
   }
