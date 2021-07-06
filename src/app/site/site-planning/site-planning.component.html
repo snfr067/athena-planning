@@ -765,17 +765,17 @@
                   <ul class="inline-block">
                     <li class="inline-block">
                       <label>{{ 'width' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false, true)">
+                      <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'height' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false, true)">
+                      <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'altitude' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false, true)">
+                      <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false, true, true)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false)"> -->
                     </li>
                   </ul>
@@ -1280,7 +1280,7 @@
           <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'meter' | translate }}
         </ng-container>
         <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-          <input type="text" [(ngModel)]="dragObject[svgId].z">{{ 'cm' | translate }}
+          <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'cm' | translate }}
         </ng-container>
         <ng-container *ngIf="dragObject[svgId].type === 'UE'">
           <select class="zAxis" [(ngModel)]="dragObject[svgId].z">

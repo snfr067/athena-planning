@@ -566,7 +566,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             }
             console.log(this.calculateForm);
             
-            this.initData(false, false, false);
+            this.initData(false, false, false, false);
           },
           err => {
             this.msgDialogConfig.data = {
@@ -590,7 +590,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // this.calculateForm.bandwidth = '[1]';
         }
 
-        this.initData(false, false, false);
+        this.initData(false, false, false, false);
       }
       
       // setTimeout(()=> {
@@ -670,10 +670,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * @param isImportXls 是否import xlxs
    * @param isImportImg 是否import image
    */
-  initData(isImportXls, isImportImg, isChangeFieldParam) {
+  initData(isImportXls, isImportImg, isChangeFieldParam, isAltChange) {
     if (typeof this.chart !== 'undefined') {
       this.chart.nativeElement.style.opacity = 0;
     }
+
+    //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude < 0 || this.calculateForm.width < 0) {
       if (this.calculateForm.height < 0) {
         this.calculateForm.height = 100;
@@ -689,6 +691,55 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
+
+    if (isAltChange) {
+      let msg = '若場域高度修改後低於障礙物或基站高度，障礙物和基站會被設置成場域高度';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      //檢查場域高度有沒有小於場域所有的物件高度
+      //zValues
+      for (let i = 0;i < this.zValues.length;i++) {
+        if (this.calculateForm.altitude < Number(this.zValues[i])) {
+          this.zValues[i] = '';
+        }
+      }
+      let j = 0;
+      for (let i = 0;i < this.zValues.length;i++) {
+        if (this.zValues[i] == '') {
+          j++;
+        }
+      }
+      if (j == this.zValues.length) {
+        this.zValues[0] = '0';
+      }
+      //障礙物
+      for (let i = 0;i < this.obstacleList.length;i++) {
+        // console.log('障礙物'+this.dragObject[this.obstacleList[i]].altitude+' '+this.calculateForm.altitude);
+        if (this.calculateForm.altitude < this.dragObject[this.obstacleList[i]].altitude) {
+          this.dragObject[this.obstacleList[i]].altitude = this.calculateForm.altitude;
+          // console.log('障礙物高度被修改成場域高度'+this.dragObject[this.obstacleList[i]].altitude);
+        }
+      }
+      //既有基地台
+      for (let i = 0;i < this.defaultBSList.length;i++) {
+        // console.log('既有基地台'+this.dragObject[this.defaultBSList[i]].altitude+' '+this.calculateForm.altitude);
+        if (this.calculateForm.altitude < this.dragObject[this.defaultBSList[i]].altitude) {
+          this.dragObject[this.defaultBSList[i]].altitude = this.calculateForm.altitude;
+          // console.log('既有基地台高度被修改成場域高度'+this.dragObject[this.defaultBSList[i]].altitude);
+        }
+      }
+      //待選基地台
+      for (let i = 0;i < this.candidateList.length;i++) {
+        if (this.calculateForm.altitude < this.dragObject[this.candidateList[i]].altitude) {
+          this.dragObject[this.candidateList[i]].altitude = this.calculateForm.altitude;
+        }
+      }
+    }
+
     // Plotly繪圖config
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -804,7 +855,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                 // do noting
               } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                 // 編輯
-                if (!isChangeFieldParam) {
+                if (!isAltChange) {
                   this.edit();
                 }
                 console.log(this.calculateForm);
@@ -855,7 +906,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
             // 編輯
             console.log(this.calculateForm);
-            if (!isChangeFieldParam) {
+            if (!isAltChange) {
               this.edit();
             }
           }
@@ -1630,7 +1681,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     reader.readAsDataURL(file);
     reader.onload = () => {
       this.calculateForm.mapImage = reader.result.toString();
-      this.initData(false, true, false);
+      this.initData(false, true, false, false);
     };
   }
 
@@ -2713,7 +2764,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
   
-      this.initData(true, false, false);
+      this.initData(true, false, false, false);
     } catch (error) {
       console.log(error);
       // fail xlsx
@@ -3211,6 +3262,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    */
   edit() {
     // obstacleInfo
+    this.obstacleList.length = 0;
+    this.dragObject = {};
+    this.candidateList.length = 0;
+    this.defaultBSList.length = 0;
+    this.bsListRfParam = {};
+    this.ueList.length = 0;
+    this.spanStyle = {};
+    this.rectStyle = {};
+    this.ellipseStyle = {};
+    this.polygonStyle = {};
+    this.trapezoidStyle = {};
+    this.svgStyle = {};
+    this.pathStyle = {};
+    // this.circleStyle
     if (!this.authService.isEmpty(this.calculateForm.obstacleInfo)) {
       const obstacle = this.calculateForm.obstacleInfo.split('|');
       const obstacleLen = obstacle.length;
