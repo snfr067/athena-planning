@@ -483,3 +483,24 @@ ul {
 :host ::ng-deep .moveable-origin {
     opacity: 0;
 }
+
+.inputNum {
+    display: inline-block;
+    width: 50px;
+}
+
+.inputNumPower {
+    display: inline-block;
+    width: 100px;
+}
+
+.inputNumFreq {
+    display: inline-block;
+    width: 175px;
+    height: 22px;
+}
+
+.inputNumFreqAI {
+    display: inline-block;
+    width: 150px;
+}

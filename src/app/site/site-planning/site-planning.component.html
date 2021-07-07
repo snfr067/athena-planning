@@ -378,7 +378,7 @@
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
           <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
-            <input type="text" [(ngModel)]="calculateForm.availableNewBsNumber">
+            <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
@@ -411,24 +411,24 @@
               <tr *ngIf="duplexMode === 'tdd'">
                 <td>{{ 'upDownRatio' | translate }}</td>
                 <td>
-                  {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                  {{ 'dlRatio' | translate }}<input type="number" class="inputNum" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </td>
               </tr>
               <tr>
                 <td>{{ 'powerRange' | translate }}</td>
                 <td>
-                  <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
+                  <input type="number" class="inputNumPower" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
                   ~
-                  <input [(ngModel)]="calculateForm.powerMaxRange" type="text" placeholder="{{ 'powerMaxRange' | translate }}">dBm
+                  <input [(ngModel)]="calculateForm.powerMaxRange" type="number" class="inputNumPower" placeholder="{{ 'powerMaxRange' | translate }}">dBm
                 </td>
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
                 <td>Frequency</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
+                <td><input type="number" step="5" class="inputNum" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
               </tr>
               <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'scalingFactor' | translate }}</td>
-                <td><input type="text" [(ngModel)]="scalingFactor"></td>
+                <td><input type="number" step="0.1" class="inputNum" [(ngModel)]="scalingFactor"></td>
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'tddBandwidth' | translate }}</td>
@@ -837,7 +837,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd' && planningIndex == '3'">
                   <p>{{ 'upDownRatio' | translate }}	</p>
-                  {{ 'dlRatio' | translate }}<input type="text" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                  {{ 'dlRatio' | translate }}<input type="number" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </li>
 
                 <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
@@ -968,9 +968,9 @@
                 <li>
                   <p style="display: block;">{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
                   <ol class="inline-block">
-                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)"></li>
-                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
-                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
+                    <li><input type="number" class="inputNum" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
                   </ol>
                 </li>
               </ul>
@@ -1667,7 +1667,7 @@
     <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
       <tr *ngIf="planningIndex == '3'">
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
@@ -1675,11 +1675,11 @@
       </tr>
       <tr>
         <td>Frequency</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'tddBandwidth' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>MHz
+        <td><input type="number" class="inputNum" step="5" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>MHz
       </tr>
       <tr>
         <td>{{ 'mimoNum' | translate }}</td>
@@ -1707,7 +1707,7 @@
     <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
       <tr *ngIf="planningIndex == '3'">
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
@@ -1715,11 +1715,11 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulBandwidth' | translate }}</td>
@@ -1773,7 +1773,7 @@
     <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
       <tr *ngIf="planningIndex == '3'">
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
@@ -1781,7 +1781,7 @@
       </tr>
       <tr>
         <td>Frequency</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
       </tr>
       <!-- <tr>
         <td>{{ 'tddBandwidth' | translate }}</td>
@@ -1914,7 +1914,7 @@
     <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
       <tr *ngIf="planningIndex == '3'">
         <td>TxPower</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
       </tr>
       <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
@@ -1922,11 +1922,11 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulMimolayer' | translate }}</td>
