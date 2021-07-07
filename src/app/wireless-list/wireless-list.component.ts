@@ -5,6 +5,7 @@ import { NewPlanningComponent } from '../new-planning/new-planning.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PdfComponent } from '../site/pdf/pdf.component';
+// import { SitePlanning } from '../site/site-planning/site-planning.component';
 import { ExcelService } from '../service/excel.service';
 import { MsgDialogComponent } from '../utility/msg-dialog/msg-dialog.component';
 import { FormService } from '../service/form.service';
@@ -56,6 +57,8 @@ export class WirelessListComponent implements OnInit, OnDestroy {
   confirmDialogConfig: MatDialogConfig;
   /** 數值格式化為.1  */
   roundFormat = Plotly.d3.format('.1f');
+
+  // @ViewChild('sitePlanning') sitePlanning: SitePlanning;
 
   /** 呼叫PdfComponent元件 */
   @ViewChild('pdf')
@@ -161,6 +164,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
    * @param taskId taskId
    */
   exportHstExcel(taskId) {
+    // this.sitePlanning.export();
     let url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
     url += `${this.authService.userToken}/${taskId}`;
     this.http.get(url).subscribe(

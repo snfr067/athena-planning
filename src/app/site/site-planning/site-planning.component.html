@@ -989,11 +989,11 @@
                 <li *ngFor="let item of obstacleList">
                   <span>
                     <label>X</label>
-                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
+                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
                   </span>
                   <span>
                     <label>Y</label>
-                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
+                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
                   </span>
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
@@ -1048,11 +1048,11 @@
                     <li *ngFor="let item of defaultBSList; let i = index;">
                       <span>
                         <label>X</label>
-                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
+                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
                       </span>
                       <span>
                         <label>Y</label>
-                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
+                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
                       </span>
                       <span>
                         <label>Z</label>
@@ -1096,11 +1096,11 @@
                 <li *ngFor="let item of candidateList">
                   <span>
                     <label>X</label>
-                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
+                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
                   </span>
                   <span>
                     <label>Y</label>
-                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
+                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
                   </span>
                   <span>
                     <label>Z</label>
@@ -1128,11 +1128,11 @@
                     <li *ngFor="let item of ueList">
                       <span>
                         <label>X</label>
-                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition(item)">
+                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
                       </span>
                       <span>
                         <label>Y</label>
-                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition(item)">
+                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
                       </span>
                       <span>
                         <label>Z</label>
