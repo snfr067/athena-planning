@@ -404,6 +404,8 @@ export class SignalUlThroughputComponent implements OnInit {
       });
     }
 
+    this.shapes.length = 0;
+
     // 障礙物
     if (this.calculateForm.obstacleInfo !== '') {
       const obstacle = this.calculateForm.obstacleInfo.split('|');
@@ -429,28 +431,47 @@ export class SignalUlThroughputComponent implements OnInit {
           shape = '0';
         }
 
-        this.rectList.push({
-          x: xdata,
-          y: ydata,
-          rotate: oData[5],
-          shape: shape,
-          style: {
-            left: 0,
-            top: 0,
-            width: oData[2],
-            height: oData[3],
-            // transform: `rotate(${oData[5]}deg)`,
-            position: 'absolute',
-            visibility: this.showObstacle,
-            opacity: 0
-          },
-          svgStyle: {
-            width: oData[2],
-            height: oData[3],
-            fill: oColor,
-          },
-          hover: text
-        });
+        if (Number(shape) === 2) {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            fillcolor: '#000000',
+            x0: xdata,
+            y0: ydata,
+            x1: xdata + oData[2],
+            y1: ydata + oData[3],
+            line: {
+              color: '#000000'
+            },
+            opacity: 0.2,
+            visible: (this.showObstacle === 'visible' ? true : false)
+          });
+
+        } else {
+          this.rectList.push({
+            x: xdata,
+            y: ydata,
+            rotate: oData[5],
+            shape: shape,
+            style: {
+              left: 0,
+              top: 0,
+              width: oData[2],
+              height: oData[3],
+              // transform: `rotate(${oData[5]}deg)`,
+              position: 'absolute',
+              visibility: this.showObstacle,
+              opacity: 0
+            },
+            svgStyle: {
+              width: oData[2],
+              height: oData[3],
+              fill: oColor,
+            },
+            hover: text
+          });
+        }
 
       }
     }
@@ -464,7 +485,7 @@ export class SignalUlThroughputComponent implements OnInit {
       const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
       const rect = xy.getBoundingClientRect();
       let layoutOption = {};
-      this.shapes.length = 0;
+      
       this.annotations.length = 0;
       const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
@@ -537,10 +558,12 @@ export class SignalUlThroughputComponent implements OnInit {
         }
       }
 
-      const sizes = this.chartService.calSize(this.calculateForm, gd);
+      // 尺寸跟場域設定一樣
+      const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
+      // const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: sizes[0],
-        height: sizes[1],
+        width: sizes.width + 50,
+        height: sizes.height,
         shapes: this.shapes,
         annotations: this.annotations
       };
@@ -694,9 +717,7 @@ export class SignalUlThroughputComponent implements OnInit {
    * @param visible 
    */
   switchShowObstacle(visible) {
-    for (const item of this.rectList) {
-      item.style['visibility'] = visible;
-    }
+    this.chartService.switchShowObstacle(visible, this.rectList, this.shapes, this.annotations, this.chartId);
   }
 
   /**
@@ -711,7 +732,7 @@ export class SignalUlThroughputComponent implements OnInit {
     }, [2]);
 
     for (const item of this.shapes) {
-      if (item.type == 'circle') {
+      if (item.type == 'circle' && item.fillcolor === '#005959') {
         item.visible = visible;
       }
     }

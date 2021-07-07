@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CalculateForm } from '../form/CalculateForm';
 
+declare var Plotly: any;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,4 +39,30 @@ export class ChartService {
     }
     return [layoutWidth, layoutHeight];
   }
+
+  /**
+   * show/hide 障礙物
+   * @param visible 
+   * @param rectList 
+   * @param shapes 
+   * @param annotations 
+   * @param gd 
+   */
+  switchShowObstacle(visible, rectList, shapes, annotations, gd) {
+    for (const item of rectList) {
+      item.style['visibility'] = visible;
+    }
+    const shapeVisible = (visible === 'visible') ? true : false;
+    for (const item of shapes) {
+      // 顏色區分圓形障礙物與BS
+      if (item.type === 'circle' && item.fillcolor === '#000000') {
+        item.visible = shapeVisible;
+      }
+    }
+    Plotly.relayout(gd, {
+      shapes: shapes,
+      annotations: annotations
+    });
+  }
+
 }

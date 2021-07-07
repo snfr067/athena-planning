@@ -283,6 +283,78 @@ export class SignalQualityComponent implements OnInit {
       });
     }
 
+    this.shapes.length = 0;
+
+    // 障礙物
+    if (this.calculateForm.obstacleInfo !== '') {
+      const obstacle = this.calculateForm.obstacleInfo.split('|');
+      for (const item of obstacle) {
+        const oData = JSON.parse(item);
+        const xdata = oData[0];
+        const ydata = oData[1];
+        const oColor = '#000000';
+        // 0~3分別是矩型、三角形、圓形、梯形
+        let shape = oData[7];
+        let text = `${this.translateService.instant('planning.obstacleInfo')}
+        X: ${xdata}
+        Y: ${ydata}
+        ${this.translateService.instant('width')}: ${oData[2]}
+        ${this.translateService.instant('height')}: ${oData[3]}
+        ${this.translateService.instant('altitude')}: ${oData[4]}
+        `;
+
+        if (typeof oData[6] !== 'undefined') {
+          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(oData[6])}`;
+        }
+        if (typeof oData[7] === 'undefined') {
+          shape = '0';
+        }
+
+        if (Number(shape) === 2) {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            fillcolor: '#000000',
+            x0: xdata,
+            y0: ydata,
+            x1: xdata + oData[2],
+            y1: ydata + oData[3],
+            line: {
+              color: '#000000'
+            },
+            opacity: 0.2,
+            visible: (this.showObstacle === 'visible' ? true : false)
+          });
+
+        } else {
+          this.rectList.push({
+            x: xdata,
+            y: ydata,
+            rotate: oData[5],
+            shape: shape,
+            style: {
+              left: 0,
+              top: 0,
+              width: oData[2],
+              height: oData[3],
+              // transform: `rotate(${oData[5]}deg)`,
+              position: 'absolute',
+              visibility: this.showObstacle,
+              opacity: 0
+            },
+            svgStyle: {
+              width: oData[2],
+              height: oData[3],
+              fill: oColor,
+            },
+            hover: text
+          });
+        }
+
+      }
+    }
+
     // const trace = {
     //   x: mapX,
     //   y: mapY,
@@ -458,57 +530,6 @@ export class SignalQualityComponent implements OnInit {
       });
     }
 
-    // 障礙物
-    if (this.calculateForm.obstacleInfo !== '') {
-      const obstacle = this.calculateForm.obstacleInfo.split('|');
-      for (const item of obstacle) {
-        const oData = JSON.parse(item);
-        const xdata = oData[0];
-        const ydata = oData[1];
-        const oColor = '#000000';
-        // 0~3分別是矩型、三角形、圓形、梯形
-        let shape = oData[7];
-        let text = `${this.translateService.instant('planning.obstacleInfo')}
-        X: ${xdata}
-        Y: ${ydata}
-        ${this.translateService.instant('width')}: ${oData[2]}
-        ${this.translateService.instant('height')}: ${oData[3]}
-        ${this.translateService.instant('altitude')}: ${oData[4]}
-        `;
-
-        if (typeof oData[6] !== 'undefined') {
-          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(oData[6])}`;
-        }
-        if (typeof oData[7] === 'undefined') {
-          shape = '0';
-        }
-
-        this.rectList.push({
-          x: xdata,
-          y: ydata,
-          rotate: oData[5],
-          shape: shape,
-          style: {
-            left: 0,
-            top: 0,
-            width: oData[2],
-            height: oData[3],
-            // transform: `rotate(${oData[5]}deg)`,
-            position: 'absolute',
-            visibility: this.showObstacle,
-            opacity: 0
-          },
-          svgStyle: {
-            width: oData[2],
-            height: oData[3],
-            fill: oColor,
-          },
-          hover: text
-        });
-
-      }
-    }
-
     console.log(traces);
 
     Plotly.newPlot(id, {
@@ -521,7 +542,7 @@ export class SignalQualityComponent implements OnInit {
       const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
       const rect = xy.getBoundingClientRect();
       let layoutOption = {};
-      this.shapes.length = 0;
+      
       this.annotations.length = 0;
       // 新增基站
       if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '') {
@@ -590,25 +611,17 @@ export class SignalQualityComponent implements OnInit {
           });
         }
       }
-
-      const sizes = this.chartService.calSize(this.calculateForm, gd);
+      // 尺寸跟場域設定一樣
+      const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
+      // const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: sizes[0],
-        height: sizes[1],
+        width: sizes.width + 50,
+        height: sizes.height,
         shapes: this.shapes,
         annotations: this.annotations
       };
-
-      if (images.length > 0) {
-        const image = new Image();
-        image.src = images[0].source;
-        image.onload = () => {
-          this.reLayout(id, layoutOption, isPDF);
-        };
-        
-      } else {
-        this.reLayout(id, layoutOption, isPDF);
-      }
+      // resize layout
+      this.reLayout(id, layoutOption, isPDF);
 
     });
   }
@@ -750,9 +763,7 @@ export class SignalQualityComponent implements OnInit {
    * @param visible 
    */
   switchShowObstacle(visible) {
-    for (const item of this.rectList) {
-      item.style['visibility'] = visible;
-    }
+    this.chartService.switchShowObstacle(visible, this.rectList, this.shapes, this.annotations, this.chartId);
   }
 
   /**
@@ -768,7 +779,8 @@ export class SignalQualityComponent implements OnInit {
     }, [2]);
 
     for (const item of this.shapes) {
-      if (item.type == 'circle') {
+      // 顏色區分障礙物與BS
+      if (item.type == 'circle' && item.fillcolor === '#005959') {
         item.visible = visible;
       }
     }
