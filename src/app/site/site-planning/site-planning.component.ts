@@ -618,7 +618,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       if (fieldOrId.length > 1) {
         this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
       } else {
-        this.zValues[Number(fieldOrId)] = this.calculateForm.altitude.toString();
+        let existed = false;
+        for (let i = 0;i < this.zValues.length;i++) {
+          if (this.zValues[i] == this.calculateForm.altitude.toString()) {
+            existed = true;
+          }
+        }
+        if (!existed) {
+          this.zValues[Number(fieldOrId)] = this.calculateForm.altitude.toString();
+        } else {
+          delete this.zValues[Number(fieldOrId)];
+        }
       }
     }
     if (fieldOrId.length == 1) {
@@ -630,12 +640,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             delete this.zValues[Number(fieldOrId)];
             // this.zValues[Number(fieldOrId)] = '';
             msg = '已有重複高度';
-            if (i == 0 && this.zValues[1] == undefined && this.zValues[2] == undefined) {
+            if (i == 0 && this.zValues[1] === undefined && this.zValues[2] === undefined) {
               this.zValues.length = 1;
               console.log(this.zValues);
-            } else if (i == 0 && this.zValues[1] != undefined && this.zValues[2] == undefined){
+            } else if (i == 0 && this.zValues[1] !== undefined && this.zValues[2] === undefined){
               this.zValues.length = 2;
-            } else if (i == 0 && this.zValues[1] == undefined && this.zValues[2] == undefined){
+            } else if (i == 0 && this.zValues[1] === undefined && this.zValues[2] === undefined){
               this.zValues.length = 3;
             } else if (i == 1){
               this.zValues.length = 2;
@@ -645,46 +655,49 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
       console.log(this.zValues);
-      if (this.zValues[0] == undefined || this.zValues[0] == '') {
-        if (this.zValues[1] == undefined && this.zValues[2] == undefined) {
+      if (this.zValues[0] === undefined || this.zValues[0] === '') {
+        if (this.zValues[1] === undefined && this.zValues[2] === undefined) {
           this.zValues[0] = '0';
           this.zValues.length = 1;
-        } else if (this.zValues[1] != undefined && this.zValues[2] != undefined) {
+        } else if (this.zValues[1] !== undefined && this.zValues[2] !== undefined) {
           this.zValues[0] = this.zValues[1];
           this.zValues[1] = this.zValues[2];
           delete this.zValues[2];
           this.zValues.length = 2;
-        } else if (this.zValues[1] == undefined && this.zValues[2] != undefined) {
+        } else if (this.zValues[1] === undefined && this.zValues[2] !== undefined) {
           this.zValues[0] = this.zValues[2];
           delete this.zValues[2];
           this.zValues.length = 1;
-        } else if (this.zValues[1] != undefined && this.zValues[2] == undefined) {
+        } else if (this.zValues[1] !== undefined && this.zValues[2] === undefined) {
           this.zValues[0] = this.zValues[1];
           delete this.zValues[1];
           this.zValues.length = 1;
         }
-      } else if (this.zValues[1] == undefined || this.zValues[1] == '') {
-        if (this.zValues[0] == undefined && this.zValues[2] == undefined) {
+      } else if (this.zValues[1] === undefined || this.zValues[1] === '') {
+        if (this.zValues[0] === undefined && this.zValues[2] === undefined) {
           this.zValues[0] = '0';
           this.zValues.length = 1;
-        } else if (this.zValues[0] != undefined && this.zValues[2] != undefined) {
+        } else if (this.zValues[0] !== undefined && this.zValues[2] !== undefined) {
           this.zValues[1] = this.zValues[2];
           delete this.zValues[2];
           this.zValues.length = 2;
-        } else if (this.zValues[0] == undefined && this.zValues[2] != undefined) {
+        } else if (this.zValues[0] !== undefined && this.zValues[2] === undefined) {
+          delete this.zValues[1];
+          this.zValues.length = 1;
+        } else if (this.zValues[0] === undefined && this.zValues[2] !== undefined) {
           this.zValues[0] = this.zValues[2];
           delete this.zValues[2];
           this.zValues.length = 1;
         }
-      } else if (this.zValues[2] == undefined || this.zValues[2] == '') {
-        if (this.zValues[0] == undefined && this.zValues[1] == undefined) {
+      } else if (this.zValues[2] === undefined || this.zValues[2] === '') {
+        if (this.zValues[0] === undefined && this.zValues[1] === undefined) {
           this.zValues[0] = '0';
           this.zValues.length = 1;
-        } else if (this.zValues[0] == undefined && this.zValues[1] != undefined) {
+        } else if (this.zValues[0] === undefined && this.zValues[1] !== undefined) {
           this.zValues[0] = this.zValues[1];
           delete this.zValues[1];
           this.zValues.length = 1;
-        } else if (this.zValues[0] != undefined && this.zValues[1] == undefined) {
+        } else if (this.zValues[0] !== undefined && this.zValues[1] === undefined) {
           this.zValues[1] = this.zValues[2];
           delete this.zValues[2];
           this.zValues.length = 2;
@@ -765,7 +778,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
 
-    if (isAltChange) {
+    // FoolProof
+    if (isAltChange) { 
       let msg = '若場域高度修改後低於障礙物或基站高度，障礙物和基站會被設置成場域高度';
       this.msgDialogConfig.data = {
         type: 'error',
@@ -777,18 +791,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       //zValues
       for (let i = 0;i < this.zValues.length;i++) {
         if (this.calculateForm.altitude < Number(this.zValues[i])) {
-          this.zValues[i] = '';
+          delete this.zValues[i];
         }
       }
-      let j = 0;
-      for (let i = 0;i < this.zValues.length;i++) {
-        if (this.zValues[i] == '') {
-          j++;
-        }
-      }
-      if (j == this.zValues.length) {
+      if (this.zValues[0] == undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
         this.zValues[0] = '0';
+        this.zValues.length = 1;
+      } else if (this.zValues[0] != undefined && this.zValues[1] != undefined && this.zValues[2] == undefined) {
+        this.zValues.length = 2;
+      } else if (this.zValues[0] != undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
+        this.zValues.length = 1;
       }
+
+      console.log(this.zValues.length);
       //障礙物
       for (let i = 0;i < this.obstacleList.length;i++) {
         // console.log('障礙物'+this.dragObject[this.obstacleList[i]].altitude+' '+this.calculateForm.altitude);
@@ -1787,7 +1802,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * 檢查參數是否完整
    */
    checkRFParamIsEmpty(protocol, duplex) {
-
     let error = false;
     let msg = '<br>';
      if (protocol == '1') { //5G
@@ -1939,6 +1953,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  //Todo
+  checkCandidateRFParamIsEmpty(protocol, duplex) {
+    // this.tempCalParamSet
+    return false;
+  }
+
   /**
    * 開始運算
    */
@@ -1947,8 +1967,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.moveable.destroy();
     } catch (error) {}
 
-    // 檢查是否有參數未被填入
+    // 檢查既有基地台是否有參數未被填入
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
+      return;
+    }
+
+    // 檢查待選基地台參數 Todo
+    if (this.checkCandidateRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
       return;
     }
 
@@ -1961,10 +1986,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       return;
     }
-
-
-    console.log(typeof this.calculateForm.powerMaxRange);
-    console.log(typeof this.calculateForm.powerMinRange);
 
     if (this.planningIndex !='3' && Number(this.calculateForm.powerMaxRange) == Number(this.calculateForm.powerMinRange) || 
     Number(this.calculateForm.powerMinRange) > Number(this.calculateForm.powerMaxRange)) {
@@ -1984,11 +2005,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     // Candidate
     // DefaultBs [重要!!]
-    
     // ---------- 我是分隔線 ----------
-
-    console.log(this.calculateForm);
-
     if (((this.candidateList.length < this.calculateForm.availableNewBsNumber) || Number(this.calculateForm.availableNewBsNumber) === 0) && this.planningIndex !== '3') {
       let msg;
       if (this.calculateForm.objectiveIndex === '2') {
@@ -2039,8 +2056,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.setPlanningObj();
 
       // let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
-
-
       console.log(this.calculateForm);
       let url = '';
       if (this.planningIndex !== '3') {

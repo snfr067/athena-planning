@@ -966,11 +966,11 @@
                 </li>
                 
                 <li>
-                  <p>{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
+                  <p style="display: block;">{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
                   <ol class="inline-block">
-                    <li><input type="text" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)" ></li>
-                    <li><input type="text" [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
-                    <li><input type="text" [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
+                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)"></li>
+                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
+                    <li><input type="number" style="display: inline-block; width: 50px;" [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
                   </ol>
                 </li>
               </ul>
