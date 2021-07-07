@@ -1788,17 +1788,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         for (let i = 0; i < this.defaultBSList.length; i++) {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
           let bsMsg = '';
-          // console.log(obj);
-          // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
-          if (obj.tddbandwidth == undefined || obj.tddbandwidth == '') { bsMsg += `頻寬,`; error = true; }
-          if (obj.tddscs == undefined || obj.tddscs == '') { bsMsg += `子載波間距,`; error = true; }
-          if (obj.ulModulationCodScheme == undefined || obj.ulModulationCodScheme == '') { bsMsg += `上行調變能力,`; error = true; }
-          if (obj.dlModulationCodScheme == undefined || obj.dlModulationCodScheme == '') { bsMsg += `下行調變能力,`; error = true; }
-          if (obj.ulMimoLayer == undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數,`; error = true; }
-          if (obj.dlMimoLayer == undefined || obj.dlMimoLayer == '') { bsMsg += `下行資料串流層數,`; error = true; }
-          if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率`; error = true; }
-          if (bsMsg != '') {
+          // if (obj.beampattern) { msg = '' }
+          
+          if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率,`; error = true;}
+          if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型,`; error = true;}
+          if (obj.tddbandwidth === undefined || obj.tddbandwidth === '') { bsMsg += `頻寬,`; error = true; }
+          if (obj.tddscs === undefined || obj.tddscs === '') { bsMsg += `子載波間距,`; error = true; }
+          if (obj.ulModulationCodScheme === undefined || obj.ulModulationCodScheme === '') { bsMsg += `上行調變能力,`; error = true; }
+          if (obj.dlModulationCodScheme === undefined || obj.dlModulationCodScheme === '') { bsMsg += `下行調變能力,`; error = true; }
+          if (obj.ulMimoLayer === undefined || obj.ulMimoLayer === '') { bsMsg += `上行資料串流層數,`; error = true; }
+          if (obj.dlMimoLayer === undefined || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數,`; error = true; }
+          if (obj.tddfrequency === undefined || obj.tddfrequency === '') { bsMsg += `中心頻率`; error = true; }
+          if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
@@ -1811,17 +1813,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // console.log(obj);
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
-          if (obj.dlBandwidth == undefined || obj.dlBandwidth == '') { bsMsg += `下行頻寬,`; error = true; }
-          if (obj.ulBandwidth == undefined || obj.ulBandwidth == '') { bsMsg += `上行頻寬,`; error = true; }
-          if (obj.dlScs == undefined || obj.dlScs == '') { bsMsg += `下行子載波間距,`; error = true; }
-          if (obj.ulScs == undefined || obj.ulScs == '') { bsMsg += `上行子載波間距,`; error = true; }
-          if (obj.dlModulationCodScheme == '' || obj.dlModulationCodScheme == undefined) { bsMsg += `下行調變能力,`; error = true; }
-          if (obj.ulModulationCodScheme == '' || obj.ulModulationCodScheme == undefined) { bsMsg += `上行調變能力,`; error = true; }
-          if (obj.dlMimoLayer == undefined || obj.dlMimoLayer == '') { bsMsg += `下行資料串流層數,`; error = true; }
-          if (obj.ulMimoLayer == undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數,`; error = true; }
-          if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行頻率,`; error = true; }
-          if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行頻率`; error = true; }
-          if (bsMsg != '') {
+          if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率,`; error = true; }
+          if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型,`; error = true;}
+          if (obj.dlBandwidth === undefined || obj.dlBandwidth === '') { bsMsg += `下行頻寬,`; error = true; }
+          if (obj.ulBandwidth === undefined || obj.ulBandwidth === '') { bsMsg += `上行頻寬,`; error = true; }
+          if (obj.dlScs === undefined || obj.dlScs === '') { bsMsg += `下行子載波間距,`; error = true; }
+          if (obj.ulScs === undefined || obj.ulScs === '') { bsMsg += `上行子載波間距,`; error = true; }
+          if (obj.dlModulationCodScheme === '' || obj.dlModulationCodScheme == undefined) { bsMsg += `下行調變能力,`; error = true; }
+          if (obj.ulModulationCodScheme === '' || obj.ulModulationCodScheme == undefined) { bsMsg += `上行調變能力,`; error = true; }
+          if (obj.dlMimoLayer === undefined || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數,`; error = true; }
+          if (obj.ulMimoLayer === undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數,`; error = true; }
+          if (obj.fddDlFrequency === undefined || obj.fddDlFrequency === '') { bsMsg += `下行頻率,`; error = true; }
+          if (obj.fddUlFrequency === undefined || obj.fddUlFrequency === '') { bsMsg += `上行頻率`; error = true; }
+          if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
@@ -1839,10 +1843,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           let bsMsg = '';
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
-          if (obj.mimoNumber4G == undefined || obj.mimoNumber4G == '') { bsMsg += `MIMO天線數,`; error = true; }
-          if (obj.tddbandwidth == undefined || obj.tddbandwidth == '') { bsMsg += `頻寬,`; error = true; }
-          if (obj.tddfrequency == undefined || obj.tddfrequency == '') { bsMsg += `中心頻率,`; error = true; }
-          if (bsMsg != '') {
+          if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率,`; error = true; }
+          if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型,`; error = true;}
+          if (obj.mimoNumber4G === undefined || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數,`; error = true; }
+          if (obj.tddbandwidth === undefined || obj.tddbandwidth === '') { bsMsg += `頻寬,`; error = true; }
+          if (obj.tddfrequency === undefined || obj.tddfrequency === '') { bsMsg += `中心頻率,`; error = true; }
+          if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
@@ -1854,12 +1860,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           let bsMsg = '';
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
-          if (obj.mimoNumber4G == undefined || obj.mimoNumber4G == '') { bsMsg += `MIMO天線數,`; error = true; }
-          if (obj.dlBandwidth == undefined || obj.dlBandwidth == '') { bsMsg += `上行頻寬,`; error = true; }
-          if (obj.ulBandwidth == undefined || obj.ulBandwidth == '') { bsMsg += `下行頻寬,`; error = true; }
-          if (obj.fddDlFrequency == undefined || obj.fddDlFrequency == '') { bsMsg += `下行中心頻率,`; error = true; }
-          if (obj.fddUlFrequency == undefined || obj.fddUlFrequency == '') { bsMsg += `上行中心頻率`; error = true; }
-          if (bsMsg != '') {
+          if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率,`; error = true; }
+          if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型,`; error = true;}
+          if (obj.mimoNumber4G === undefined || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數,`; error = true; }
+          if (obj.dlBandwidth === undefined || obj.dlBandwidth === '') { bsMsg += `上行頻寬,`; error = true; }
+          if (obj.ulBandwidth === undefined || obj.ulBandwidth === '') { bsMsg += `下行頻寬,`; error = true; }
+          if (obj.fddDlFrequency === undefined || obj.fddDlFrequency === '') { bsMsg += `下行中心頻率,`; error = true; }
+          if (obj.fddUlFrequency === undefined || obj.fddUlFrequency === '') { bsMsg += `上行中心頻率`; error = true; }
+          if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
