@@ -2100,7 +2100,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
-      // this.authService.spinnerShowAsHome();
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
 
@@ -2115,6 +2114,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
+      this.authService.spinnerShowAsHome();
 
       // let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
       console.log(this.calculateForm);
@@ -2131,20 +2131,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
       console.log(this.calculateForm);
 
-      // this.http.post(url, JSON.stringify(apiBody)).subscribe(
-      //   res => {
-      //     this.taskid = res['taskid'];
-      //     const percentageVal = document.getElementById('percentageVal');
-      //     if (percentageVal != null) {
-      //       percentageVal.innerHTML = '0';
-      //     }
-      //     this.getProgress();
-      //   },
-      //   err => {
-      //     this.authService.spinnerHide();
-      //     console.log(err);
-      //   }
-      // );
+      this.http.post(url, JSON.stringify(apiBody)).subscribe(
+        res => {
+          this.taskid = res['taskid'];
+          const percentageVal = document.getElementById('percentageVal');
+          if (percentageVal != null) {
+            percentageVal.innerHTML = '0';
+          }
+          this.getProgress();
+        },
+        err => {
+          this.authService.spinnerHide();
+          console.log(err);
+        }
+      );
     }
   }
 

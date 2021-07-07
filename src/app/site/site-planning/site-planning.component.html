@@ -432,15 +432,15 @@
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'tddBandwidth' | translate }}</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.tddbandwidth">MHz</td>
+                <td><input type="number" class="inputNum" step="5" [(ngModel)]="tempCalParamSet.tddbandwidth">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'uplink.frequency' | translate }}</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.fddUlFrequency" (change)="hintDlUlDiff('ul')">MHz</td>
+                <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="tempCalParamSet.fddUlFrequency" (change)="hintDlUlDiff('ul')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'downlink.frequency' | translate }}</td>
-                <td><input type="text" [(ngModel)]="tempCalParamSet.fddDlFrequency" (change)="hintDlUlDiff('dl')">MHz</td>
+                <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="tempCalParamSet.fddDlFrequency" (change)="hintDlUlDiff('dl')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'ulBandwidth' | translate }}</td>
@@ -765,17 +765,17 @@
                   <ul class="inline-block">
                     <li class="inline-block">
                       <label>{{ 'width' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.width" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'height' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.height" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'altitude' | translate }}</label>
-                      <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false, true, true)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false, true, true)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false)"> -->
                     </li>
                   </ul>
@@ -842,7 +842,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
                   <p>{{ 'scalingFactor' | translate }}	</p>
-                  <input type="text" [(ngModel)]="scalingFactor">
+                  <input type="number" class="inputNum" step="0.1" [(ngModel)]="scalingFactor">
                 </li>
 
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
@@ -959,9 +959,9 @@
                 <li *ngIf="calculateForm.objectiveIndex == '2'">
                   <p>{{ 'powerRange' | translate }}</p>
                   <span>
-                    <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
+                    <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
                     ~
-                    <input [(ngModel)]="calculateForm.powerMaxRange" type="text" placeholder="{{ 'powerMaxRange' | translate }}">dBm
+                    <input [(ngModel)]="calculateForm.powerMaxRange" type="number" class="inputNum" step="1" placeholder="{{ 'powerMaxRange' | translate }}">dBm
                   </span>
                 </li>
                 
