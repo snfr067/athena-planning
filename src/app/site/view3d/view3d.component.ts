@@ -211,12 +211,15 @@ export class View3dComponent implements OnInit {
           obstacle.position.z = item.y + offsetZ + item.height;
           obstacle.position.x = item.x + offsetX + (item.width / 2);
         }
+      } else if (item.element === 2) {
+        obstacle.position.x = item.x + offsetX + (item.width / 2);
+        obstacle.position.z = item.y + offsetZ + (item.width / 2);
       }
 
       if (item.element === 0) {
         obstacle.rotation.z = Math.PI / 2;
       }
-      if (item.rotate !== 0) {
+      if (item.rotate !== 0 && item.element !== 2) {
         obstacle.rotation.y = item.rotate * (Math.PI / 180);
       }
       
