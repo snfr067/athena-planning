@@ -315,16 +315,16 @@ export class SignalQualityComponent implements OnInit {
             type: 'circle',
             xref: 'x',
             yref: 'y',
-            fillcolor: '#000000',
+            fillcolor: oColor,
             x0: xdata,
             y0: ydata,
             x1: xdata + oData[2],
             y1: ydata + oData[3],
             line: {
-              color: '#000000'
+              color: oColor
             },
-            opacity: 0.2,
-            visible: (this.showObstacle === 'visible' ? true : false)
+            visible: (this.showObstacle === 'visible' ? true : false),
+            layer: 'below'
           });
 
         } else {
@@ -693,7 +693,7 @@ export class SignalQualityComponent implements OnInit {
         window.setTimeout(() => {
           item['style']['transform'] = `rotate(${item.rotate}deg)`;
           item['style'].opacity = 1;
-        }, 0);
+        }, 100);
       }
 
       for (const item of this.defaultBsList) {

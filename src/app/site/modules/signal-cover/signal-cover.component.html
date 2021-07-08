@@ -7,7 +7,7 @@
           <g><rect [ngStyle]="item.svgStyle" stroke-width="1.5" x="0" y="0" /></g>
         </svg>
 
-        <svg *ngIf="item.shape == '1'" xmlns="http://www.w3.org/2000/svg">
+        <svg *ngIf="item.shape == '1'" [ngStyle]="item.svgStyle" xmlns="http://www.w3.org/2000/svg">
           <g>
             <rect x="-1" y="-1" width="32" height="32" fill="none"/>
             <g id="canvasGrid" display="none">

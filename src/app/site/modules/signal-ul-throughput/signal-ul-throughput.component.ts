@@ -444,8 +444,8 @@ export class SignalUlThroughputComponent implements OnInit {
             line: {
               color: '#000000'
             },
-            opacity: 0.2,
-            visible: (this.showObstacle === 'visible' ? true : false)
+            visible: (this.showObstacle === 'visible' ? true : false),
+            layer: 'below'
           });
 
         } else {
