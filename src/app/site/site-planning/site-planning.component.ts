@@ -738,9 +738,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {
     this.setForm();
     // 暫存
-    localStorage.clear();
+    // window.sessionStorage.clear();
     if (this.taskid !== '') {
-      window.sessionStorage.setItem(`form_${this.taskid}`, JSON.stringify(this.calculateForm));
+      // window.sessionStorage.setItem
+      // window.sessionStorage.setItem(`form_${this.taskid}`, JSON.stringify(this.calculateForm));
     } else {
       window.sessionStorage.setItem(`form_blank_task`, JSON.stringify(this.calculateForm));
     }
@@ -1104,7 +1105,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         beampattern: 0,
         // frequency: 2400,
         fddDlFrequency: 2400,
-        fddUlFrequency: 2400,
+        fddUlFrequency: 2450,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
         dlMimoLayer: '1',
@@ -1941,57 +1942,61 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     let error = false;
     let msg = '';
     const obj = this.tempCalParamSet;
-    if (this.scalingFactor == null) {
-      msg+= '擴展係數<br/>'
-    }
+    if (this.scalingFactor == null) {msg+= '未填入擴展係數<br/>'}
+    if (this.scalingFactor < 0) {msg+= '擴展係數不可小於0<br/>'}
     if (this.calculateForm.powerMaxRange == null || this.calculateForm.powerMinRange == null) {
       if (this.calculateForm.powerMaxRange == null) {
-        msg+= '最大功率<br/>'
+        msg+= '未填入最大功率<br/>'
       } else {
-        msg+= '最小功率<br/>'
+        msg+= '未填入最小功率<br/>'
       }
     }
     if (protocol == '1') {
       if (duplex == 'tdd') {
-        if (this.dlRatio === null || 
-          this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比<br/>`; error = true; }
-        if (obj.tddscs === null || obj.tddscs == '') { msg += `子載波間距<br/>`; error = true; }
-        if (obj.tddbandwidth === null || obj.tddbandwidth == '') { msg += `頻寬<br/>`; error = true; }
-        if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { msg += `上行調變能力<br/>`; error = true; }
-        if (obj.dlModulationCodScheme === null || obj.dlModulationCodScheme === '') { msg += `下行調變能力<br/>`; error = true; }
-        if (obj.ulMimoLayer === null || obj.ulMimoLayer === '') { msg += `上行資料串流層數<br/>`; error = true; }
-        if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { msg += `下行資料串流層數<br/>`; error = true; }
-        if (obj.tddfrequency === null) { msg += `中心頻率<br/>`; error = true; }
-        console.log('西巴老馬');
+        if (this.dlRatio === null) { msg += `未填入上下行配比<br/>`;  }
+        if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比須介於0~100之間<br/>`;  }
+        if (obj.tddscs === null || obj.tddscs == '') { msg += `未填入子載波間距<br/>`;  }
+        if (obj.tddbandwidth === null || obj.tddbandwidth == '') { msg += `未填入頻寬<br/>`;  }
+        if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { msg += `未填入上行調變能力<br/>`;  }
+        if (obj.dlModulationCodScheme === null || obj.dlModulationCodScheme === '') { msg += `未填入下行調變能力<br/>`;  }
+        if (obj.ulMimoLayer === null || obj.ulMimoLayer === '') { msg += `未填入上行資料串流層數<br/>`;  }
+        if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { msg += `未填入下行資料串流層數<br/>`;  }
+        if (obj.tddfrequency === null) { msg += `未填入中心頻率<br/>`;  }
+        if (obj.tddfrequency < 0) { msg += `中心頻率不可小於0<br/>`;  }
       } else {
-        if (obj.dlBandwidth === null || obj.dlBandwidth === '') { msg += `下行頻寬<br/>`; error = true; }
-        if (obj.ulBandwidth === null || obj.ulBandwidth === '') { msg += `上行頻寬<br/>`; error = true; }
-        if (obj.dlScs === null || obj.dlScs === '') { msg += `下行子載波間距<br/>`; error = true; }
-        if (obj.ulScs === null || obj.ulScs === '') { msg += `上行子載波間距<br/>`; error = true; }
-        if (obj.dlModulationCodScheme === null || obj.dlModulationCodScheme === '') { msg += `下行調變能力<br/>`; error = true; }
-        if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { msg += `上行調變能力<br/>`; error = true; }
-        if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { msg += `下行資料串流層數<br/>`; error = true; }
-        if (obj.ulMimoLayer === null || obj.ulMimoLayer === '') { msg += `上行資料串流層數<br/>`; error = true; }
-        if (obj.fddDlFrequency === null) { msg += `下行頻率<br/>`; error = true; }
-        if (obj.fddUlFrequency === null) { msg += `上行頻率<br/>`; error = true; }
+        if (obj.dlBandwidth === null || obj.dlBandwidth === '') { msg += `未填入下行頻寬<br/>`;  }
+        if (obj.ulBandwidth === null || obj.ulBandwidth === '') { msg += `未填入上行頻寬<br/>`;  }
+        if (obj.dlScs === null || obj.dlScs === '') { msg += `未填入下行子載波間距<br/>`;  }
+        if (obj.ulScs === null || obj.ulScs === '') { msg += `未填入上行子載波間距<br/>`;  }
+        if (obj.dlModulationCodScheme === null || obj.dlModulationCodScheme === '') { msg += `未填入下行調變能力<br/>`;  }
+        if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { msg += `未填入上行調變能力<br/>`;  }
+        if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { msg += `未填入下行資料串流層數<br/>`;  }
+        if (obj.ulMimoLayer === null || obj.ulMimoLayer === '') { msg += `未填入上行資料串流層數<br/>`;  }
+        if (obj.fddDlFrequency === null) { msg += `未填入下行頻率<br/>`;  }
+        if (obj.fddDlFrequency < 0) { msg += `下行頻率不可小於0<br/>`;  }
+        if (obj.fddUlFrequency === null) { msg += `未填入上行頻率<br/>`;  }
+        if (obj.fddUlFrequency < 0) { msg += `上行頻率不可小於0<br/>`;  }
       }
     } else {
       if (duplex == 'tdd') {
-        if (this.dlRatio === null || 
-          this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比<br/>`; error = true; }
-        if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { msg += `MIMO天線數<br/>`; error = true; }
-        if (obj.tddbandwidth === null) { msg += `頻寬<br/>`; error = true; }
-        if (obj.tddfrequency === null) { msg += `中心頻率<br/>`; error = true; }
+        if (this.dlRatio === null) { msg += `未填入上下行配比<br/>`;  }
+        if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比須介於0~100之間<br/>`;  }
+        if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { msg += `未填入MIMO天線數<br/>`;  }
+        if (obj.tddbandwidth === null) { msg += `未填入頻寬<br/>`;  }
+        if (obj.tddfrequency === null) { msg += `未填入中心頻率<br/>`;  }
+        if (obj.tddfrequency < 0) { msg += `中心頻率不可小於0<br/>`;  }
       } else {
-        if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { msg += `MIMO天線數<br/>`; error = true; }
-        if (obj.dlBandwidth === null || obj.dlBandwidth === '') { msg += `上行頻寬<br/>`; error = true; }
-        if (obj.ulBandwidth === null || obj.ulBandwidth === '') { msg += `下行頻寬<br/>`; error = true; }
-        if (obj.fddDlFrequency === null) { msg += `下行中心頻率<br/>`; error = true; }
-        if (obj.fddUlFrequency === null) { msg += `上行中心頻率<br/>`; error = true; }
+        if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { msg += `未填入MIMO天線數<br/>`;  }
+        if (obj.dlBandwidth === null || obj.dlBandwidth === '') { msg += `未填入上行頻寬<br/>`;  }
+        if (obj.ulBandwidth === null || obj.ulBandwidth === '') { msg += `未填入下行頻寬<br/>`;  }
+        if (obj.fddDlFrequency === null) { msg += `未填入下行中心頻率<br/>`;  }
+        if (obj.fddDlFrequency < 0) { msg += `下行頻率不可小於0<br/>`;  }
+        if (obj.fddUlFrequency === null) { msg += `未填入上行中心頻率<br/>`;  }
+        if (obj.fddUlFrequency === null) { msg += `未填入上行頻率<br/>`;  }
       }
     }
     if (msg !== '') {
-      msg = '請輸入規劃參數:<br/>' + msg;
+      msg = '以下問題請修正:<br/>' + msg;
       error = true;
       console.log(msg);
     }

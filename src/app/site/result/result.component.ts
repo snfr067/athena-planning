@@ -177,6 +177,7 @@ export class ResultComponent implements OnInit {
       url += `${this.authService.userToken}/${this.taskId}`;
     } else {
       url = `${this.authService.API_URL}/completeCalcResult/${this.taskId}/${this.authService.userToken}`;
+      window.sessionStorage.removeItem('form_blank_task');
     }
     this.http.get(url).subscribe(
       res => {

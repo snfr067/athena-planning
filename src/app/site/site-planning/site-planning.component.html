@@ -424,11 +424,11 @@
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
                 <td>Frequency</td>
-                <td><input type="number" step="5" class="inputNum" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
+                <td><input type="number" step="5" class="inputNum" max="10000" min="0" [(ngModel)]="tempCalParamSet.tddfrequency">MHz</td>
               </tr>
               <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'scalingFactor' | translate }}</td>
-                <td><input type="number" step="0.1" class="inputNum" [(ngModel)]="scalingFactor"></td>
+                <td><input type="number" step="0.1" min="0" class="inputNum" [(ngModel)]="scalingFactor"></td>
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'tddBandwidth' | translate }}</td>
@@ -436,11 +436,11 @@
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'uplink.frequency' | translate }}</td>
-                <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="tempCalParamSet.fddUlFrequency" (change)="hintDlUlDiff('ul')">MHz</td>
+                <td><input type="number" class="inputNumFreq" step="5" max="10000" min="0" [(ngModel)]="tempCalParamSet.fddUlFrequency" (change)="hintDlUlDiff('ul')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
                 <td>{{ 'downlink.frequency' | translate }}</td>
-                <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="tempCalParamSet.fddDlFrequency" (change)="hintDlUlDiff('dl')">MHz</td>
+                <td><input type="number" class="inputNumFreq" step="5" max="10000" min="0" [(ngModel)]="tempCalParamSet.fddDlFrequency" (change)="hintDlUlDiff('dl')">MHz</td>
               </tr>
               <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'ulBandwidth' | translate }}</td>
@@ -842,7 +842,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
                   <p>{{ 'scalingFactor' | translate }}	</p>
-                  <input type="number" class="inputNum" step="0.1" [(ngModel)]="scalingFactor">
+                  <input type="number" class="inputNum" step="0.1" min="0" [(ngModel)]="scalingFactor">
                 </li>
 
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
