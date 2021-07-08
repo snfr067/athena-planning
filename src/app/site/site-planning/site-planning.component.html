@@ -428,7 +428,7 @@
               </tr>
               <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'scalingFactor' | translate }}</td>
-                <td><input type="number" step="0.1" min="0" class="inputNum" [(ngModel)]="scalingFactor"></td>
+                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="scalingFactor"></td>
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
                 <td>{{ 'tddBandwidth' | translate }}</td>
@@ -765,17 +765,20 @@
                   <ul class="inline-block">
                     <li class="inline-block">
                       <label>{{ 'width' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.width" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.width" 
+                      (click)="tempParamStorage(calculateForm.width)" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'height' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.height" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.height" 
+                      (click)="tempParamStorage(calculateForm.height)" (change)="initData(false, false, true, false)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'altitude' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false, true, true)">
+                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.altitude" 
+                      (click)="tempParamStorage(calculateForm.altitude)" (change)="initData(false, false, true, true)">
                       <!-- <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false)"> -->
                     </li>
                   </ul>
@@ -842,7 +845,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
                   <p>{{ 'scalingFactor' | translate }}	</p>
-                  <input type="number" class="inputNum" step="0.1" min="0" [(ngModel)]="scalingFactor">
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="scalingFactor">
                 </li>
 
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
@@ -989,11 +992,17 @@
                 <li *ngFor="let item of obstacleList">
                   <span>
                     <label>X</label>
-                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
+                    <input type="text" [(ngModel)]="dragObject[item].x" 
+                    (select)="tempParamStorage(dragObject[item].x)"
+                    (click)="tempParamStorage(dragObject[item].x)"
+                    (change)="changePosition($event,item,'x')">
                   </span>
                   <span>
                     <label>Y</label>
-                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
+                    <input type="text" [(ngModel)]="dragObject[item].y" 
+                    (select)="tempParamStorage(dragObject[item].y)"
+                    (click)="tempParamStorage(dragObject[item].y)"
+                    (change)="changePosition($event,item,'y')">
                   </span>
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
@@ -1048,11 +1057,17 @@
                     <li *ngFor="let item of defaultBSList; let i = index;">
                       <span>
                         <label>X</label>
-                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
+                        <input type="text" [(ngModel)]="dragObject[item].x" 
+                        (select)="tempParamStorage(dragObject[item].x)"
+                        (click)="tempParamStorage(dragObject[item].x)"
+                        (change)="changePosition($event,item,'x')">
                       </span>
                       <span>
                         <label>Y</label>
-                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
+                        <input type="text" [(ngModel)]="dragObject[item].y"
+                        (select)="tempParamStorage(dragObject[item].y)"
+                        (click)="tempParamStorage(dragObject[item].y)"
+                        (change)="changePosition($event,item,'y')">
                       </span>
                       <span>
                         <label>Z</label>
@@ -1096,11 +1111,17 @@
                 <li *ngFor="let item of candidateList">
                   <span>
                     <label>X</label>
-                    <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
+                    <input type="text" [(ngModel)]="dragObject[item].x"
+                    (select)="tempParamStorage(dragObject[item].x)"
+                    (click)="tempParamStorage(dragObject[item].x)"
+                    (change)="changePosition($event,item,'x')">
                   </span>
                   <span>
                     <label>Y</label>
-                    <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
+                    <input type="text" [(ngModel)]="dragObject[item].y"
+                    (select)="tempParamStorage(dragObject[item].y)"
+                    (click)="tempParamStorage(dragObject[item].y)"
+                    (change)="changePosition($event,item,'y')">
                   </span>
                   <span>
                     <label>Z</label>
@@ -1128,11 +1149,17 @@
                     <li *ngFor="let item of ueList">
                       <span>
                         <label>X</label>
-                        <input type="text" [(ngModel)]="dragObject[item].x" (change)="changePosition($event,item)">
+                        <input type="text" [(ngModel)]="dragObject[item].x"
+                        (select)="tempParamStorage(dragObject[item].x)"
+                        (click)="tempParamStorage(dragObject[item].x)"
+                        (change)="changePosition($event,item,'x')">
                       </span>
                       <span>
                         <label>Y</label>
-                        <input type="text" [(ngModel)]="dragObject[item].y" (change)="changePosition($event,item)">
+                        <input type="text" [(ngModel)]="dragObject[item].y"
+                        (select)="tempParamStorage(dragObject[item].y)"
+                        (click)="tempParamStorage(dragObject[item].y)"
+                        (change)="changePosition($event,item,'y')">
                       </span>
                       <span>
                         <label>Z</label>
