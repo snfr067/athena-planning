@@ -411,7 +411,7 @@
               <tr *ngIf="duplexMode === 'tdd'">
                 <td>{{ 'upDownRatio' | translate }}</td>
                 <td>
-                  {{ 'dlRatio' | translate }}<input type="number" class="inputNum" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                  {{ 'dlRatio' | translate }}<input type="number" class="inputNum" max=100 min=0 [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </td>
               </tr>
               <tr>
@@ -837,7 +837,7 @@
 
                 <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd' && planningIndex == '3'">
                   <p>{{ 'upDownRatio' | translate }}	</p>
-                  {{ 'dlRatio' | translate }}<input type="number" [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                  {{ 'dlRatio' | translate }}<input type="number" max=100 min=0 [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
                 </li>
 
                 <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
@@ -1315,10 +1315,10 @@
         <td>{{ 'altitude.setting' | translate }}</td>
         <td>
           <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
-            <input type="text" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
+            <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
           </ng-container>
           <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-            <input type="text" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
+            <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
           </ng-container>
           <ng-container *ngIf="dragObject[svgId].type === 'UE'">
             <select class="zAxis" [(ngModel)]="dragObject[svgId].z">

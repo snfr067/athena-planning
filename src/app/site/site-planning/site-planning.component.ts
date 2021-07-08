@@ -103,7 +103,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     ue: 'subitem active'
   };
   /** 平面高度 */
-  zValues = ['1', '', ''];
+  zValues = [1];
   /** 障礙物 */
   obstacleList = [];
   /** 互動物件 */
@@ -319,8 +319,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   tempCalParamSet = {
     txpower: 0,
     beampattern: '0',
-    fddDlFrequency: 2400,
-    fddUlFrequency: 2400,
+    fddDlFrequency: 3500,
+    fddUlFrequency: 3550,
     ulModulationCodScheme: "64QAM-table",
     dlModulationCodScheme: "64QAM-table",
     dlMimoLayer: '1',
@@ -616,17 +616,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         msg = '不可大於場域高度';
       }
       // 障礙物or基地台
-      if (fieldOrId.length > 1) {
+      if (fieldOrId.length > 1) { //障礙物
         this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
-      } else {
+      } else { //zValue
         let existed = false;
         for (let i = 0;i < this.zValues.length;i++) {
-          if (this.zValues[i] == this.calculateForm.altitude.toString()) {
+          // if (this.zValues[i] == this.calculateForm.altitude.toString()) {
+          if (this.zValues[i] == this.calculateForm.altitude) {
             existed = true;
           }
         }
         if (!existed) {
-          this.zValues[Number(fieldOrId)] = this.calculateForm.altitude.toString();
+          this.zValues[Number(fieldOrId)] = Number(this.calculateForm.altitude);
+          // this.zValues[Number(fieldOrId)] = this.calculateForm.altitude.toString();
         } else {
           delete this.zValues[Number(fieldOrId)];
         }
@@ -634,13 +636,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
     //zValues
     if (fieldOrId.length == 1) {
+      // 先檢視是否有重複高度
       for (let i = 0; i < 3; i++) {
         if (Number(fieldOrId) == i) {
           continue;
         } else {
-          if (Number(this.zValues[i]) == altitude) {
+          if (Number(this.zValues[i]) == altitude) { //找到重複高度的了 刪掉剛剛改的zValue
             delete this.zValues[Number(fieldOrId)];
-            // this.zValues[Number(fieldOrId)] = '';
             msg = '已有重複高度';
             if (i == 0 && this.zValues[1] === undefined && this.zValues[2] === undefined) {
               this.zValues.length = 1;
@@ -656,10 +658,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           }
         }
       }
-      console.log(this.zValues);
-      if (this.zValues[0] === undefined || this.zValues[0] === '') {
+      // console.log(this.zValues);
+      if (this.zValues[0] === undefined || this.zValues[0] === null) {
         if (this.zValues[1] === undefined && this.zValues[2] === undefined) {
-          this.zValues[0] = '0';
+          this.zValues[0] = 0;
           this.zValues.length = 1;
         } else if (this.zValues[1] !== undefined && this.zValues[2] !== undefined) {
           this.zValues[0] = this.zValues[1];
@@ -675,9 +677,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           delete this.zValues[1];
           this.zValues.length = 1;
         }
-      } else if (this.zValues[1] === undefined || this.zValues[1] === '') {
+      } else if (this.zValues[1] === undefined || this.zValues[1] === null) {
         if (this.zValues[0] === undefined && this.zValues[2] === undefined) {
-          this.zValues[0] = '0';
+          this.zValues[0] = 0;
           this.zValues.length = 1;
         } else if (this.zValues[0] !== undefined && this.zValues[2] !== undefined) {
           this.zValues[1] = this.zValues[2];
@@ -691,9 +693,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           delete this.zValues[2];
           this.zValues.length = 1;
         }
-      } else if (this.zValues[2] === undefined || this.zValues[2] === '') {
+      } else if (this.zValues[2] === undefined || this.zValues[2] === null) {
         if (this.zValues[0] === undefined && this.zValues[1] === undefined) {
-          this.zValues[0] = '0';
+          this.zValues[0] = 0;
           this.zValues.length = 1;
         } else if (this.zValues[0] === undefined && this.zValues[1] !== undefined) {
           this.zValues[0] = this.zValues[1];
@@ -797,7 +799,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
       if (this.zValues[0] == undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
-        this.zValues[0] = '0';
+        this.zValues[0] = 0;
         this.zValues.length = 1;
       } else if (this.zValues[0] != undefined && this.zValues[1] != undefined && this.zValues[2] == undefined) {
         this.zValues.length = 2;
@@ -1793,16 +1795,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.beampattern) { msg = '' }
           // if (obj.beampattern) { msg = '' }
           if (this.planningIndex == '3') {
-            if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true;}
-            if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
+            if (obj.txpower === null || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true;}
+            if (obj.beampattern === null || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
           }
-          if (obj.tddbandwidth === undefined || obj.tddbandwidth === '') { bsMsg += `頻寬<br/>`; error = true; }
-          if (obj.tddscs === undefined || obj.tddscs === '') { bsMsg += `子載波間距<br/>`; error = true; }
-          if (obj.ulModulationCodScheme === undefined || obj.ulModulationCodScheme === '') { bsMsg += `上行調變能力<br/>`; error = true; }
-          if (obj.dlModulationCodScheme === undefined || obj.dlModulationCodScheme === '') { bsMsg += `下行調變能力<br/>`; error = true; }
-          if (obj.ulMimoLayer === undefined || obj.ulMimoLayer === '') { bsMsg += `上行資料串流層數<br/>`; error = true; }
-          if (obj.dlMimoLayer === undefined || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數<br/>`; error = true; }
-          if (obj.tddfrequency === undefined || obj.tddfrequency === '') { bsMsg += `中心頻率`; error = true; }
+          if (obj.tddbandwidth === null || obj.tddbandwidth === '') { bsMsg += `頻寬<br/>`; error = true; }
+          if (obj.tddscs === null || obj.tddscs === '') { bsMsg += `子載波間距<br/>`; error = true; }
+          if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { bsMsg += `上行調變能力<br/>`; error = true; }
+          if (obj.dlModulationCodScheme === null || obj.dlModulationCodScheme === '') { bsMsg += `下行調變能力<br/>`; error = true; }
+          if (obj.ulMimoLayer === null || obj.ulMimoLayer === '') { bsMsg += `上行資料串流層數<br/>`; error = true; }
+          if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數<br/>`; error = true; }
+          if (obj.tddfrequency === null || obj.tddfrequency === '') { bsMsg += `中心頻率`; error = true; }
           if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
@@ -1817,19 +1819,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = '' }
           // if (obj.beampattern) { msg = '' }
           if (this.planningIndex == '3') {
-            if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
-            if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
+            if (obj.txpower === null || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
+            if (obj.beampattern === null || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
           }
-          if (obj.dlBandwidth === undefined || obj.dlBandwidth === '') { bsMsg += `下行頻寬<br/>`; error = true; }
-          if (obj.ulBandwidth === undefined || obj.ulBandwidth === '') { bsMsg += `上行頻寬<br/>`; error = true; }
-          if (obj.dlScs === undefined || obj.dlScs === '') { bsMsg += `下行子載波間距<br/>`; error = true; }
-          if (obj.ulScs === undefined || obj.ulScs === '') { bsMsg += `上行子載波間距<br/>`; error = true; }
+          if (obj.dlBandwidth === null || obj.dlBandwidth === '') { bsMsg += `下行頻寬<br/>`; error = true; }
+          if (obj.ulBandwidth === null || obj.ulBandwidth === '') { bsMsg += `上行頻寬<br/>`; error = true; }
+          if (obj.dlScs === null || obj.dlScs === '') { bsMsg += `下行子載波間距<br/>`; error = true; }
+          if (obj.ulScs === null || obj.ulScs === '') { bsMsg += `上行子載波間距<br/>`; error = true; }
           if (obj.dlModulationCodScheme === '' || obj.dlModulationCodScheme == undefined) { bsMsg += `下行調變能力<br/>`; error = true; }
           if (obj.ulModulationCodScheme === '' || obj.ulModulationCodScheme == undefined) { bsMsg += `上行調變能力<br/>`; error = true; }
-          if (obj.dlMimoLayer === undefined || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數<br/>`; error = true; }
-          if (obj.ulMimoLayer === undefined || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數<br/>`; error = true; }
-          if (obj.fddDlFrequency === undefined || obj.fddDlFrequency === '') { bsMsg += `下行頻率<br/>`; error = true; }
-          if (obj.fddUlFrequency === undefined || obj.fddUlFrequency === '') { bsMsg += `上行頻率`; error = true; }
+          if (obj.dlMimoLayer === null || obj.dlMimoLayer === '') { bsMsg += `下行資料串流層數<br/>`; error = true; }
+          if (obj.ulMimoLayer === null || obj.ulMimoLayer == '') { bsMsg += `上行資料串流層數<br/>`; error = true; }
+          if (obj.fddDlFrequency === null || obj.fddDlFrequency === '') { bsMsg += `下行頻率<br/>`; error = true; }
+          if (obj.fddUlFrequency === null || obj.fddUlFrequency === '') { bsMsg += `上行頻率`; error = true; }
           if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
@@ -1849,12 +1851,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
           if (this.planningIndex == '3') {
-            if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
+            if (obj.txpower === null || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
             if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
           }
-          if (obj.mimoNumber4G === undefined || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數<br/>`; error = true; }
-          if (obj.tddbandwidth === undefined || obj.tddbandwidth === '') { bsMsg += `頻寬<br/>`; error = true; }
-          if (obj.tddfrequency === undefined || obj.tddfrequency === '') { bsMsg += `中心頻率<br/>`; error = true; }
+          if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數<br/>`; error = true; }
+          if (obj.tddbandwidth === null || obj.tddbandwidth === '') { bsMsg += `頻寬<br/>`; error = true; }
+          if (obj.tddfrequency === null || obj.tddfrequency === '') { bsMsg += `中心頻率<br/>`; error = true; }
           if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
@@ -1868,14 +1870,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // if (obj.txpower) { msg = `請填上${i+1}的` }
           // if (obj.beampattern) { msg = `請填上${i+1}的` }
           if (this.planningIndex == '3') {
-            if (obj.txpower === undefined || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
+            if (obj.txpower === null || obj.txpower === '') { bsMsg += `發射功率<br/>`; error = true; }
             if (obj.beampattern === undefined || obj.beampattern === '') { bsMsg += `波束型<br/>`; error = true;}
           }
-          if (obj.mimoNumber4G === undefined || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數<br/>`; error = true; }
-          if (obj.dlBandwidth === undefined || obj.dlBandwidth === '') { bsMsg += `上行頻寬<br/>`; error = true; }
-          if (obj.ulBandwidth === undefined || obj.ulBandwidth === '') { bsMsg += `下行頻寬<br/>`; error = true; }
-          if (obj.fddDlFrequency === undefined || obj.fddDlFrequency === '') { bsMsg += `下行中心頻率<br/>`; error = true; }
-          if (obj.fddUlFrequency === undefined || obj.fddUlFrequency === '') { bsMsg += `上行中心頻率`; error = true; }
+          if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { bsMsg += `MIMO天線數<br/>`; error = true; }
+          if (obj.dlBandwidth === null || obj.dlBandwidth === '') { bsMsg += `上行頻寬<br/>`; error = true; }
+          if (obj.ulBandwidth === null || obj.ulBandwidth === '') { bsMsg += `下行頻寬<br/>`; error = true; }
+          if (obj.fddDlFrequency === null || obj.fddDlFrequency === '') { bsMsg += `下行中心頻率<br/>`; error = true; }
+          if (obj.fddUlFrequency === null || obj.fddUlFrequency === '') { bsMsg += `上行中心頻率`; error = true; }
           if (bsMsg !== '') {
             msg+= `請輸入BS${i+1}:<br><p style="color: red;">`;
             msg+= bsMsg;
@@ -1951,7 +1953,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (protocol == '1') {
       if (duplex == 'tdd') {
-        if (this.dlRatio === undefined || this.dlRatio === null) { msg += `上下行配比<br/>`; error = true; }
+        if (this.dlRatio === null || 
+          this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比<br/>`; error = true; }
         if (obj.tddscs === null || obj.tddscs == '') { msg += `子載波間距<br/>`; error = true; }
         if (obj.tddbandwidth === null || obj.tddbandwidth == '') { msg += `頻寬<br/>`; error = true; }
         if (obj.ulModulationCodScheme === null || obj.ulModulationCodScheme === '') { msg += `上行調變能力<br/>`; error = true; }
@@ -1974,7 +1977,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       }
     } else {
       if (duplex == 'tdd') {
-        if (this.dlRatio === null) { msg += `上下行配比<br/>`; error = true; }
+        if (this.dlRatio === null || 
+          this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比<br/>`; error = true; }
         if (obj.mimoNumber4G === null || obj.mimoNumber4G === '') { msg += `MIMO天線數<br/>`; error = true; }
         if (obj.tddbandwidth === null) { msg += `頻寬<br/>`; error = true; }
         if (obj.tddfrequency === null) { msg += `中心頻率<br/>`; error = true; }
@@ -2048,7 +2052,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     // Candidate
     // DefaultBs [重要!!]
     // ---------- 我是分隔線 ----------
-    if (((this.candidateList.length < this.calculateForm.availableNewBsNumber) || Number(this.calculateForm.availableNewBsNumber) === 0) && this.planningIndex !== '3') {
+    if (((this.candidateList.length < this.calculateForm.availableNewBsNumber) || Number(this.calculateForm.availableNewBsNumber) <= 0) && this.planningIndex !== '3') {
       let msg;
       if (this.calculateForm.objectiveIndex === '2') {
         msg = this.translateService.instant('availableNewBsNumber.wifi');
@@ -2183,9 +2187,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     this.calculateForm.sessionid = this.authService.userToken;
     const zValue = this.zValues.filter(
-      option => option !== ''
+      option => option !== null
+      // option => option !== ''
     );
     this.calculateForm.zValue = `[${zValue.toString()}]`;
+    // this.calculateForm.zValue = `[${zValue.toString()}]`;
     let obstacleInfo = '';
     this.calculateForm.obstacleInfo = obstacleInfo;
     if (this.obstacleList.length > 0) {
