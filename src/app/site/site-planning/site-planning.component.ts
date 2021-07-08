@@ -615,6 +615,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       } else {
         msg = '不可大於場域高度';
       }
+      // 障礙物or基地台
       if (fieldOrId.length > 1) {
         this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
       } else {
@@ -631,6 +632,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
+    //zValues
     if (fieldOrId.length == 1) {
       for (let i = 0; i < 3; i++) {
         if (Number(fieldOrId) == i) {
@@ -893,6 +895,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             height: sizes[1]
           };
 
+          sessionStorage.removeItem('layoutSize');
           sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
 
           // image放進圖裡後需取得比例尺
@@ -946,6 +949,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           width: sizes[0],
           height: sizes[1]
         };
+
+        sessionStorage.removeItem('layoutSize');
+        sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
 
         // 重設長寬
         Plotly.relayout('chart', layoutOption).then((gd2) => {
