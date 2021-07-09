@@ -309,6 +309,23 @@ export class SignalCoverComponent implements OnInit {
       }
     }
 
+    let colorscale: any = [
+      [0, 'rgb(12,51,131)'],
+      [0.25, 'rgb(10,136,186)'],
+      [0.5, 'rgb(242,211,56)'],
+      [0.75, 'rgb(242,143,56)'],
+      [1, 'rgb(217,30,30)']
+    ];
+
+    let allZero = true;
+    for (const item of zData[zValues.indexOf(Number(this.zValue))]) {
+      for (const d of item) {
+        if (d != null && d !== 0) {
+          allZero = false;
+        }
+      }
+    }
+
     // 圖區右邊建議基站
     if (hasBS) {
       
@@ -371,7 +388,6 @@ export class SignalCoverComponent implements OnInit {
         }
       }
       
-      
       let k = 1;
       if (defaultBs.length > 0) {
         // const candidateidx = this.result['candidateIdx'];
@@ -381,22 +397,39 @@ export class SignalCoverComponent implements OnInit {
           apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           // legend
+          // let color;
+          // if (z < max * 0.25) {
+          //   color = 'rgb(12,51,131)';
+          //   console.log('1');
+          // } else if (z >= max * 0.25 && z < max * 0.5) {
+          //   color = 'rgb(10,136,186)';
+          //   console.log('2');
+          // } else if (z >= max * 0.5 && z < max * 0.75) {
+          //   color = 'rgb(242,211,56)';
+          //   console.log('3');
+          // } else if (z >= max * 0.75 && z < max) {
+          //   color = 'rgb(242,143,56)';
+          //   console.log('4');
+          // } else if (z === max) {
+          //   color = 'rgb(217,30,30)';
+          //   console.log('5');
+          // }
+
+          // Xean: 07/10 add legend color改用計算的
           let color;
-          if (z < max * 0.25) {
+          if (allZero && defaultBs.length === 1) {
+            // 只有一個都是0的基站指定為藍色
             color = 'rgb(12,51,131)';
-            console.log('1');
-          } else if (z >= max * 0.25 && z < max * 0.5) {
-            color = 'rgb(10,136,186)';
-            console.log('2');
-          } else if (z >= max * 0.5 && z < max * 0.75) {
-            color = 'rgb(242,211,56)';
-            console.log('3');
-          } else if (z >= max * 0.75 && z < max) {
-            color = 'rgb(242,143,56)';
-            console.log('4');
-          } else if (z === max) {
-            color = 'rgb(217,30,30)';
-            console.log('5');
+          } else {
+            const zDomain = [];
+            const colorRange = [];
+            for (let n = 0; n < colorscale.length; n++) {
+              zDomain.push(max * colorscale[n][0]);
+              colorRange.push(colorscale[n][1]);
+            }
+            // 套件提供用range計算的方法
+            const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+            color = colorFN(z);
           }
 
           traces.push({
@@ -433,27 +466,20 @@ export class SignalCoverComponent implements OnInit {
       }
     }
 
-    let allZero = true;
-    for (const item of zData[zValues.indexOf(Number(this.zValue))]) {
-      for (const d of item) {
-        if (d != null && d !== 0) {
-          allZero = false;
-        }
-      }
-    }
+    
 
-    let colorscale = [
-      ['0', 'rgb(12,51,131)'],
-      ['0.25', 'rgb(10,136,186)'],
-      ['0.5', 'rgb(242,211,56)'],
-      ['0.75', 'rgb(242,143,56)'],
-      ['1', 'rgb(217,30,30)']
-    ];
     if (allZero) {
       colorscale = [
-        ['0', 'rgb(12,51,131)'],
-        ['1', 'rgb(12,51,131)']
+        [0, 'rgb(12,51,131)'],
+        [1, 'rgb(12,51,131)']
       ];
+    }
+
+    for (let i = 0; i < defaultBs.length; i++) {
+      const oData = defaultBs[i];
+      const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+
+      
     }
 
     const trace = {
@@ -919,6 +945,29 @@ export class SignalCoverComponent implements OnInit {
     Plotly.restyle(chartElm, {
       opacity: this.opacityValue
     }, [traceNum]);
+  }
+
+  gradient(startColor, endColor, step, z) {
+    const rStep = (startColor[0] - endColor[0]) / step;
+    const gStep = (startColor[1] - endColor[1]) / step;
+    const bStep = (startColor[2] - endColor[2]) / step;
+
+    const gradientColorArr = [];
+    for (let i = 0; i < step; i++) {
+      if (z === step) {
+        gradientColorArr.push(rStep * i + startColor[0], rStep * i + startColor[1], rStep * i + startColor[2]);
+      }
+      
+    }
+    return gradientColorArr;
+  }
+
+  calColor(z, min, max, startColor, endColor) {
+    const ratio = z / max;
+    const color1 = startColor[0] - ((startColor[0] - endColor[0]) * ratio);
+console.log(z, max, z/max, color1)
+    console.log(this.gradient([12, 51, 131], [10, 136, 186], max - min, z));
+
   }
 
 }
