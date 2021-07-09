@@ -1791,7 +1791,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   //   this.dragObject = {};
   // }
   isEmpty(str) {
-    return (!str || str.length === 0 );
+    if (str === undefined || str === null || str.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
+    // if (Number(str) == 0) {
+    //   return false;
+    // } else {
+    //   return (!str || str.length === 0 );
+    // }
   }
 
   /**
@@ -1964,6 +1973,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const obj = this.tempCalParamSet;
     if (this.isEmpty(this.scalingFactor)) {msg+= '未填入擴展係數<br/>'}
     else if (this.scalingFactor < 0 || this.scalingFactor > 1) {msg+= '擴展係數須介於0到1之間<br/>'}
+    console.log(this.calculateForm.powerMinRange);
+    console.log(this.calculateForm.powerMaxRange);
     if (this.isEmpty(this.calculateForm.powerMaxRange) || this.isEmpty(this.calculateForm.powerMinRange)) {
       if (this.isEmpty(this.calculateForm.powerMaxRange)) {
         msg+= '未填入最大功率<br/>'
@@ -2152,21 +2163,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
 
       console.log(this.calculateForm);
-      // this.authService.spinnerShowAsHome();
-      // this.http.post(url, JSON.stringify(apiBody)).subscribe(
-      //   res => {
-      //     this.taskid = res['taskid'];
-      //     const percentageVal = document.getElementById('percentageVal');
-      //     if (percentageVal != null) {
-      //       percentageVal.innerHTML = '0';
-      //     }
-      //     this.getProgress();
-      //   },
-      //   err => {
-      //     this.authService.spinnerHide();
-      //     console.log(err);
-      //   }
-      // );
+      this.authService.spinnerShowAsHome();
+      this.http.post(url, JSON.stringify(apiBody)).subscribe(
+        res => {
+          this.taskid = res['taskid'];
+          const percentageVal = document.getElementById('percentageVal');
+          if (percentageVal != null) {
+            percentageVal.innerHTML = '0';
+          }
+          this.getProgress();
+        },
+        err => {
+          this.authService.spinnerHide();
+          console.log(err);
+        }
+      );
     }
   }
 
