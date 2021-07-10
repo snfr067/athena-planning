@@ -337,14 +337,7 @@ export class ResultComponent implements OnInit {
           } else {
 
           }
-          for (const item of defaultBs) {
-            const obj = JSON.parse(item);
-            this.defaultBSList.push({
-              x: obj[0],
-              y: obj[1],
-              z: obj[2]
-            });
-          }
+          
         }
 
         let candidateBs = [];
