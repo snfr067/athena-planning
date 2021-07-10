@@ -245,8 +245,10 @@ export class SignalCoverComponent implements OnInit {
     }
     // 取z的最大值
     const zMax = [];
+    const zMin = [];
     for (const item of allZ) {
       zMax.push(Plotly.d3.max(item));
+      zMin.push(Plotly.d3.min(item));
     }
 
     const x = [];
@@ -356,6 +358,7 @@ export class SignalCoverComponent implements OnInit {
 
             const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
             const max = zMax[zValues.indexOf(Number(this.zValue))];
+            const min = zMin[zValues.indexOf(Number(this.zValue))];
             // legend
             let color;
             // if (z < max * 0.25) {
@@ -376,7 +379,7 @@ export class SignalCoverComponent implements OnInit {
               const zDomain = [];
               const colorRange = [];
               for (let n = 0; n < colorscale.length; n++) {
-                zDomain.push(max * colorscale[n][0]);
+                zDomain.push((max - min) * colorscale[n][0] + min);
                 colorRange.push(colorscale[n][1]);
               }
               // 套件提供用range計算的方法
@@ -413,6 +416,7 @@ export class SignalCoverComponent implements OnInit {
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
           apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
+          const min = zMin[zValues.indexOf(Number(this.zValue))];
           // legend Xean: 07/10 mark,顏色改成套件計算
           // let color;
           // if (z < max * 0.25) {
@@ -441,7 +445,7 @@ export class SignalCoverComponent implements OnInit {
             const zDomain = [];
             const colorRange = [];
             for (let n = 0; n < colorscale.length; n++) {
-              zDomain.push(max * colorscale[n][0]);
+              zDomain.push((max - min) * colorscale[n][0] + min);
               colorRange.push(colorscale[n][1]);
             }
             // 套件提供用range計算的方法
