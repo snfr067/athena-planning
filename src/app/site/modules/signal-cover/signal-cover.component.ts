@@ -60,6 +60,8 @@ export class SignalCoverComponent implements OnInit {
   shapes = [];
   /** AP文字 */
   annotations = [];
+  /** traces */
+  traces = [];
   /** 障礙物element */
   @ViewChildren('obstaclecElm') obstacleElm: QueryList<ElementRef>;
 
@@ -76,9 +78,6 @@ export class SignalCoverComponent implements OnInit {
       Plotly.relayout(this.chartId, layoutOption);
     });
   }
-
-  //test
-  traces = [];
 
   ngOnInit(): void {
   }
@@ -267,7 +266,7 @@ export class SignalCoverComponent implements OnInit {
       y.push(yval);
       yval += hRatio;
     }
-    const traces = [];
+    this.traces = [];
 
     // UE
     if (this.calculateForm.ueCoordinate !== '') {
@@ -285,7 +284,7 @@ export class SignalCoverComponent implements OnInit {
         text.push(`${this.translateService.instant('ue')}<br>X: ${oData[0]}<br>Y: ${oData[1]}<br>${this.translateService.instant('altitude')}: ${oData[2]}`);
       }
 
-      traces.push({
+      this.traces.push({
         x: cx,
         y: cy,
         text: text,
@@ -387,7 +386,7 @@ export class SignalCoverComponent implements OnInit {
               color = colorFN(z);
             }
 
-            traces.push({
+            this.traces.push({
               x: [0],
               y: [0],
               name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
@@ -453,7 +452,7 @@ export class SignalCoverComponent implements OnInit {
             color = colorFN(z);
           }
 
-          traces.push({
+          this.traces.push({
             x: [0],
             y: [0],
             name: `${this.translateService.instant('defaultBs')} ${k}`,
@@ -506,13 +505,12 @@ export class SignalCoverComponent implements OnInit {
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('ap.num')}: %{text}<extra></extra>`,
       showscale: false,
       zsmooth: 'fast',
-      opacity: this.opacityValue
+      opacity: this.opacityValue,
+      uid: 'heatmap'
     };
-    traces.push(trace);
+    this.traces.push(trace);
 
-    // test
-    this.traces = traces;
-    console.log(traces);
+    console.log(this.traces);
 
     // 新增基站
     if (this.calculateForm.candidateBs !== '') {
@@ -560,7 +558,7 @@ export class SignalCoverComponent implements OnInit {
         num++;
       }
 
-      traces.push({
+      this.traces.push({
         x: candidateX,
         y: candidateY,
         text: candidateText,
@@ -608,53 +606,34 @@ export class SignalCoverComponent implements OnInit {
         }
         const rotate = oData[5];
 
-        if (Number(shape) === 2) {
-          this.shapes.push({
-            type: 'circle',
-            xref: 'x',
-            yref: 'y',
-            fillcolor: '#000000',
-            x0: xdata,
-            y0: ydata,
-            x1: xdata + oData[2],
-            y1: ydata + oData[3],
-            line: {
-              color: '#000000'
-            },
-            visible: (this.showObstacle === 'visible' ? true : false),
-            layer: 'below'
-          });
-
-        } else {
-          this.rectList.push({
-            x: xdata,
-            y: ydata,
-            rotate: oData[5],
-            shape: shape,
-            style: {
-              left: 0,
-              top: 0,
-              width: oData[2],
-              height: oData[3],
-              // transform: `rotate(${oData[5]}deg)`,
-              position: 'absolute',
-              visibility: this.showObstacle,
-              opacity: 0
-            },
-            svgStyle: {
-              width: oData[2],
-              height: oData[3],
-              fill: oColor,
-            },
-            hover: text
-          });
-        }
+        this.rectList.push({
+          x: xdata,
+          y: ydata,
+          rotate: oData[5],
+          shape: shape,
+          style: {
+            left: 0,
+            top: 0,
+            width: oData[2],
+            height: oData[3],
+            // transform: `rotate(${oData[5]}deg)`,
+            position: 'absolute',
+            visibility: this.showObstacle,
+            opacity: 0
+          },
+          svgStyle: {
+            width: oData[2],
+            height: oData[3],
+            fill: oColor,
+          },
+          hover: text
+        });
 
       }
     }
 
     Plotly.newPlot(id, {
-      data: traces,
+      data: this.traces,
       layout: layout,
       config: defaultPlotlyConfiguration
     }).then((gd) => {
@@ -952,36 +931,16 @@ export class SignalCoverComponent implements OnInit {
   /** heatmap透明度 */
   changeOpacity() {
     const chartElm = document.querySelectorAll(`.signal_cover`)[0];
-    let traceNum = 1;
-    if (this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
-      traceNum = 0;
-    }
-    Plotly.restyle(chartElm, {
-      opacity: this.opacityValue
-    }, [traceNum]);
-  }
-
-  gradient(startColor, endColor, step, z) {
-    const rStep = (startColor[0] - endColor[0]) / step;
-    const gStep = (startColor[1] - endColor[1]) / step;
-    const bStep = (startColor[2] - endColor[2]) / step;
-
-    const gradientColorArr = [];
-    for (let i = 0; i < step; i++) {
-      if (z === step) {
-        gradientColorArr.push(rStep * i + startColor[0], rStep * i + startColor[1], rStep * i + startColor[2]);
+    for (let i = 0; i < this.traces.length; i++) {
+      if (typeof this.traces[i].uid !== 'undefined') {
+        if (this.traces[i].uid === 'heatmap') {
+          Plotly.restyle(chartElm, {
+            opacity: this.opacityValue
+          }, [i]);
+        }
       }
-      
     }
-    return gradientColorArr;
-  }
-
-  calColor(z, min, max, startColor, endColor) {
-    const ratio = z / max;
-    const color1 = startColor[0] - ((startColor[0] - endColor[0]) * ratio);
-console.log(z, max, z/max, color1)
-    console.log(this.gradient([12, 51, 131], [10, 136, 186], max - min, z));
-
+    
   }
 
 }
