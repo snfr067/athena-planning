@@ -872,47 +872,104 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)}
     };
 
-    const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth + 80;
-    const maxWidth = window.innerWidth - 64 - matdrawer;
-    document.getElementById('chart').style.width = `${maxWidth}px`;
-
-    if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
-      const reader = new FileReader();
-      reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
-      reader.onload = (e) => {
-        // 背景圖
-        this.plotLayout['images'] = [{
-          source: reader.result,
-          x: 0,
-          y: 0,
-          sizex: this.calculateForm.width,
-          sizey: this.calculateForm.height,
-          xref: 'x',
-          yref: 'y',
-          xanchor: 'left',
-          yanchor: 'bottom',
-          sizing: 'stretch'
-        }];
-
+    window.setTimeout(() => {
+      // 圖區不出現scroll bar，否則物件位置會跑掉
+      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth + 80;
+      const maxWidth = window.innerWidth - 64 - matdrawer;
+      document.getElementById('chart').style.width = `${maxWidth}px`;
+      document.getElementById('chart').style.overflow = 'hidden';
+  
+      if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
+        const reader = new FileReader();
+        reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
+        reader.onload = (e) => {
+          // 背景圖
+          this.plotLayout['images'] = [{
+            source: reader.result,
+            x: 0,
+            y: 0,
+            sizex: this.calculateForm.width,
+            sizey: this.calculateForm.height,
+            xref: 'x',
+            yref: 'y',
+            xanchor: 'left',
+            yanchor: 'bottom',
+            sizing: 'stretch'
+          }];
+  
+          // draw background image chart
+          Plotly.newPlot('chart', {
+            data: [],
+            layout: this.plotLayout,
+            config: defaultPlotlyConfiguration
+          }).then((gd) => {
+            
+            const sizes = this.chartService.calSize(this.calculateForm, gd);
+            const layoutOption = {
+              width: sizes[0],
+              height: sizes[1]
+            };
+  
+            sessionStorage.removeItem('layoutSize');
+            sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
+  
+            // image放進圖裡後需取得比例尺
+            Plotly.relayout('chart', layoutOption).then((gd2) => {
+              this.chart.nativeElement.style.opacity = 1;
+              const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
+              const rect2 = xy2.getBoundingClientRect();
+              // drag範圍
+              this.bounds = {
+                left: rect2.left,
+                top: rect2.top,
+                right: rect2.right,
+                bottom: rect2.top + rect2.height
+              };
+  
+              // 計算比例尺
+              this.calScale(gd2);
+              
+              if (isImportXls) {
+                // import xlsx
+                this.setImportData();
+              } else if (isImportImg) {
+                // do noting
+              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                // 編輯
+                if (!isAltChange) {
+                  this.edit();
+                }
+                console.log(this.calculateForm);
+              }
+            });
+  
+          });
+        };
+  
+      } else {
+        if (typeof this.chart !== 'undefined') {
+          this.chart.nativeElement.style.opacity = 1;
+        }
+        this.plotLayout['width'] = window.innerWidth * 0.68;
         // draw background image chart
         Plotly.newPlot('chart', {
           data: [],
           layout: this.plotLayout,
           config: defaultPlotlyConfiguration
         }).then((gd) => {
-          
+  
+          // 無image時圖長寬
           const sizes = this.chartService.calSize(this.calculateForm, gd);
           const layoutOption = {
             width: sizes[0],
             height: sizes[1]
           };
-
+  
           sessionStorage.removeItem('layoutSize');
           sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
-
-          // image放進圖裡後需取得比例尺
+  
+          // 重設長寬
           Plotly.relayout('chart', layoutOption).then((gd2) => {
-            this.chart.nativeElement.style.opacity = 1;
             const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
             const rect2 = xy2.getBoundingClientRect();
             // drag範圍
@@ -922,80 +979,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
               right: rect2.right,
               bottom: rect2.top + rect2.height
             };
-
+    
             // 計算比例尺
             this.calScale(gd2);
-            
+            // import xlsx
             if (isImportXls) {
-              // import xlsx
               this.setImportData();
             } else if (isImportImg) {
-              // do noting
+              // do nothing
             } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
               // 編輯
+              console.log(this.calculateForm);
               if (!isAltChange) {
                 this.edit();
               }
-              console.log(this.calculateForm);
             }
           });
-
-        });
-      };
-
-    } else {
-      if (typeof this.chart !== 'undefined') {
-        this.chart.nativeElement.style.opacity = 1;
-      }
-      this.plotLayout['width'] = window.innerWidth * 0.68;
-      // draw background image chart
-      Plotly.newPlot('chart', {
-        data: [],
-        layout: this.plotLayout,
-        config: defaultPlotlyConfiguration
-      }).then((gd) => {
-
-        // 無image時圖長寬
-        const sizes = this.chartService.calSize(this.calculateForm, gd);
-        const layoutOption = {
-          width: sizes[0],
-          height: sizes[1]
-        };
-
-        sessionStorage.removeItem('layoutSize');
-        sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
-
-        // 重設長寬
-        Plotly.relayout('chart', layoutOption).then((gd2) => {
-          const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
-          const rect2 = xy2.getBoundingClientRect();
-          // drag範圍
-          this.bounds = {
-            left: rect2.left,
-            top: rect2.top,
-            right: rect2.right,
-            bottom: rect2.top + rect2.height
-          };
   
-          // 計算比例尺
-          this.calScale(gd2);
-          // import xlsx
-          if (isImportXls) {
-            this.setImportData();
-          } else if (isImportImg) {
-            // do nothing
-          } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-            // 編輯
-            console.log(this.calculateForm);
-            if (!isAltChange) {
-              this.edit();
-            }
-          }
+          
         });
+      }
+    }, 0);
 
-        
-      });
-    }
+    
   }
 
   /** 計算比例尺 */

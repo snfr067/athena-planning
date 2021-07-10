@@ -358,16 +358,30 @@ export class SignalCoverComponent implements OnInit {
             const max = zMax[zValues.indexOf(Number(this.zValue))];
             // legend
             let color;
-            if (z < max * 0.25) {
+            // if (z < max * 0.25) {
+            //   color = 'rgb(12,51,131)';
+            // } else if (z >= max * 0.25 && z < max * 0.5) {
+            //   color = 'rgb(10,136,186)';
+            // } else if (z >= max * 0.5 && z < max * 0.75) {
+            //   color = 'rgb(242,211,56)';
+            // } else if (z >= max * 0.75 && z < max) {
+            //   color = 'rgb(242,143,56)';
+            // } else if (z === max) {
+            //   color = 'rgb(217,30,30)';
+            // }
+
+            if (allZero && chosenCandidate.length === 1) {
               color = 'rgb(12,51,131)';
-            } else if (z >= max * 0.25 && z < max * 0.5) {
-              color = 'rgb(10,136,186)';
-            } else if (z >= max * 0.5 && z < max * 0.75) {
-              color = 'rgb(242,211,56)';
-            } else if (z >= max * 0.75 && z < max) {
-              color = 'rgb(242,143,56)';
-            } else if (z === max) {
-              color = 'rgb(217,30,30)';
+            } else {
+              const zDomain = [];
+              const colorRange = [];
+              for (let n = 0; n < colorscale.length; n++) {
+                zDomain.push(max * colorscale[n][0]);
+                colorRange.push(colorscale[n][1]);
+              }
+              // 套件提供用range計算的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              color = colorFN(z);
             }
 
             traces.push({
@@ -393,10 +407,13 @@ export class SignalCoverComponent implements OnInit {
         // const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
           const oData = defaultBs[i];
+          if (typeof zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])] === 'undefined') {
+            continue;
+          }
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
           apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
-          // legend
+          // legend Xean: 07/10 mark,顏色改成套件計算
           // let color;
           // if (z < max * 0.25) {
           //   color = 'rgb(12,51,131)';
@@ -473,13 +490,6 @@ export class SignalCoverComponent implements OnInit {
         [0, 'rgb(12,51,131)'],
         [1, 'rgb(12,51,131)']
       ];
-    }
-
-    for (let i = 0; i < defaultBs.length; i++) {
-      const oData = defaultBs[i];
-      const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-
-      
     }
 
     const trace = {
