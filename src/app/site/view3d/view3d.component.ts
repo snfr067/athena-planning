@@ -166,6 +166,7 @@ export class View3dComponent implements OnInit {
       const depth = item.altitude / 2;
       let obstacleData;
       let obstacle;
+      
       if (item.element === 0) {
         obstacleData = [
           new BABYLON.Vector3(-depth, 0, 0),
@@ -206,10 +207,10 @@ export class View3dComponent implements OnInit {
         obstacle.position.y = depth + offsetY;
       }
       obstacle.position.z = item.y + offsetZ;
-      if (item.element === 1) {
+      if (item.element === 1 || item.element === 3) {
         if (item.rotate > 90 || item.rotate < -90) {
           obstacle.position.z = item.y + offsetZ + item.height;
-          obstacle.position.x = item.x + offsetX + (item.width / 2);
+          obstacle.position.x = item.x + offsetX + item.width;
         }
       } else if (item.element === 2) {
         obstacle.position.x = item.x + offsetX + (item.width / 2);

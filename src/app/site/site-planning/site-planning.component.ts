@@ -2524,6 +2524,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           for (let i = 0; i < this.pgInterval; i++) {
             window.clearInterval(i);
           }
+          sessionStorage.removeItem('calculateForm');
+          sessionStorage.removeItem('importFile');
+          sessionStorage.removeItem('taskName');
           this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
           
         } else {
@@ -3866,7 +3869,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   result() {
     // 規劃目標
     this.setPlanningObj();
-
+    
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }});
     } else {
