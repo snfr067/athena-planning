@@ -197,7 +197,7 @@ export class View3dComponent implements OnInit {
 
       } else if (item.element === 2) {
         // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
-        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.width, item.width, 99, 1, scene);
+        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height, item.height, 99, 1, scene);
       } else if (item.element === 3) {
         // 梯形
         obstacleData = [
@@ -223,8 +223,8 @@ export class View3dComponent implements OnInit {
           obstacle.position.x = item.x + offsetX + item.width;
         }
       } else if (item.element === 2) {
-        obstacle.position.x = item.x + offsetX + (item.width / 2);
-        obstacle.position.z = item.y + offsetZ + (item.width / 2);
+        obstacle.position.x = item.x + offsetX + (item.height / 2);
+        obstacle.position.z = item.y + offsetZ + (item.height / 2);
       }
 
       if (item.element === 0) {
