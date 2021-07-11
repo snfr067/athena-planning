@@ -316,7 +316,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            // heatmap透明度，跟2d底圖相同
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
             heatmapMat.alpha = 0.85;
             sinrMapPlane.material = heatmapMat;
         }
@@ -329,7 +332,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
             heatmapMat.alpha = 0.85;
             pciMapPlane.material = heatmapMat;
         }
@@ -342,7 +348,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
             heatmapMat.alpha = 0.85;
             rsrpMapPlane.material = heatmapMat;
         }
@@ -355,7 +364,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
             heatmapMat.alpha = 0.85;
             ulThroughputMapPlane.material = heatmapMat;
         }
@@ -368,7 +380,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
             heatmapMat.alpha = 0.85;
             dlThroughputMapPlane.material = heatmapMat;
         }
