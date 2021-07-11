@@ -316,8 +316,9 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            // heatmap透明度，跟2d底圖相同
+            heatmapMat.alpha = 0.85;
             sinrMapPlane.material = heatmapMat;
-            console.log(texture)
         }
         sinrMapPlane.isVisible = false;
         this.heatmapGroup[z].push(sinrMapPlane);
@@ -328,6 +329,8 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            heatmapMat.alpha = 0.85;
             pciMapPlane.material = heatmapMat;
         }
         pciMapPlane.isVisible = false;
@@ -339,6 +342,8 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            heatmapMat.alpha = 0.85;
             rsrpMapPlane.material = heatmapMat;
         }
         rsrpMapPlane.isVisible = false;
@@ -350,6 +355,8 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            heatmapMat.alpha = 0.85;
             ulThroughputMapPlane.material = heatmapMat;
         }
         ulThroughputMapPlane.isVisible = false;
@@ -361,6 +368,8 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            // heatmap透明度，跟2d底圖相同，讓顏色相近於2d圖
+            heatmapMat.alpha = 0.85;
             dlThroughputMapPlane.material = heatmapMat;
         }
         dlThroughputMapPlane.isVisible = false;
@@ -600,7 +609,9 @@ export class View3dComponent implements OnInit {
 
     const max = -44;
     const min = -140;
+    // 計算顏色區間公式的domain
     const zDomain = [];
+    // 計算顏色區間公式的range
     const colorRange = [];
     for (let k = 0; k < this.colorscale.length; k++) {
       zDomain.push((max - min) * this.colorscale[k][0] + min);
@@ -621,7 +632,9 @@ export class View3dComponent implements OnInit {
             } else {
               // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
               const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              // get hex color
               const hexColor = colorFN(value);
+              // hex轉rgb
               const rgb = Plotly.d3.rgb(hexColor);
               colorMap[n] = rgb.r;
               colorMap[n + 1] = rgb.g;
