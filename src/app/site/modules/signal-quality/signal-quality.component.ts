@@ -310,47 +310,28 @@ export class SignalQualityComponent implements OnInit {
           shape = '0';
         }
 
-        if (Number(shape) === 2) {
-          this.shapes.push({
-            type: 'circle',
-            xref: 'x',
-            yref: 'y',
-            fillcolor: oColor,
-            x0: xdata,
-            y0: ydata,
-            x1: xdata + oData[2],
-            y1: ydata + oData[3],
-            line: {
-              color: oColor
-            },
-            visible: (this.showObstacle === 'visible' ? true : false),
-            layer: 'below'
-          });
-
-        } else {
-          this.rectList.push({
-            x: xdata,
-            y: ydata,
-            rotate: oData[5],
-            shape: shape,
-            style: {
-              left: 0,
-              top: 0,
-              width: oData[2],
-              height: oData[3],
-              // transform: `rotate(${oData[5]}deg)`,
-              position: 'absolute',
-              visibility: this.showObstacle,
-              opacity: 0
-            },
-            svgStyle: {
-              width: oData[2],
-              height: oData[3],
-              fill: oColor,
-            },
-            hover: text
-          });
-        }
+        this.rectList.push({
+          x: xdata,
+          y: ydata,
+          rotate: oData[5],
+          shape: shape,
+          style: {
+            left: 0,
+            top: 0,
+            width: oData[2],
+            height: oData[3],
+            // transform: `rotate(${oData[5]}deg)`,
+            position: 'absolute',
+            visibility: this.showObstacle,
+            opacity: 0
+          },
+          svgStyle: {
+            width: oData[2],
+            height: oData[3],
+            fill: oColor,
+          },
+          hover: text
+        });
 
       }
     }
@@ -693,7 +674,7 @@ export class SignalQualityComponent implements OnInit {
         window.setTimeout(() => {
           item['style']['transform'] = `rotate(${item.rotate}deg)`;
           item['style'].opacity = 1;
-        }, 100);
+        }, 0);
       }
 
       for (const item of this.defaultBsList) {

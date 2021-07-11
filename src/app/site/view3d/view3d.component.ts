@@ -98,6 +98,16 @@ export class View3dComponent implements OnInit {
   isPDF = false;
   /** heatmap config */
   heatmapConfig = [[12, 51, 131], [10, 136, 186], [242, 211, 56], [242, 143, 56], [217, 30, 30]];
+  /** 訊號覆蓋圖是否為藍色 */
+  isCoverBlue = true;
+  /** 跟2d圖相同的colorscale */
+  colorscale: any = [
+    [0, 'rgb(12,51,131)'],
+    [0.25, 'rgb(10,136,186)'],
+    [0.5, 'rgb(242,211,56)'],
+    [0.75, 'rgb(242,143,56)'],
+    [1, 'rgb(217,30,30)']
+  ];
 
   /** canvas element */
   @ViewChild('canvas', { static: true }) 
@@ -166,6 +176,7 @@ export class View3dComponent implements OnInit {
       const depth = item.altitude / 2;
       let obstacleData;
       let obstacle;
+      
       if (item.element === 0) {
         obstacleData = [
           new BABYLON.Vector3(-depth, 0, 0),
@@ -186,7 +197,7 @@ export class View3dComponent implements OnInit {
 
       } else if (item.element === 2) {
         // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
-        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.width, item.width, 99, 1, scene);
+        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height, item.height, 99, 1, scene);
       } else if (item.element === 3) {
         // 梯形
         obstacleData = [
@@ -203,19 +214,22 @@ export class View3dComponent implements OnInit {
 
       obstacle.position.x = item.x + offsetX;
       if (item.element === 1 || item.element === 3) {
+        // 三角形與梯形
         obstacle.position.y = item.altitude + offsetY;
       } else {
         obstacle.position.y = depth + offsetY;
       }
       obstacle.position.z = item.y + offsetZ;
-      if (item.element === 1) {
+      if (item.element === 1 || item.element === 3) {
+        // 三角形與梯形
         if (item.rotate > 90 || item.rotate < -90) {
           obstacle.position.z = item.y + offsetZ + item.height;
-          obstacle.position.x = item.x + offsetX + (item.width / 2);
+          obstacle.position.x = item.x + offsetX + item.width;
         }
       } else if (item.element === 2) {
-        obstacle.position.x = item.x + offsetX + (item.width / 2);
-        obstacle.position.z = item.y + offsetZ + (item.width / 2);
+        // 圓形
+        obstacle.position.x = item.x + offsetX + (item.height / 2);
+        obstacle.position.z = item.y + offsetZ + (item.height / 2);
       }
 
       if (item.element === 0) {
@@ -232,6 +246,7 @@ export class View3dComponent implements OnInit {
 
     const defaultBsMat = new BABYLON.StandardMaterial('defaultBsMaterial', scene);
     defaultBsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+    let bsCount = 0;
     for (const bs of this.defaultBs) {
       // const bs = this.defaultBs[id];
       // const bs = this.dragObject[id];
@@ -245,8 +260,13 @@ export class View3dComponent implements OnInit {
         bsBox.material = defaultBsMat;
   
         this.defaultBsGroup.push(bsBox);
+        bsCount++;
       }
       
+    }
+
+    if (bsCount > 1) {
+      this.isCoverBlue = false;
     }
 
     const candidateMat = new BABYLON.StandardMaterial('candidateMaterial', scene);
@@ -266,6 +286,10 @@ export class View3dComponent implements OnInit {
             } else {
               candBox.material = candidateMat;
             }
+          }
+
+          if (this.result['gaResult'].chosenCandidate.length > 1) {
+            this.isCoverBlue = false;
           }
 
         } else {
@@ -297,6 +321,11 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
+            heatmapMat.alpha = 0.85;
             sinrMapPlane.material = heatmapMat;
         }
         sinrMapPlane.isVisible = false;
@@ -308,6 +337,11 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
+            heatmapMat.alpha = 0.85;
             pciMapPlane.material = heatmapMat;
         }
         pciMapPlane.isVisible = false;
@@ -319,6 +353,11 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
+            heatmapMat.alpha = 0.85;
             rsrpMapPlane.material = heatmapMat;
         }
         rsrpMapPlane.isVisible = false;
@@ -330,6 +369,11 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
+            heatmapMat.alpha = 0.85;
             ulThroughputMapPlane.material = heatmapMat;
         }
         ulThroughputMapPlane.isVisible = false;
@@ -341,6 +385,11 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
+            /**
+             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+             * 跟2d底圖相同，讓顏色相近於2d圖
+             */
+            heatmapMat.alpha = 0.85;
             dlThroughputMapPlane.material = heatmapMat;
         }
         dlThroughputMapPlane.isVisible = false;
@@ -397,11 +446,14 @@ export class View3dComponent implements OnInit {
   genPciMapData(zIndex) {
     const blockCount = this.defaultBs.length + this.result['gaResult'].chosenCandidate.length;
     const colorMap = new Uint8Array(this.width * this.height * 3);
-
+    let allZero = true;
     const ary = [];
     this.result['gaResult']['connectionMapAll'].map(v => {
       v.map(m => {
         m.map(d => {
+          if (d != null && d > 0) {
+            allZero = false;
+          }
           ary.push(d);
         });
       });
@@ -409,9 +461,13 @@ export class View3dComponent implements OnInit {
 
     const max = Plotly.d3.max(ary);
     const min = Plotly.d3.min(ary);
+    const zDomain = [];
+    const colorRange = [];
+    for (let k = 0; k < this.colorscale.length; k++) {
+      zDomain.push((max - min) * this.colorscale[k][0] + min);
+      colorRange.push(this.colorscale[k][1]);
+    }
 
-    const totalDelta = max - min;
-    // console.log(totalDelta, max, min)
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
@@ -419,39 +475,59 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].connectionMapAll[i][j][zIndex];
-            let offset;
-            if (totalDelta === 0) {
-              offset = (value - min);
-            } else {
-              offset = (value - min) / totalDelta;
-            }
-            // const offset = (value + 1) / blockCount;
-            // console.log(value, offset);
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
               colorMap[n + 2] = 255;
-            } else if (offset < 0.25) {
-              const mixRatio = offset / 0.25;
-              colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
-              colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
-              colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
-          } else if (offset < 0.5) {
-              const mixRatio = (offset - 0.25) / 0.25;
-              colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-              colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-              colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-          } else if (offset < 0.75) {
-              const mixRatio = (offset - 0.5) / 0.25;
-              colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-              colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-              colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
-          } else {
-              const mixRatio = (offset - 0.75) / 0.25;
-              colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-              colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-              colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
-          }
+            } else if (allZero && this.isCoverBlue) {
+              // 都是0的基站指定為藍色
+              colorMap[n] = 12;
+              colorMap[n + 1] = 51;
+              colorMap[n + 2] = 131;
+            } else {
+              // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              const hexColor = colorFN(value);
+              const rgb = Plotly.d3.rgb(hexColor);
+              colorMap[n] = rgb.r;
+              colorMap[n + 1] = rgb.g;
+              colorMap[n + 2] = rgb.b;
+            }
+
+
+          //   let offset;
+          //   if (totalDelta === 0) {
+          //     offset = (value - min);
+          //   } else {
+          //     offset = (value - min) / totalDelta;
+          //   }
+          //   // const offset = (value + 1) / blockCount;
+          //   // console.log(value, offset);
+          //   if (value == null) {
+          //     colorMap[n] = 255;
+          //     colorMap[n + 1] = 255;
+          //     colorMap[n + 2] = 255;
+          //   } else if (offset < 0.25) {
+          //     const mixRatio = offset / 0.25;
+          //     colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+          //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+          //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+          // } else if (offset < 0.5) {
+          //     const mixRatio = (offset - 0.25) / 0.25;
+          //     colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+          //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+          //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+          // } else if (offset < 0.75) {
+          //     const mixRatio = (offset - 0.5) / 0.25;
+          //     colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+          //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+          //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+          // } else {
+          //     const mixRatio = (offset - 0.75) / 0.25;
+          //     colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+          //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+          //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+          // }
         }
     }
     return colorMap;
@@ -464,6 +540,25 @@ export class View3dComponent implements OnInit {
   genSinrMapData(zIndex) {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['sinrMax'] - this.result['sinrMin'];
+
+    const sinrColorscale: any = [
+      [0, 'rgb(12,51,131)'],
+      [0.2, 'rgb(10,136,186)'],
+      [0.3, 'rgb(136, 224, 53)'],
+      [0.4, 'rgb(242,211,56)'],
+      [0.75, 'rgb(242,143,56)'],
+      [1, 'rgb(217,30,30)'],
+    ];
+
+    const min = -8;
+    const max = 24;
+    const zDomain = [];
+    const colorRange = [];
+    for (let k = 0; k < sinrColorscale.length; k++) {
+      zDomain.push((max - min) * sinrColorscale[k][0] + min);
+      colorRange.push(sinrColorscale[k][1]);
+    }
+
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
@@ -471,41 +566,54 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].sinrMap[i][j][zIndex];
-            const offset = (value - this.result['sinrMin']) / totalDelta;
-
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
               colorMap[n + 2] = 255;
-            } else if (offset === 0) {
-                colorMap[n] = 12;
-                colorMap[n + 1] = 51;
-                colorMap[n + 2] = 131;
-
-            } else if (offset < 0.31) {
-                colorMap[n] = 10;
-                colorMap[n + 1] = 36;
-                colorMap[n + 2] = 186;
-
-            } else if (offset < 0.41) {
-                colorMap[n] = 136;
-                colorMap[n + 1] = 224;
-                colorMap[n + 2] = 53;
-
-            } else if (offset < 0.75) {
-                colorMap[n] = 242;
-                colorMap[n + 1] = 211;
-                colorMap[n + 2] = 56;
-
-            } else if (offset < 1) {
-              colorMap[n] = 242;
-              colorMap[n + 1] = 143;
-              colorMap[n + 2] = 56;
             } else {
-              colorMap[n] = 217;
-              colorMap[n + 1] = 30;
-              colorMap[n + 2] = 30;
+              // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              const hexColor = colorFN(value);
+              const rgb = Plotly.d3.rgb(hexColor);
+              colorMap[n] = rgb.r;
+              colorMap[n + 1] = rgb.g;
+              colorMap[n + 2] = rgb.b;
             }
+            // const offset = (value - this.result['sinrMin']) / totalDelta;
+
+            // if (value == null) {
+            //   colorMap[n] = 255;
+            //   colorMap[n + 1] = 255;
+            //   colorMap[n + 2] = 255;
+            // } else if (offset === 0) {
+            //     colorMap[n] = 12;
+            //     colorMap[n + 1] = 51;
+            //     colorMap[n + 2] = 131;
+
+            // } else if (offset < 0.31) {
+            //     colorMap[n] = 10;
+            //     colorMap[n + 1] = 36;
+            //     colorMap[n + 2] = 186;
+
+            // } else if (offset < 0.41) {
+            //     colorMap[n] = 136;
+            //     colorMap[n + 1] = 224;
+            //     colorMap[n + 2] = 53;
+
+            // } else if (offset < 0.75) {
+            //     colorMap[n] = 242;
+            //     colorMap[n + 1] = 211;
+            //     colorMap[n + 2] = 56;
+
+            // } else if (offset < 1) {
+            //   colorMap[n] = 242;
+            //   colorMap[n + 1] = 143;
+            //   colorMap[n + 2] = 56;
+            // } else {
+            //   colorMap[n] = 217;
+            //   colorMap[n + 1] = 30;
+            //   colorMap[n + 2] = 30;
+            // }
         }
     }
     return colorMap;
@@ -518,6 +626,18 @@ export class View3dComponent implements OnInit {
   genRsrpMapData(zIndex) {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['rsrpMax'] - this.result['rsrpMin'];
+
+    const max = -44;
+    const min = -140;
+    // 計算顏色區間公式的domain
+    const zDomain = [];
+    // 計算顏色區間公式的range
+    const colorRange = [];
+    for (let k = 0; k < this.colorscale.length; k++) {
+      zDomain.push((max - min) * this.colorscale[k][0] + min);
+      colorRange.push(this.colorscale[k][1]);
+    }
+
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
@@ -525,32 +645,48 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].rsrpMap[i][j][zIndex];
-            const offset = (value - this.result['rsrpMin']) / totalDelta;
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
               colorMap[n + 2] = 255;
-            } else if (offset < 0.25) {
-                const mixRatio = offset / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
-            } else if (offset < 0.5) {
-                const mixRatio = (offset - 0.25) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-            } else if (offset < 0.75) {
-                const mixRatio = (offset - 0.5) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
             } else {
-                const mixRatio = (offset - 0.75) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+              // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              // get hex color
+              const hexColor = colorFN(value);
+              // hex轉rgb
+              const rgb = Plotly.d3.rgb(hexColor);
+              colorMap[n] = rgb.r;
+              colorMap[n + 1] = rgb.g;
+              colorMap[n + 2] = rgb.b;
             }
+
+            // const offset = (value - this.result['rsrpMin']) / totalDelta;
+            // if (value == null) {
+            //   colorMap[n] = 255;
+            //   colorMap[n + 1] = 255;
+            //   colorMap[n + 2] = 255;
+            // } else if (offset < 0.25) {
+            //     const mixRatio = offset / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+            // } else if (offset < 0.5) {
+            //     const mixRatio = (offset - 0.25) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+            // } else if (offset < 0.75) {
+            //     const mixRatio = (offset - 0.5) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+            // } else {
+            //     const mixRatio = (offset - 0.75) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+            // }
         }
     }
     return colorMap;
@@ -564,6 +700,14 @@ export class View3dComponent implements OnInit {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['ulThroughputMax'] - this.result['ulThroughputMin'];
     if (this.result['gaResult'].ulThroughputMap != null && this.result['gaResult'].ulThroughputMap.length > 0) {
+      const max = 1200;
+      const min = 100;
+      const zDomain = [];
+      const colorRange = [];
+      for (let k = 0; k < this.colorscale.length; k++) {
+        zDomain.push((max - min) * this.colorscale[k][0] + min);
+        colorRange.push(this.colorscale[k][1]);
+      }
       for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
@@ -571,37 +715,50 @@ export class View3dComponent implements OnInit {
               continue;
             }
             const value = this.result['gaResult'].ulThroughputMap[i][j][zIndex];
-            const offset = value / 1200;
-            
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;
               colorMap[n + 2] = 255;
-            } else if (value >= 1200) {
-              colorMap[n] = 217;
-              colorMap[n + 1] = 30;
-              colorMap[n + 2] = 30;
-            } else if (offset < 0.25) {
-                const mixRatio = offset / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
-            } else if (offset < 0.5) {
-                const mixRatio = (offset - 0.25) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-            } else if (offset < 0.75) {
-                const mixRatio = (offset - 0.5) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
             } else {
-                const mixRatio = (offset - 0.75) / 0.25;
-                colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-                colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-                colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+              // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              const hexColor = colorFN(value);
+              const rgb = Plotly.d3.rgb(hexColor);
+              colorMap[n] = rgb.r;
+              colorMap[n + 1] = rgb.g;
+              colorMap[n + 2] = rgb.b;
             }
+            // const offset = value / 1200;
+            
+            // if (value == null) {
+            //   colorMap[n] = 255;
+            //   colorMap[n + 1] = 255;
+            //   colorMap[n + 2] = 255;
+            // } else if (value >= 1200) {
+            //   colorMap[n] = 217;
+            //   colorMap[n + 1] = 30;
+            //   colorMap[n + 2] = 30;
+            // } else if (offset < 0.25) {
+            //     const mixRatio = offset / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+            // } else if (offset < 0.5) {
+            //     const mixRatio = (offset - 0.25) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+            // } else if (offset < 0.75) {
+            //     const mixRatio = (offset - 0.5) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+            // } else {
+            //     const mixRatio = (offset - 0.75) / 0.25;
+            //     colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+            //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+            //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+            // }
         }
       }
     }
@@ -617,6 +774,8 @@ export class View3dComponent implements OnInit {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     if (this.result['gaResult'].dlThroughputMap != null && this.result['gaResult'].dlThroughputMap.length > 0) {
       const totalDelta = this.result['dlThroughputMax'] - this.result['dlThroughputMin'];
+      const max = 1200;
+      const min = 100;
       for (let j = 0; j < this.height; j++) {
           for (let i = 0; i < this.width; i++) {
               const n = (j * this.width + i) * 3;
@@ -624,36 +783,55 @@ export class View3dComponent implements OnInit {
                 continue;
               }
               const value = this.result['gaResult'].dlThroughputMap[i][j][zIndex];
-              const offset = value / 1200;
               if (value == null) {
                 colorMap[n] = 255;
                 colorMap[n + 1] = 255;
                 colorMap[n + 2] = 255;
-              } else if (value >= 1200) {
-                colorMap[n] = 217;
-                colorMap[n + 1] = 30;
-                colorMap[n + 2] = 30;
-              } else if (offset < 0.25) {
-                  const mixRatio = offset / 0.25;
-                  colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
-                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
-                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
-              } else if (offset < 0.5) {
-                  const mixRatio = (offset - 0.25) / 0.25;
-                  colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
-                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
-                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
-              } else if (offset < 0.75) {
-                  const mixRatio = (offset - 0.5) / 0.25;
-                  colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
-                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
-                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
               } else {
-                  const mixRatio = (offset - 0.75) / 0.25;
-                  colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
-                  colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
-                  colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+                const zDomain = [];
+                const colorRange = [];
+                for (let k = 0; k < this.colorscale.length; k++) {
+                  zDomain.push((max - min) * this.colorscale[k][0] + min);
+                  colorRange.push(this.colorscale[k][1]);
+                }
+                // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
+                const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+                const hexColor = colorFN(value);
+                const rgb = Plotly.d3.rgb(hexColor);
+                colorMap[n] = rgb.r;
+                colorMap[n + 1] = rgb.g;
+                colorMap[n + 2] = rgb.b;
               }
+              // const offset = value / 1200;
+              // if (value == null) {
+              //   colorMap[n] = 255;
+              //   colorMap[n + 1] = 255;
+              //   colorMap[n + 2] = 255;
+              // } else if (value >= 1200) {
+              //   colorMap[n] = 217;
+              //   colorMap[n + 1] = 30;
+              //   colorMap[n + 2] = 30;
+              // } else if (offset < 0.25) {
+              //     const mixRatio = offset / 0.25;
+              //     colorMap[n] = mixRatio * (this.heatmapConfig[1][0] - this.heatmapConfig[0][0]) + this.heatmapConfig[0][0];
+              //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[1][1] - this.heatmapConfig[0][1]) + this.heatmapConfig[0][1];
+              //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[1][2] - this.heatmapConfig[0][2]) + this.heatmapConfig[0][2];
+              // } else if (offset < 0.5) {
+              //     const mixRatio = (offset - 0.25) / 0.25;
+              //     colorMap[n] = mixRatio * (this.heatmapConfig[2][0] - this.heatmapConfig[1][0]) + this.heatmapConfig[1][0];
+              //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[2][1] - this.heatmapConfig[1][1]) + this.heatmapConfig[1][1];
+              //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[2][2] - this.heatmapConfig[1][2]) + this.heatmapConfig[1][2];
+              // } else if (offset < 0.75) {
+              //     const mixRatio = (offset - 0.5) / 0.25;
+              //     colorMap[n] = mixRatio * (this.heatmapConfig[3][0] - this.heatmapConfig[2][0]) + this.heatmapConfig[2][0];
+              //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[3][1] - this.heatmapConfig[2][1]) + this.heatmapConfig[2][1];
+              //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[3][2] - this.heatmapConfig[2][2]) + this.heatmapConfig[2][2];
+              // } else {
+              //     const mixRatio = (offset - 0.75) / 0.25;
+              //     colorMap[n] = mixRatio * (this.heatmapConfig[4][0] - this.heatmapConfig[3][0]) + this.heatmapConfig[3][0];
+              //     colorMap[n + 1] = mixRatio * (this.heatmapConfig[4][1] - this.heatmapConfig[3][1]) + this.heatmapConfig[3][1];
+              //     colorMap[n + 2] = mixRatio * (this.heatmapConfig[4][2] - this.heatmapConfig[3][2]) + this.heatmapConfig[3][2];
+              // }
           }
       }
     }

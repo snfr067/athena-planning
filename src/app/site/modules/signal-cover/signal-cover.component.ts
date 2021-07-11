@@ -60,6 +60,8 @@ export class SignalCoverComponent implements OnInit {
   shapes = [];
   /** AP文字 */
   annotations = [];
+  /** traces */
+  traces = [];
   /** 障礙物element */
   @ViewChildren('obstaclecElm') obstacleElm: QueryList<ElementRef>;
 
@@ -76,9 +78,6 @@ export class SignalCoverComponent implements OnInit {
       Plotly.relayout(this.chartId, layoutOption);
     });
   }
-
-  //test
-  traces = [];
 
   ngOnInit(): void {
   }
@@ -245,8 +244,10 @@ export class SignalCoverComponent implements OnInit {
     }
     // 取z的最大值
     const zMax = [];
+    const zMin = [];
     for (const item of allZ) {
       zMax.push(Plotly.d3.max(item));
+      zMin.push(Plotly.d3.min(item));
     }
 
     const x = [];
@@ -265,7 +266,7 @@ export class SignalCoverComponent implements OnInit {
       y.push(yval);
       yval += hRatio;
     }
-    const traces = [];
+    this.traces = [];
 
     // UE
     if (this.calculateForm.ueCoordinate !== '') {
@@ -283,7 +284,7 @@ export class SignalCoverComponent implements OnInit {
         text.push(`${this.translateService.instant('ue')}<br>X: ${oData[0]}<br>Y: ${oData[1]}<br>${this.translateService.instant('altitude')}: ${oData[2]}`);
       }
 
-      traces.push({
+      this.traces.push({
         x: cx,
         y: cy,
         text: text,
@@ -306,6 +307,23 @@ export class SignalCoverComponent implements OnInit {
     } else {
       if (this.calculateForm.candidateBs !== '') {
         hasBS = true;
+      }
+    }
+
+    let colorscale: any = [
+      [0, 'rgb(12,51,131)'],
+      [0.25, 'rgb(10,136,186)'],
+      [0.5, 'rgb(242,211,56)'],
+      [0.75, 'rgb(242,143,56)'],
+      [1, 'rgb(217,30,30)']
+    ];
+
+    let allZero = true;
+    for (const item of zData[zValues.indexOf(Number(this.zValue))]) {
+      for (const d of item) {
+        if (d != null && d !== 0) {
+          allZero = false;
+        }
       }
     }
 
@@ -339,21 +357,36 @@ export class SignalCoverComponent implements OnInit {
 
             const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
             const max = zMax[zValues.indexOf(Number(this.zValue))];
+            const min = zMin[zValues.indexOf(Number(this.zValue))];
             // legend
             let color;
-            if (z < max * 0.25) {
+            // if (z < max * 0.25) {
+            //   color = 'rgb(12,51,131)';
+            // } else if (z >= max * 0.25 && z < max * 0.5) {
+            //   color = 'rgb(10,136,186)';
+            // } else if (z >= max * 0.5 && z < max * 0.75) {
+            //   color = 'rgb(242,211,56)';
+            // } else if (z >= max * 0.75 && z < max) {
+            //   color = 'rgb(242,143,56)';
+            // } else if (z === max) {
+            //   color = 'rgb(217,30,30)';
+            // }
+
+            if (allZero && chosenCandidate.length === 1) {
               color = 'rgb(12,51,131)';
-            } else if (z >= max * 0.25 && z < max * 0.5) {
-              color = 'rgb(10,136,186)';
-            } else if (z >= max * 0.5 && z < max * 0.75) {
-              color = 'rgb(242,211,56)';
-            } else if (z >= max * 0.75 && z < max) {
-              color = 'rgb(242,143,56)';
-            } else if (z === max) {
-              color = 'rgb(217,30,30)';
+            } else {
+              const zDomain = [];
+              const colorRange = [];
+              for (let n = 0; n < colorscale.length; n++) {
+                zDomain.push((max - min) * colorscale[n][0] + min);
+                colorRange.push(colorscale[n][1]);
+              }
+              // 套件提供用range計算的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              color = colorFN(z);
             }
 
-            traces.push({
+            this.traces.push({
               x: [0],
               y: [0],
               name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
@@ -371,35 +404,55 @@ export class SignalCoverComponent implements OnInit {
         }
       }
       
-      
       let k = 1;
       if (defaultBs.length > 0) {
         // const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
           const oData = defaultBs[i];
+          if (typeof zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])] === 'undefined') {
+            continue;
+          }
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
           apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
-          // legend
+          const min = zMin[zValues.indexOf(Number(this.zValue))];
+          // legend Xean: 07/10 mark,顏色改成套件計算
+          // let color;
+          // if (z < max * 0.25) {
+          //   color = 'rgb(12,51,131)';
+          //   console.log('1');
+          // } else if (z >= max * 0.25 && z < max * 0.5) {
+          //   color = 'rgb(10,136,186)';
+          //   console.log('2');
+          // } else if (z >= max * 0.5 && z < max * 0.75) {
+          //   color = 'rgb(242,211,56)';
+          //   console.log('3');
+          // } else if (z >= max * 0.75 && z < max) {
+          //   color = 'rgb(242,143,56)';
+          //   console.log('4');
+          // } else if (z === max) {
+          //   color = 'rgb(217,30,30)';
+          //   console.log('5');
+          // }
+
+          // Xean: 07/10 add legend color改用計算的
           let color;
-          if (z < max * 0.25) {
+          if (allZero && defaultBs.length === 1) {
+            // 只有一個都是0的基站指定為藍色
             color = 'rgb(12,51,131)';
-            console.log('1');
-          } else if (z >= max * 0.25 && z < max * 0.5) {
-            color = 'rgb(10,136,186)';
-            console.log('2');
-          } else if (z >= max * 0.5 && z < max * 0.75) {
-            color = 'rgb(242,211,56)';
-            console.log('3');
-          } else if (z >= max * 0.75 && z < max) {
-            color = 'rgb(242,143,56)';
-            console.log('4');
-          } else if (z === max) {
-            color = 'rgb(217,30,30)';
-            console.log('5');
+          } else {
+            const zDomain = [];
+            const colorRange = [];
+            for (let n = 0; n < colorscale.length; n++) {
+              zDomain.push((max - min) * colorscale[n][0] + min);
+              colorRange.push(colorscale[n][1]);
+            }
+            // 套件提供用range計算的方法
+            const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+            color = colorFN(z);
           }
 
-          traces.push({
+          this.traces.push({
             x: [0],
             y: [0],
             name: `${this.translateService.instant('defaultBs')} ${k}`,
@@ -433,26 +486,12 @@ export class SignalCoverComponent implements OnInit {
       }
     }
 
-    let allZero = true;
-    for (const item of zData[zValues.indexOf(Number(this.zValue))]) {
-      for (const d of item) {
-        if (d != null && d !== 0) {
-          allZero = false;
-        }
-      }
-    }
+    
 
-    let colorscale = [
-      ['0', 'rgb(12,51,131)'],
-      ['0.25', 'rgb(10,136,186)'],
-      ['0.5', 'rgb(242,211,56)'],
-      ['0.75', 'rgb(242,143,56)'],
-      ['1', 'rgb(217,30,30)']
-    ];
     if (allZero) {
       colorscale = [
-        ['0', 'rgb(12,51,131)'],
-        ['1', 'rgb(12,51,131)']
+        [0, 'rgb(12,51,131)'],
+        [1, 'rgb(12,51,131)']
       ];
     }
 
@@ -466,13 +505,12 @@ export class SignalCoverComponent implements OnInit {
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('ap.num')}: %{text}<extra></extra>`,
       showscale: false,
       zsmooth: 'fast',
-      opacity: this.opacityValue
+      opacity: this.opacityValue,
+      uid: 'heatmap'
     };
-    traces.push(trace);
+    this.traces.push(trace);
 
-    // test
-    this.traces = traces;
-    console.log(traces);
+    console.log(this.traces);
 
     // 新增基站
     if (this.calculateForm.candidateBs !== '') {
@@ -520,7 +558,7 @@ export class SignalCoverComponent implements OnInit {
         num++;
       }
 
-      traces.push({
+      this.traces.push({
         x: candidateX,
         y: candidateY,
         text: candidateText,
@@ -568,53 +606,34 @@ export class SignalCoverComponent implements OnInit {
         }
         const rotate = oData[5];
 
-        if (Number(shape) === 2) {
-          this.shapes.push({
-            type: 'circle',
-            xref: 'x',
-            yref: 'y',
-            fillcolor: '#000000',
-            x0: xdata,
-            y0: ydata,
-            x1: xdata + oData[2],
-            y1: ydata + oData[3],
-            line: {
-              color: '#000000'
-            },
-            visible: (this.showObstacle === 'visible' ? true : false),
-            layer: 'below'
-          });
-
-        } else {
-          this.rectList.push({
-            x: xdata,
-            y: ydata,
-            rotate: oData[5],
-            shape: shape,
-            style: {
-              left: 0,
-              top: 0,
-              width: oData[2],
-              height: oData[3],
-              // transform: `rotate(${oData[5]}deg)`,
-              position: 'absolute',
-              visibility: this.showObstacle,
-              opacity: 0
-            },
-            svgStyle: {
-              width: oData[2],
-              height: oData[3],
-              fill: oColor,
-            },
-            hover: text
-          });
-        }
+        this.rectList.push({
+          x: xdata,
+          y: ydata,
+          rotate: oData[5],
+          shape: shape,
+          style: {
+            left: 0,
+            top: 0,
+            width: oData[2],
+            height: oData[3],
+            // transform: `rotate(${oData[5]}deg)`,
+            position: 'absolute',
+            visibility: this.showObstacle,
+            opacity: 0
+          },
+          svgStyle: {
+            width: oData[2],
+            height: oData[3],
+            fill: oColor,
+          },
+          hover: text
+        });
 
       }
     }
 
     Plotly.newPlot(id, {
-      data: traces,
+      data: this.traces,
       layout: layout,
       config: defaultPlotlyConfiguration
     }).then((gd) => {
@@ -912,13 +931,16 @@ export class SignalCoverComponent implements OnInit {
   /** heatmap透明度 */
   changeOpacity() {
     const chartElm = document.querySelectorAll(`.signal_cover`)[0];
-    let traceNum = 1;
-    if (this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
-      traceNum = 0;
+    for (let i = 0; i < this.traces.length; i++) {
+      if (typeof this.traces[i].uid !== 'undefined') {
+        if (this.traces[i].uid === 'heatmap') {
+          Plotly.restyle(chartElm, {
+            opacity: this.opacityValue
+          }, [i]);
+        }
+      }
     }
-    Plotly.restyle(chartElm, {
-      opacity: this.opacityValue
-    }, [traceNum]);
+    
   }
 
 }

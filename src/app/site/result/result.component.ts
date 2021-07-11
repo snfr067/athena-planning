@@ -337,14 +337,7 @@ export class ResultComponent implements OnInit {
           } else {
 
           }
-          for (const item of defaultBs) {
-            const obj = JSON.parse(item);
-            this.defaultBSList.push({
-              x: obj[0],
-              y: obj[1],
-              z: obj[2]
-            });
-          }
+          
         }
 
         let candidateBs = [];
@@ -369,14 +362,10 @@ export class ResultComponent implements OnInit {
             this.obstacleList.push({
               x: obj[0],
               y: obj[1],
-              // z: 0,
               width: obj[2],
               height: obj[3],
               altitude: obj[4],
-              color: "#73805c",
-              // type: "obstacle",
-              // title: "障礙物",
-              // element: 0,
+              color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
               rotate: obj[5],
               material: obj[6],
               element: obj[7],

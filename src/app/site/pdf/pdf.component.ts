@@ -152,9 +152,23 @@ export class PdfComponent implements OnInit {
           if (!this.isEmpty(this.calculateForm.obstacleInfo)) {
             obstacle = this.calculateForm.obstacleInfo.split('|');
             for (const item of obstacle) {
-              this.obstacleList.push(JSON.parse(item));
+              const obj = JSON.parse(item);
+              this.obstacleList.push({
+                x: obj[0],
+                y: obj[1],
+                width: obj[2],
+                height: obj[3],
+                altitude: obj[4],
+                color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
+                rotate: obj[5],
+                material: obj[6],
+                element: obj[7],
+              });
             }
+            obstacle = this.obstacleList;
           }
+
+
           // 行動終端分佈
           let ueCoordinate = [];
           if (!this.isEmpty(this.calculateForm.ueCoordinate)) {

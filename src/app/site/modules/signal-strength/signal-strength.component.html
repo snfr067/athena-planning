@@ -23,7 +23,7 @@
           </g>
         </svg>
 
-        <svg *ngIf="item.shape == '2'" xmlns="http://www.w3.org/2000/svg">
+        <svg *ngIf="item.shape == '2'" [attr.width]="item.style.width" [attr.height]="item.style.height" xmlns="http://www.w3.org/2000/svg">
           <g>
             <rect fill="none" id="canvas_background" height="32" width="20" y="-1" x="-1"/>
             <g display="none" id="canvasGrid">
@@ -31,7 +31,7 @@
             </g>
             </g>
             <g>
-            <rect stroke="#000" height="28" width="41" y="151" x="111" stroke-width="1.5" fill="#000000"/>
+              <rect height="28" width="41" y="151" x="111" fill="none" />
             <ellipse stroke-width="1.5" [ngStyle]="item.ellipseStyle" fill="#000000"/>
           </g>
         </svg>

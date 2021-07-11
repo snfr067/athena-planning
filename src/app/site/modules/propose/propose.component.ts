@@ -223,11 +223,11 @@ export class ProposeComponent implements OnInit {
         config: defaultPlotlyConfiguration
       }).then((gd) => {
   
-        // 計算長寬
-        const sizes = this.chartService.calSize(this.calculateForm, gd);
+        // 尺寸跟場域設定一樣
+        const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
         const layoutOption = {
-          width: sizes[0],
-          height: sizes[1]
+          width: sizes.width,
+          height: sizes.height,
         };
         // 重新指定圖的長寬
         Plotly.relayout(id, layoutOption).then((gd2) => {
