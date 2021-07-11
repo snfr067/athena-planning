@@ -212,17 +212,20 @@ export class View3dComponent implements OnInit {
 
       obstacle.position.x = item.x + offsetX;
       if (item.element === 1 || item.element === 3) {
+        // 三角形與梯形
         obstacle.position.y = item.altitude + offsetY;
       } else {
         obstacle.position.y = depth + offsetY;
       }
       obstacle.position.z = item.y + offsetZ;
       if (item.element === 1 || item.element === 3) {
+        // 三角形與梯形
         if (item.rotate > 90 || item.rotate < -90) {
           obstacle.position.z = item.y + offsetZ + item.height;
           obstacle.position.x = item.x + offsetX + item.width;
         }
       } else if (item.element === 2) {
+        // 圓形
         obstacle.position.x = item.x + offsetX + (item.height / 2);
         obstacle.position.z = item.y + offsetZ + (item.height / 2);
       }
