@@ -199,6 +199,8 @@ export class View3dComponent implements OnInit {
 
       }
 
+      console.log(obstacle);
+
       obstacle.position.x = item.x + offsetX;
       if (item.element === 1 || item.element === 3) {
         obstacle.position.y = item.altitude + offsetY;

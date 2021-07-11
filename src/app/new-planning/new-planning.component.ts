@@ -132,7 +132,8 @@ export class NewPlanningComponent implements OnInit {
     reader.onload = () => {
       // xlsx結果寫入sessionStorage，場域頁使用
       sessionStorage.setItem('importFile', reader.result.toString());
-      const name = file.name.substring(0, file.name.lastIndexOf('.'));
+      const name = file.name;
+      // const name = file.name.substring(0, file.name.lastIndexOf('.'));
       sessionStorage.setItem('taskName', name);
       window.clearInterval(this.timeInterval);
       this.matDialog.closeAll();

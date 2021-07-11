@@ -2908,7 +2908,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
     console.log(wb);
     /* save to file */
-    XLSX.writeFile(wb, `${this.calculateForm.taskName}.xlsx`);
+    XLSX.writeFile(wb, `${this.calculateForm.taskName}`);
   }
 
   /**
@@ -2926,7 +2926,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     reader.onload = (e: any) => {
       /* read workbook */
       const bstr: string = e.target.result;
-      const name = file.name.substring(0, file.name.lastIndexOf('.'));
+      // const name = file.name.substring(0, file.name.lastIndexOf('.'));
+      const name = file.name;
       sessionStorage.setItem('taskName', name);
       this.readXls(bstr);
 
