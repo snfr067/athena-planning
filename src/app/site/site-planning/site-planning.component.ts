@@ -941,8 +941,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 console.log(this.calculateForm);
               }
-            });
-  
+            });  
           });
         };
   
@@ -998,6 +997,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   
           
         });
+      }
+
+      if (isChangeFieldParam) {
+        window.setTimeout(() => {
+          for (const item of this.obstacleList) {
+            if (this.dragObject[item].element == '2') {
+              // 切換場域尺寸後圓形會變形，重新初始化物件設定長寬
+              this.moveClick(item);
+              this.target = document.querySelector(`#${item}`);
+              this.setTransform(this.target);
+              const width = this.target.getBoundingClientRect().width;
+              this.frame.set('height', `${width}px`);
+              this.frame.set('width', `${width}px`);
+              const x = (width / 2).toString();
+              this.ellipseStyle[this.svgId].rx = x;
+              this.ellipseStyle[this.svgId].ry = x;
+              this.ellipseStyle[this.svgId].cx = x;
+              this.ellipseStyle[this.svgId].cy = x;
+              this.moveable.destroy();
+            }
+          }
+        }, 500);
       }
     }, 0);
 
