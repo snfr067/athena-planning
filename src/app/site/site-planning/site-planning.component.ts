@@ -1771,17 +1771,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * @param event 
    */
   fileChange(event) {
-    // 清除所有物件
-    this.obstacleList.length = 0;
-    this.defaultBSList.length = 0;
-    this.candidateList.length = 0;
-    this.ueList.length = 0;
-    this.dragObject = {};
-    this.calculateForm.obstacleInfo = '';
-    this.calculateForm.defaultBs = '';
-    this.calculateForm.candidateBs = '';
-    this.calculateForm.ueCoordinate = '';
-
+    // Xean: 07/12 註解清除所有物件
+    // this.obstacleList.length = 0;
+    // this.defaultBSList.length = 0;
+    // this.candidateList.length = 0;
+    // this.ueList.length = 0;
+    // this.dragObject = {};
+    // this.calculateForm.obstacleInfo = '';
+    // this.calculateForm.defaultBs = '';
+    // this.calculateForm.candidateBs = '';
+    // this.calculateForm.ueCoordinate = '';
+    
+    // 載入圖檔
     const file = event.target.files[0];
     this.calculateForm.mapName = file.name;
     this.showFileName = false;
@@ -1789,7 +1790,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     reader.readAsDataURL(file);
     reader.onload = () => {
       this.calculateForm.mapImage = reader.result.toString();
-      this.initData(false, true, false, false);
+      // 背景圖
+      this.plotLayout['images'] = [{
+        source: reader.result,
+        x: 0,
+        y: 0,
+        sizex: this.calculateForm.width,
+        sizey: this.calculateForm.height,
+        xref: 'x',
+        yref: 'y',
+        xanchor: 'left',
+        yanchor: 'bottom',
+        sizing: 'stretch',
+        layer: 'below'
+      }];
+      Plotly.relayout('chart', this.plotLayout);
+      // this.initData(false, true, false, false);
     };
   }
 
@@ -2654,24 +2670,84 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     // this.svgId = svgId;
-    console.log($event);
+
     this.target = document.querySelector(`#${svgId}`);
-    const rect = this.target.getBoundingClientRect();
-    const height = rect.height;
 
-    const left = this.pixelXLinear(this.dragObject[svgId].x) + this.chartLeft;
-    const bottom = this.chartBottom - this.pixelYLinear(this.dragObject[svgId].y);
-    const yPos = bottom - height;
-    this.frame.set('left', `${left}px`);
-    this.frame.set('top', `${yPos}px`);
-    if (this.dragObject[svgId].type === 'obstacle') {
-      this.frame.set('width', `${this.pixelXLinear(this.dragObject[svgId].width)}px`);
-      this.frame.set('height', `${this.pixelYLinear(this.dragObject[svgId].height)}px`);
+    if (xy === 'x') {
+      this.moveable.ngOnInit();
+      const left = this.pixelXLinear(this.dragObject[svgId].x);
+      this.frame = new Frame({
+        width: this.spanStyle[svgId].width,
+        height: this.spanStyle[svgId].height,
+        left: `${left}px`,
+        top: `${this.spanStyle[svgId].top}px`,
+        'z-index': 99999,
+        transform: {
+          rotate: `${this.dragObject[this.svgId].rotate}deg`,
+          scaleX: 1,
+          scaleY: 1
+        }
+      });
+      
+      this.moveable.destroy();
+
+      this.spanStyle[svgId].left = `${left}px`;
+      
+      this.setTransform(this.target);
+    } else {
+      // const mOrigin = document.querySelector('.moveable-origin');
+      // const moveableOrigin = mOrigin.getBoundingClientRect();
+      // const my = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+      const top = this.pixelYLinear(this.dragObject[svgId].y);
+      console.log(top)
+      this.frame = new Frame({
+        width: this.spanStyle[svgId].width,
+        height: this.spanStyle[svgId].height,
+        left: `${this.spanStyle[svgId].left}px`,
+        top: `${top}px`,
+        'z-index': 99999,
+        transform: {
+          rotate: `${this.dragObject[this.svgId].rotate}deg`,
+          scaleX: 1,
+          scaleY: 1
+        }
+      });
+      this.spanStyle[svgId].top = `${top}px`;
+      try {
+        this.moveable.destroy();
+      } catch (error) {
+        
+      }
+      
+      this.setTransform(this.target);
     }
-    this.setTransform(this.target);
 
-    this.spanStyle[svgId].left = left;
-    this.spanStyle[svgId].top = yPos;
+    // const mOrigin = document.querySelector('.moveable-origin');
+    // if (mOrigin != null) {
+    //   // 有找到中心點
+    //   const moveableOrigin = mOrigin.getBoundingClientRect();
+    //   const mx = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
+    //   const my = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+
+    //   console.log(this.xLinear(mx))
+    // }
+
+    // const rect = this.target.getBoundingClientRect();
+    // const height = rect.height;
+
+    // const left = this.pixelXLinear(this.dragObject[svgId].x) + this.chartLeft;
+    // const bottom = this.chartBottom - this.pixelYLinear(this.dragObject[svgId].y);
+    // const yPos = bottom - height;
+    // this.frame.set('left', `${left}px`);
+    // this.frame.set('top', `${yPos}px`);
+    // if (this.dragObject[svgId].type === 'obstacle') {
+    //   this.frame.set('width', `${this.pixelXLinear(this.dragObject[svgId].width)}px`);
+    //   this.frame.set('height', `${this.pixelYLinear(this.dragObject[svgId].height)}px`);
+    // }
+    // this.setTransform(this.target);
+
+    // this.spanStyle[svgId].left = left;
+    // this.spanStyle[svgId].top = yPos;
 
     if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate') {
       this.moveNumber(svgId);
@@ -2685,14 +2761,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   changeRotate(svgId) {
     this.svgId = svgId;
     this.target = document.querySelector(`#${svgId}`);
+    
     this.frame.set('transform', 'rotate', `${this.dragObject[svgId].rotate}deg`);
+    // this.setTransform(this.target);
+    this.moveClick(svgId);
+    
+    this.target = document.querySelector(`#${svgId}`);
     this.setTransform(this.target);
-    this.target.setAttribute('style', `transform: rotate(${this.dragObject[svgId].rotate}deg)`);
-    if (this.dragObject[svgId].rotate === '0') {
-      // 0時click才會生效
-      this.target.click();
-      this.target.blur();
-    }
+    // this.moveable.destroy();
+
+    // this.target.setAttribute('style', `transform: rotate(${this.dragObject[svgId].rotate}deg)`);
+    // if (this.dragObject[svgId].rotate === '0') {
+    //   // 0時click才會生效
+    //   this.target.click();
+    //   this.target.blur();
+    // }
   }
 
   /**
