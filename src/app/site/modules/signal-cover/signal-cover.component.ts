@@ -225,11 +225,14 @@ export class SignalCoverComponent implements OnInit {
       zText.push([]);
     }
     let xIndex = 0;
+    console.log(this.result['connectionMapAll']);
     for (const item of this.result['connectionMapAll']) {
       for (let i = 0; i < zLen; i++) {
+        // console.log(item)
         let yIndex = 0;
         for (const yData of item) {
-          if (typeof zData[i][yIndex] === 'undefined') {
+        // console.log(yData)
+          if (typeof zData[i][yIndex] == 'undefined') {
             zData[i][yIndex] = [];
             zText[i][yIndex] = [];
           }
