@@ -736,8 +736,8 @@ export class PdfComponent implements OnInit {
       ''
     ];
     const p1Data = [[
-      this.result['coverage'], `${Math.round(this.result['averageSinr'])}db`,
-      `${Math.round(this.result['averageRsrp'])}dBm`, ''
+      this.result['coverage'], `${Number(this.result['averageSinr'])}db`,
+      `${Number(this.result['averageRsrp'])}dBm`, ''
     ]];
     pdf.autoTable(p1Title, p1Data, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
