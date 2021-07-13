@@ -82,6 +82,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
     this.http.get(`${this.authService.API_URL}/history/${this.authService.userId}/${this.authService.userToken}`).subscribe(
       res => {
         this.hstList = res['history'];
+        console.log(this.hstList);
         this.authService.spinnerHide();
       }, err => {
         console.log(err);

@@ -950,15 +950,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           this.chart.nativeElement.style.opacity = 1;
         }
         this.plotLayout['width'] = window.innerWidth * 0.68;
+        // this.plotLayout['width'] = window.innerWidth;
         // draw background image chart
         Plotly.newPlot('chart', {
           data: [],
           layout: this.plotLayout,
           config: defaultPlotlyConfiguration
         }).then((gd) => {
+          console.log('layoutHeightlayoutHeightlayoutHeightlayoutHeight');
   
           // 無image時圖長寬
           const sizes = this.chartService.calSize(this.calculateForm, gd);
+          console.log(sizes);
           const layoutOption = {
             width: sizes[0],
             height: sizes[1]

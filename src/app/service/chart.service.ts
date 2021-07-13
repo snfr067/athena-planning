@@ -19,8 +19,14 @@ export class ChartService {
     
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
+
+    // console.log(calculateForm.width);
+    // console.log(calculateForm.height);
+    // console.log(layoutWidth);
+    // console.log(layoutHeight);
     if (Number(calculateForm.width) < Number(calculateForm.height)) {
       const ratio = calculateForm.width / calculateForm.height;
+      // layoutWidth = layoutHeight * ratio;
       layoutWidth = layoutHeight * ratio + 160;
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
