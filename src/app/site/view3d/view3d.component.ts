@@ -235,6 +235,14 @@ export class View3dComponent implements OnInit {
       if (item.element === 0) {
         obstacle.rotation.z = Math.PI / 2;
       }
+      if (item.rotate < -180) {
+        item.rotate = item.rotate % -360;
+        item.rotate = 360 + item.rotate;
+      } else if (item.rotate > 180) {
+        item.rotate = item.rotate % 360;
+        item.rotate = 360 - item.rotate;
+      }
+      console.log(`rotate: ${item.rotate}`);
       if (item.rotate !== 0 && item.element !== 2) {
         obstacle.rotation.y = item.rotate * (Math.PI / 180);
       }
@@ -248,11 +256,7 @@ export class View3dComponent implements OnInit {
     defaultBsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
     let bsCount = 0;
     for (const bs of this.defaultBs) {
-      // const bs = this.defaultBs[id];
-      // const bs = this.dragObject[id];
-      // console.log(bs);
-      // console.log(id);
-      // console.log(this.defaultBs);
+
       if (typeof bs !== 'undefined') {
         const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', {size: 1}, scene);
         bsBox.position = new BABYLON.Vector3(bs.x + offsetX, bs.z + offsetY, bs.y + offsetZ);

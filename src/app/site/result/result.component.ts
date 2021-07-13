@@ -799,6 +799,9 @@ export class ResultComponent implements OnInit {
       result: this.hstOutput
     };
     this.matDialog.open(View3dComponent, this.view3dDialogConfig);
+    // 不知為何，只開一次dialog位置會偏移
+    this.matDialog.closeAll();
+    this.matDialog.open(View3dComponent, this.view3dDialogConfig);
   }
 
   /** ON/OFF 顯示UE */
