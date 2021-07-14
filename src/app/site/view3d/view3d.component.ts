@@ -196,21 +196,33 @@ export class View3dComponent implements OnInit {
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
 
       } else if (item.element === 2) {
-        // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
-        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height, item.height, 99, 1, scene);
+        // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景 似乎item.height - depth 物件才不會過大
+        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height - depth, item.height - depth, 99, 1, scene);
       } else if (item.element === 3) {
-        // 梯形
+        // 梯形 似乎item.height - depth 物件才不會過大
         obstacleData = [
           new BABYLON.Vector3(0, 0, 0),
           new BABYLON.Vector3(item.width, 0, 0),
-          new BABYLON.Vector3(item.width * 0.75, 0, item.height),
-          new BABYLON.Vector3(item.width * 0.25, 0, item.height)
+          new BABYLON.Vector3(item.width * 0.75, 0, item.height - depth),
+          new BABYLON.Vector3(item.width * 0.25, 0, item.height - depth)
         ];
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
 
       }
 
-      console.log(obstacle);
+      // console.log(obstacle);
+      // 超過180度或-180度時重算角度，否則位置會跑很多
+      if (item.rotate < -180) {
+        item.rotate = item.rotate % -360;
+        item.rotate = 360 + item.rotate;
+      } else if (item.rotate > 180) {
+        item.rotate = item.rotate % 360;
+        item.rotate = 360 - item.rotate;
+      }
+      if (item.rotate === 360) {
+        item.rotate = 0;
+      }
+      // console.log(`rotate: ${item.rotate}`);
 
       obstacle.position.x = item.x + offsetX;
       if (item.element === 1 || item.element === 3) {
@@ -220,6 +232,7 @@ export class View3dComponent implements OnInit {
         obstacle.position.y = depth + offsetY;
       }
       obstacle.position.z = item.y + offsetZ;
+
       if (item.element === 1 || item.element === 3) {
         // 三角形與梯形
         if (item.rotate > 90 || item.rotate < -90) {
@@ -235,14 +248,7 @@ export class View3dComponent implements OnInit {
       if (item.element === 0) {
         obstacle.rotation.z = Math.PI / 2;
       }
-      if (item.rotate < -180) {
-        item.rotate = item.rotate % -360;
-        item.rotate = 360 + item.rotate;
-      } else if (item.rotate > 180) {
-        item.rotate = item.rotate % 360;
-        item.rotate = 360 - item.rotate;
-      }
-      console.log(`rotate: ${item.rotate}`);
+      
       if (item.rotate !== 0 && item.element !== 2) {
         obstacle.rotation.y = item.rotate * (Math.PI / 180);
       }

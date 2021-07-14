@@ -156,7 +156,7 @@ export class SignalQualityComponent implements OnInit {
         ticks: 'inside',
         ticksuffix: 'm'
       },
-      margin: { t: 20, b: 20, l: 40, r: 5},
+      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)},
       images: images,
       hovermode: 'closest',
       shapes: [],
@@ -596,7 +596,7 @@ export class SignalQualityComponent implements OnInit {
       const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
       // const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: sizes.width + 50,
+        width: sizes.width + 90,
         height: sizes.height,
         shapes: this.shapes,
         annotations: this.annotations

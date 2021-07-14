@@ -117,7 +117,7 @@ export class ProposeComponent implements OnInit {
         zeroline: false,
         fixedrange: true
       },
-      margin: { t: 20, b: 20, l: 40},
+      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)},
       images: images,
       hovermode: 'closest'
     };

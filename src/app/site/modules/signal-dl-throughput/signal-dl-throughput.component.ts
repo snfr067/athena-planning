@@ -542,7 +542,7 @@ export class SignalDlThroughputComponent implements OnInit {
       const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
       // const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: sizes.width + 50,
+        width: sizes.width + 90,
         height: sizes.height,
         shapes: this.shapes,
         annotations: this.annotations
