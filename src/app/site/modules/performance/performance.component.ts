@@ -43,7 +43,8 @@ export class PerformanceComponent implements OnInit {
     if (val == null || val === '') {
       return '-';
     } else {
-      let result = Math.round(val * 1000) / 1000 + (isPercentage ? '%' : '');
+      let result = Math.round(val * 1000) / 1000 + (isPercentage ? '' : '');
+      // let result = Math.round(val * 1000) / 1000 + (isPercentage ? '%' : '');
       if (type === 'ueAverageRsrp') {
         result += 'dBm';
       } else if (type === 'ueAverageSinr') {

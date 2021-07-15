@@ -736,7 +736,7 @@ export class PdfComponent implements OnInit {
       ''
     ];
     const p1Data = [[
-      this.result['coverage'], `${Number(this.result['averageSinr'])}db`,
+      this.result['coverage']+'%', `${Number(this.result['averageSinr'])}db`,
       `${Number(this.result['averageRsrp'])}dBm`, ''
     ]];
     pdf.autoTable(p1Title, p1Data, {
@@ -757,13 +757,14 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('ue.corver'),
       this.translateService.instant('ue.quality'),
       this.translateService.instant('ue.strength'),
-      this.translateService.instant('ue.throughput')
+      // this.translateService.instant('ue.throughput')
     ];
     let p2Data;
     if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
       p2Data = [[
-        this.result['ueCoverage'].toString(), `${Math.round(this.result['ueAverageSinr'] * 1000) / 1000} `,
-        `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000} `, `${Math.round(this.result['ueThroughput'] * 1000) / 1000} `
+        this.result['ueCoverage'].toString()+'%', `${Math.round(this.result['ueAverageSinr'] * 1000) / 1000}db`,
+        `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000}dBm`
+        // `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000} `, `${Math.round(this.result['ueThroughput'] * 1000) / 1000} `
       ]];
     } else {
       p2Data = [[

@@ -505,7 +505,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                   });
                 });
               } catch(e) {
-                console.log('No ulThorughput data, it may be an old record');
+                // console.log('No ulThorughput data, it may be an old record');
               }
       
               const dlThroughputAry = [];
@@ -518,7 +518,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                   });
                 });
               } catch(e){
-                console.log('No dlThorughput data, it may be an old record');
+                // console.log('No dlThorughput data, it may be an old record');
               }
 
               this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
@@ -559,12 +559,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             this.zValues = JSON.parse(this.calculateForm.zValue);
             
 
-            console.log(this.calculateForm);
+            // console.log(this.calculateForm);
             if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
               // 從暫存取出
               // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
             }
-            console.log(this.calculateForm);
+            // console.log(this.calculateForm);
             
             this.initData(false, false, false, false);
           },
