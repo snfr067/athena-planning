@@ -189,6 +189,7 @@
 	"result.propose.candidateBs.x": "X coordination",
 	"result.propose.candidateBs.y": "Y coordination",
 	"result.propose.candidateBs.xy": "X/Y",
+	"result.propose.candidateBs.beamId": "BeamID",
 	"result.propose.candidateBs.z": "Z coordination",
 	"result.propose.candidateBs.dbm": "(dBm)",
 	"result.layered.info": "Field information",

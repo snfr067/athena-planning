@@ -122,6 +122,7 @@ export class FormService {
     output['cqiCount'] = result['cqicount'];
     output['cqiMap'] = JSON.parse(result['cqimap']);
     output['defaultBeamId'] = JSON.parse(result['defaultbeamid']);
+    output['defaultidx'] = JSON.parse(result['defaultidx']);
     // output['defaultBs'] = JSON.parse(result['defaultbs']);
     // output['defaultBs'] = result['defaultbs'];
     // output['txPower'] = result['defaultbspower'];

@@ -182,12 +182,14 @@ export class ResultComponent implements OnInit {
     this.http.get(url).subscribe(
       res => {
         // console.log(res);
+        let defaultidx = [];
         if (this.isHst) {
           // 大小寫不同，各自塞回form
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
           console.log(this.calculateForm);
           console.log(this.result);
+          defaultidx = this.result['defaultidx'];
           // setTimeout(() => {
           this.getCandidateList();
           // }, 3000);
@@ -197,6 +199,7 @@ export class ResultComponent implements OnInit {
           this.result = res['output'];
           console.log(this.calculateForm);
           console.log(this.result);
+          defaultidx = this.result['defaultIdx'];
           this.getCandidateList();
         }
         //是否為模擬
@@ -205,19 +208,36 @@ export class ResultComponent implements OnInit {
         if (this.calculateForm.defaultBs !== '') {
           let candidateNum = 0;
           if (this.candidateList.length != 0) {candidateNum = this.calculateForm.candidateBs.split('|').length;}
-          console.log(candidateNum);
+          // console.log(candidateNum);
           this.showBsArea = true;
           console.log(this.calculateForm);
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
+          let unsorttxpower = [];
+          let unsortbeamid = [];
           let txpower = [];
+          let beamid = [];
           if (this.isHst) {
-            txpower = JSON.parse(this.calculateForm.txPower);
+            unsorttxpower = JSON.parse(this.calculateForm.txPower);
+            unsortbeamid = JSON.parse(this.calculateForm.beamId);
           } else {
-            console.log(this.result);
-            txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+            // console.log(this.result);
+            unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+            unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
           }
+          for (let i = 0;i < defaultidx.length;i++) {
+            for (let j = 0;j < defaultidx.length;j++) {
+              if (i == defaultidx[j]) {
+                txpower.push(unsorttxpower[j]);
+                beamid.push(unsortbeamid[j]);
+              }
+            }
+          }
+          console.log(defaultidx);
+          console.log(unsorttxpower);
+          console.log(unsortbeamid);
           console.log(txpower);
+          console.log(beamid);
           const frequency = JSON.parse(this.calculateForm.frequencyList);
           const bandwidth = JSON.parse(this.calculateForm.bandwidth);
           const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
@@ -264,6 +284,7 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
+                  beamid: beamid[i],
                   frequency: frequency[i+candidateNum],
                   bandwidth: bandwidth[i+candidateNum],
                   mimoNumber: mimoNumber[i+candidateNum]
@@ -279,6 +300,7 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
+                  beamid: beamid[i],
                   dlFrequency: dlFrequency[i+candidateNum],
                   ulFrequency: ulFrequency[i+candidateNum],
                   ulBandwidth: ulBandwidth[i+candidateNum],
@@ -298,6 +320,7 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
+                  beamid: beamid[i],
                   frequency: frequency[i+candidateNum],
                   bandwidth: bandwidth[i+candidateNum],
                   scs: scs[i+candidateNum],
@@ -310,7 +333,7 @@ export class ResultComponent implements OnInit {
                 i++;
               }
             } else {
-              console.log(txpower);
+              // console.log(txpower);
               for (const item of defaultBs) {
                 const obj = JSON.parse(item);
                 this.defaultBSList5gFdd.push({
@@ -318,6 +341,7 @@ export class ResultComponent implements OnInit {
                   y: obj[1],
                   z: obj[2],
                   txpower: txpower[i],
+                  beamid: beamid[i],
                   scs: scs[i+candidateNum],
                   dlScs: dlScs[i+candidateNum],
                   ulScs: ulScs[i+candidateNum],
@@ -526,7 +550,7 @@ export class ResultComponent implements OnInit {
     // console.log(chosenNum);
     // this.candidateTable = [];
     const txpower = this.result['candidateBsPower'];
-    const beamId = this.result['candidateBeamId'];
+    const beamid = this.result['candidateBeamId'];
     const frequency = JSON.parse(this.calculateForm.frequencyList);
     const bandwidth = JSON.parse(this.calculateForm.bandwidth);
     const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
@@ -560,6 +584,7 @@ export class ResultComponent implements OnInit {
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
             y: xyMap[this.result['chosenCandidate'][i].toString()].y,
             txpower: txpower[i],
+            beamid: beamid[i],
             frequency: frequency[item-1],
             bandwidth: bandwidth[item-1],
             mimoNumber: mimoNumber[item-1]
@@ -577,6 +602,7 @@ export class ResultComponent implements OnInit {
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
             y: xyMap[this.result['chosenCandidate'][i].toString()].y,
             txpower: txpower[i],
+            beamid: beamid[i],
             dlFrequency: dlFrequency[item-1],
             ulFrequency: ulFrequency[item-1],
             ulBandwidth: ulBandwidth[item-1],
@@ -594,6 +620,7 @@ export class ResultComponent implements OnInit {
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
             y: xyMap[this.result['chosenCandidate'][i].toString()].y,
             txpower: txpower[i],
+            beamid: beamid[i],
             frequency: frequency[item-1],
             bandwidth: bandwidth[item-1],
             scs: scs[item-1],
@@ -611,6 +638,7 @@ export class ResultComponent implements OnInit {
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
             y: xyMap[this.result['chosenCandidate'][i].toString()].y,
             txpower: txpower[i],
+            beamid: beamid[i],
             dlFrequency: dlFrequency[item-1],
             ulFrequency: ulFrequency[item-1],
             ulBandwidth: ulBandwidth[item-1],

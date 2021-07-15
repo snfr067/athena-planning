@@ -191,6 +191,7 @@
 	"result.propose.candidateBs.xy": "X/Y",
 	"result.propose.candidateBs.z": "Z座標",
 	"result.propose.candidateBs.dbm": "功率(dBm)",
+	"result.propose.candidateBs.beamId": "波束形",
 	"result.layered.info": "場域設定資訊",
 	"result.bs.info": "基站資訊",
 	"result.bs.count": "(共{0}台)",
