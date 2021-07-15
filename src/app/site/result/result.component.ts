@@ -217,19 +217,24 @@ export class ResultComponent implements OnInit {
           let unsortbeamid = [];
           let txpower = [];
           let beamid = [];
-          if (this.isHst) {
-            unsorttxpower = JSON.parse(this.calculateForm.txPower);
-            unsortbeamid = JSON.parse(this.calculateForm.beamId);
+          if (this.isSimulate) {
+            txpower = JSON.parse(this.calculateForm.txPower);
+            beamid = JSON.parse(this.calculateForm.beamId);
           } else {
-            // console.log(this.result);
-            unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
-            unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
-          }
-          for (let i = 0;i < defaultidx.length;i++) {
-            for (let j = 0;j < defaultidx.length;j++) {
-              if (i == defaultidx[j]) {
-                txpower.push(unsorttxpower[j]);
-                beamid.push(unsortbeamid[j]);
+            if (this.isHst) {
+              unsorttxpower = JSON.parse(this.calculateForm.txPower);
+              unsortbeamid = JSON.parse(this.calculateForm.beamId);
+            } else {
+              // console.log(this.result);
+              unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+              unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+            }
+            for (let i = 0;i < defaultidx.length;i++) {
+              for (let j = 0;j < defaultidx.length;j++) {
+                if (i == defaultidx[j]) {
+                  txpower.push(unsorttxpower[j]);
+                  beamid.push(unsortbeamid[j]);
+                }
               }
             }
           }
