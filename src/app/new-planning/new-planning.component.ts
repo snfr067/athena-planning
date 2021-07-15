@@ -46,9 +46,9 @@ export class NewPlanningComponent implements OnInit {
   /** 表單-altitude */
   get altitude() { return this.sizeGroup.get('altitude'); }
 
-  keyup(e) {
-    e.target.value = e.target.value.replace(/[\W]/g,'');
-  }
+  // keyup(e) {
+  //   e.target.value = e.target.value.replace(/[\W]/g,'');
+  // }
 
   ngOnInit() {
 
