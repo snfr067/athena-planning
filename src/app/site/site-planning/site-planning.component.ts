@@ -925,22 +925,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                 right: rect2.right,
                 bottom: rect2.top + rect2.height
               };
-  
-              // 計算比例尺
-              this.calScale(gd2);
-              
-              if (isImportXls) {
-                // import xlsx
-                this.setImportData();
-              } else if (isImportImg) {
-                // do noting
-              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-                // 編輯
-                if (!isAltChange) {
-                  this.edit();
+
+              // 圓形有時會變形，延遲載入物件
+              window.setTimeout(() => {
+                // 計算比例尺
+                this.calScale(gd2);
+
+                if (isImportXls) {
+                  // import xlsx
+                  this.setImportData();
+                } else if (isImportImg) {
+                  // do noting
+                } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                  // 編輯
+                  if (!isAltChange) {
+                    this.edit();
+                  }
+                  console.log(this.calculateForm);
                 }
-                console.log(this.calculateForm);
-              }
+              }, 100);
+              
             });  
           });
         };
@@ -949,7 +953,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         if (typeof this.chart !== 'undefined') {
           this.chart.nativeElement.style.opacity = 1;
         }
-        this.plotLayout['width'] = window.innerWidth * 0.68;
+        // this.plotLayout['width'] = window.innerWidth * 0.68;
         // this.plotLayout['width'] = window.innerWidth;
         // draw background image chart
         Plotly.newPlot('chart', {
@@ -982,20 +986,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
               bottom: rect2.top + rect2.height
             };
     
-            // 計算比例尺
-            this.calScale(gd2);
-            // import xlsx
-            if (isImportXls) {
-              this.setImportData();
-            } else if (isImportImg) {
-              // do nothing
-            } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-              // 編輯
-              console.log(this.calculateForm);
-              if (!isAltChange) {
-                this.edit();
+            // 圓形有時會變形，延遲載入物件
+            window.setTimeout(() => {
+              // 計算比例尺
+              this.calScale(gd2);
+              // import xlsx
+              if (isImportXls) {
+                this.setImportData();
+              } else if (isImportImg) {
+                // do nothing
+              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                // 編輯
+                console.log(this.calculateForm);
+                if (!isAltChange) {
+                  this.edit();
+                }
               }
-            }
+            }, 100);
+            
           });
   
           
