@@ -961,11 +961,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           layout: this.plotLayout,
           config: defaultPlotlyConfiguration
         }).then((gd) => {
-          console.log('layoutHeightlayoutHeightlayoutHeightlayoutHeight');
   
           // 無image時圖長寬
           const sizes = this.chartService.calSize(this.calculateForm, gd);
-          console.log(sizes);
+          // console.log(sizes);
           const layoutOption = {
             width: sizes[0],
             height: sizes[1]
@@ -1150,16 +1149,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.bsListRfParam[this.svgId] = {
         txpower: 0,
         beampattern: 0,
-        // frequency: 2400,
         fddDlFrequency: 2400,
         fddUlFrequency: 2450,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
         dlMimoLayer: '1',
         ulMimoLayer: '1',
-        // scalingFact: 1,
         //TDD 5G
-        // scs: '15',
         tddscs: '15',
         tddbandwidth: 5,
         tddfrequency: 2400,
@@ -1168,13 +1164,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         ulScs: '15',
         dlBandwidth: '5',
         ulBandwidth: '5',
-
         subcarrier: 15,
         scsBandwidth: 0,
-
         //4G Only
         mimoNumber4G: '1',
-
         //Wifi
         wifiProtocol: 'wifi4',
         guardInterval: '400ns',
@@ -1199,16 +1192,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.bsListRfParam[this.svgId] = {
         txpower: 0,
         beampattern: 0,
-        // frequency: 2400,
         fddDlFrequency: 2400,
         fddUlFrequency: 2400,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
         dlMimoLayer: '1',
         ulMimoLayer: '1',
-        // scalingFact: 1,
         //TDD 5G
-        // scs: '15',
         tddscs: '15',
         tddbandwidth: 5,
         tddfrequency: 2400,
@@ -1303,11 +1293,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     this.bgdivStyle.height = `${window.innerHeight}px`;
     this.bgdivStyle['z-index'] = `999999999999`;
 
-    this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
-    this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
-    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
-    this.ognDragObject = _.cloneDeep(this.dragObject);
-
     window.setTimeout(() => {
       this.target = document.getElementById(`${this.svgId}`);
       this.live = true;
@@ -1322,6 +1307,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.moveable.ngOnInit();
       window.setTimeout(() => {
         this.setDragData();
+        this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
+        this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
+        this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+        this.ognDragObject = _.cloneDeep(this.dragObject);
         this.hoverObj = this.target;
         // 障礙物若莫名移動，還原位置
         this.backObstacle();
@@ -1330,6 +1319,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         this.bgdivStyle.width = `0px`;
         this.bgdivStyle.height = `0px`;
         this.bgdivStyle['z-index'] = `0`;
+        
       }, 100);
 
       window.setTimeout(() => {
@@ -1373,7 +1363,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
     this.ognDragObject = _.cloneDeep(this.dragObject);
-console.log(this.dragObject[id])
+    // console.log(this.dragObject[id])
     this.live = true;
     if (this.dragObject[id].type === 'obstacle') {
       this.moveable.rotatable = true;
@@ -1466,13 +1456,12 @@ console.log(this.dragObject[id])
     }
 
     const mOrigin = document.querySelector('.moveable-origin');
-    console.log(mOrigin)
+    // console.log(mOrigin)
     if (mOrigin != null) {
       // 有找到中心點
       const moveableOrigin = mOrigin.getBoundingClientRect();
       const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
       const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
-  
       this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
       this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
       this.dragObject[this.svgId].width = wVal;
@@ -3838,7 +3827,6 @@ console.log(this.dragObject[id])
           let dlmsc = this.calculateForm.dlMcsTable;
           this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
           this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
-          console.log(this.bsListRfParam[id].dlMcsTable);
           this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
           this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
           this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();

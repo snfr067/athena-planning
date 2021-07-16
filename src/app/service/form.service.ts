@@ -16,7 +16,7 @@ export class FormService {
    * @param result 
    */
   setHstToForm(result) {
-    console.log(result);
+    // console.log(result);
     const calculateForm = new CalculateForm();
     calculateForm.addFixedBsNumber = result['addfixedbsnumber'];
     calculateForm.availableNewBsNumber = result['availablenewbsnumber'];
