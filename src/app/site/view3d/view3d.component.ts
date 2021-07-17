@@ -235,10 +235,23 @@ export class View3dComponent implements OnInit {
 
       if (item.element === 1 || item.element === 3) {
         // 三角形與梯形
-        if (item.rotate > 90 || item.rotate < -90) {
+        if (item.rotate > 134 || item.rotate < -134) {
           obstacle.position.z = item.y + offsetZ + item.height;
           obstacle.position.x = item.x + offsetX + item.width;
+        } else if (item.rotate > 44 || item.rotate < -44) {
+          obstacle.position.z = item.y + offsetZ + (item.width * 2);
+          obstacle.position.x = item.x + offsetX - (item.height / 2);
+
+          
+
+        } else if (item.rotate !== 0) {
+          obstacle.position.x = item.x + offsetX - (item.width / 2);
+          const xxx = item.y + offsetZ + ((item.height - depth) / 2);
+          console.log(xxx, item.y+offsetZ, ((item.height - depth) / 2))
+          console.log((item.width) * Math.cos(obstacle.rotation.y))
+          obstacle.position.z = item.y + offsetZ + (item.width * Math.cos(item.rotate));
         }
+        obstacle.computeWorldMatrix(true);
       } else if (item.element === 2) {
         // 圓形
         obstacle.position.x = item.x + offsetX + (item.height / 2);

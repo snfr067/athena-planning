@@ -622,13 +622,12 @@ export class PdfComponent implements OnInit {
       `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
-      this.translateService.instant('result.pdf.width'),
-      this.translateService.instant('result.pdf.altitude')
+      this.translateService.instant('material')
     ];
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
-      obstacleData.push([(k + 1), item[0], item[1], item[2], item[3], item[4]]);
+      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.element)]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},

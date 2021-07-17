@@ -869,7 +869,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         zeroline: false,
         fixedrange: true
       },
-      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)}
+      margin: { t: 20, b: 20, l: 50, r: 50}
     };
 
     window.setTimeout(() => {
@@ -2207,20 +2207,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
-      this.http.post(url, JSON.stringify(apiBody)).subscribe(
-        res => {
-          this.taskid = res['taskid'];
-          const percentageVal = document.getElementById('percentageVal');
-          if (percentageVal != null) {
-            percentageVal.innerHTML = '0';
-          }
-          this.getProgress();
-        },
-        err => {
-          this.authService.spinnerHide();
-          console.log(err);
+      
+      window.setTimeout(() => {
+        // 進度設為0
+        const percentageVal = document.getElementById('percentageVal');
+        if (percentageVal != null) {
+          percentageVal.innerHTML = '0';
         }
-      );
+
+        this.http.post(url, JSON.stringify(apiBody)).subscribe(
+          res => {
+            this.taskid = res['taskid'];
+            this.getProgress();
+          },
+          err => {
+            this.authService.spinnerHide();
+            console.log(err);
+          }
+        );
+      }, 100);
     }
   }
 
