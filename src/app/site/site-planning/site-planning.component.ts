@@ -384,6 +384,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  @HostListener('window:resize') windowResize() {
+    try {
+      this.moveable.ngOnDestroy();
+    } catch (error) {}
+    this.chartResize();
+  }
+
   // @Input()
   // duplexMode = "fdd";
   // tempDuplexMode;
@@ -848,7 +855,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       showTips: false,
       editable: false,
       scrollZoom: false,
-      displayModeBar: false
+      displayModeBar: false,
+      responsive: true
     };
     // 繪圖layout
     this.plotLayout = {
@@ -874,10 +882,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     window.setTimeout(() => {
       // 圖區不出現scroll bar，否則物件位置會跑掉
-      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth + 80;
-      const maxWidth = window.innerWidth - 64 - matdrawer;
+      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
+      const maxWidth = window.innerWidth - 100 - matdrawer;
       document.getElementById('chart').style.width = `${maxWidth}px`;
-      document.getElementById('chart').style.overflow = 'hidden';
+      // document.getElementById('chart').style.overflow = 'hidden';
   
       if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
         const reader = new FileReader();
@@ -3600,62 +3608,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: item[6].toString(),
           element: shape
         };
-
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - this.pixelYLinear(item[3]) - this.pixelYLinear(item[1])}px`,
-          width: `${this.pixelXLinear(item[2])}px`,
-          height: `${this.pixelYLinear(item[3])}px`,
-          // transform: `rotate(${this.dragObject[id].rotate}deg)`,
-          opacity: 0
-        };
-        // 延遲轉角度，讓位置正確
-        window.setTimeout(() => {
-          this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
-          this.spanStyle[id].opacity = 1;
-        }, 0);
-  
-        const width = this.pixelXLinear(item[2]);
-        const height = this.pixelYLinear(item[3]);
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: width,
-          height: height
-        };
-  
-        if (Number(shape) === 0) {
-          // 方形
-          this.rectStyle[id] = {
-            width: width,
-            height: height,
-            fill: this.dragObject[id].color
-          };
-        } else if (Number(shape) === 2) {
-          // 圓形
-          const x = (width / 2).toString();
-          this.ellipseStyle[id] = {
-            ry: x,
-            rx: x,
-            cx: x,
-            cy: x,
-            fill: this.dragObject[id].color
-          };
-  
-        } else if (Number(shape) === 1) {
-          // 三角形
-          const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
-          this.polygonStyle[id] = {
-            points: points,
-            fill: this.dragObject[id].color
-          };
-        } else if (Number(shape) === 3) {
-          // 梯形
-          this.trapezoidStyle[id] = {
-            fill: this.dragObject[id].color,
-            width: width,
-            height: height
-          };
-        }
+        // set 障礙物尺寸與位置
+        this.setObstacleSize(id);
+        
         this.obstacleList.push(id);
       }
     }
@@ -3684,24 +3639,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: '0',
           element: 'candidate'
         };
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - this.candidateHeight - this.pixelYLinear(item[1])}px`,
-          width: `${this.candidateWidth}px`,
-          height: `${this.candidateHeight}px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: this.candidateWidth,
-          height: this.candidateHeight
-        };
-        this.pathStyle[id] = {
-          fill: this.dragObject[id].color
-        };
-        window.setTimeout(() => {
-          this.moveNumber(id);
-        }, 0);
 
+        // set 新增基站位置
+        this.setCandidateSize(id);
+        
         this.tempCalParamSet.txpower = txpower[0];
         this.tempCalParamSet.beampattern = beamId[0];
         if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
@@ -3852,23 +3793,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: '0',
           element: 'defaultBS'
         };
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - 30 - this.pixelYLinear(item[1])}px`,
-          width: `30px`,
-          height: `30px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: 30,
-          height: 30
-        };
-        this.pathStyle[id] = {
-          fill: this.dragObject[id].color
-        };
-        window.setTimeout(() => {
-          this.moveNumber(id);
-        }, 0);
+        // set 既有基站位置
+        this.setDefaultBsSize(id);
       }
     }
     
@@ -3894,20 +3820,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           material: '0',
           element: 'UE'
         };
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(item[0])}px`,
-          top: `${this.chartHeight - this.ueHeight - this.pixelYLinear(item[1])}px`,
-          width: `${this.ueWidth}px`,
-          height: `${this.ueHeight}px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: this.ueWidth,
-          height: this.ueHeight
-        };
-        this.pathStyle[id] = {
-          fill: this.dragObject[id].color
-        };
+
+        // set UE位置
+        this.setUeSize(id);
       }
     }
 
@@ -4208,6 +4123,186 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
+  }
+
+  /** 圖區resize */
+  chartResize() {
+    
+    // 重取區域寬度
+    const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
+    const maxWidth = window.innerWidth - 100 - matdrawer;
+    document.getElementById('chart').style.width = `${maxWidth}px`;
+    const dArea = <HTMLDivElement>document.getElementById('top_area');
+    // top區域+head menu + 一點buffer
+    const dAreaHeight = dArea.clientHeight + 90;
+    document.getElementById('chart').style.height = `${window.innerHeight - dAreaHeight}px`;
+
+    Plotly.relayout('chart', {
+      width: maxWidth,
+      // autosize: true
+      // height: '100%'
+    }).then((gd) => {
+      const sizes = this.chartService.calSize(this.calculateForm, document.getElementById('chart'));
+      const layoutOption = {
+        width: sizes[0],
+        height: sizes[1]
+      };
+      console.log(layoutOption)
+      Plotly.relayout('chart', layoutOption).then((gd2) => {
+        // 重新計算比例尺
+        this.calScale(gd2);
+        // set 障礙物尺寸與位置
+        for (const id of this.obstacleList) {
+          this.setObstacleSize(id);
+        }
+        // set 新增基站位置
+        for (const id of this.candidateList) {
+          this.setCandidateSize(id);
+        }
+        // set 既有基站位置
+        for (const id of this.defaultBSList) {
+          this.setDefaultBsSize(id);
+        }
+        // set 既有基站位置
+        for (const id of this.ueList) {
+          this.setUeSize(id);
+        }
+      });
+    });
+
+  }
+
+  /**
+   * set 障礙物尺寸與位置
+   * @param id 
+   */
+  setObstacleSize(id) {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.pixelXLinear(this.dragObject[id].width)}px`,
+      height: `${this.pixelYLinear(this.dragObject[id].height)}px`,
+      // transform: `rotate(${this.dragObject[id].rotate}deg)`,
+      opacity: 0
+    };
+    // 延遲轉角度，讓位置正確
+    window.setTimeout(() => {
+      this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
+      this.spanStyle[id].opacity = 1;
+    }, 0);
+
+    const width = this.pixelXLinear(this.dragObject[id].width);
+    const height = this.pixelYLinear(this.dragObject[id].height);
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: width,
+      height: height
+    };
+
+    const shape = this.dragObject[id].element;
+    if (Number(shape) === 0) {
+      // 方形
+      this.rectStyle[id] = {
+        width: width,
+        height: height,
+        fill: this.dragObject[id].color
+      };
+    } else if (Number(shape) === 2) {
+      // 圓形
+      const x = (width / 2).toString();
+      this.ellipseStyle[id] = {
+        ry: x,
+        rx: x,
+        cx: x,
+        cy: x,
+        fill: this.dragObject[id].color
+      };
+
+    } else if (Number(shape) === 1) {
+      // 三角形
+      const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
+      this.polygonStyle[id] = {
+        points: points,
+        fill: this.dragObject[id].color
+      };
+    } else if (Number(shape) === 3) {
+      // 梯形
+      this.trapezoidStyle[id] = {
+        fill: this.dragObject[id].color,
+        width: width,
+        height: height
+      };
+    }
+  }
+
+  /**
+   * set 新增基站位置
+   * @param id 
+   */
+  setCandidateSize(id) {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.candidateHeight - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.candidateWidth}px`,
+      height: `${this.candidateHeight}px`
+    };
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: this.candidateWidth,
+      height: this.candidateHeight
+    };
+    this.pathStyle[id] = {
+      fill: this.dragObject[id].color
+    };
+    window.setTimeout(() => {
+      this.moveNumber(id);
+    }, 0);
+
+  }
+
+  /**
+   * set 既有基站位置
+   * @param id 
+   */
+  setDefaultBsSize(id) {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - 30 - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `30px`,
+      height: `30px`
+    };
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: 30,
+      height: 30
+    };
+    this.pathStyle[id] = {
+      fill: this.dragObject[id].color
+    };
+    window.setTimeout(() => {
+      this.moveNumber(id);
+    }, 0);
+  }
+
+  /**
+   * set UE位置
+   * @param id 
+   */
+  setUeSize(id) {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.ueHeight - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.ueWidth}px`,
+      height: `${this.ueHeight}px`
+    };
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: this.ueWidth,
+      height: this.ueHeight
+    };
+    this.pathStyle[id] = {
+      fill: this.dragObject[id].color
+    };
   }
 
 }

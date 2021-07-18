@@ -121,31 +121,33 @@
     
 
   <div id="d_area">
-    <button class="toggle" mat-button (click)="sidenav.toggle()">
-      <span class="material-icons">swap_horiz</span>
-    </button>
-    <h2 class="inline-block">
-      {{ getTitle() }}(
-        <mat-form-field floatLabel="never" style="height: 45px;">
-          <input matInput [(ngModel)]="calculateForm.taskName" placeholder="{{ 'taskName' | translate }}" required>
-        </mat-form-field>
-      )
-    </h2>
-    <mat-button-toggle-group class="inline-block">
-      <mat-button-toggle value="import" (click)="file.click()">{{ 'import' | translate }}</mat-button-toggle>
-      <mat-button-toggle value="export" (click)="export()">{{ 'tasklist.export' | translate }}</mat-button-toggle>
-    </mat-button-toggle-group>
-    <input type="file" #file style="display: none;" (change)="import($event)" multiple="false" accept=".xlsx" />
+    <div id="top_area">
+      <button class="toggle" mat-button (click)="sidenav.toggle()">
+        <span class="material-icons">swap_horiz</span>
+      </button>
+      <h2 class="inline-block">
+        {{ getTitle() }}(
+          <mat-form-field floatLabel="never" style="height: 45px;">
+            <input matInput [(ngModel)]="calculateForm.taskName" placeholder="{{ 'taskName' | translate }}" required>
+          </mat-form-field>
+        )
+      </h2>
+      <mat-button-toggle-group class="inline-block">
+        <mat-button-toggle value="import" (click)="file.click()">{{ 'import' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="export" (click)="export()">{{ 'tasklist.export' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+      <input type="file" #file style="display: none;" (change)="import($event)" multiple="false" accept=".xlsx" />
 
-    <mat-button-toggle-group class="inline-block ml_5">
-      <mat-button-toggle value="go" (click)="calculate()">{{ 'planning.calculate' | translate }}</mat-button-toggle>
-      <mat-button-toggle *ngIf="taskid !== ''" value="result" (click)="result()">{{ 'planning.result' | translate }}</mat-button-toggle>
-      <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle>
-    </mat-button-toggle-group>
+      <mat-button-toggle-group class="inline-block ml_5">
+        <mat-button-toggle value="go" (click)="calculate()">{{ 'planning.calculate' | translate }}</mat-button-toggle>
+        <mat-button-toggle *ngIf="taskid !== ''" value="result" (click)="result()">{{ 'planning.result' | translate }}</mat-button-toggle>
+        <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
     <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
       
     </div> -->
-    <div #chart id="chart" style="position: relative;">
+    <div #chart id="chart" style="position: relative; overflow-x: auto">
       <div #dragArea [ngStyle]="dragStyle">
         <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
