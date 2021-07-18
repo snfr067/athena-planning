@@ -65,15 +65,18 @@ export class SignalQualityComponent implements OnInit {
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
 
   @HostListener('window:resize') windowResize() {
+    const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
     Plotly.relayout(this.chartId, {
-      autosize: true
+      width: leftArea.clientWidth
     }).then(gd => {
-      const sizes = this.chartService.calSize(this.calculateForm, gd);
+      const sizes = this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120);
       const layoutOption = {
-        width: sizes[0],
+        width: sizes[0] + 100,
         height: sizes[1]
       };
-      Plotly.relayout(this.chartId, layoutOption);
+      Plotly.relayout(this.chartId, layoutOption).then(gd2 => {
+        this.setChartObjectSize(gd2);
+      });
     });
   }
 
@@ -313,6 +316,8 @@ export class SignalQualityComponent implements OnInit {
         this.rectList.push({
           x: xdata,
           y: ydata,
+          width: oData[2],
+          height: oData[3],
           rotate: oData[5],
           shape: shape,
           style: {
@@ -616,105 +621,7 @@ export class SignalQualityComponent implements OnInit {
   reLayout(id, layoutOption, isPDF) {
     Plotly.relayout(id, layoutOption).then((gd2) => {
 
-      this.divStyle.opacity = 1;
-      const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
-      const rect2 = xy2.getBoundingClientRect();
-      gd2.style.opacity = 0.85;
-      gd2.querySelectorAll('.plotly')[0].style.opacity = 0.85;
-
-      this.style = {
-        left: `${xy2.getAttribute('x')}px`,
-        top: `${xy2.getAttribute('y')}px`,
-        width: `${rect2.width}px`,
-        height: `${rect2.height}px`,
-        position: 'absolute'
-      };
-
-      const pixelXLinear = Plotly.d3.scale.linear()
-        .domain([0, this.calculateForm.width])
-        .range([0, rect2.width]);
-
-      const pixelYLinear = Plotly.d3.scale.linear()
-        .domain([0, this.calculateForm.height])
-        .range([0, rect2.height]);
-
-      for (const item of this.rectList) {
-        // 障礙物加粗
-        let width = pixelXLinear(item['svgStyle'].width);
-        if (width < 5) {
-          width = 5;
-        }
-        let height = pixelYLinear(item['svgStyle'].height);
-        if (height < 5) {
-          height = 5;
-        }
-
-        const leftPosition = pixelXLinear(item.x);
-
-        item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
-        item['style'].left = `${leftPosition}px`;
-        item['style'].width = `${width}px`;
-        item['style'].height = `${height}px`;
-        item['svgStyle'].width = `${width}px`;
-        item['svgStyle'].height = `${height}px`;
-        if (item.shape === 1) {
-          const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
-          item['points'] = points;
-          console.log(item);
-        } else if (item.shape === 2) {
-          item['ellipseStyle'] = {
-            cx: width / 2,
-            cy: height / 2,
-            rx: width / 2,
-            ry: height / 2
-          };
-        }
-
-        // 延遲轉角度，讓位置正確
-        window.setTimeout(() => {
-          item['style']['transform'] = `rotate(${item.rotate}deg)`;
-          item['style'].opacity = 1;
-        }, 0);
-      }
-
-      for (const item of this.defaultBsList) {
-        item['style'] = {
-          left: `${pixelXLinear(item.x)}px`,
-          bottom: `${pixelYLinear(item.y)}px`,
-          position: 'absolute',
-          // visibility: this.showBs
-        };
-        item['circleStyle'] = {
-          left: `${pixelXLinear(item.x) + 15}px`,
-          bottom: `${pixelYLinear(item.y) + 25}px`,
-          position: 'absolute',
-          // visibility: this.showBs
-        };
-      }
-      // 新增基站
-      const xy3: SVGRectElement = gd2.querySelector('.xy');
-      const rect3 = xy3.getBoundingClientRect();
-      const candisateXLinear = Plotly.d3.scale.linear()
-        .domain([0, this.calculateForm.width])
-        .range([0, rect3.width]);
-
-      const candisateYLinear = Plotly.d3.scale.linear()
-        .domain([0, this.calculateForm.height])
-        .range([0, rect3.height]);
-      for (const item of this.candidateList) {
-        item['style'] = {
-          left: `${pixelXLinear(item.x)}px`,
-          bottom: `${candisateYLinear(item.y)}px`,
-          position: 'absolute',
-          visibility: this.showCandidate
-        };
-        item['circleStyle'] = {
-          left: `${pixelXLinear(item.x) + 15}px`,
-          bottom: `${candisateYLinear(item.y) + 25}px`,
-          position: 'absolute',
-          visibility: this.showCandidate
-        };
-      }
+      this.setChartObjectSize(gd2);
 
       if (isPDF) {
         // pdf轉成png，避免colorbar空白
@@ -727,6 +634,108 @@ export class SignalQualityComponent implements OnInit {
 
       }
     });
+  }
+
+  setChartObjectSize(gd2) {
+
+    this.divStyle.opacity = 1;
+    const xy2: SVGRectElement = gd2.querySelector('.draglayer > .xy').querySelectorAll('rect')[0];
+    const rect2 = xy2.getBoundingClientRect();
+    gd2.style.opacity = 0.85;
+    gd2.querySelectorAll('.plotly')[0].style.opacity = 0.85;
+
+    this.style = {
+      left: `${xy2.getAttribute('x')}px`,
+      top: `${xy2.getAttribute('y')}px`,
+      width: `${rect2.width}px`,
+      height: `${rect2.height}px`,
+      position: 'absolute'
+    };
+    const pixelXLinear = Plotly.d3.scale.linear()
+      .domain([0, this.calculateForm.width])
+      .range([0, rect2.width]);
+
+    const pixelYLinear = Plotly.d3.scale.linear()
+      .domain([0, this.calculateForm.height])
+      .range([0, rect2.height]);
+
+    for (const item of this.rectList) {
+      // 障礙物加粗
+      let width = pixelXLinear(item.width);
+      if (width < 5) {
+        width = 5;
+      }
+      let height = pixelYLinear(item.height);
+      if (height < 5) {
+        height = 5;
+      }
+
+      const leftPosition = pixelXLinear(item.x);
+
+      item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
+      item['style'].left = `${leftPosition}px`;
+      item['style'].width = `${width}px`;
+      item['style'].height = `${height}px`;
+      item['svgStyle'].width = `${width}px`;
+      item['svgStyle'].height = `${height}px`;
+      if (item.shape === 1) {
+        const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
+        item['points'] = points;
+        // console.log(item);
+      } else if (item.shape === 2) {
+        item['ellipseStyle'] = {
+          cx: width / 2,
+          cy: height / 2,
+          rx: width / 2,
+          ry: height / 2
+        };
+      }
+
+      // 延遲轉角度，讓位置正確
+      window.setTimeout(() => {
+        item['style']['transform'] = `rotate(${item.rotate}deg)`;
+        item['style'].opacity = 1;
+      }, 0);
+    }
+
+    for (const item of this.defaultBsList) {
+      item['style'] = {
+        left: `${pixelXLinear(item.x)}px`,
+        bottom: `${pixelYLinear(item.y)}px`,
+        position: 'absolute',
+        // visibility: this.showBs
+      };
+      item['circleStyle'] = {
+        left: `${pixelXLinear(item.x) + 15}px`,
+        bottom: `${pixelYLinear(item.y) + 25}px`,
+        position: 'absolute',
+        // visibility: this.showBs
+      };
+    }
+    // 新增基站
+    const xy3: SVGRectElement = gd2.querySelector('.xy');
+    const rect3 = xy3.getBoundingClientRect();
+    const candisateXLinear = Plotly.d3.scale.linear()
+      .domain([0, this.calculateForm.width])
+      .range([0, rect3.width]);
+
+    const candisateYLinear = Plotly.d3.scale.linear()
+      .domain([0, this.calculateForm.height])
+      .range([0, rect3.height]);
+    for (const item of this.candidateList) {
+      item['style'] = {
+        left: `${pixelXLinear(item.x)}px`,
+        bottom: `${candisateYLinear(item.y)}px`,
+        position: 'absolute',
+        visibility: this.showCandidate
+      };
+      item['circleStyle'] = {
+        left: `${pixelXLinear(item.x) + 15}px`,
+        bottom: `${candisateYLinear(item.y) + 25}px`,
+        position: 'absolute',
+        visibility: this.showCandidate
+      };
+    }
   }
 
   /**

@@ -90,4 +90,59 @@ export class ChartService {
     });
   }
 
+  /**
+   * 計算結果頁圖長寬
+   * @param calculateForm 
+   * @param gd 
+   */
+  calResultSize(calculateForm: CalculateForm, gd, maxWidth) {
+    
+    let layoutWidth = gd.clientWidth;
+    let layoutHeight = gd.clientHeight;
+    const maxHeight = window.innerHeight - 150;
+    if (layoutHeight > maxHeight) {
+      layoutHeight = maxHeight;
+    }
+
+    if (Number(calculateForm.width) < Number(calculateForm.height)) {
+      const ratio = calculateForm.width / calculateForm.height;
+      // layoutWidth = layoutHeight * ratio;
+      layoutWidth = layoutHeight * ratio + 160;
+      if (layoutWidth > gd.clientWidth) {
+        // has scroll bar
+        layoutWidth = gd.clientWidth;
+        const wRatio = calculateForm.height / calculateForm.width;
+        layoutHeight = layoutWidth * wRatio;
+      }
+    } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
+      const ratio = calculateForm.height / calculateForm.width;
+      layoutHeight = layoutWidth * ratio;
+      if (layoutHeight > maxHeight) {
+        const wRatio = maxHeight / layoutHeight;
+        layoutHeight = maxHeight;
+        layoutWidth = layoutWidth * wRatio + 100;
+        if (layoutWidth > gd.clientWidth) {
+          layoutWidth = gd.clientWidth;
+        }
+      }
+      if (layoutHeight > gd.clientHeight) {
+        // has scroll bar
+        layoutHeight = gd.clientHeight;
+        const wRatio = calculateForm.width / calculateForm.height;
+        layoutWidth = layoutHeight * wRatio;
+      }
+    } else {
+      const marginSize = 80;
+      layoutHeight = maxHeight;
+      layoutWidth = layoutHeight + marginSize;
+      if (layoutWidth > maxWidth) {
+        // has scroll bar
+        layoutWidth = maxWidth;
+        layoutHeight = layoutWidth - marginSize;
+      }
+    }
+    
+    return [layoutWidth, layoutHeight];
+  }
+
 }
