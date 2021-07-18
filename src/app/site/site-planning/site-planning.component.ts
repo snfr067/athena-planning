@@ -882,10 +882,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     window.setTimeout(() => {
       // 圖區不出現scroll bar，否則物件位置會跑掉
-      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
-      const maxWidth = window.innerWidth - 100 - matdrawer;
+      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth + 80;
+      // console.log
+      const maxWidth = window.innerWidth - 64 - matdrawer;
       document.getElementById('chart').style.width = `${maxWidth}px`;
-      // document.getElementById('chart').style.overflow = 'hidden';
+      document.getElementById('chart').style.overflow = 'hidden';
   
       if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
         const reader = new FileReader();
