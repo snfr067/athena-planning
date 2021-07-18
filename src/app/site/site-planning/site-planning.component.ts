@@ -3633,12 +3633,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         } else if (Number(shape) === 2) {
           // 圓形
           const x = (width / 2).toString();
-          const y = (height / 2).toString();
           this.ellipseStyle[id] = {
             ry: x,
-            rx: y,
+            rx: x,
             cx: x,
-            cy: y,
+            cy: x,
             fill: this.dragObject[id].color
           };
   
@@ -3922,7 +3921,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
     this.ognDragObject = _.cloneDeep(this.dragObject);
-
+    // 檢查圓形高度
+    window.setTimeout(() => {
+      this.checkCircle();
+    }, 0);
   }
 
   /** 運算結果 */
@@ -4184,6 +4186,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
           this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
         }
+    }
+  }
+
+  /** 檢查圓形高度 */
+  checkCircle() {
+    for (const svgId of this.obstacleList) {
+      const obstacle = this.dragObject[svgId];
+      if (obstacle.element === 2) {
+        const spanHeight = Number(this.spanStyle[svgId].height.replace('px', ''));
+        const cy2 = this.ellipseStyle[svgId].cy * 2;
+        if (cy2 > spanHeight || cy2 > this.svgStyle[svgId].height) {
+          // 圓形高度超出外框，還原正常尺寸
+          console.log(spanHeight, this.svgStyle[svgId].height, cy2);
+          this.svgStyle[svgId].height = spanHeight;
+          const newCy = spanHeight / 2;
+          this.ellipseStyle[svgId].rx = newCy;
+          this.ellipseStyle[svgId].ry = newCy;
+          this.ellipseStyle[svgId].cx = newCy;
+          this.ellipseStyle[svgId].cy = newCy;
+        }
+      }
     }
   }
 
