@@ -405,6 +405,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     this.view3dDialogConfig.hasBackdrop = false;
     this.msgDialogConfig.autoFocus = false;
     sessionStorage.removeItem('planningObj');
+    document.querySelector('body').style.overflow = 'hidden';
 
     for (let i = 0; i < 9; i++) {
       this.pathLossModelIdList.push(i);
@@ -760,6 +761,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     try {
       this.moveable.destroy();
     } catch (error) {}
+    document.querySelector('body').style.overflow = 'auto';
   }
 
   tempParamStorage (temp) {
@@ -4128,48 +4130,50 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
   /** 圖區resize */
   chartResize() {
-    
-    // 重取區域寬度
-    const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
-    const maxWidth = window.innerWidth - 100 - matdrawer;
-    document.getElementById('chart').style.width = `${maxWidth}px`;
-    const dArea = <HTMLDivElement>document.getElementById('top_area');
-    // top區域+head menu + 一點buffer
-    const dAreaHeight = dArea.clientHeight + 90;
-    document.getElementById('chart').style.height = `${window.innerHeight - dAreaHeight}px`;
+    window.setTimeout(() => {
+      // 重取區域寬度
+      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
+      const maxWidth = window.innerWidth - 100 - matdrawer;
+      document.getElementById('chart').style.width = `${maxWidth}px`;
+      const dArea = <HTMLDivElement>document.getElementById('top_area');
+      // top區域+head menu + 一點buffer
+      const dAreaHeight = dArea.clientHeight + 90;
+      document.getElementById('chart').style.height = `${window.innerHeight - dAreaHeight}px`;
 
-    Plotly.relayout('chart', {
-      width: maxWidth,
-      // autosize: true
-      // height: '100%'
-    }).then((gd) => {
-      const sizes = this.chartService.calSize(this.calculateForm, document.getElementById('chart'));
-      const layoutOption = {
-        width: sizes[0],
-        height: sizes[1]
-      };
-      console.log(layoutOption)
-      Plotly.relayout('chart', layoutOption).then((gd2) => {
-        // 重新計算比例尺
-        this.calScale(gd2);
-        // set 障礙物尺寸與位置
-        for (const id of this.obstacleList) {
-          this.setObstacleSize(id);
-        }
-        // set 新增基站位置
-        for (const id of this.candidateList) {
-          this.setCandidateSize(id);
-        }
-        // set 既有基站位置
-        for (const id of this.defaultBSList) {
-          this.setDefaultBsSize(id);
-        }
-        // set 既有基站位置
-        for (const id of this.ueList) {
-          this.setUeSize(id);
-        }
+      Plotly.relayout('chart', {
+        width: maxWidth,
+        // autosize: true
+        // height: '100%'
+      }).then((gd) => {
+        const sizes = this.chartService.calSize(this.calculateForm, document.getElementById('chart'));
+        const layoutOption = {
+          width: sizes[0],
+          height: sizes[1]
+        };
+        console.log(layoutOption);
+        Plotly.relayout('chart', layoutOption).then((gd2) => {
+          // 重新計算比例尺
+          this.calScale(gd2);
+          // set 障礙物尺寸與位置
+          for (const id of this.obstacleList) {
+            this.setObstacleSize(id);
+          }
+          // set 新增基站位置
+          for (const id of this.candidateList) {
+            this.setCandidateSize(id);
+          }
+          // set 既有基站位置
+          for (const id of this.defaultBSList) {
+            this.setDefaultBsSize(id);
+          }
+          // set 既有基站位置
+          for (const id of this.ueList) {
+            this.setUeSize(id);
+          }
+        });
       });
-    });
+    }, 300);
+    
 
   }
 
