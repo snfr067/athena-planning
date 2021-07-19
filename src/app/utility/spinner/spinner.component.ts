@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   templateUrl: './spinner.component.html',
   styleUrls: ['./spinner.component.scss']
 })
-export class SpinnerComponent {
+export class SpinnerComponent implements OnInit {
 
   constructor(public spinner: NgxSpinnerService, private router: Router) { }
 
@@ -20,15 +20,33 @@ export class SpinnerComponent {
   showCal = true;
   /** 顯示loading */
   showLoad = false;
+  /** 進度百分比 */
+  percentageVal = 0;
+  showPercentage = false;
+
+  time;
+
+  ngOnInit(): void {
+    this.percentageVal = 0;
+  }
+
+  addTime() {
+    if (this.percentageVal < 100) {
+      this.time = window.setTimeout(() => {
+        this.percentageVal++;
+        this.addTime();
+      }, 3000);
+    } else {
+      window.clearTimeout(this.time);
+    }
+  }
 
   /** show loading */
   show() {
     this.showCal = false;
     this.showLoad = true;
-    const percentageVal = document.getElementById('percentageVal');
-    if (percentageVal != null) {
-      percentageVal.innerHTML = '0';
-    }
+    this.showHome = false;
+    this.showPercentage = false;
     this.spinner.show();
   }
 
@@ -42,10 +60,10 @@ export class SpinnerComponent {
     this.showLoad = false;
     this.showCal = true;
     this.showHome = true;
-    const percentageVal = document.getElementById('percentageVal');
-    if (percentageVal != null) {
-      percentageVal.innerHTML = '0';
-    }
+    this.percentageVal = 0;
+    this.showPercentage = true;
+    window.clearTimeout(this.time);
+    this.addTime();
     this.spinner.show();
   }
 
@@ -53,10 +71,10 @@ export class SpinnerComponent {
   showCalculating() {
     this.showLoad = false;
     this.showCal = true;
-    const percentageVal = document.getElementById('percentageVal');
-    if (percentageVal != null) {
-      percentageVal.innerHTML = '0';
-    }
+    this.showHome = false;
+    this.percentageVal = 0;
+    this.showPercentage = true;
+    this.addTime();
     this.spinner.show();
   }
 

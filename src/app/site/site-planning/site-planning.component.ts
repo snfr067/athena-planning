@@ -2220,12 +2220,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.authService.spinnerShowAsHome();
       
       window.setTimeout(() => {
-        // 進度設為0
-        const percentageVal = document.getElementById('percentageVal');
-        if (percentageVal != null) {
-          percentageVal.innerHTML = '0';
-        }
-
         this.http.post(url, JSON.stringify(apiBody)).subscribe(
           res => {
             this.taskid = res['taskid'];
@@ -2534,24 +2528,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     console.log(`Bs${item}:${this.bsListRfParam[item]}`);
   }
 
-  /**
-   * 進度百分比，3秒加1%
-   */
-  addInterval() {
-    this.pgInterval = window.setInterval(() => {
-      if (this.progressNum < 100) {
-        const percentageVal = document.getElementById('percentageVal');
-        if (percentageVal != null) {
-          percentageVal.innerHTML = (this.progressNum++).toString();
-        }
-      } else {
-        window.clearInterval(this.pgInterval);
-        for (let i = 0; i < this.pgInterval; i++) {
-          window.clearInterval(i);
-        }
-      }
-    }, 3000);
-  }
 
   /** 查詢進度 */
   getProgress() {
@@ -2565,10 +2541,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
         
         if (res['progress'] === 1) {
-          const percentageVal = document.getElementById('percentageVal');
-          if (percentageVal != null) {
-            percentageVal.innerHTML = '100';
-          }
           // done
           this.authService.spinnerHide();
           // 儲存
@@ -2589,7 +2561,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             window.clearInterval(i);
           }
           this.progressInterval = window.setTimeout(() => {
-            this.addInterval();
             this.getProgress();
           }, 3000);
         }

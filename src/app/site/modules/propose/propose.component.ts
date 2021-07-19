@@ -44,8 +44,16 @@ export class ProposeComponent implements OnInit {
   @ViewChild('proposeImg') proposeImg: ElementRef<HTMLImageElement>;
 
   @HostListener('window:resize') windowResize() {
+    const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
     Plotly.relayout('layout_chart', {
-      autosize: true
+      width: leftArea.clientWidth
+    }).then(gd => {
+      const sizes = this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120);
+      const layoutOption = {
+        width: sizes[0],
+        height: sizes[1]
+      };
+      Plotly.relayout('layout_chart', layoutOption);
     });
   }
 
@@ -117,7 +125,7 @@ export class ProposeComponent implements OnInit {
         zeroline: false,
         fixedrange: true
       },
-      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)},
+      margin: { t: 20, b: 20, l: 50, r: 50},
       images: images,
       hovermode: 'closest'
     };
