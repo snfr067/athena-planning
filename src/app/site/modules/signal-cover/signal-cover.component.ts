@@ -225,8 +225,8 @@ export class SignalCoverComponent implements OnInit {
       zText.push([]);
     }
     let xIndex = 0;
-    console.log(this.result['connectionMapAll']);
-    for (const item of this.result['connectionMapAll']) {
+    console.log(this.result['connectionMap']);
+    for (const item of this.result['connectionMap']) {
       for (let i = 0; i < zLen; i++) {
         // console.log(item)
         let yIndex = 0;
@@ -237,10 +237,11 @@ export class SignalCoverComponent implements OnInit {
             zText[i][yIndex] = [];
           }
           zData[i][yIndex][xIndex] = yData[i];
-
-          zText[i][yIndex][xIndex] = `BS ${(Math.round(yData[i] * 100) / 100)}`;
+          zText[i][yIndex][xIndex] = yData[i];
           yIndex++;
-          allZ[i].push(yData[i]);
+          if (!allZ[i].includes(yData[i]) && yData[i] != null) {
+            allZ[i].push(yData[i]);
+          }
         }
       }
       xIndex++;
@@ -255,16 +256,16 @@ export class SignalCoverComponent implements OnInit {
 
     const x = [];
     const y = [];
-    const wRatio = this.calculateForm.width / this.result['connectionMapAll'].length;
+    const wRatio = this.calculateForm.width / this.result['connectionMap'].length;
     let xval = 0;
-    const xLen = this.result['connectionMapAll'].length;
+    const xLen = this.result['connectionMap'].length;
     for (let i = 0; i <= xLen; i++) {
       x.push(xval);
       xval += wRatio;
     }
-    const hRatio = this.calculateForm.height / this.result['connectionMapAll'][0].length;
+    const hRatio = this.calculateForm.height / this.result['connectionMap'][0].length;
     let yval = 0;
-    const yLen = this.result['connectionMapAll'][0].length;
+    const yLen = this.result['connectionMap'][0].length;
     for (let i = 0; i <= yLen; i++) {
       y.push(yval);
       yval += hRatio;
@@ -339,76 +340,74 @@ export class SignalCoverComponent implements OnInit {
       //   list = this.calculateForm.candidateBs.split('|');
       // }
       const apMap = {};
+      let legendNum = 0;
 
       if (this.calculateForm.candidateBs != "") {
         let list;
         list = this.calculateForm.candidateBs.split('|');
         const cx = [];
         const cy = [];
-        let k = 1;
 
-        const chosenCandidate = [];
         for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
-          chosenCandidate.push(this.result['chosenCandidate'][i].toString());
-        }
+          const chosenCandidate = this.result['chosenCandidate'][i].toString();
 
-        for (let i = 0; i < list.length; i++) {
-          const oData = JSON.parse(list[i]);
-          if (chosenCandidate.includes(oData.toString())) {
-            cx.push(oData[0]);
-            cy.push(oData[1]);
-
-            const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-            const max = zMax[zValues.indexOf(Number(this.zValue))];
-            const min = zMin[zValues.indexOf(Number(this.zValue))];
-            // legend
-            let color;
-            // if (z < max * 0.25) {
-            //   color = 'rgb(12,51,131)';
-            // } else if (z >= max * 0.25 && z < max * 0.5) {
-            //   color = 'rgb(10,136,186)';
-            // } else if (z >= max * 0.5 && z < max * 0.75) {
-            //   color = 'rgb(242,211,56)';
-            // } else if (z >= max * 0.75 && z < max) {
-            //   color = 'rgb(242,143,56)';
-            // } else if (z === max) {
-            //   color = 'rgb(217,30,30)';
-            // }
-
-            if (allZero && chosenCandidate.length === 1) {
-              color = 'rgb(12,51,131)';
-            } else {
-              const zDomain = [];
-              const colorRange = [];
-              for (let n = 0; n < colorscale.length; n++) {
-                zDomain.push((max - min) * colorscale[n][0] + min);
-                colorRange.push(colorscale[n][1]);
+          for (let j = 0; j < list.length; j++) {
+            const oData = JSON.parse(list[j]);
+            // 建議基站
+            if (chosenCandidate === oData.toString()) {
+              cx.push(oData[0]);
+              cy.push(oData[1]);
+  
+              const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+              const max = zMax[zValues.indexOf(Number(this.zValue))];
+              const min = zMin[zValues.indexOf(Number(this.zValue))];
+              // legend
+              let color;
+  
+              if (allZero && this.result['chosenCandidate'].length === 1) {
+                color = 'rgb(12,51,131)';
+              } else {
+                const zDomain = [];
+                const colorRange = [];
+                for (let n = 0; n < colorscale.length; n++) {
+                  zDomain.push((max - min) * colorscale[n][0] + min);
+                  colorRange.push(colorscale[n][1]);
+                }
+                // 套件提供用range計算的方法
+                const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+                color = colorFN(z);
               }
-              // 套件提供用range計算的方法
-              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-              color = colorFN(z);
+  
+              // legend編號有在connectionMap裡的才呈現
+              if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
+                this.traces.push({
+                  x: [0],
+                  y: [0],
+                  name: `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`,
+                  marker: {
+                    color: color,
+                  },
+                  type: 'bar',
+                  hoverinfo: 'none',
+                  showlegend: true
+                });
+  
+                // tooltip對應用
+                apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;              
+                
+              }
+              legendNum++;
             }
-
-            this.traces.push({
-              x: [0],
-              y: [0],
-              name: `${this.translateService.instant('result.propose.candidateBs')} ${k}`,
-              marker: {
-                color: color,
-              },
-              type: 'bar',
-              hoverinfo: 'none',
-              showlegend: true
-            });
-
-            apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${k}`;
           }
-          k++;
         }
+
+        
+        
       }
       
-      let k = 1;
+      
       if (defaultBs.length > 0) {
+        let k = 1;
         // const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
           const oData = defaultBs[i];
@@ -416,27 +415,8 @@ export class SignalCoverComponent implements OnInit {
             continue;
           }
           const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-          apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           const min = zMin[zValues.indexOf(Number(this.zValue))];
-          // legend Xean: 07/10 mark,顏色改成套件計算
-          // let color;
-          // if (z < max * 0.25) {
-          //   color = 'rgb(12,51,131)';
-          //   console.log('1');
-          // } else if (z >= max * 0.25 && z < max * 0.5) {
-          //   color = 'rgb(10,136,186)';
-          //   console.log('2');
-          // } else if (z >= max * 0.5 && z < max * 0.75) {
-          //   color = 'rgb(242,211,56)';
-          //   console.log('3');
-          // } else if (z >= max * 0.75 && z < max) {
-          //   color = 'rgb(242,143,56)';
-          //   console.log('4');
-          // } else if (z === max) {
-          //   color = 'rgb(217,30,30)';
-          //   console.log('5');
-          // }
 
           // Xean: 07/10 add legend color改用計算的
           let color;
@@ -455,31 +435,41 @@ export class SignalCoverComponent implements OnInit {
             color = colorFN(z);
           }
 
-          this.traces.push({
-            x: [0],
-            y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${k}`,
-            marker: {
-              color: color,
-            },
-            type: 'bar',
-            hoverinfo: 'none',
-            showlegend: true
-          });
-
+          // legend編號有在connectionMap裡的才呈現
+          if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
+            this.traces.push({
+              x: [0],
+              y: [0],
+              name: `${this.translateService.instant('defaultBs')} ${k}`,
+              marker: {
+                color: color,
+              },
+              type: 'bar',
+              hoverinfo: 'none',
+              showlegend: true
+            });
+  
+            apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
+          }
+          
+          legendNum++;
           k++;
         }
       }
+      console.log(`all data`, allZ);
+      console.log(`apMap`, apMap);
 
       // 重新指定連線對象tooltip
       xIndex = 0;
-      for (const item of this.result['connectionMapAll']) {
+      for (const item of this.result['connectionMap']) {
         for (let i = 0; i < zLen; i++) {
           let yIndex = 0;
           for (const yData of item) {
+            // console.log(yData)
             if (typeof apMap[yData[i]] === 'undefined') {
               zText[i][yIndex][xIndex] = '無';
             } else {
+              // console.log(yData[i], apMap[yData[i]])
               zText[i][yIndex][xIndex] = apMap[yData[i]];
             }
             yIndex++;
@@ -650,9 +640,9 @@ export class SignalCoverComponent implements OnInit {
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
 
-        const yLinear = Plotly.d3.scale.linear()
-          .domain([0, rect.height])
-          .range([0, this.calculateForm.height]);
+      const yLinear = Plotly.d3.scale.linear()
+        .domain([0, rect.height])
+        .range([0, this.calculateForm.height]);
       // 新增基站
       if (this.calculateForm.candidateBs !== '') {
         
