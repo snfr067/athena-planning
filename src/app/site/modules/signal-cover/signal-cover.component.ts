@@ -761,15 +761,15 @@ export class SignalCoverComponent implements OnInit {
         .range([0, rect2.height]);
 
       for (const item of this.rectList) {
-        // 障礙物加粗
-        let width = pixelXLinear(item['svgStyle'].width);
-        if (width < 5) {
-          width = 5;
-        }
-        let height = pixelYLinear(item['svgStyle'].height);
-        if (height < 5) {
-          height = 5;
-        }
+        // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
+        let width = pixelXLinear(item.width);
+        // if (width < 5) {
+        //   width = 5;
+        // }
+        let height = pixelYLinear(item.height);
+        // if (height < 5) {
+        //   height = 5;
+        // }
 
         const leftPosition = pixelXLinear(item.x);
 

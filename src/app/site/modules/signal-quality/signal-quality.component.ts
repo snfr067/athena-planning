@@ -660,15 +660,15 @@ export class SignalQualityComponent implements OnInit {
       .range([0, rect2.height]);
 
     for (const item of this.rectList) {
-      // 障礙物加粗
+      // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
       let width = pixelXLinear(item.width);
-      if (width < 5) {
-        width = 5;
-      }
+      // if (width < 5) {
+      //   width = 5;
+      // }
       let height = pixelYLinear(item.height);
-      if (height < 5) {
-        height = 5;
-      }
+      // if (height < 5) {
+      //   height = 5;
+      // }
 
       const leftPosition = pixelXLinear(item.x);
 
@@ -690,7 +690,9 @@ export class SignalQualityComponent implements OnInit {
           ry: height / 2
         };
       }
-
+      if (item.y === 0.6) {
+        console.log(item)
+      }
       // 延遲轉角度，讓位置正確
       window.setTimeout(() => {
         item['style']['transform'] = `rotate(${item.rotate}deg)`;
