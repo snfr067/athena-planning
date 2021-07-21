@@ -311,6 +311,8 @@ export class SignalStrengthComponent implements OnInit {
         this.rectList.push({
           x: xdata,
           y: ydata,
+          width: oData[2],
+          height: oData[3],
           rotate: oData[5],
           shape: shape,
           style: {

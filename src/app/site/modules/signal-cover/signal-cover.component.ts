@@ -225,7 +225,7 @@ export class SignalCoverComponent implements OnInit {
       zText.push([]);
     }
     let xIndex = 0;
-    console.log(this.result['connectionMap']);
+    // console.log(this.result['connectionMap']);
     for (const item of this.result['connectionMap']) {
       for (let i = 0; i < zLen; i++) {
         // console.log(item)
@@ -253,6 +253,8 @@ export class SignalCoverComponent implements OnInit {
       zMax.push(Plotly.d3.max(item));
       zMin.push(Plotly.d3.min(item));
     }
+
+    console.log(`distinct connectionMap data`, allZ[zValues.indexOf(Number(this.zValue))]);
 
     const x = [];
     const y = [];
@@ -348,76 +350,77 @@ export class SignalCoverComponent implements OnInit {
         const cx = [];
         const cy = [];
 
-        for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
-          const chosenCandidate = this.result['chosenCandidate'][i].toString();
+        for (let j = 0; j < list.length; j++) {
+          const oData = JSON.parse(list[j]);
+          // legend編號有包含在connectionMap裡
+          if (allZ[zValues.indexOf(Number(this.zValue))].includes(j)) {
+            cx.push(oData[0]);
+            cy.push(oData[1]);
 
-          for (let j = 0; j < list.length; j++) {
-            const oData = JSON.parse(list[j]);
-            // 建議基站
-            if (chosenCandidate === oData.toString()) {
-              cx.push(oData[0]);
-              cy.push(oData[1]);
-  
-              const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
-              const max = zMax[zValues.indexOf(Number(this.zValue))];
-              const min = zMin[zValues.indexOf(Number(this.zValue))];
-              // legend
-              let color;
-  
-              if (allZero && this.result['chosenCandidate'].length === 1) {
-                color = 'rgb(12,51,131)';
-              } else {
-                const zDomain = [];
-                const colorRange = [];
-                for (let n = 0; n < colorscale.length; n++) {
-                  zDomain.push((max - min) * colorscale[n][0] + min);
-                  colorRange.push(colorscale[n][1]);
-                }
-                // 套件提供用range計算的方法
-                const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-                color = colorFN(z);
+            const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
+            const max = zMax[zValues.indexOf(Number(this.zValue))];
+            const min = zMin[zValues.indexOf(Number(this.zValue))];
+            // legend
+            let color;
+
+            if (allZero && this.result['chosenCandidate'].length === 1) {
+              color = 'rgb(12,51,131)';
+            } else {
+              const zDomain = [];
+              const colorRange = [];
+              for (let n = 0; n < colorscale.length; n++) {
+                zDomain.push((max - min) * colorscale[n][0] + min);
+                colorRange.push(colorscale[n][1]);
               }
-  
-              // legend編號有在connectionMap裡的才呈現
-              if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
-                this.traces.push({
-                  x: [0],
-                  y: [0],
-                  name: `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`,
-                  marker: {
-                    color: color,
-                  },
-                  type: 'bar',
-                  hoverinfo: 'none',
-                  showlegend: true
-                });
-  
-                // tooltip對應用
-                apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;              
-                
-              }
-              legendNum++;
+              // 套件提供用range計算的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              color = colorFN(z);
             }
-          }
-        }
 
-        
-        
+            // legend編號有在connectionMap裡的才呈現
+            if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
+              // legend
+              this.traces.push({
+                x: [0],
+                y: [0],
+                name: `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`,
+                marker: {
+                  color: color,
+                },
+                type: 'bar',
+                hoverinfo: 'none',
+                showlegend: true
+              });
+
+              // tooltip對應用
+              apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
+            }
+          } else {
+            console.log(`miss 待選 legend num ${legendNum}`);
+          }
+          this.candidateList.push({
+            x: oData[0],
+            y: oData[1],
+            num: (j + 1),
+            color: '#f7176a',
+            ap: `待選 ${(j + 1)}`
+          });
+
+          legendNum++;
+        }
       }
-      
       
       if (defaultBs.length > 0) {
         let k = 1;
         // const candidateidx = this.result['candidateIdx'];
         for (let i = 0; i < defaultBs.length; i++) {
           const oData = defaultBs[i];
-          if (typeof zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])] === 'undefined') {
+          if (typeof zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])] === 'undefined') {
             continue;
           }
-          const z = zData[zValues.indexOf(Number(this.zValue))][Math.ceil(oData[1])][Math.ceil(oData[0])];
+          const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           const min = zMin[zValues.indexOf(Number(this.zValue))];
-
           // Xean: 07/10 add legend color改用計算的
           let color;
           if (allZero && defaultBs.length === 1) {
@@ -450,13 +453,15 @@ export class SignalCoverComponent implements OnInit {
             });
   
             apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
+          } else {
+            console.log(`miss 既有 legend num ${legendNum}`);
           }
           
           legendNum++;
           k++;
         }
       }
-      console.log(`all data`, allZ);
+      
       console.log(`apMap`, apMap);
 
       // 重新指定連線對象tooltip
@@ -505,73 +510,6 @@ export class SignalCoverComponent implements OnInit {
 
     console.log(this.traces);
 
-    // 新增基站
-    if (this.calculateForm.candidateBs !== '') {
-      const list = this.calculateForm.candidateBs.split('|');
-      const cx = [];
-      const cy = [];
-      const chosenCandidate = [];
-      for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
-        chosenCandidate.push(this.result['chosenCandidate'][i].toString());
-      }
-      let num = 1;
-
-      const candidateX = [];
-      const candidateY = [];
-      const candidateText = [];
-      const hoverText = [];
-      for (const item of list) {
-        const oData = JSON.parse(item);
-        if (chosenCandidate.includes(oData.toString())) {
-          const xdata = oData[0];
-          const ydata = oData[1];
-          const zdata = oData[2];
-          cx.push(xdata);
-          cy.push(ydata);
-
-          const text = `${this.translateService.instant('candidateBs')}
-          X: ${xdata}
-          Y: ${ydata}
-          Z: ${zdata}
-          ${this.translateService.instant('bsPower')}: ${this.result['candidateBsPower'][chosenCandidate.indexOf(oData.toString())]} dBm`;
-          this.candidateList.push({
-            x: xdata,
-            y: ydata,
-            color: '#f7176a',
-            hover: text,
-            num: num,
-            ap: `待選${num}`
-          });
-
-          candidateX.push(xdata);
-          candidateY.push(ydata);
-          candidateText.push(`Z: ${zdata}<br>${this.translateService.instant('bsPower')}: ${this.result['candidateBsPower'][chosenCandidate.indexOf(oData.toString())]} dBm`);
-          hoverText.push(text);
-        }
-        num++;
-      }
-
-      this.traces.push({
-        x: candidateX,
-        y: candidateY,
-        text: candidateText,
-        textfont: {
-          color: '#fff'
-        },
-        type: 'scatter',
-        mode: 'markers',
-        marker: {
-          size: 25,
-          color: '#000'
-        },
-        hovertemplate: `X: %{x}<br>Y: %{y}<br>%{text}<extra></extra>`,
-        showlegend: false,
-        visible: this.showCandidate,
-        uid: `AP`,
-        opacity: 0
-      });
-    }
-
     this.shapes.length = 0;
 
     // 障礙物
@@ -602,6 +540,8 @@ export class SignalCoverComponent implements OnInit {
         this.rectList.push({
           x: xdata,
           y: ydata,
+          width: oData[2],
+          height: oData[3],
           rotate: oData[5],
           shape: shape,
           style: {
@@ -712,7 +652,7 @@ export class SignalCoverComponent implements OnInit {
       const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
       // const sizes = this.chartService.calSize(this.calculateForm, gd);
       layoutOption = {
-        width: sizes.width + 110,
+        width: sizes.width + 80,
         height: sizes.height,
         shapes: this.shapes,
         annotations: this.annotations
@@ -761,6 +701,7 @@ export class SignalCoverComponent implements OnInit {
         .range([0, rect2.height]);
 
       for (const item of this.rectList) {
+        console.log(item)
         // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
         let width = pixelXLinear(item.width);
         // if (width < 5) {
@@ -772,7 +713,7 @@ export class SignalCoverComponent implements OnInit {
         // }
 
         const leftPosition = pixelXLinear(item.x);
-
+console.log(width, height)
         item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
         item['style'].left = `${leftPosition}px`;
         item['style'].width = `${width}px`;
@@ -782,7 +723,7 @@ export class SignalCoverComponent implements OnInit {
         if (item.shape === 1) {
           const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
           item['points'] = points;
-          console.log(item);
+          console.log(item, points);
         } else if (item.shape === 2) {
           item['ellipseStyle'] = {
             cx: width / 2,
