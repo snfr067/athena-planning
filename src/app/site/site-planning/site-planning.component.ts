@@ -583,7 +583,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           err => {
             this.msgDialogConfig.data = {
               type: 'error',
-              infoMessage: '無法取得計算結果!'
+              infoMessage: this.translateService.instant('cant_get_result')
             };
             this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
           }
@@ -623,9 +623,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     let msg = '';
     if (altitude < 0 || altitude > this.calculateForm.altitude) {
       if (altitude < 0) {
-        msg = '高度不可小於0';
+        msg = this.translateService.instant('alt_less_0');
       } else {
-        msg = '不可大於場域高度';
+        msg = this.translateService.instant('alt_greater_than_field');
       }
       // 障礙物or基地台
       if (fieldOrId.length > 1) { //障礙物
@@ -655,7 +655,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         } else {
           if (Number(this.zValues[i]) == altitude) { //找到重複高度的了 刪掉剛剛改的zValue
             delete this.zValues[Number(fieldOrId)];
-            msg = '已有重複高度';
+            msg = this.translateService.instant('already_same_alt');
             if (i == 0 && this.zValues[1] === undefined && this.zValues[2] === undefined) {
               this.zValues.length = 1;
               console.log(this.zValues);
@@ -847,7 +847,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * @param isImportImg 是否import image
    */
   initData(isImportXls, isImportImg, isHWAChange) {
-    console.log('sdfsdfskldfslkdjflksjflksjlkdjklsjld');
     if (typeof this.chart !== 'undefined') {
       this.chart.nativeElement.style.opacity = 0;
     }
@@ -867,7 +866,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         window.sessionStorage.removeItem('tempParam');
         // this.calculateForm.width = 100;
       }
-      let msg = '場域高度不可小於等於0,將為您恢復原本值';
+      let msg = this.translateService.instant('field_alt_less_0');
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
@@ -877,7 +876,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     // FoolProof Altitude
     if (isHWAChange == 'altitude') { 
-      let msg = '若場域高度修改後低於障礙物或基站高度，障礙物和基站會被設置成場域高度';
+      let msg = this.translateService.instant('field_alt_fix_then_all_fix');
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg

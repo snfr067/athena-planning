@@ -310,7 +310,13 @@
 	"less_0_fddDlFrequency": "下行頻率不可小於0",
 	"less_0_fddUlFrequency": "上行頻率不可小於0",
 	"fddDlFrequency_same_fddUlFrequency": "上行頻率與下行頻率不可相同",
-	"following_fix_plz": "以下問題請修正:"
+	"following_fix_plz": "以下問題請修正:",
 
+	"field_alt_less_0": "場域高度不可小於等於0,將為您恢復原本值",
+	"field_alt_fix_then_all_fix": "若場域高度修改後低於障礙物或基站高度，障礙物和基站會被設置成場域高度",
+	"already_same_alt": "已有重複高度",
+	"alt_less_0": "高度不可小於0",
+	"alt_greater_than_field": "不可大於場域高度",
+	"cant_get_result": "無法取得計算結果!"
 
 }

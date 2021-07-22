@@ -312,6 +312,14 @@
 	"less_0_fddDlFrequency": "Downlink frequency can't less than 0",
 	"less_0_fddUlFrequency": "Uplink frequency can't less than 0",
 	"fddDlFrequency_same_fddUlFrequency": "Uplink frequency repeats with downlink frequency",
-	"following_fix_plz": "Please fix the following problems:"
+	"following_fix_plz": "Please fix the following problems:",
+
+	"field_alt_less_0": "The altitude of the field cannot be less than or equal to 0, and it will restore the original value for you",
+	"field_alt_fix_then_all_fix": "If the altitude of the field is modified to be lower than the altitude of the obstacle or base station, the obstacle and the base station will be set to the altitdue of the field",
+	"already_same_alt": "Already has repeated altitude",
+	"alt_less_0": "Altitude cannot be less than 0",
+	"alt_greater_than_field": "Not greater than the altitude of the field",
+	"cant_get_result": "Can't get calculation result!"
+
 
 }

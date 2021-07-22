@@ -182,7 +182,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       }, err => {
         this.msgDialogConfig.data = {
           type: 'error',
-          infoMessage: '無法取得計算結果!'
+          infoMessage: this.translateService.instant('cant_get_result')
         };
         this.dialog.open(MsgDialogComponent, this.msgDialogConfig);
       }
@@ -202,7 +202,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       err => {
         this.msgDialogConfig.data = {
           type: 'error',
-          infoMessage: '無法取得計算結果!'
+          infoMessage: this.translateService.instant('cant_get_result')
         };
         this.dialog.open(MsgDialogComponent, this.msgDialogConfig);
       }
@@ -257,7 +257,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       err => {
         this.msgDialogConfig.data = {
           type: 'error',
-          infoMessage: '無法取得計算結果!'
+          infoMessage: this.translateService.instant('cant_get_result')
         };
         this.dialog.open(MsgDialogComponent, this.msgDialogConfig);
         this.authService.spinnerHide();
