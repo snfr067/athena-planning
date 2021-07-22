@@ -294,10 +294,10 @@
   <mat-menu #rightMenu="matMenu" id="rightMenu">
     <ng-template matMenuContent>
       <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
-      <button class="rightClickBtnGroup"
+      <!-- <button class="rightClickBtnGroup"
         (click)="$event.stopPropagation()" 
         [(colorPicker)]="color" 
-        (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button>
+        (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button> -->
       <button class="rightClickBtnGroup" (click)="openHeightSetting()">
         <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
           {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
@@ -758,7 +758,7 @@
                 </li>
                 <li>
                   <p style="margin-right: 5px;">{{ 'planning.upload' | translate }}</p>
-                  <label id="uploadFileLabel" for="upload-file">檔案上傳
+                  <label id="uploadFileLabel" for="upload-file">{{ 'planning.file.upload' | translate }}
                   <input type="file" id="upload-file" (change)="fileChange($event)" title="" hidden="hidden"></label>
                   <span style="margin-left: 2em;" *ngIf="showFileName">{{ calculateForm.mapName }}</span>
                 </li>
@@ -767,20 +767,28 @@
                   <ul class="inline-block">
                     <li class="inline-block">
                       <label>{{ 'width' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.width" 
-                      (click)="tempParamStorage(calculateForm.width)" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.width" 
+                      (click)="tempParamStorage(calculateForm.width)"
+                      (change)="checkFieldWidHei('width')">
+                      <!-- (change)="initData(false, false, 'width')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'height' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.height" 
-                      (click)="tempParamStorage(calculateForm.height)" (change)="initData(false, false, true, false)">
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.height" 
+                      (click)="tempParamStorage(calculateForm.height)"
+                      (change)="checkFieldWidHei('height')">
+                      <!-- (change)="initData(false, false, 'height')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
                     <li class="inline-block">
                       <label>{{ 'altitude' | translate }}</label>
-                      <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.altitude" 
-                      (click)="tempParamStorage(calculateForm.altitude)" (change)="initData(false, false, true, true)">
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.altitude" 
+                      (click)="tempParamStorage(calculateForm.altitude)"
+                      (change)="initData(false, false, 'altitude')">
                       <!-- <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false)"> -->
                     </li>
                   </ul>
@@ -2166,7 +2174,19 @@
   </div>
   <div mat-dialog-actions>
     <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
-    <button mat-button (click)="delete()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+    <button *ngIf="deleteList.length == 0" mat-button (click)="delete(false)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal2>
+  <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'deleteExceedField' | translate }}</p>
+    <!-- <p>我們將刪掉座標大於場域長寬的障礙物，基地台，UE，您同意嗎?</p> -->
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
+    <button *ngIf="deleteList.length != 0" mat-button (click)="delete(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
   </div>
 </ng-template>
 

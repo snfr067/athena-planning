@@ -40,8 +40,8 @@
 	"isUeAvgThroughput.tooltip": "根據行動終端分布的位置，提升這些位置的傳輸速度，但可能犧牲其他位置或場域邊緣的訊號品質",
 	"isUeCoverage": "強化行動終端有訊號覆蓋的比率",
 	"isUeCoverage.tooltip": "根據行動終端分布的位置提升訊號覆蓋率，可避免清單中的裝置沒有訊號連網，效果會高於以場域為主進行規劃",
-	"isUeTpByRsrp": "強化行動終端有訊號覆蓋的比率",
-	"isUeTpByRsrp.tooltip": "根據行動終端分布的位置提升訊號覆蓋率，可避免清單中的裝置沒有訊號連網，效果會高於以場域為主進行規劃",
+	"isUeTpByRsrp": "待輸入",
+	"isUeTpByRsrp.tooltip": "待輸入",
 	"isUeTpByDistance": "強化行動終端有訊號覆蓋的比率",
 	"isUeTpByDistance.tooltip": "根據行動終端分布的位置提升訊號覆蓋率，可避免清單中的裝置沒有訊號連網，效果會高於以場域為主進行規劃",
 	"new.ue": "新增行動終端",
@@ -111,6 +111,7 @@
 	"planning.setting": "場域設定",
 	"planning.info": "場域基本資訊",
 	"planning.upload": "上傳圖檔",
+	"planning.file.upload": "檔案上傳",
 	"planning.obstacleInfo": "場域障礙物資訊",
 	"planning.defaultBs.info": "場域內無線基站位置",
 	"planning.ue.info": "場域內無線終端分佈資訊",
@@ -241,6 +242,8 @@
 	"deletePara": "您確定要刪除",
 	"deleteSure": "確定",
 	"deleteCancel": "取消",
+	"deleteExceedField": "我們將刪掉座標大於場域長寬的障礙物，基地台，UE，您同意嗎?",
+	
 
 	"bs": "基地台",
 	"parameterSetting": "基地台參數設定",

@@ -171,9 +171,13 @@ export class WirelessListComponent implements OnInit, OnDestroy {
     this.http.get(url).subscribe(
       res => {
         const result = res;
-        delete result['output'];
+        // console.log(res);
+        // delete result['output'];
         // 回傳資料轉為CalculateForm
         const calculateForm: CalculateForm = this.formService.setHstToForm(result);
+        calculateForm.txPower = `${result['output']['defaultbspower']}`;
+        calculateForm.beamId = `${result['output']['defaultbeamid']}`;
+        calculateForm.tddFrameRatio = result['tddframeratio'];
         this.excelService.export(calculateForm);
       }, err => {
         this.msgDialogConfig.data = {

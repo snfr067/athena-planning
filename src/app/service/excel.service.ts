@@ -43,40 +43,199 @@ export class ExcelService {
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
-    const baseStationData = [['x', 'y', 'z', 'material', 'color']];
-
+    // const baseStationData = [['x', 'y', 'z', 'material', 'color']];
+    const baseStationData = [['x', 'y', 'z',
+    'txpower','beamId','tddfrequency', 'tddbandwidth',
+    'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
+    '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
+    'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
+    let txpowerArr = [];
+    let beamArr = [];
+    let defaultBsNum = 0;
+    if (calculateForm.defaultBs != '') {defaultBsNum = calculateForm.defaultBs.split('|').length;}
+    let candidateNum = 0;
+    if (calculateForm.candidateBs != '') {candidateNum = calculateForm.candidateBs.split('|').length;}
+    if (calculateForm.isSimulation) {
+      txpowerArr = JSON.parse(calculateForm.txPower);
+      beamArr = JSON.parse(calculateForm.beamId);
+    } else {
+      for (let i = 0;i < JSON.parse(calculateForm.txPower).length;i++) {
+        txpowerArr.push('');
+        beamArr.push('');
+      }
+    }
     if (!this.authService.isEmpty(calculateForm.defaultBs)) {
       const defaultBs = calculateForm.defaultBs.split('|');
-      for (const item of defaultBs) {
-        const data = JSON.parse(item);
-        baseStationData.push([
-          data[0], data[1], data[2], data[3]
-        ]);
+      // console.log(defaultBs);
+      
+      if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '5g') {
+        for (let i = 0;i < defaultBs.length;i++) {
+          baseStationData.push([
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            txpowerArr[i],
+            // '',
+            beamArr[i],
+            // '',
+            '','',
+            JSON.parse(calculateForm.dlBandwidth)[i+candidateNum],
+            JSON.parse(calculateForm.ulBandwidth)[i+candidateNum],
+            JSON.parse(calculateForm.dlFrequency)[i+candidateNum],
+            JSON.parse(calculateForm.ulFrequency)[i+candidateNum],
+            '','',
+            calculateForm.dlMcsTable.substring(1,(calculateForm.dlMcsTable.length)-1).split(',')[i+candidateNum],
+            calculateForm.ulMcsTable.substring(1,(calculateForm.ulMcsTable.length)-1).split(',')[i+candidateNum],
+            JSON.parse(calculateForm.dlMimoLayer)[i+candidateNum],
+            JSON.parse(calculateForm.ulMimoLayer)[i+candidateNum],
+            JSON.parse(calculateForm.dlScs)[i+candidateNum],
+            JSON.parse(calculateForm.ulScs)[i+candidateNum]
+          ]);
+        }
+      } else if (calculateForm.duplex === 'tdd' && calculateForm.mapProtocol === '5g') {
+        for (let i = 0;i < defaultBs.length;i++) {
+          baseStationData.push([
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            txpowerArr[i],
+            // '',
+            beamArr[i],
+            // '',
+            JSON.parse(calculateForm.frequencyList)[i+candidateNum],
+            JSON.parse(calculateForm.bandwidthList)[i+candidateNum],
+            '','','','','',
+            JSON.parse(calculateForm.scs)[i+candidateNum],
+            calculateForm.dlMcsTable.substring(1,(calculateForm.dlMcsTable.length)-1).split(',')[i+candidateNum],
+            calculateForm.ulMcsTable.substring(1,(calculateForm.ulMcsTable.length)-1).split(',')[i+candidateNum],
+            JSON.parse(calculateForm.dlMimoLayer)[i+candidateNum],
+            JSON.parse(calculateForm.ulMimoLayer)[i+candidateNum],
+            '',''
+          ]);
+        }
+      } else if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '4g') {
+        for (let i = 0;i < defaultBs.length;i++) {
+          baseStationData.push([
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            txpowerArr[i],
+            // '',
+            beamArr[i],
+            // '',
+            '','',
+            JSON.parse(calculateForm.dlBandwidth)[i+candidateNum],
+            JSON.parse(calculateForm.ulBandwidth)[i+candidateNum],
+            JSON.parse(calculateForm.dlFrequency)[i+candidateNum],
+            JSON.parse(calculateForm.ulFrequency)[i+candidateNum],
+            JSON.parse(calculateForm.mimoNumber)[i+candidateNum],
+            '','','','','','',''
+          ]);
+        }
+      } else {
+        for (let i = 0;i < defaultBs.length;i++) {
+          baseStationData.push([
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            txpowerArr[i],
+            // '',
+            beamArr[i],
+            // '',
+            JSON.parse(calculateForm.frequencyList)[i+candidateNum],
+            JSON.parse(calculateForm.bandwidthList)[i+candidateNum],
+            ,'','','','',
+            JSON.parse(calculateForm.mimoNumber)[i+candidateNum],
+            '','','','','','',''
+          ]);
+        }
       }
+      // for (const item of defaultBs) {
+      //   const data = JSON.parse(item);
+      //   baseStationData.push([
+      //     data[0], data[1], data[2], data[3]
+      //   ]);
+      // }
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
+
     // candidate
-    const candidateData = [['x', 'y', 'z', 'material', 'color']];
+    // const candidateData = [['x', 'y', 'z', 'material', 'color']];
+    const candidateData = [['x', 'y', 'z',
+    'tddfrequency', 'tddbandwidth',
+    'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
+    '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
+    'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
     if (!this.authService.isEmpty(calculateForm.candidateBs)) {
       const candidate = calculateForm.candidateBs.split('|');
-      for (const item of candidate) {
-        const data = JSON.parse(item);
-        candidateData.push([
-          data[0], data[1], data[2], data[3]
-        ]);
+      if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '5g') {
+        for (let i = 0;i < candidate.length;i++) {
+          candidateData.push([
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            '','',
+            JSON.parse(calculateForm.dlBandwidth)[i],
+            JSON.parse(calculateForm.ulBandwidth)[i],
+            JSON.parse(calculateForm.dlFrequency)[i],
+            JSON.parse(calculateForm.ulFrequency)[i],
+            '','',
+            calculateForm.dlMcsTable.substring(1,(calculateForm.dlMcsTable.length)-1).split(',')[i],
+            calculateForm.ulMcsTable.substring(1,(calculateForm.ulMcsTable.length)-1).split(',')[i],
+            JSON.parse(calculateForm.dlMimoLayer)[i].toString(),
+            JSON.parse(calculateForm.ulMimoLayer)[i].toString(),
+            JSON.parse(calculateForm.dlScs)[i],
+            JSON.parse(calculateForm.ulScs)[i]
+          ]);
+        }
+      } else if (calculateForm.duplex === 'tdd' && calculateForm.mapProtocol === '5g') {
+        for (let i = 0;i < candidate.length;i++) {
+          candidateData.push([
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(calculateForm.frequencyList)[i],
+            JSON.parse(calculateForm.bandwidthList)[i],
+            '','','','','',
+            JSON.parse(calculateForm.scs)[i].toString(),
+            calculateForm.dlMcsTable.substring(1,(calculateForm.dlMcsTable.length)-1).split(',')[i],
+            calculateForm.ulMcsTable.substring(1,(calculateForm.ulMcsTable.length)-1).split(',')[i],
+            JSON.parse(calculateForm.dlMimoLayer)[i].toString(),
+            JSON.parse(calculateForm.ulMimoLayer)[i].toString(),
+            '',''
+          ]);
+        }
+      } else if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '4g') {
+        for (let i = 0;i < candidate.length;i++) {
+          candidateData.push([
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            ,'','',
+            JSON.parse(calculateForm.dlBandwidth)[i],
+            JSON.parse(calculateForm.ulBandwidth)[i],
+            JSON.parse(calculateForm.dlFrequency)[i],
+            JSON.parse(calculateForm.ulFrequency)[i],
+            JSON.parse(calculateForm.mimoNumber)[i],
+            '','','','','','',''
+          ]);
+        }
+      } else {
+        for (let i = 0;i < candidate.length;i++) {
+          candidateData.push([
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(calculateForm.frequencyList)[i],
+            JSON.parse(calculateForm.bandwidthList)[i],
+            ,'','','','',
+            JSON.parse(calculateForm.mimoNumber)[i],
+            '','','','','','',''
+          ]);
+        }
       }
+      // for (const item of candidate) {
+      //   const data = JSON.parse(item);
+      //   candidateData.push([
+      //     data[0], data[1], data[2], data[3]
+      //   ]);
+      // }
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
     XLSX.utils.book_append_sheet(wb, candidateWS, 'candidate');
     // UE
-    const ueData = [['x', 'y', 'z', 'material', 'color']];
+    const ueData = [['x', 'y', 'z']];
     if (!this.authService.isEmpty(calculateForm.ueCoordinate)) {
       const ue = calculateForm.ueCoordinate.split('|');
       for (const item of ue) {
         const data = JSON.parse(item);
         ueData.push([
-          data[0], data[1], data[2], data[3]
+          data[0], data[1], data[2]
         ]);
       }
     }
@@ -102,15 +261,41 @@ export class ExcelService {
     const obstacleWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(obstacleData);
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
     // bs parameters
-    const bsData = [
-      ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
-      [
-        calculateForm.powerMaxRange, calculateForm.powerMinRange,
-        // calculateForm.beamMaxId, calculateForm.beamMinId,
-        '', '',
-        calculateForm.bandwidth, calculateForm.frequency
-      ]
-    ];
+    let protocolNum = 0;
+    if (calculateForm.mapProtocol == '4g') {
+      protocolNum = 0;
+    } else if (calculateForm.mapProtocol == '5g') {
+      protocolNum = 1;
+    } else {
+      protocolNum = 2;
+    }
+    let bsData = [];
+    if (calculateForm.isSimulation) {
+      bsData = [
+        // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
+        ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
+        'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        [
+          calculateForm.powerMaxRange, calculateForm.powerMinRange,
+          protocolNum, calculateForm.duplex, calculateForm.tddFrameRatio,
+          false, false, false, false, false
+        ]
+      ];
+    } else {
+      bsData = [
+        // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
+        ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
+        'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        [
+          calculateForm.powerMaxRange, calculateForm.powerMinRange,
+          protocolNum, calculateForm.duplex, calculateForm.tddFrameRatio,
+          calculateForm.isAverageSinr,calculateForm.isCoverage,
+          calculateForm.isUeAvgSinr,
+          calculateForm.isUeAvgThroughput,calculateForm.isUeCoverage
+        ]
+      ];
+    }
+    
     const bsWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(bsData);
     XLSX.utils.book_append_sheet(wb, bsWS, 'bs parameters');
     // algorithm parameters
@@ -128,7 +313,7 @@ export class ExcelService {
     // objective parameters
     const objectiveData = [
       ['objective', 'objectiveStopCondition', 'newBsNum'],
-      [calculateForm.objectiveIndex, '', calculateForm.availableNewBsNumber]
+      [calculateForm.objectiveIndex, '', calculateForm.availableNewBsNumber - defaultBsNum]
     ];
     const objectiveWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(objectiveData);
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');

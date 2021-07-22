@@ -116,6 +116,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   candidateList = [];
   /** 新增ＵＥ */
   ueList = [];
+  /** 要被刪除的List */
+  deleteList = [];
   /** 比例尺 X軸pixel轉長度公式 */
   xLinear;
   /** 比例尺 Y軸pixel轉寬度公式 */
@@ -309,6 +311,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
+  @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
+  
 
   
 
@@ -574,7 +578,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             }
             // console.log(this.calculateForm);
             
-            this.initData(false, false, false, false);
+            this.initData(false, false, '');
           },
           err => {
             this.msgDialogConfig.data = {
@@ -598,7 +602,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // this.calculateForm.bandwidth = '[1]';
         }
 
-        this.initData(false, false, false, false);
+        this.initData(false, false, '');
       }
       
       // setTimeout(()=> {
@@ -714,7 +718,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           delete this.zValues[2];
           this.zValues.length = 2;
         } else { 
-          console.log('西巴老馬');
           this.zValues.length = 2;
         }
       }
@@ -768,16 +771,87 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     window.sessionStorage.setItem('tempParam',temp);
   }
 
+  checkFieldWidHei(isHWChange) {
+    // this.deleteList.length = 0;
+    // FoolProof Height and Width -----------------------
+    if (isHWChange == 'width' || isHWChange == 'height') {
+      //障礙物
+      for (let i = 0;i < this.obstacleList.length;i++) {
+        if (isHWChange == 'width') {
+          if (this.calculateForm.width < this.dragObject[this.obstacleList[i]].x) {
+            this.deleteList.push([this.obstacleList[i],i]);
+          } else if (this.calculateForm.width < this.dragObject[this.obstacleList[i]].x + this.dragObject[this.obstacleList[i]].width) {
+            this.deleteList.push([this.obstacleList[i],i]);
+          } else { //rotation
+
+          }
+        } else {
+          if (this.calculateForm.height < this.dragObject[this.obstacleList[i]].y) {
+            this.deleteList.push([this.obstacleList[i],i]);
+          } else if (this.calculateForm.height < this.dragObject[this.obstacleList[i]].y + this.dragObject[this.obstacleList[i]].head) {
+            this.deleteList.push([this.obstacleList[i],i]);
+          } else { //rotation
+
+          }
+        }
+      }
+      //既有基地台
+      for (let i = 0;i < this.defaultBSList.length;i++) {
+        if (isHWChange == 'width') {
+          if (this.calculateForm.width < this.dragObject[this.defaultBSList[i]].x) {
+            this.deleteList.push([this.defaultBSList[i],i]);
+          }
+        } else {
+          if (this.calculateForm.height < this.dragObject[this.defaultBSList[i]].y) {
+            this.deleteList.push([this.defaultBSList[i],i]);
+          }
+        }
+      }
+      //待選基地台
+      for (let i = 0;i < this.candidateList.length;i++) {
+        if (isHWChange == 'width') {
+          if (this.calculateForm.width < this.dragObject[this.candidateList[i]].x) {
+            this.deleteList.push([this.candidateList[i],i]);
+          }
+        } else {
+          if (this.calculateForm.height < this.dragObject[this.candidateList[i]].y) {
+            this.deleteList.push([this.candidateList[i],i]);
+          }
+        }
+      }
+      // UE
+      for (let i = 0;i < this.ueList.length;i++) {
+        if (isHWChange == 'width') {
+          if (this.calculateForm.width < this.dragObject[this.ueList[i]].x) {
+            this.deleteList.push([this.ueList[i],i]);
+          }
+        } else {
+          if (this.calculateForm.height < this.dragObject[this.ueList[i]].y) {
+            this.deleteList.push([this.ueList[i],i]);
+          }
+        }
+      }
+      if (this.deleteList.length != 0) {
+        console.log(this.deleteList);
+        console.log(this.defaultBSList);
+        this.matDialog.open(this.deleteModal2);
+      } else {
+        this.initData(false, false, 'delete');
+      }
+    }
+  }
+
   /**
    * init Data
    * @param isImportXls 是否import xlxs
    * @param isImportImg 是否import image
    */
-  initData(isImportXls, isImportImg, isChangeFieldParam, isAltChange) {
+  initData(isImportXls, isImportImg, isHWAChange) {
+    console.log('sdfsdfskldfslkdjflksjflksjlkdjklsjld');
     if (typeof this.chart !== 'undefined') {
       this.chart.nativeElement.style.opacity = 0;
     }
-
+    console.log(this.defaultBSList);
     //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
       if (this.calculateForm.height < 0) {
@@ -801,8 +875,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
 
-    // FoolProof
-    if (isAltChange) { 
+    // FoolProof Altitude
+    if (isHWAChange == 'altitude') { 
       let msg = '若場域高度修改後低於障礙物或基站高度，障礙物和基站會被設置成場域高度';
       this.msgDialogConfig.data = {
         type: 'error',
@@ -825,8 +899,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       } else if (this.zValues[0] != undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
         this.zValues.length = 1;
       }
-
-      console.log(this.zValues.length);
       //障礙物
       for (let i = 0;i < this.obstacleList.length;i++) {
         // console.log('障礙物'+this.dragObject[this.obstacleList[i]].altitude+' '+this.calculateForm.altitude);
@@ -850,7 +922,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
-
+    
     // Plotly繪圖config
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -949,8 +1021,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
                   // do noting
                 } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                   // 編輯
-                  if (!isAltChange) {
-                    this.edit();
+                  if (isHWAChange !== '') {
+                    // this.edit(false);
+                  } else {
+                    this.edit(true);
                   }
                   console.log(this.calculateForm);
                 }
@@ -1008,19 +1082,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
               } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                 // 編輯
                 console.log(this.calculateForm);
-                if (!isAltChange) {
-                  this.edit();
+                if (isHWAChange !== '') {
+                  // this.edit(false);
+                } else {
+                  this.edit(true);
                 }
               }
             }, 100);
-            
           });
-  
-          
         });
       }
 
-      if (isChangeFieldParam) {
+      if (isHWAChange != '') {
         window.setTimeout(() => {
           for (const item of this.obstacleList) {
             if (this.dragObject[item].element == '2') {
@@ -1042,8 +1115,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }, 500);
       }
     }, 0);
-
-    
   }
 
   /** 計算比例尺 */
@@ -1152,7 +1223,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     } else if (id === 'defaultBS') {
       color = this.DEFAULT_BS_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
+      console.log(this.defaultBSList);
       this.defaultBSList.push(this.svgId);
+      console.log(this.defaultBSList);
       this.pathStyle[this.svgId] = {
         fill: this.DEFAULT_BS_COLOR
       };
@@ -1690,17 +1763,39 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * 刪除互動物件
    */
-  delete() {
-    if (this.dragObject[this.svgId].type === 'obstacle') {
-      this.obstacleList.splice(this.obstacleList.indexOf(this.svgId), 1);
-    } else if (this.dragObject[this.svgId].type === 'defaultBS') {
-      this.defaultBSList.splice(this.defaultBSList.indexOf(this.svgId), 1);
-    } else if (this.dragObject[this.svgId].type === 'candidate') {
-      this.candidateList.splice(this.candidateList.indexOf(this.svgId), 1);
-    } else if (this.dragObject[this.svgId].type === 'UE') {
-      this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
+  delete(all) {
+    if (!all) {
+      if (this.dragObject[this.svgId].type === 'obstacle') {
+        this.obstacleList.splice(this.obstacleList.indexOf(this.svgId), 1);
+      } else if (this.dragObject[this.svgId].type === 'defaultBS') {
+        this.defaultBSList.splice(this.defaultBSList.indexOf(this.svgId), 1);
+      } else if (this.dragObject[this.svgId].type === 'candidate') {
+        this.candidateList.splice(this.candidateList.indexOf(this.svgId), 1);
+      } else if (this.dragObject[this.svgId].type === 'UE') {
+        this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
+      }
+      this.matDialog.closeAll();
+    } else {
+      console.log(this.defaultBSList);
+      this.initData(false, false, 'delete');
+      this.deleteList.forEach(el => {
+        let type = el[0].split('_')[0];
+        if (type == 'candidate') {
+          this.candidateList.splice(el[1], 1);
+        } else if (type == 'defaultBS') {
+          this.defaultBSList.splice(el[1], 1);
+        } else if (type == 'UE') {
+          this.ueList.splice(el[1], 1);
+        } else {
+          this.obstacleList.splice(el[1], 1);
+        }
+      });
+      this.edit(false);
+      this.deleteList.length = 0;
+      // console.log(this.deleteList);
+      this.matDialog.closeAll();
     }
-    this.matDialog.closeAll();
+    
   }
 
   notDelete() {
@@ -2810,16 +2905,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
-    const baseStationData = [['x', 'y', 'z', 'material',
-    'color','txpower','beamId','tddfrequency', 'tddbandwidth',
+    const baseStationData = [['x', 'y', 'z','txpower','beamId','tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].altitude, this.dragObject[item].material,
-        this.dragObject[item].color,
+        this.dragObject[item].altitude,
+        // this.dragObject[item].color,
         this.bsListRfParam[item].txpower,
         this.bsListRfParam[item].beampattern,
         // this.bsListRfParam[item].frequency,
@@ -2849,7 +2943,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
     // candidate
-    const candidateData = [['x', 'y', 'z', 'material', 'color',
+    const candidateData = [['x', 'y', 'z',
     'tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
@@ -2857,8 +2951,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].altitude, this.dragObject[item].material,
-        this.dragObject[item].color,
+        this.dragObject[item].altitude,
+        // this.dragObject[item].color,
         //4g 5g tdd
         this.tempCalParamSet.tddfrequency,
         this.tempCalParamSet.tddbandwidth,
@@ -2897,12 +2991,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
     XLSX.utils.book_append_sheet(wb, candidateWS, 'candidate');
     // UE
-    const ueData = [['x', 'y', 'z', 'material', 'color']];
+    const ueData = [['x', 'y', 'z']];
     for (const item of this.ueList) {
       ueData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].z, this.dragObject[item].material,
-        this.dragObject[item].color
+        this.dragObject[item].z, 
+        // this.dragObject[item].material,
+        // this.dragObject[item].color
       ]);
     }
     const ueWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ueData);
@@ -2922,21 +3017,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const obstacleWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(obstacleData);
     XLSX.utils.book_append_sheet(wb, obstacleWS, 'obstacle');
     // bs parameters
-    const bsData = [
-      ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
-      'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
-      // 'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
-      // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
-      [
-        this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
-        this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio,
-        this.calculateForm.isAverageSinr,this.calculateForm.isCoverage,
-        this.calculateForm.isUeAvgSinr,
-        this.calculateForm.isUeAvgThroughput,this.calculateForm.isUeCoverage
-        // this.calculateForm.beamMaxId, this.calculateForm.beamMinId,
-        //  this.calculateForm.bandwidth, this.calculateForm.frequency
-      ]
-    ];
+    let bsData = [];
+    if (this.calculateForm.isSimulation) {
+      bsData = [
+        ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
+        'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        // 'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
+        [
+          this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
+          this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio,
+          false,false,false,false,false
+        ]
+      ];
+    } else {
+      bsData = [
+        ['bsPowerMax', 'bsPowerMin', 'protocol', 'duplex', 'downLinkRatio', 'isAverageSinr',
+        'isCoverage', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        // 'isCoverage', 'isAvgThroughput', 'isUeAvgSinr', 'isUeAvgThroughput', 'isUeCoverage'],
+        // ['bsPowerMax', 'bsPowerMin', 'bsBeamIdMax', 'bsBeamIdMin', 'bandwidth', 'frequency'],
+        [
+          this.calculateForm.powerMaxRange, this.calculateForm.powerMinRange,
+          this.calculateForm.objectiveIndex, this.duplexMode, this.dlRatio,
+          this.calculateForm.isAverageSinr,this.calculateForm.isCoverage,
+          this.calculateForm.isUeAvgSinr,
+          this.calculateForm.isUeAvgThroughput,this.calculateForm.isUeCoverage
+        ]
+      ];
+    }
+    
     const bsWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(bsData);
     XLSX.utils.book_append_sheet(wb, bsWS, 'bs parameters');
     // algorithm parameters
@@ -2959,7 +3068,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
     console.log(wb);
     /* save to file */
-    XLSX.writeFile(wb, `${this.calculateForm.taskName}`);
+    XLSX.writeFile(wb, `${this.calculateForm.taskName}.xlsx`);
   }
 
   /**
@@ -3042,7 +3151,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
   
-      this.initData(true, false, false, false);
+      this.initData(true, false, '');
     } catch (error) {
       console.log(error);
       // fail xlsx
@@ -3538,282 +3647,255 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * 首頁點編輯場域
    */
-  edit() {
-    // obstacleInfo
-    this.obstacleList.length = 0;
-    this.dragObject = {};
-    this.candidateList.length = 0;
-    this.defaultBSList.length = 0;
-    this.bsListRfParam = {};
-    this.ueList.length = 0;
-    this.spanStyle = {};
-    this.rectStyle = {};
-    this.ellipseStyle = {};
-    this.polygonStyle = {};
-    this.trapezoidStyle = {};
-    this.svgStyle = {};
-    this.pathStyle = {};
-    // this.circleStyle
-    if (!this.authService.isEmpty(this.calculateForm.obstacleInfo)) {
-      const obstacle = this.calculateForm.obstacleInfo.split('|');
-      const obstacleLen = obstacle.length;
-      for (let i = 0; i < obstacleLen; i++) {
-        if (obstacle[i].indexOf('undefined') !== -1) {
-          continue;
+  edit(redraw) {
+    // 兩個走向，一個重新拿取API的值，所以要先清空陣列，一個只是要重新算pixel位置
+    if (!redraw) {
+      this.obstacleList.forEach(el => {
+        this.setObstacleSize(el);
+      });
+      this.candidateList.forEach(el => {
+        this.setCandidateSize(el);
+      });
+      this.defaultBSList.forEach(el => {
+        this.setDefaultBsSize(el);
+      });
+      this.ueList.forEach(el => {
+        this.setUeSize(el);
+      });
+    } else {
+      // obstacleInfo
+      this.obstacleList.length = 0;
+      this.dragObject = {};
+      this.candidateList.length = 0;
+      this.defaultBSList.length = 0;
+      this.bsListRfParam = {};
+      this.ueList.length = 0;
+      this.spanStyle = {};
+      this.rectStyle = {};
+      this.ellipseStyle = {};
+      this.polygonStyle = {};
+      this.trapezoidStyle = {};
+      this.svgStyle = {};
+      this.pathStyle = {};
+      // this.circleStyle
+      if (!this.authService.isEmpty(this.calculateForm.obstacleInfo)) {
+        const obstacle = this.calculateForm.obstacleInfo.split('|');
+        const obstacleLen = obstacle.length;
+        for (let i = 0; i < obstacleLen; i++) {
+          if (obstacle[i].indexOf('undefined') !== -1) {
+            continue;
+          }
+          const item = JSON.parse(obstacle[i]);
+          let shape = '0';
+          if (typeof item[7] !== 'undefined') {
+            shape = this.parseElement(item[7]);
+          }
+          const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
+          
+          this.dragObject[id] = {
+            x: item[0],
+            y: item[1],
+            z: 0,
+            width: item[2],
+            height: item[3],
+            altitude: item[4],
+            rotate: item[5],
+            title: this.translateService.instant('obstacleInfo'),
+            type: this.svgElmMap(shape).type,
+            color: this.OBSTACLE_COLOR,
+            material: item[6].toString(),
+            element: shape
+          };
+          // set 障礙物尺寸與位置
+          this.setObstacleSize(id);
+          
+          this.obstacleList.push(id);
         }
-        const item = JSON.parse(obstacle[i]);
-        let shape = '0';
-        if (typeof item[7] !== 'undefined') {
-          shape = this.parseElement(item[7]);
-        }
-        const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
-        
-        this.dragObject[id] = {
-          x: item[0],
-          y: item[1],
-          z: 0,
-          width: item[2],
-          height: item[3],
-          altitude: item[4],
-          rotate: item[5],
-          title: this.translateService.instant('obstacleInfo'),
-          type: this.svgElmMap(shape).type,
-          color: this.OBSTACLE_COLOR,
-          material: item[6].toString(),
-          element: shape
-        };
-        // set 障礙物尺寸與位置
-        this.setObstacleSize(id);
-        
-        this.obstacleList.push(id);
       }
-    }
-    // candidate
-    if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
-      const candidate = this.calculateForm.candidateBs.split('|');
-      const candidateLen = candidate.length;
-      const txpower = JSON.parse(this.calculateForm.txPower);
-      const beamId = JSON.parse(this.calculateForm.beamId);
-      for (let i = 0; i < candidateLen; i++) {
-        const item = JSON.parse(candidate[i]);
-        const id = `candidate_${this.generateString(10)}`;
-        this.candidateList.push(id);
-        console.log(item[2]);
-        this.dragObject[id] = {
-          x: item[0],
-          y: item[1],
-          z: item[2],
-          width: this.candidateWidth,
-          height: this.candidateHeight,
-          altitude: item[2],
-          rotate: 0,
-          title: this.svgMap['candidate'].title,
-          type: this.svgMap['candidate'].type,
-          color: this.CANDIDATE_COLOR,
-          material: '0',
-          element: 'candidate'
-        };
+      // candidate
+      if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
+        const candidate = this.calculateForm.candidateBs.split('|');
+        const candidateLen = candidate.length;
+        const txpower = JSON.parse(this.calculateForm.txPower);
+        const beamId = JSON.parse(this.calculateForm.beamId);
+        for (let i = 0; i < candidateLen; i++) {
+          const item = JSON.parse(candidate[i]);
+          const id = `candidate_${this.generateString(10)}`;
+          this.candidateList.push(id);
+          console.log(item[2]);
+          this.dragObject[id] = {
+            x: item[0],
+            y: item[1],
+            z: item[2],
+            width: this.candidateWidth,
+            height: this.candidateHeight,
+            altitude: item[2],
+            rotate: 0,
+            title: this.svgMap['candidate'].title,
+            type: this.svgMap['candidate'].type,
+            color: this.CANDIDATE_COLOR,
+            material: '0',
+            element: 'candidate'
+          };
 
-        // set 新增基站位置
-        this.setCandidateSize(id);
-        
-        this.tempCalParamSet.txpower = txpower[0];
-        this.tempCalParamSet.beampattern = beamId[0];
-        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-          this.tempCalParamSet.dlScs = JSON.parse(this.calculateForm.dlScs)[i];
-          this.tempCalParamSet.ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          // set 新增基站位置
+          this.setCandidateSize(id);
+          
+          this.tempCalParamSet.txpower = txpower[0];
+          this.tempCalParamSet.beampattern = beamId[0];
+          if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
+            this.tempCalParamSet.dlScs = JSON.parse(this.calculateForm.dlScs)[i];
+            this.tempCalParamSet.ulScs = JSON.parse(this.calculateForm.ulScs)[i];
+          }
+          if (this.calculateForm.duplex === 'fdd') {
+            this.duplexMode = 'fdd';
+            this.tempCalParamSet.fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
+            this.tempCalParamSet.fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
+            this.tempCalParamSet.dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
+            this.tempCalParamSet.ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
+          } else {
+            this.duplexMode = 'tdd';
+            this.tempCalParamSet.tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
+            this.tempCalParamSet.tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+          }
+          if (this.calculateForm.mapProtocol === '4g') {
+            this.tempCalParamSet.mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
+          }
+          if (this.calculateForm.mapProtocol === '5g') {
+            let ulmsc = this.calculateForm.ulMcsTable;
+            let dlmsc = this.calculateForm.dlMcsTable;
+            this.tempCalParamSet.ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
+            this.tempCalParamSet.dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
+            this.tempCalParamSet.tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
+            this.tempCalParamSet.ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
+            this.tempCalParamSet.dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
+            this.scalingFactor = this.calculateForm.scalingFactor;
+          }
         }
-        if (this.calculateForm.duplex === 'fdd') {
-          this.duplexMode = 'fdd';
-          this.tempCalParamSet.fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
-          this.tempCalParamSet.fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
-          this.tempCalParamSet.dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
-          this.tempCalParamSet.ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
-        } else {
-          this.duplexMode = 'tdd';
-          this.tempCalParamSet.tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
-          this.tempCalParamSet.tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-        }
-        if (this.calculateForm.mapProtocol === '4g') {
-          this.tempCalParamSet.mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
-        }
-        if (this.calculateForm.mapProtocol === '5g') {
-          let ulmsc = this.calculateForm.ulMcsTable;
-          let dlmsc = this.calculateForm.dlMcsTable;
-          this.tempCalParamSet.ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
-          this.tempCalParamSet.dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
-          this.tempCalParamSet.tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
-          this.tempCalParamSet.ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
-          this.tempCalParamSet.dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
-          this.scalingFactor = this.calculateForm.scalingFactor;
-        }
-        // this.bsListRfParam[id] = {
-        //   txpower: txpower[i],
-        //   beampattern: beamId[i],
-        //   ulModulationCodScheme: "64QAM-table",
-        //   dlModulationCodScheme: "64QAM-table",
-        //   mimoLayer: 1,
-        //   subcarrier: 15,
-        //   scsBandwidth: 10,
-        // };
-        // if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-        //   this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i];
-        //   this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i];
-        // }
-        // if (this.calculateForm.duplex === 'fdd') {
-        //   this.duplexMode = 'fdd';
-        //   this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i];
-        //   this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i];
-        //   this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i];
-        //   this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i];
-        //   console.log(this.bsListRfParam[id].dlScs);
-        //   console.log(this.bsListRfParam[id].dlBandwidth);
-        //   console.log(this.bsListRfParam[id].ulScs);
-        //   console.log(this.bsListRfParam[id].ulBandwidth);
-        // } else {
-        //   this.duplexMode = 'tdd';
-        //   this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
-        //   this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-        // }
-        // if (this.calculateForm.mapProtocol === '4g') {
-        //   this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
-        // }
-        // if (this.calculateForm.mapProtocol === '5g') {
-        //   this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
-        //   this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
-        //   this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
-        //   this.scalingFactor = this.calculateForm.scalingFactor;
-        // }
-        // if (this.calculateForm.objectiveIndex === '2') {
-        //   this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i].toString();
-        // }
       }
-    }
-    // defaultBs
-    this.calculateForm.defaultBs = this.calculateForm.bsList;
-    if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
-      const defaultBS = this.calculateForm.defaultBs.split('|');
-      const txpower = JSON.parse(this.calculateForm.txPower);
-      const beamId = JSON.parse(this.calculateForm.beamId);
-      // this.dlRatio = this.calculateForm.tddFrameRatio;
-      let candidateNum = 0;
-      if (this.candidateList.length != 0) {candidateNum = this.candidateList.length;}
+      // defaultBs
+      this.calculateForm.defaultBs = this.calculateForm.bsList;
+      if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
+        const defaultBS = this.calculateForm.defaultBs.split('|');
+        const txpower = JSON.parse(this.calculateForm.txPower);
+        const beamId = JSON.parse(this.calculateForm.beamId);
+        // this.dlRatio = this.calculateForm.tddFrameRatio;
+        let candidateNum = 0;
+        if (this.candidateList.length != 0) {candidateNum = this.candidateList.length;}
 
-      const defaultBSLen = defaultBS.length;
-      for (let i = 0; i < defaultBSLen; i++) {
-        const item = JSON.parse(defaultBS[i]);
-        const id = `defaultBS_${this.generateString(10)}`;
-        this.defaultBSList.push(id);
-        //20210521
-        this.bsListRfParam[id] = {
-          txpower: txpower[i+candidateNum],
-          beampattern: beamId[i+candidateNum],
-          // frequency: frequencyList[i],
-          // ulModulationCodScheme: "64QAM-table",
-          // dlModulationCodScheme: "64QAM-table",
-          mimoLayer: 1,
-          // scalingFact: 1,
-          subcarrier: 15,
-          scsBandwidth: 10,
-        };
-        if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-          this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
-          this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
+        const defaultBSLen = defaultBS.length;
+        for (let i = 0; i < defaultBSLen; i++) {
+          const item = JSON.parse(defaultBS[i]);
+          const id = `defaultBS_${this.generateString(10)}`;
+          this.defaultBSList.push(id);
+          //20210521
+          this.bsListRfParam[id] = {
+            txpower: txpower[i+candidateNum],
+            beampattern: beamId[i+candidateNum],
+            // frequency: frequencyList[i],
+            // ulModulationCodScheme: "64QAM-table",
+            // dlModulationCodScheme: "64QAM-table",
+            mimoLayer: 1,
+            // scalingFact: 1,
+            subcarrier: 15,
+            scsBandwidth: 10,
+          };
+          if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
+            this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
+            this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
+          }
+          if (this.calculateForm.duplex === 'fdd') {
+            this.duplexMode = 'fdd';
+            this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i+candidateNum];
+            this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i+candidateNum];
+            this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i+candidateNum];
+            this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i+candidateNum];
+            // console.log(this.bsListRfParam[id].dlScs);
+            // console.log(this.bsListRfParam[id].dlBandwidth);
+            // console.log(this.bsListRfParam[id].ulScs);
+            // console.log(this.bsListRfParam[id].ulBandwidth);
+          } else {
+            this.duplexMode = 'tdd';
+            this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
+            this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
+          }
+          if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
+            // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+          }
+          if (this.calculateForm.mapProtocol === '4g') {
+            this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i+candidateNum];
+          }
+          if (this.calculateForm.mapProtocol === '5g') {
+            let ulmsc = this.calculateForm.ulMcsTable;
+            let dlmsc = this.calculateForm.dlMcsTable;
+            this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
+            this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
+            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
+            this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
+            this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();
+            // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
+            // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
+            this.scalingFactor = this.calculateForm.scalingFactor;
+          }
+          this.dragObject[id] = {
+            x: item[0],
+            y: item[1],
+            z: item[2],
+            width: 30,
+            height: 30,
+            altitude: item[2],
+            rotate: 0,
+            title: this.svgMap['defaultBS'].title,
+            type: this.svgMap['defaultBS'].type,
+            color: this.DEFAULT_BS_COLOR,
+            material: '0',
+            element: 'defaultBS'
+          };
+          // set 既有基站位置
+          this.setDefaultBsSize(id);
         }
-        if (this.calculateForm.duplex === 'fdd') {
-          this.duplexMode = 'fdd';
-          this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i+candidateNum];
-          this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i+candidateNum];
-          this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i+candidateNum];
-          this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i+candidateNum];
-          // console.log(this.bsListRfParam[id].dlScs);
-          // console.log(this.bsListRfParam[id].dlBandwidth);
-          // console.log(this.bsListRfParam[id].ulScs);
-          // console.log(this.bsListRfParam[id].ulBandwidth);
-        } else {
-          this.duplexMode = 'tdd';
-          this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
-          this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
-        }
-        if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
-          // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-        }
-        if (this.calculateForm.mapProtocol === '4g') {
-          this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i+candidateNum];
-        }
-        if (this.calculateForm.mapProtocol === '5g') {
-          let ulmsc = this.calculateForm.ulMcsTable;
-          let dlmsc = this.calculateForm.dlMcsTable;
-          this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
-          this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
-          this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
-          this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
-          this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();
-          // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
-          // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
-          this.scalingFactor = this.calculateForm.scalingFactor;
-        }
-        this.dragObject[id] = {
-          x: item[0],
-          y: item[1],
-          z: item[2],
-          width: 30,
-          height: 30,
-          altitude: item[2],
-          rotate: 0,
-          title: this.svgMap['defaultBS'].title,
-          type: this.svgMap['defaultBS'].type,
-          color: this.DEFAULT_BS_COLOR,
-          material: '0',
-          element: 'defaultBS'
-        };
-        // set 既有基站位置
-        this.setDefaultBsSize(id);
       }
-    }
-    
-    // UE
-    if (!this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
-      const ue = this.calculateForm.ueCoordinate.split('|');
-      const ueLen = ue.length;
-      for (let i = 0; i < ueLen; i++) {
-        const item = JSON.parse(ue[i]);
-        const id = `ue_${this.generateString(10)}`;
-        this.ueList.push(id);
-        this.dragObject[id] = {
-          x: item[0],
-          y: item[1],
-          z: item[2],
-          width: this.ueWidth,
-          height: this.ueHeight,
-          altitude: item[2],
-          rotate: 0,
-          title: this.svgMap['UE'].title,
-          type: this.svgMap['UE'].type,
-          color: this.UE_COLOR,
-          material: '0',
-          element: 'UE'
-        };
-
-        // set UE位置
-        this.setUeSize(id);
+      
+      // UE
+      if (!this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
+        const ue = this.calculateForm.ueCoordinate.split('|');
+        const ueLen = ue.length;
+        for (let i = 0; i < ueLen; i++) {
+          const item = JSON.parse(ue[i]);
+          const id = `ue_${this.generateString(10)}`;
+          this.ueList.push(id);
+          this.dragObject[id] = {
+            x: item[0],
+            y: item[1],
+            z: item[2],
+            width: this.ueWidth,
+            height: this.ueHeight,
+            altitude: item[2],
+            rotate: 0,
+            title: this.svgMap['UE'].title,
+            type: this.svgMap['UE'].type,
+            color: this.UE_COLOR,
+            material: '0',
+            element: 'UE'
+          };
+          // set UE位置
+          this.setUeSize(id);
+        }
       }
-    }
-
-    if (this.calculateForm.objectiveIndex === '2') {
-      // 切換到2.4Ghz
-      if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
-        this.wifiFrequency = '1';
+      if (this.calculateForm.objectiveIndex === '2') {
+        // 切換到2.4Ghz
+        if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
+          this.wifiFrequency = '1';
+        }
+        this.changeWifiFrequency();
       }
-      this.changeWifiFrequency();
+      this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+      this.ognDragObject = _.cloneDeep(this.dragObject);
+      // 檢查圓形高度
+      window.setTimeout(() => {
+        this.checkCircle();
+      }, 0);
     }
-
-    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
-    this.ognDragObject = _.cloneDeep(this.dragObject);
-    // 檢查圓形高度
-    window.setTimeout(() => {
-      this.checkCircle();
-    }, 0);
   }
 
   /** 運算結果 */
@@ -4046,7 +4128,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    */
   removeObj(id) {
     this.svgId = id;
-    this.delete();
+    this.delete(false);
   }
 
   /**
