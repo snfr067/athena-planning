@@ -1964,19 +1964,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
           let bsMsg = '';
           if (this.planningIndex == '3') {
-            if (this.isEmpty(obj.txpower)) { bsMsg += `未填入發射功率<br/>`; }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `未填入波束型<br/>`; }
+            if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
+            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
-          if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `未填入頻寬<br/>`;  }
-          if (this.isEmpty(obj.tddscs)) { bsMsg += `未填入子載波間距<br/>`;  }
-          if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `未填入上行調變能力<br/>`;  }
-          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `未填入下行調變能力<br/>`;  }
-          if (this.isEmpty(obj.ulMimoLayer)) { bsMsg += `未填入上行資料串流層數<br/>`;  }
-          if (this.isEmpty(obj.dlMimoLayer)) { bsMsg += `未填入下行資料串流層數<br/>`;  }
-          if (this.isEmpty(obj.tddfrequency)) { bsMsg += `未填入中心頻率<br/>`;  }
-          else if (obj.tddfrequency < 0) { bsMsg += `中心頻率不可小於0<br/>`;  }
+          if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
+          if (this.isEmpty(obj.tddscs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddscs')}<br/>`;  }
+          if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulModulationCodScheme')}<br/>`;  }
+          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlModulationCodScheme')}<br/>`;  }
+          if (this.isEmpty(obj.ulMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulMimoLayer')}<br/>`;  }
+          if (this.isEmpty(obj.dlMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlMimoLayer')}<br/>`;  }
+          if (this.isEmpty(obj.tddfrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddfrequency')}<br/>`;  }
+          else if (obj.tddfrequency < 0) { bsMsg += `${this.translateService.instant('tddfrequency_less_than_0')}<br/>`;  }
           if (bsMsg !== '') {
-            msg+= `以下BS${i+1}基站問題請修正:<br><p style="color: red;">`;
+            msg+= `${this.translateService.instant('bs_problem1')}${i+1}:${this.translateService.instant('bs_problem2')}<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
             error = true;
@@ -1987,28 +1987,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
           let bsMsg = '';
           if (this.planningIndex == '3') {
-            if (this.isEmpty(obj.txpower)) { bsMsg += `未填入發射功率<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `未填入波束型<br/>`; }
+            if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
+            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
-          if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `未填入下行頻寬<br/>`;  }
-          if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `未填入上行頻寬<br/>`;  }
-          if (this.isEmpty(obj.dlScs)) { bsMsg += `未填入下行子載波間距<br/>`;  }
-          if (this.isEmpty(obj.ulScs)) { bsMsg += `未填入上行子載波間距<br/>`;  }
-          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `未填入下行調變能力<br/>`;  }
-          if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `未填入上行調變能力<br/>`;  }
-          if (this.isEmpty(obj.dlMimoLayer)) { bsMsg += `未填入下行資料串流層數<br/>`;  }
-          if (this.isEmpty(obj.ulMimoLayer)) { bsMsg += `未填入上行資料串流層數<br/>`;  }
-          if (this.isEmpty(obj.fddDlFrequency)) { bsMsg += `未填入下行頻率<br/>`;  }
-          else if (obj.fddDlFrequency < 0) { bsMsg += `下行頻率不可小於0<br/>`;  }
-          if (this.isEmpty(obj.fddUlFrequency)) { bsMsg += `未填入上行頻率<br/>`;  }
-          else if (obj.fddUlFrequency < 0) { bsMsg += `上行頻率不可小於0<br/>`;  }
+          if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
+          if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('uulBandwidth')}<br/>`;  }
+          if (this.isEmpty(obj.dlScs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlscs')}<br/>`;  }
+          if (this.isEmpty(obj.ulScs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulscs')}<br/>`;  }
+          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlModulationCodScheme')}<br/>`;  }
+          if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulModulationCodScheme')}<br/>`;  }
+          if (this.isEmpty(obj.dlMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlMimoLayer')}<br/>`;  }
+          if (this.isEmpty(obj.ulMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulMimoLayer')}<br/>`;  }
+          if (this.isEmpty(obj.fddDlFrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlfrequency')}<br/>`;  }
+          else if (obj.fddDlFrequency < 0) { bsMsg += `${this.translateService.instant('dlfrequency_less_than_0')}<br/>`;  }
+          if (this.isEmpty(obj.fddUlFrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulfrequency')}<br/>`;  }
+          else if (obj.fddUlFrequency < 0) { bsMsg += `${this.translateService.instant('ulfrequency_less_than_0')}<br/>`;  }
           if (obj.fddDlFrequency == obj.fddUlFrequency
             && !this.isEmpty(obj.fddDlFrequency)
             && !this.isEmpty(obj.fddUlFrequency)) {
-            bsMsg+= `上行頻率與下行頻率不可相同<br/>`
+            bsMsg+= `${this.translateService.instant('dlfrequency_same_ulfrequency')}<br/>`
           }
           if (bsMsg !== '') {
-            msg+= `以下BS${i+1}基站問題請修正:<br><p style="color: red;">`;
+            msg+= `${this.translateService.instant('bs_problem1')}${i+1}:${this.translateService.instant('bs_problem2')}<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
             error = true;
@@ -2023,16 +2023,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           // console.log(obj.tddbandwidth);
           // console.log(obj.tddfrequency);
           if (this.planningIndex == '3') {
-            if (this.isEmpty(obj.txpower)) { bsMsg += `未填入發射功率<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `未填入波束型<br/>`; }
+            if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
+            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
-          if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `未填入MIMO天線數<br/>`;  }
-          if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `未填入頻寬<br/>`;  }
-          else if (obj.tddbandwidth < 0) { bsMsg += `頻寬不可小於0<br/>`;  }
-          if (this.isEmpty(obj.tddfrequency)) { bsMsg += `未填入中心頻率<br/>`;  }
-          else if (obj.tddfrequency < 0) { bsMsg += `中心頻率不可小於0<br/>`;  }
+          if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('mimonum')}<br/>`;  }
+          if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
+          else if (obj.tddbandwidth < 0) { bsMsg += `${this.translateService.instant('tddbandwidth_less_than_0')}<br/>`;  }
+          if (this.isEmpty(obj.tddfrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddfrequency')}<br/>`;  }
+          else if (obj.tddfrequency < 0) { bsMsg += `${this.translateService.instant('tddfrequency_less_than_0')}<br/>`;  }
           if (bsMsg !== '') {
-            msg+= `以下BS${i+1}基站問題請修正:<br><p style="color: red;">`;
+            msg+= `${this.translateService.instant('bs_problem1')}${i+1}:${this.translateService.instant('bs_problem2')}<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
             error = true;
@@ -2043,25 +2043,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           const obj = this.bsListRfParam[this.defaultBSList[i]];
           let bsMsg = '';
           if (this.planningIndex == '3') {
-            if (this.isEmpty(obj.txpower)) { bsMsg += `未填入發射功率<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `未填入波束型<br/>`; }
+            if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
+            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
-          if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `未填入MIMO天線數<br/>`;  }
-          if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `未填入上行頻寬<br/>`;  }
-          else if (obj.dlBandwidth < 0) { bsMsg += `上行頻寬不可小於0<br/>`;  }
-          if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `未填入下行頻寬<br/>`;  }
-          else if (obj.ulBandwidth < 0) { bsMsg += `下行頻寬不可小於0<br/>`;  }
-          if (this.isEmpty(obj.fddDlFrequency)) { bsMsg += `未填入下行中心頻率<br/>`;  }
-          else if (obj.fddDlFrequency < 0) { bsMsg += `下行中心頻率不可小於0<br/>`;  }
-          if (this.isEmpty(obj.fddUlFrequency)) { bsMsg += `未填入上行中心頻率<br/>`;  }
-          else if (obj.fddUlFrequency < 0) { bsMsg += `上行中心頻率不可小於0<br/>`;  }
+          if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('mimonum')}<br/>`;  }
+          if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
+          else if (obj.dlBandwidth < 0) { bsMsg += `${this.translateService.instant('dlbandwidth_less_than_0')}<br/>`;  }
+          if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('uulBandwidth')}<br/>`;  }
+          else if (obj.ulBandwidth < 0) { bsMsg += `${this.translateService.instant('ulbandwidth_less_than_0')}<br/>`;  }
+          if (this.isEmpty(obj.fddDlFrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlfrequency')}<br/>`;  }
+          else if (obj.fddDlFrequency < 0) { bsMsg += `${this.translateService.instant('dlfrequency_less_than_0')}<br/>`;  }
+          if (this.isEmpty(obj.fddUlFrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulfrequency')}<br/>`;  }
+          else if (obj.fddUlFrequency < 0) { bsMsg += `${this.translateService.instant('ulfrequency_less_than_0')}<br/>`;  }
           if (obj.fddDlFrequency == obj.fddUlFrequency
             && !this.isEmpty(obj.fddUlFrequency)
             && !this.isEmpty(obj.fddDlFrequency)) {
-            bsMsg+= `上行頻率與下行頻率不可相同<br/>`
+            bsMsg+= `${this.translateService.instant('dlfrequency_same_ulfrequency')}<br/>`
           }
           if (bsMsg !== '') {
-            msg+= `以下BS${i+1}基站問題請修正:<br><p style="color: red;">`;
+            msg+= `${this.translateService.instant('bs_problem1')}${i+1}:${this.translateService.instant('bs_problem2')}<br><p style="color: red;">`;
             msg+= bsMsg;
             msg+= '</p>';
             error = true;
@@ -2092,7 +2092,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     let msg = '';
     if (uldl == 'ul') {
       if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
-        msg = '上行頻率跟下行頻率重複了，請修改上行頻率'
+        msg = this.translateService.instant('dlfrequency_same_ulfrequency2')
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -2103,7 +2103,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
         if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
-          msg = '下行頻率跟上行頻率重複了，請修改下行頻率'
+          msg = this.translateService.instant('dlfrequency_same_ulfrequency3')
           this.msgDialogConfig.data = {
             type: 'error',
             infoMessage: msg
@@ -2120,76 +2120,76 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     let error = false;
     let msg = '';
     const obj = this.tempCalParamSet;
-    if (this.isEmpty(this.scalingFactor)) {msg+= '未填入擴展係數<br/>'}
-    else if (this.scalingFactor < 0 || this.scalingFactor > 1) {msg+= '擴展係數須介於0到1之間<br/>'}
+    if (this.isEmpty(this.scalingFactor)) {msg+= `${this.translateService.instant('nf_scalingFactor')}<br/>`}
+    else if (this.scalingFactor < 0 || this.scalingFactor > 1) {msg+= `${this.translateService.instant('0to1_scalingFactor')}<br/>`}
     console.log(this.calculateForm.powerMinRange);
     console.log(this.calculateForm.powerMaxRange);
     if (this.isEmpty(this.calculateForm.powerMaxRange) || this.isEmpty(this.calculateForm.powerMinRange)) {
       if (this.isEmpty(this.calculateForm.powerMaxRange)) {
-        msg+= '未填入最大功率<br/>'
+        msg+= `${this.translateService.instant('nf_maxpower')}<br/>`
       } else {
-        msg+= '未填入最小功率<br/>'
+        msg+= `${this.translateService.instant('nf_minpower')}<br/>`
       }
     }
     if (protocol == '1') {
       if (duplex == 'tdd') {
-        if (this.isEmpty(this.dlRatio)) { msg += `未填入上下行配比<br/>`;  }
-        else if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比須介於0~100之間<br/>`;  }
-        if (this.isEmpty(obj.tddscs)) { msg += `未填入子載波間距<br/>`;  }
-        if (this.isEmpty(obj.tddbandwidth)) { msg += `未填入頻寬<br/>`;  }
-        if (this.isEmpty(obj.ulModulationCodScheme)) { msg += `未填入上行調變能力<br/>`;  }
-        if (this.isEmpty(obj.dlModulationCodScheme)) { msg += `未填入下行調變能力<br/>`;  }
-        if (this.isEmpty(obj.ulMimoLayer)) { msg += `未填入上行資料串流層數<br/>`;  }
-        if (this.isEmpty(obj.dlMimoLayer)) { msg += `未填入下行資料串流層數<br/>`;  }
-        if (this.isEmpty(obj.tddfrequency)) { msg += `未填入中心頻率<br/>`;  }
-        else if (obj.tddfrequency < 0) { msg += `中心頻率不可小於0<br/>`;  }
+        if (this.isEmpty(this.dlRatio)) { msg += `${this.translateService.instant('nf_dlratio')}<br/>`;  }
+        else if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `${this.translateService.instant('0_100_dlratio')}<br/>`;  }
+        if (this.isEmpty(obj.tddscs)) { msg += `${this.translateService.instant('nf_tddscs')}<br/>`;  }
+        if (this.isEmpty(obj.tddbandwidth)) { msg += `${this.translateService.instant('nf_tddbandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.ulModulationCodScheme)) { msg += `${this.translateService.instant('nf_ulModulationCodScheme')}<br/>`;  }
+        if (this.isEmpty(obj.dlModulationCodScheme)) { msg += `${this.translateService.instant('nf_dlModulationCodScheme')}<br/>`;  }
+        if (this.isEmpty(obj.ulMimoLayer)) { msg += `${this.translateService.instant('nf_ulMimoLayer')}<br/>`;  }
+        if (this.isEmpty(obj.dlMimoLayer)) { msg += `${this.translateService.instant('nf_dlMimoLayer')}<br/>`;  }
+        if (this.isEmpty(obj.tddfrequency)) { msg += `${this.translateService.instant('nf_tddfrequency')}<br/>`;  }
+        else if (obj.tddfrequency < 0) { msg += `${this.translateService.instant('less_0_tddfrequency')}<br/>`;  }
       } else {
-        if (this.isEmpty(obj.dlBandwidth)) { msg += `未填入下行頻寬<br/>`;  }
-        if (this.isEmpty(obj.ulBandwidth)) { msg += `未填入上行頻寬<br/>`;  }
-        if (this.isEmpty(obj.dlScs)) { msg += `未填入下行子載波間距<br/>`;  }
-        if (this.isEmpty(obj.ulScs)) { msg += `未填入上行子載波間距<br/>`;  }
-        if (this.isEmpty(obj.dlModulationCodScheme)) { msg += `未填入下行調變能力<br/>`;  }
-        if (this.isEmpty(obj.ulModulationCodScheme)) { msg += `未填入上行調變能力<br/>`;  }
-        if (this.isEmpty(obj.dlMimoLayer)) { msg += `未填入下行資料串流層數<br/>`;  }
-        if (this.isEmpty(obj.ulMimoLayer)) { msg += `未填入上行資料串流層數<br/>`;  }
-        if (this.isEmpty(obj.fddDlFrequency)) { msg += `未填入下行頻率<br/>`;  }
-        else if (obj.fddDlFrequency < 0) { msg += `下行頻率不可小於0<br/>`;  }
-        if (this.isEmpty(obj.fddUlFrequency)) { msg += `未填入上行頻率<br/>`;  }
-        else if (obj.fddUlFrequency < 0) { msg += `上行頻率不可小於0<br/>`;  }
+        if (this.isEmpty(obj.dlBandwidth)) { msg += `${this.translateService.instant('nf_dlBandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.ulBandwidth)) { msg += `${this.translateService.instant('nf_ulBandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.dlScs)) { msg += `${this.translateService.instant('nf_dlScs')}<br/>`;  }
+        if (this.isEmpty(obj.ulScs)) { msg += `${this.translateService.instant('nf_ulScs')}<br/>`;  }
+        if (this.isEmpty(obj.dlModulationCodScheme)) { msg += `${this.translateService.instant('nf_dlModulationCodScheme')}<br/>`;  }
+        if (this.isEmpty(obj.ulModulationCodScheme)) { msg += `${this.translateService.instant('nf_ulModulationCodScheme')}<br/>`;  }
+        if (this.isEmpty(obj.dlMimoLayer)) { msg += `${this.translateService.instant('nf_dlMimoLayer')}<br/>`;  }
+        if (this.isEmpty(obj.ulMimoLayer)) { msg += `${this.translateService.instant('nf_ulMimoLayer')}<br/>`;  }
+        if (this.isEmpty(obj.fddDlFrequency)) { msg += `${this.translateService.instant('nf_fddDlFrequency')}<br/>`;  }
+        else if (obj.fddDlFrequency < 0) { msg += `${this.translateService.instant('less_0_fddDlFrequency')}<br/>`;  }
+        if (this.isEmpty(obj.fddUlFrequency)) { msg += `${this.translateService.instant('nf_fddUlFrequency')}<br/>`;  }
+        else if (obj.fddUlFrequency < 0) { msg += `${this.translateService.instant('less_0_fddUlFrequency')}<br/>`;  }
         if (obj.fddDlFrequency == obj.fddUlFrequency
           && !this.isEmpty(obj.fddUlFrequency)
           && !this.isEmpty(obj.fddDlFrequency)) {
-          msg+= `上行頻率與下行頻率不可相同<br/>`
+          msg+= `${this.translateService.instant('fddDlFrequency_same_fddUlFrequency')}<br/>`
         }
       }
     } else {
       if (duplex == 'tdd') {
-        if (this.isEmpty(this.dlRatio)  === null) { msg += `未填入上下行配比<br/>`;  }
-        else if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `上下行配比須介於0~100之間<br/>`;  }
-        if (this.isEmpty(obj.mimoNumber4G)) { msg += `未填入MIMO天線數<br/>`;  }
-        if (this.isEmpty(obj.tddbandwidth)) { msg += `未填入頻寬<br/>`;  }
-        else if (Number(obj.tddbandwidth) < 0) { msg += `頻寬不可小於0<br/>`;  }
-        if (this.isEmpty(obj.tddfrequency)) { msg += `未填入中心頻率<br/>`;  }
-        else if (obj.tddfrequency < 0) { msg += `中心頻率不可小於0<br/>`;  }
+        if (this.isEmpty(this.dlRatio)  === null) { msg += `${this.translateService.instant('nf_dlratio')}<br/>`;  }
+        else if (this.dlRatio < 0 || this.dlRatio > 100) { msg += `${this.translateService.instant('0_100_dlratio')}<br/>`;  }
+        if (this.isEmpty(obj.mimoNumber4G)) { msg += `${this.translateService.instant('nf_mimonum')}<br/>`;  }
+        if (this.isEmpty(obj.tddbandwidth)) { msg += `${this.translateService.instant('nf_tddbandwidth')}<br/>`;  }
+        else if (Number(obj.tddbandwidth) < 0) { msg += `${this.translateService.instant('less_0_tddbandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.tddfrequency)) { msg += `${this.translateService.instant('nf_tddfrequency')}<br/>`;  }
+        else if (obj.tddfrequency < 0) { msg += `${this.translateService.instant('less_0_tddfrequency')}<br/>`;  }
       } else {
-        if (this.isEmpty(obj.mimoNumber4G)) { msg += `未填入MIMO天線數<br/>`;  }
-        if (this.isEmpty(obj.dlBandwidth)) { msg += `未填入上行頻寬<br/>`;  }
-        else if (Number(obj.dlBandwidth) < 0) { msg += `上行頻寬不可小於0<br/>`;  }
-        if (this.isEmpty(obj.ulBandwidth)) { msg += `未填入下行頻寬<br/>`;  }
-        else if (Number(obj.ulBandwidth) < 0) { msg += `下行頻寬不可小於0<br/>`;  }
-        if (this.isEmpty(obj.fddDlFrequency)) { msg += `未填入下行中心頻率<br/>`;  }
-        else if (obj.fddDlFrequency < 0) { msg += `下行頻率不可小於0<br/>`;  }
-        if (this.isEmpty(obj.fddUlFrequency)) { msg += `未填入上行中心頻率<br/>`;  }
-        else if (obj.fddUlFrequency < 0) { msg += `上行頻率不可小於0<br/>`;  }
+        if (this.isEmpty(obj.mimoNumber4G)) { msg += `${this.translateService.instant('nf_mimonum')}<br/>`;  }
+        if (this.isEmpty(obj.dlBandwidth)) { msg += `${this.translateService.instant('nf_ulBandwidth')}<br/>`;  }
+        else if (Number(obj.dlBandwidth) < 0) { msg += `${this.translateService.instant('less_0_ulBandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.ulBandwidth)) { msg += `${this.translateService.instant('nf_dlBandwidth')}<br/>`;  }
+        else if (Number(obj.ulBandwidth) < 0) { msg += `${this.translateService.instant('less_0_dlBandwidth')}<br/>`;  }
+        if (this.isEmpty(obj.fddDlFrequency)) { msg += `${this.translateService.instant('nf_fddDlFrequency')}<br/>`;  }
+        else if (obj.fddDlFrequency < 0) { msg += `${this.translateService.instant('less_0_fddDlFrequency')}<br/>`;  }
+        if (this.isEmpty(obj.fddUlFrequency)) { msg += `${this.translateService.instant('nf_fddUlFrequency')}<br/>`;  }
+        else if (obj.fddUlFrequency < 0) { msg += `${this.translateService.instant('less_0_fddUlFrequency')}<br/>`;  }
         if (obj.fddDlFrequency == obj.fddUlFrequency
           && !this.isEmpty(obj.fddUlFrequency)
           && !this.isEmpty(obj.fddDlFrequency)) {
-          msg+= `上行頻率與下行頻率不可相同<br/>`
+          msg+= `${this.translateService.instant('fddDlFrequency_same_fddUlFrequency')}<br/>`
         }
       }
     }
     if (msg !== '') {
-      msg = '以下問題請修正:<br/>' + msg;
+      msg = `${this.translateService.instant('following_fix_plz')}<br/>` + msg;
       error = true;
       console.log(msg);
     }
@@ -2222,7 +2222,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     if (this.planningIndex != '3' && this.duplexMode == 'fdd' && this.checkDlUlDiff()) {
-      let msg = '上行頻率跟下行頻率重複了，請修改'
+      let msg = this.translateService.instant('dl_ul_freq_same')
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
@@ -2235,9 +2235,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     Number(this.calculateForm.powerMinRange) > Number(this.calculateForm.powerMaxRange)) {
       let msg = '';
       if (this.calculateForm.powerMaxRange == this.calculateForm.powerMinRange) {
-        msg = '最大功率與最小功率值相同，請修改';
+        msg = this.translateService.instant('max_min_txpower_same');
       } else {
-        msg = '最大功率不可小於最小功率，請修改';
+        msg = this.translateService.instant('min_txpower_greater_than_max');
       }
       this.msgDialogConfig.data = {
         type: 'error',
@@ -2268,7 +2268,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
-      let msg = "模擬模式既有基站數量不可小於0"
+      let msg = this.translateService.instant('bs_must_greater_then_zero')
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
@@ -2750,7 +2750,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       // console.log(typeof this.calculateForm.width);
       if (Number(this.dragObject[svgId].x) < 0 || Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
         this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
-        let msg = 'X座標不可小於0或大於場域長度';
+        let msg = this.translateService.instant('x_greater_then_field_width');
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -2761,7 +2761,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
         this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
-        let msg = 'Y座標不可小於0或大於場域寬度';
+        let msg = this.translateService.instant('y_greater_then_field_height');
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
