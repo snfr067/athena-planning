@@ -342,6 +342,7 @@ export class SignalCoverComponent implements OnInit {
       //   list = this.calculateForm.candidateBs.split('|');
       // }
       const apMap = {};
+      // 對應connectionMap的編號
       let legendNum = 0;
 
       if (this.calculateForm.candidateBs != "") {
@@ -394,17 +395,18 @@ export class SignalCoverComponent implements OnInit {
 
               // tooltip對應用
               apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
+
+              this.candidateList.push({
+                x: oData[0],
+                y: oData[1],
+                num: (j + 1),
+                color: '#f7176a',
+                ap: `待選 ${(j + 1)}`
+              });
             }
           } else {
             console.log(`miss 待選 legend num ${legendNum}`);
           }
-          this.candidateList.push({
-            x: oData[0],
-            y: oData[1],
-            num: (j + 1),
-            color: '#f7176a',
-            ap: `待選 ${(j + 1)}`
-          });
 
           legendNum++;
         }

@@ -1506,36 +1506,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
   /** set drag object data */
   setDragData() {
-    // const span = this.target.closest('span');
     const rect = this.target.getBoundingClientRect();
-    // const rectLeft = rect.left - this.chartLeft;
-    // const rectBottom = this.chartBottom - rect.bottom;
-    // let xVal = this.roundFormat(this.xLinear(rectLeft));
-    // if (xVal < 0) {
-    //   xVal = 0;
-    // }
 
     const type = this.dragObject[this.svgId].element;
-
-    // const yVal = this.roundFormat(this.yLinear(rectBottom));
     let wVal;
     let hVal;
-    if (Number(type) === 0) {
-      // 方形
-      wVal = this.roundFormat(this.xLinear(this.rectStyle[this.svgId].width));
-      hVal = this.roundFormat(this.yLinear(this.rectStyle[this.svgId].height));
-    } else if (Number(type) === 2) {
-      // 圓形正圓
-      wVal = this.roundFormat(this.xLinear(rect.width));
-      hVal = this.roundFormat(this.yLinear(rect.width));
 
-    } else if (Number(type) === 1) {
-      // 三角形
-      wVal = this.roundFormat(this.xLinear(this.svgStyle[this.svgId].width));
-      hVal = this.roundFormat(this.yLinear(this.svgStyle[this.svgId].height));
-    } else if (Number(type) === 3) {
-      wVal = this.roundFormat(this.xLinear(this.trapezoidStyle[this.svgId].width));
-      hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
+    if (this.dragObject[this.svgId].type === 'obstacle') {
+      // 障礙物才需取長寬
+      if (Number(type) === 0) {
+        // 方形
+        wVal = this.roundFormat(this.xLinear(this.rectStyle[this.svgId].width));
+        hVal = this.roundFormat(this.yLinear(this.rectStyle[this.svgId].height));
+      } else if (Number(type) === 2) {
+        // 圓形正圓
+        wVal = this.roundFormat(this.xLinear(rect.width));
+        hVal = this.roundFormat(this.yLinear(rect.width));
+  
+      } else if (Number(type) === 1) {
+        // 三角形
+        wVal = this.roundFormat(this.xLinear(this.svgStyle[this.svgId].width));
+        hVal = this.roundFormat(this.yLinear(this.svgStyle[this.svgId].height));
+      } else if (Number(type) === 3) {
+        wVal = this.roundFormat(this.xLinear(this.trapezoidStyle[this.svgId].width));
+        hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
+      }
     }
 
     const mOrigin = document.querySelector('.moveable-origin');
@@ -1547,8 +1542,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
       this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
       this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
-      this.dragObject[this.svgId].width = wVal;
-      this.dragObject[this.svgId].height = hVal;
+      if (this.dragObject[this.svgId].type === 'obstacle') {
+        this.dragObject[this.svgId].width = wVal;
+        this.dragObject[this.svgId].height = hVal;
+      }
     }
     
   }
@@ -3234,26 +3231,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           ulScs: baseStationData[i][20],
         };
         
-
-        console.log(this.dragObject)
         this.defaultBSList.push(id);
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(baseStationData[i][0])}px`,
-          top: `${this.chartHeight - 30 - this.pixelYLinear(baseStationData[i][1])}px`,
-          width: `30px`,
-          height: `30px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: 30,
-          height: 30
-        };
-        this.pathStyle[id] = {
-          fill: color
-        };
-        window.setTimeout(() => {
-          this.moveNumber(id);
-        }, 0);
+        // set 既有基站位置
+        this.setDefaultBsSize(id);
       }
     }
     /* candidate sheet */
@@ -3320,24 +3300,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         this.tempCalParamSet.dlScs = candidateData[i][17];
         this.tempCalParamSet.ulScs = candidateData[i][18];
 
-        this.spanStyle[id] = {
-          left: `${this.pixelXLinear(candidateData[i][0])}px`,
-          top: `${this.chartHeight - this.candidateHeight - this.pixelYLinear(candidateData[i][1])}px`,
-          width: `${this.candidateWidth}px`,
-          height: `${this.candidateHeight}px`
-        };
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: this.candidateWidth,
-          height: this.candidateHeight
-        };
-        this.pathStyle[id] = {
-          fill: color
-        };
-
-        window.setTimeout(() => {
-          this.moveNumber(id);
-        }, 0);
+        // set UE位置
+        this.setCandidateSize(id);
 
         // RF parameter import
         // this.bsListRfParam[id] = {
@@ -3392,20 +3356,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
             material: material,
             element: this.svgMap['UE'].element
           };
-          this.spanStyle[id] = {
-            left: `${this.pixelXLinear(ueData[i][0])}px`,
-            top: `${this.chartHeight - this.ueHeight - this.pixelYLinear(ueData[i][1])}px`,
-            width: `19px`,
-            height: `29px`
-          };
-          this.svgStyle[id] = {
-            display: 'inherit',
-            width: this.ueWidth,
-            height: this.ueHeight
-          };
-          this.pathStyle[id] = {
-            fill: color
-          };
+
+          // set UE位置
+          this.setUeSize(id);
         }
       }
     }
@@ -3469,89 +3422,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         if (this.dragObject[id].altitude > this.calculateForm.altitude) {
           this.dragObject[id].altitude = this.calculateForm.altitude;
         }
-
-        this.svgStyle[id] = {
-          display: 'inherit',
-          width: this.pixelXLinear(this.dragObject[id].width),
-          height: this.pixelYLinear(this.dragObject[id].height)
-        };
-        if (shape === 'rect' || Number(shape) === 0) {
-          this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(obstacleData[i][1])}px`,
-            width: `${this.pixelXLinear(obstacleData[i][2])}px`,
-            height: `${this.pixelYLinear(obstacleData[i][3])}px`,
-            opacity: 0
-            // transform: `rotate(${this.dragObject[id].rotate}deg)`
-          };
-          this.rectStyle[id] = {
-            width: this.pixelXLinear(this.dragObject[id].width),
-            height: this.pixelYLinear(this.dragObject[id].height),
-            fill: this.dragObject[id].color
-          };
-        } else if (shape === 'ellipse' || Number(shape) === 2) {
-          console.log(this.dragObject[id]);
-          this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) -  this.pixelYLinear(this.dragObject[id].y)}px`,
-            width: `${this.pixelXLinear(this.dragObject[id].width * 2)}px`,
-            height: `${this.pixelYLinear(this.dragObject[id].height * 2)}px`,
-            opacity: 0
-            // transform: `rotate(${this.dragObject[id].rotate}deg)`
-          };
-          console.log(this.spanStyle[id]);
-          const x = (this.pixelXLinear(this.dragObject[id].width) / 2).toString();
-          const y = (this.pixelYLinear(this.dragObject[id].height) / 2).toString();
-          this.ellipseStyle[id] = {
-            cx: x,
-            cy: y,
-            rx: x,
-            ry: y,
-            fill: this.dragObject[id].color
-          };
-        } else if (shape === 'polygon' || Number(shape) === 1) {
-          console.log(this.dragObject[id]);
-          this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
-            width: `${this.pixelXLinear(obstacleData[i][2] / 2)}px`,
-            height: `${this.pixelYLinear(obstacleData[i][3] / 2)}px`,
-            opacity: 0
-            // transform: `rotate(${this.dragObject[id].rotate}deg)`
-          };
-          console.log(this.spanStyle[id]);
-          const width = this.pixelXLinear(this.dragObject[id].width);
-          const height = this.pixelYLinear(this.dragObject[id].height);
-          const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
-          this.polygonStyle[id] = {
-            points: points,
-            fill: this.dragObject[id].color
-          };
-        } else if (shape === 'trapezoid' || Number(shape) === 3) {
-          console.log(this.svgStyle[id]);
-          console.log(this.dragObject[id]);
-          this.spanStyle[id] = {
-            left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-            top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
-            width: `${this.pixelXLinear(obstacleData[i][2] / 2)}px`,
-            height: `${this.pixelYLinear(obstacleData[i][3] / 2)}px`,
-            opacity: 0
-            // transform: `rotate(${this.dragObject[id].rotate}deg)`
-          };
-          console.log(this.spanStyle[id]);
-          // const width = this.pixelXLinear(this.dragObject[id].width);
-          // const height = this.pixelYLinear(this.dragObject[id].height);
-          // const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
-          this.trapezoidStyle[id] = {
-            // points: points,
-            fill: this.dragObject[id].color
-          };
-        }
-        // 延遲轉角度，讓位置正確
-        window.setTimeout(() => {
-          this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
-          this.spanStyle[id].opacity = 1;
-        }, 0);
+        // set 障礙物尺寸與位置
+        this.setObstacleSize(id);
         this.obstacleList.push(id);
       }
     }
@@ -4274,6 +4146,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         cy: x,
         fill: this.dragObject[id].color
       };
+      // 重新指定圓形span跟svg的高，避免變形
+      this.svgStyle[id].height = width;
+      this.spanStyle[id].height = `${width}px`;
 
     } else if (Number(shape) === 1) {
       // 三角形
