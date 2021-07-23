@@ -3188,12 +3188,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       this.planningIndex = '3';
       for (let i = 1; i < baseStationData.length; i++) {
         const id = `defaultBS_${(i - 1)}`;
-        let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
+        // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
         // 不在清單內，指定為木頭
-        if (!materialReg.test(material)) {
-          material = '0';
-        }
-        const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
+        // if (!materialReg.test(material)) {
+          // material = '0';
+        // }
+        // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
         this.dragObject[id] = {
           x: baseStationData[i][0],
           y: baseStationData[i][1],
@@ -3204,8 +3204,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           rotate: 0,
           title: this.svgMap['defaultBS'].title,
           type: this.svgMap['defaultBS'].type,
-          color: color,
-          material: material,
+          color: this.DEFAULT_BS_COLOR,
+          // material: material,
           element: this.svgMap['defaultBS'].element
         };
         if (this.dragObject[id].altitude > this.calculateForm.altitude) {
@@ -3213,22 +3213,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         }
         // RF parameter import
         this.bsListRfParam[id] = {
-          txpower: baseStationData[i][5],
-          beampattern: baseStationData[i][6],
-          tddfrequency: baseStationData[i][7],
-          tddbandwidth: baseStationData[i][8],
-          dlBandwidth: baseStationData[i][9],
-          ulBandwidth: baseStationData[i][10],
-          fddDlFrequency: baseStationData[i][11],
-          fddUlFrequency: baseStationData[i][12],
-          mimoNumber4G: baseStationData[i][13],
-          tddscs: baseStationData[i][14],
-          dlModulationCodScheme: baseStationData[i][15],
-          ulModulationCodScheme: baseStationData[i][16],
-          dlMimoLayer: baseStationData[i][17],
-          ulMimoLayer: baseStationData[i][18],
-          dlScs: baseStationData[i][19],
-          ulScs: baseStationData[i][20],
+          txpower: baseStationData[i][3],
+          beampattern: baseStationData[i][4],
+          tddfrequency: baseStationData[i][5],
+          tddbandwidth: baseStationData[i][6],
+          dlBandwidth: baseStationData[i][7],
+          ulBandwidth: baseStationData[i][8],
+          fddDlFrequency: baseStationData[i][9],
+          fddUlFrequency: baseStationData[i][10],
+          mimoNumber4G: baseStationData[i][11],
+          tddscs: baseStationData[i][12],
+          dlModulationCodScheme: baseStationData[i][13],
+          ulModulationCodScheme: baseStationData[i][14],
+          dlMimoLayer: baseStationData[i][15],
+          ulMimoLayer: baseStationData[i][16],
+          dlScs: baseStationData[i][17],
+          ulScs: baseStationData[i][18],
         };
         
         this.defaultBSList.push(id);
@@ -3245,11 +3245,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
       for (let i = 1; i < candidateData.length; i++) {
         const id = `candidate_${(i - 1)}`;
         this.candidateList.push(id);
-        let material = (typeof candidateData[i][3] === 'undefined' ? '0' : candidateData[i][3]);
-        if (!materialReg.test(material)) {
-          material = '0';
-        }
-        const color = (typeof candidateData[i][4] === 'undefined' ? this.CANDIDATE_COLOR : candidateData[i][4]);
+        // let material = (typeof candidateData[i][3] === 'undefined' ? '0' : candidateData[i][3]);
+        // if (!materialReg.test(material)) {
+          // material = '0';
+        // }
+        // const color = (typeof candidateData[i][4] === 'undefined' ? this.CANDIDATE_COLOR : candidateData[i][4]);
 
         this.dragObject[id] = {
           x: candidateData[i][0],
@@ -3261,8 +3261,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           rotate: 0,
           title: this.svgMap['candidate'].title,
           type: this.svgMap['candidate'].type,
-          color: color,
-          material: material,
+          color: this.DEFAULT_BS_COLOR,
+          // material: material,
           element: this.svgMap['candidate'].element
         };
 
@@ -3285,20 +3285,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         //   dlScs: candidateData[i][17],
         //   ulScs: candidateData[i][18],
         // };
-        this.tempCalParamSet.tddfrequency = candidateData[i][5];
-        this.tempCalParamSet.tddbandwidth = candidateData[i][6];
-        this.tempCalParamSet.dlBandwidth = candidateData[i][7];
-        this.tempCalParamSet.ulBandwidth = candidateData[i][8];
-        this.tempCalParamSet.fddDlFrequency = candidateData[i][9];
-        this.tempCalParamSet.fddUlFrequency = candidateData[i][10];
-        this.tempCalParamSet.mimoNumber4G = candidateData[i][11];
-        this.tempCalParamSet.tddscs = candidateData[i][12];
-        this.tempCalParamSet.dlModulationCodScheme = candidateData[i][13];
-        this.tempCalParamSet.ulModulationCodScheme = candidateData[i][14];
-        this.tempCalParamSet.dlMimoLayer = candidateData[i][15];
-        this.tempCalParamSet.ulMimoLayer = candidateData[i][16];
-        this.tempCalParamSet.dlScs = candidateData[i][17];
-        this.tempCalParamSet.ulScs = candidateData[i][18];
+        this.tempCalParamSet.tddfrequency = candidateData[i][3];
+        this.tempCalParamSet.tddbandwidth = candidateData[i][4];
+        this.tempCalParamSet.dlBandwidth = candidateData[i][5];
+        this.tempCalParamSet.ulBandwidth = candidateData[i][6];
+        this.tempCalParamSet.fddDlFrequency = candidateData[i][7];
+        this.tempCalParamSet.fddUlFrequency = candidateData[i][8];
+        this.tempCalParamSet.mimoNumber4G = candidateData[i][9];
+        this.tempCalParamSet.tddscs = candidateData[i][10];
+        this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11];
+        this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12];
+        this.tempCalParamSet.dlMimoLayer = candidateData[i][13];
+        this.tempCalParamSet.ulMimoLayer = candidateData[i][14];
+        this.tempCalParamSet.dlScs = candidateData[i][15];
+        this.tempCalParamSet.ulScs = candidateData[i][16];
 
         // set UE位置
         this.setCandidateSize(id);
