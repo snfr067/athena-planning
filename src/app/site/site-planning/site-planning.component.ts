@@ -3064,7 +3064,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
     console.log(wb);
     /* save to file */
-    XLSX.writeFile(wb, `${this.calculateForm.taskName}.xlsx`);
+    XLSX.writeFile(wb, `${this.calculateForm.taskName}`);
   }
 
   /**

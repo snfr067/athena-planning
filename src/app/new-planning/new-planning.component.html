@@ -1,6 +1,6 @@
 <h3>{{ 'planning.new' | translate }}
   <span class="example-button-row">
-      <button mat-button (click)="importFile.click()">{{ 'planning.import' | translate }}(.xlsx)</button>
+      <button mat-button (click)="importFile.click()">{{ 'planning.import' | translate }}</button>
       <input type="file" id="file0" #importFile style="display: none;" (change)="import($event)">
       <!-- <input type="file" id="file0" #importFile style="display: none;" (change)="import($event)" accept=".xlsx"> -->
   </span>

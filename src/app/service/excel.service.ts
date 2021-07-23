@@ -319,6 +319,6 @@ export class ExcelService {
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
     console.log(wb);
     /* save to file */
-    XLSX.writeFile(wb, `${calculateForm.taskName}.xlsx`);
+    XLSX.writeFile(wb, `${calculateForm.taskName}`);
   }
 }

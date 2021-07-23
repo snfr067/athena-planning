@@ -15,7 +15,7 @@
 			<!-- <th class="min">{{ 'tasklist.report' | translate }}</th> -->
 			<th class="min">{{ 'tasklist.edit' | translate }}</th>
 			<th class="min">{{ 'delete' | translate }}</th>
-			<th class="min">{{ 'tasklist.export' | translate }}</th>
+			<!-- <th class="min">{{ 'tasklist.export' | translate }}</th> -->
 			</tr>
 		</thead>
 		<tbody>
@@ -41,7 +41,7 @@
 				<!-- <td><i class="far fa-file-pdf" (click)="exportPDF(item.taskId, true)" ></i></td> -->
 				<td><i class="fas fa-pencil-alt" (click)="edit(item.taskId, true)"></i></td>
 				<td><i class="far fa-trash-alt" (click)="delete(item, 'hst')"></i></td>
-				<td><i class="fas fa-file-download" (click)="exportHstExcel(item.taskId)"></i></td>
+				<!-- <td><i class="fas fa-file-download" (click)="exportHstExcel(item.taskId)"></i></td> -->
 			</tr>
 			<tr *ngIf="taskList.length === 0 && hstList.length === 0">
 				<td colspan="7" class="text-center">{{ 'notaskList' | translate }}</td>
