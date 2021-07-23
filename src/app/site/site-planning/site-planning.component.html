@@ -294,10 +294,11 @@
   <mat-menu #rightMenu="matMenu" id="rightMenu">
     <ng-template matMenuContent>
       <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
-      <!-- <button class="rightClickBtnGroup"
+      <button class="rightClickBtnGroup" 
+        *ngIf="dragObject[svgId].type === 'obstacle';"
         (click)="$event.stopPropagation()" 
         [(colorPicker)]="color" 
-        (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button> -->
+        (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button>
       <button class="rightClickBtnGroup" (click)="openHeightSetting()">
         <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
           {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}

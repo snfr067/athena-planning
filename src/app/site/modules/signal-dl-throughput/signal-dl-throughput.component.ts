@@ -322,7 +322,7 @@ export class SignalDlThroughputComponent implements OnInit {
         this.defaultBsList.push({
           x: xdata,
           y: ydata,
-          ap: `既有${num}`,
+          ap: `${this.translateService.instant('default')}${num}`,
           color: 'green',
           hover: text,
           style: {
@@ -372,7 +372,7 @@ export class SignalDlThroughputComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `待選${num}`
+            ap: `${this.translateService.instant('candidate')}${num}`
           });
 
           candidateX.push(xdata);

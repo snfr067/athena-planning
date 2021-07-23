@@ -319,7 +319,9 @@
 	"already_same_alt": "Already has repeated altitude",
 	"alt_less_0": "Altitude cannot be less than 0",
 	"alt_greater_than_field": "Not greater than the altitude of the field",
-	"cant_get_result": "Can't get calculation result!"
+	"cant_get_result": "Can't get calculation result!",
+	"": "After switching the duplex mode, please remember to check whether the base station RF parameters are filled in",
 
-
+	"default": "D",
+	"candidate": "C"
 }

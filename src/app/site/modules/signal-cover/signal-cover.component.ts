@@ -202,7 +202,7 @@ export class SignalCoverComponent implements OnInit {
           y: ydata,
           color: 'green',
           hover: text,
-          ap: `既有${num}`,
+          ap: `${this.translateService.instant('default')}${num}`,
           style: {
             // visibility: this.showBs,
             opacity: 0
@@ -401,11 +401,11 @@ export class SignalCoverComponent implements OnInit {
                 y: oData[1],
                 num: (j + 1),
                 color: '#f7176a',
-                ap: `待選 ${(j + 1)}`
+                ap: `${this.translateService.instant('candidate')}${(j + 1)}`
               });
             }
           } else {
-            console.log(`miss 待選 legend num ${legendNum}`);
+            console.log(`miss ${this.translateService.instant('candidate')} legend num ${legendNum}`);
           }
 
           legendNum++;
@@ -456,7 +456,7 @@ export class SignalCoverComponent implements OnInit {
   
             apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
           } else {
-            console.log(`miss 既有 legend num ${legendNum}`);
+            console.log(`miss ${this.translateService.instant('default')} legend num ${legendNum}`);
           }
           
           legendNum++;

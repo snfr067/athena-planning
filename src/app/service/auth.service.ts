@@ -119,19 +119,19 @@ export class AuthService {
    */
   parseMaterial(val) {
     if (val === '0' || val === 0) {
-      return '木頭';
+      return this.translateService.use('material.wood');
     } else if (val === '1' || val === 1) {
-      return '水泥';
+      return this.translateService.use('material.cement');
     } else if (val === '2' || val === 2) {
-      return '輕鋼架';
+      return this.translateService.use('material.light_steel_frame');
     } else if (val === '3' || val === 3) {
-      return '玻璃';
+      return this.translateService.use('material.glass');
     } else if (val === '4' || val === 4) {
-      return '不鏽鋼/其它金屬類';
+      return this.translateService.use('material.stainless');
     } else if (val === '5' || val === 5) {
-      return '石膏';
+      return this.translateService.use('material.fireproof');
     } else if (val === '6' || val === 6) {
-      return '岩綿';
+      return this.translateService.use('material.fireSoundproof');
     }
   }
 

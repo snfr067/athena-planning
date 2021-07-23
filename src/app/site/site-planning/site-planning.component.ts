@@ -2828,7 +2828,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    * @param type 物件類別
    */
   changeProtoOrDuplex() {
-    let msg = "切換雙工模式後請記得檢查是否填入基站RF參數";
+    let msg = this.translateService.instant('switch_duplex_hint');
     this.msgDialogConfig.data = {
       type: 'error',
       infoMessage: msg

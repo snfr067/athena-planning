@@ -361,7 +361,7 @@ export class SignalStrengthComponent implements OnInit {
           x: xdata,
           y: ydata,
           color: 'green',
-          ap: `既有${num}`,
+          ap: `${this.translateService.instant('default')}${num}`,
           hover: text,
           style: {
             visibility: this.showBs,
@@ -409,7 +409,7 @@ export class SignalStrengthComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `待選${num}`
+            ap: `${this.translateService.instant('candidate')}${num}`
           });
 
           candidateX.push(xdata);
@@ -702,7 +702,7 @@ export class SignalStrengthComponent implements OnInit {
       }
     }
     for (const item of this.annotations) {
-      if (item.text[0] == '既') {
+      if (item.text[0] == '既' || item.text[0] == 'D') {
         item.visible = visible;
       }
     }
@@ -728,7 +728,7 @@ export class SignalStrengthComponent implements OnInit {
       }
     }
     for (const item of this.annotations) {
-      if (item.text[0] == '待') {
+      if (item.text[0] == '待' || item.text[0] == 'C') {
         item.visible = visible;
       }
     }

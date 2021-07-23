@@ -794,7 +794,7 @@ export class PdfComponent implements OnInit {
     const p3Data = [];
     for (let k = 0; k < this.zValues.length; k++) {
       p3Data.push([
-        `${this.zValues[k]}公尺`,
+        `${this.zValues[k]}m`,
         `${this.result['layeredCoverage'][k]}%`,
         `${Math.round(this.result['layeredAverageSinr'][k] * 1000) / 1000}db`,
         `${Math.round(this.result['layeredAverageRsrp'][k] * 1000) / 1000}dBm`

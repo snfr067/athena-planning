@@ -324,7 +324,7 @@ export class SignalUlThroughputComponent implements OnInit {
           y: ydata,
           color: 'green',
           hover: text,
-          ap: `既有${num}`,
+          ap: `${this.translateService.instant('default')}${num}`,
           style: {
             visibility: this.showBs,
             opacity: 0
@@ -372,7 +372,7 @@ export class SignalUlThroughputComponent implements OnInit {
             color: '#f7176a',
             hover: text,
             num: num,
-            ap: `待選${num}`
+            ap: `${this.translateService.instant('candidate')}${num}`
           });
 
           candidateX.push(xdata);
