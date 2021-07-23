@@ -119,19 +119,19 @@ export class AuthService {
    */
   parseMaterial(val) {
     if (val === '0' || val === 0) {
-      return this.translateService.use('material.wood');
+      return this.translateService.instant('material.wood');
     } else if (val === '1' || val === 1) {
-      return this.translateService.use('material.cement');
+      return this.translateService.instant('material.cement');
     } else if (val === '2' || val === 2) {
-      return this.translateService.use('material.light_steel_frame');
+      return this.translateService.instant('material.light_steel_frame');
     } else if (val === '3' || val === 3) {
-      return this.translateService.use('material.glass');
+      return this.translateService.instant('material.glass');
     } else if (val === '4' || val === 4) {
-      return this.translateService.use('material.stainless');
+      return this.translateService.instant('material.stainless');
     } else if (val === '5' || val === 5) {
-      return this.translateService.use('material.fireproof');
+      return this.translateService.instant('material.fireproof');
     } else if (val === '6' || val === 6) {
-      return this.translateService.use('material.fireSoundproof');
+      return this.translateService.instant('material.fireSoundproof');
     }
   }
 
