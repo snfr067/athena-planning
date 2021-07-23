@@ -44,7 +44,7 @@ export class ExcelService {
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
     // const baseStationData = [['x', 'y', 'z', 'material', 'color']];
-    const baseStationData = [['x', 'y', 'z',
+    const baseStationData = [['x', 'y', 'z','material','color',
     'txpower','beamId','tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
@@ -71,7 +71,7 @@ export class ExcelService {
       if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '5g') {
         for (let i = 0;i < defaultBs.length;i++) {
           baseStationData.push([
-            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],'','',
             txpowerArr[i],
             // '',
             beamArr[i],
@@ -93,7 +93,7 @@ export class ExcelService {
       } else if (calculateForm.duplex === 'tdd' && calculateForm.mapProtocol === '5g') {
         for (let i = 0;i < defaultBs.length;i++) {
           baseStationData.push([
-            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],'','',
             txpowerArr[i],
             // '',
             beamArr[i],
@@ -112,7 +112,7 @@ export class ExcelService {
       } else if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '4g') {
         for (let i = 0;i < defaultBs.length;i++) {
           baseStationData.push([
-            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],'','',
             txpowerArr[i],
             // '',
             beamArr[i],
@@ -129,7 +129,7 @@ export class ExcelService {
       } else {
         for (let i = 0;i < defaultBs.length;i++) {
           baseStationData.push([
-            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],
+            JSON.parse(defaultBs[i])[0], JSON.parse(defaultBs[i])[1], JSON.parse(defaultBs[i])[2],'','',
             txpowerArr[i],
             // '',
             beamArr[i],
@@ -154,7 +154,7 @@ export class ExcelService {
 
     // candidate
     // const candidateData = [['x', 'y', 'z', 'material', 'color']];
-    const candidateData = [['x', 'y', 'z',
+    const candidateData = [['x', 'y', 'z','material','color',
     'tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
@@ -164,7 +164,7 @@ export class ExcelService {
       if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '5g') {
         for (let i = 0;i < candidate.length;i++) {
           candidateData.push([
-            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],'','',
             '','',
             JSON.parse(calculateForm.dlBandwidth)[i],
             JSON.parse(calculateForm.ulBandwidth)[i],
@@ -182,7 +182,7 @@ export class ExcelService {
       } else if (calculateForm.duplex === 'tdd' && calculateForm.mapProtocol === '5g') {
         for (let i = 0;i < candidate.length;i++) {
           candidateData.push([
-            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],'','',
             JSON.parse(calculateForm.frequencyList)[i],
             JSON.parse(calculateForm.bandwidthList)[i],
             '','','','','',
@@ -197,7 +197,7 @@ export class ExcelService {
       } else if (calculateForm.duplex === 'fdd' && calculateForm.mapProtocol === '4g') {
         for (let i = 0;i < candidate.length;i++) {
           candidateData.push([
-            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],'','',
             ,'','',
             JSON.parse(calculateForm.dlBandwidth)[i],
             JSON.parse(calculateForm.ulBandwidth)[i],
@@ -210,7 +210,7 @@ export class ExcelService {
       } else {
         for (let i = 0;i < candidate.length;i++) {
           candidateData.push([
-            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],
+            JSON.parse(candidate[i])[0], JSON.parse(candidate[i])[1], JSON.parse(candidate[i])[2],'','',
             JSON.parse(calculateForm.frequencyList)[i],
             JSON.parse(calculateForm.bandwidthList)[i],
             ,'','','','',

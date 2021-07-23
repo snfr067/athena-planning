@@ -2901,14 +2901,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
-    const baseStationData = [['x', 'y', 'z','txpower','beamId','tddfrequency', 'tddbandwidth',
+    const baseStationData = [['x', 'y', 'z','material','color','txpower','beamId','tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].altitude,
+        this.dragObject[item].altitude,'','',
         // this.dragObject[item].color,
         this.bsListRfParam[item].txpower,
         this.bsListRfParam[item].beampattern,
@@ -2939,7 +2939,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
     // candidate
-    const candidateData = [['x', 'y', 'z',
+    const candidateData = [['x', 'y', 'z','material','color',
     'tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
@@ -2947,7 +2947,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].altitude,
+        this.dragObject[item].altitude,'','',
         // this.dragObject[item].color,
         //4g 5g tdd
         this.tempCalParamSet.tddfrequency,
@@ -3212,23 +3212,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
           this.dragObject[id].altitude = this.calculateForm.altitude;
         }
         // RF parameter import
+        const offset = 2;
         this.bsListRfParam[id] = {
-          txpower: baseStationData[i][3],
-          beampattern: baseStationData[i][4],
-          tddfrequency: baseStationData[i][5],
-          tddbandwidth: baseStationData[i][6],
-          dlBandwidth: baseStationData[i][7],
-          ulBandwidth: baseStationData[i][8],
-          fddDlFrequency: baseStationData[i][9],
-          fddUlFrequency: baseStationData[i][10],
-          mimoNumber4G: baseStationData[i][11],
-          tddscs: baseStationData[i][12],
-          dlModulationCodScheme: baseStationData[i][13],
-          ulModulationCodScheme: baseStationData[i][14],
-          dlMimoLayer: baseStationData[i][15],
-          ulMimoLayer: baseStationData[i][16],
-          dlScs: baseStationData[i][17],
-          ulScs: baseStationData[i][18],
+          txpower: baseStationData[i][3+offset],
+          beampattern: baseStationData[i][4+offset],
+          tddfrequency: baseStationData[i][5+offset],
+          tddbandwidth: baseStationData[i][6+offset],
+          dlBandwidth: baseStationData[i][7+offset],
+          ulBandwidth: baseStationData[i][8+offset],
+          fddDlFrequency: baseStationData[i][9+offset],
+          fddUlFrequency: baseStationData[i][10+offset],
+          mimoNumber4G: baseStationData[i][11+offset],
+          tddscs: baseStationData[i][12+offset],
+          dlModulationCodScheme: baseStationData[i][13+offset],
+          ulModulationCodScheme: baseStationData[i][14+offset],
+          dlMimoLayer: baseStationData[i][15+offset],
+          ulMimoLayer: baseStationData[i][16+offset],
+          dlScs: baseStationData[i][17+offset],
+          ulScs: baseStationData[i][18+offset],
         };
         
         this.defaultBSList.push(id);
@@ -3285,20 +3286,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         //   dlScs: candidateData[i][17],
         //   ulScs: candidateData[i][18],
         // };
-        this.tempCalParamSet.tddfrequency = candidateData[i][3];
-        this.tempCalParamSet.tddbandwidth = candidateData[i][4];
-        this.tempCalParamSet.dlBandwidth = candidateData[i][5];
-        this.tempCalParamSet.ulBandwidth = candidateData[i][6];
-        this.tempCalParamSet.fddDlFrequency = candidateData[i][7];
-        this.tempCalParamSet.fddUlFrequency = candidateData[i][8];
+        const offset = 2;
+        this.tempCalParamSet.tddfrequency = candidateData[i][3+offset];
+        this.tempCalParamSet.tddbandwidth = candidateData[i][4+offset];
+        this.tempCalParamSet.dlBandwidth = candidateData[i][5+offset];
+        this.tempCalParamSet.ulBandwidth = candidateData[i][6+offset];
+        this.tempCalParamSet.fddDlFrequency = candidateData[i][7+offset];
+        this.tempCalParamSet.fddUlFrequency = candidateData[i][8+offset];
         this.tempCalParamSet.mimoNumber4G = candidateData[i][9];
         this.tempCalParamSet.tddscs = candidateData[i][10];
-        this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11];
-        this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12];
-        this.tempCalParamSet.dlMimoLayer = candidateData[i][13];
-        this.tempCalParamSet.ulMimoLayer = candidateData[i][14];
-        this.tempCalParamSet.dlScs = candidateData[i][15];
-        this.tempCalParamSet.ulScs = candidateData[i][16];
+        this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11+offset];
+        this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12+offset];
+        this.tempCalParamSet.dlMimoLayer = candidateData[i][13+offset];
+        this.tempCalParamSet.ulMimoLayer = candidateData[i][14+offset];
+        this.tempCalParamSet.dlScs = candidateData[i][15+offset];
+        this.tempCalParamSet.ulScs = candidateData[i][16+offset];
 
         // set UE位置
         this.setCandidateSize(id);
