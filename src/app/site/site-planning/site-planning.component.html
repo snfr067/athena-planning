@@ -136,7 +136,7 @@
         <mat-button-toggle value="import" (click)="file.click()">{{ 'import' | translate }}</mat-button-toggle>
         <mat-button-toggle value="export" (click)="export()">{{ 'tasklist.export' | translate }}</mat-button-toggle>
       </mat-button-toggle-group>
-      <input type="file" #file style="display: none;" (change)="import($event)" multiple="false" accept=".xlsx" />
+      <input type="file" #file style="display: none;" (change)="import($event)" multiple="false"/>
 
       <mat-button-toggle-group class="inline-block ml_5">
         <mat-button-toggle value="go" (click)="calculate()">{{ 'planning.calculate' | translate }}</mat-button-toggle>
@@ -1017,7 +1017,10 @@
                   </span>
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].rotate" (change)="changeRotate(item)">
+                    <input type="text" [(ngModel)]="dragObject[item].rotate"
+                    (select)="tempParamStorage(dragObject[item].y)"
+                    (click)="tempParamStorage(dragObject[item].y)"
+                    (change)="changeRotate(item)">
                   </span>
                   <br>
                   <span>

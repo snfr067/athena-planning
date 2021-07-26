@@ -168,6 +168,8 @@
 	"max_min_txpower_same": "最大功率與最小功率值相同，請修改",
 	"min_txpower_greater_than_max": "最大功率不可小於最小功率，請修改",
 	"must_less_then": "必須小於待選位置數量",
+	"x_greater_then_field_width": "X座標需要小於場域長度和大於0",
+	"y_greater_then_field_height": "Y座標需要小於場域寬度和大於0",
 	"view.3d": "3D 顯示",
 	"rfParamLink": "RF參數設定",
 

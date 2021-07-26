@@ -2741,29 +2741,96 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
    */
   changePosition($event,svgId,xy) {
     // 先進行檢查，數字不可為負數，且不可超過場域長寬
+    const isOb = (svgId.split('_')[0]!='UE' && svgId.split('_')[0]!='defaultBS' && svgId.split('_')[0]!='candidate') ? true : false;
+    
     if (xy == 'x') {
-      // console.log(typeof this.dragObject[svgId].x);
       // console.log(typeof this.calculateForm.width);
-      if (Number(this.dragObject[svgId].x) < 0 || Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
-        this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
-        let msg = this.translateService.instant('x_greater_then_field_width');
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: msg
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        return;
+      if (!isOb) {
+        if (Number(this.dragObject[svgId].x) < 0 || Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
+          this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          let msg = this.translateService.instant('x_greater_then_field_width');
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: msg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          return;
+        }
+      } else {
+        let isRotate = (this.dragObject[svgId].rotate == 0) ? false : true;
+        console.log(`rotate: ${isRotate}`)
+        let width = 0;
+        if (isRotate) {
+          let cogX = Number(this.dragObject[svgId].width) + Number(this.dragObject[svgId].x);
+          console.log(cogX);
+          console.log(this.dragObject[svgId].width);
+          console.log(this.dragObject[svgId].rotate);
+          console.log(typeof this.dragObject[svgId].rotate);
+          console.log(Math.sin(Number(this.dragObject[svgId].rotate)));
+          console.log(Math.cos(Number(this.dragObject[svgId].rotate)));
+          width  = Number(this.dragObject[svgId].width)*Math.abs(Math.cos(Number(this.dragObject[svgId].rotate))) + 
+          Number(this.dragObject[svgId].height)*Math.sin(Number(this.dragObject[svgId].rotate));
+          console.log(`rotate width: ${width}`)
+          console.log(`CoG+HalfWidth: ${cogX+Number(this.dragObject[svgId].x)}`)
+          if (cogX + width/2 > Number(this.calculateForm.width)) {
+            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+            let msg = this.translateService.instant('x_greater_then_field_width');
+            this.msgDialogConfig.data = {
+              type: 'error',
+              infoMessage: msg
+            };
+            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            return;
+          }
+        } else {
+          width = Number(this.dragObject[svgId].width);
+          if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
+            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+            let msg = this.translateService.instant('x_greater_then_field_width');
+            this.msgDialogConfig.data = {
+              type: 'error',
+              infoMessage: msg
+            };
+            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            return;
+          }
+        }
       }
     } else {
-      if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
-        this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
-        let msg = this.translateService.instant('y_greater_then_field_height');
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: msg
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        return;
+      if (!isOb) {
+        if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
+          this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+          let msg = this.translateService.instant('y_greater_then_field_height');
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: msg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          return;
+        }
+      } else {
+        let isRotate = (this.dragObject[svgId].rotate == 0) ? false : true;
+        console.log(`rotate: ${isRotate}`)
+        let height = 0;
+        if (isRotate) {
+          height  = Number(this.dragObject[svgId].height)*Math.abs(Math.cos(this.dragObject[svgId].rotate)) + 
+          Number(this.dragObject[svgId].width)*Math.sin(this.dragObject[svgId].rotate);
+          // console.log(`rotate height: ${height}`)
+          // console.log(`rotate : ${height}`)
+        } else {
+          height = Number(this.dragObject[svgId].height);
+        }
+        console.log(this.dragObject[svgId].height);
+        if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
+          this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          let msg = this.translateService.instant('y_greater_then_field_height');
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: msg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          return;
+        }
       }
     }
     // 0713 Xean修改
