@@ -53,7 +53,8 @@ export class ChartService {
         layoutWidth = layoutHeight * wRatio;
       }
     } else {
-      const marginSize = 80;
+      // marginSize 60 grid才能維持正方形
+      const marginSize = 60;
       layoutWidth = layoutHeight + marginSize;
       if (layoutWidth > gd.clientWidth) {
         // has scroll bar
@@ -132,7 +133,7 @@ export class ChartService {
         layoutWidth = layoutHeight * wRatio;
       }
     } else {
-      const marginSize = 80;
+      const marginSize = 60;
       layoutHeight = maxHeight;
       layoutWidth = layoutHeight + marginSize;
       if (layoutWidth > maxWidth) {
