@@ -955,9 +955,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
     window.setTimeout(() => {
       // 圖區不出現scroll bar，否則物件位置會跑掉
-      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth + 80;
+      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
       // console.log
-      const maxWidth = window.innerWidth - 64 - matdrawer;
+      const maxWidth = window.innerWidth - 180 - matdrawer;
       document.getElementById('chart').style.width = `${maxWidth}px`;
       document.getElementById('chart').style.overflow = 'hidden';
   
@@ -4126,7 +4126,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
     window.setTimeout(() => {
       // 重取區域寬度
       const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
-      const maxWidth = window.innerWidth - 100 - matdrawer;
+      (<HTMLDivElement>document.querySelector('.mat-drawer-content')).style.overflowY = 'hidden';
+      // 最大寬度再縮小，避免出現scroll bar
+      const maxWidth = window.innerWidth - 180 - matdrawer;
       document.getElementById('chart').style.width = `${maxWidth}px`;
       const dArea = <HTMLDivElement>document.getElementById('top_area');
       // top區域+head menu + 一點buffer
