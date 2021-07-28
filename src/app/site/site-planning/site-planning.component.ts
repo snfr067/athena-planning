@@ -30,7 +30,7 @@ declare var Plotly: any;
   templateUrl: './site-planning.component.html',
   styleUrls: ['./site-planning.component.scss']
 })
-export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
+export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
   constructor(
     private authService: AuthService,
@@ -401,6 +401,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes) {
     console.log(changes);
+  }
+
+  ngAfterViewInit(): void {
+    // 1920尺寸右邊選單會再拉長一次
+    if (screen.availWidth >= 1920) {
+      window.setTimeout(() => {
+        this.chartResize();
+      }, 1000);
+    }
   }
 
   ngOnInit() {

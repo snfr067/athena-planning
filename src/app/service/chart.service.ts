@@ -19,7 +19,8 @@ export class ChartService {
     
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
-
+    // marginSize 60 grid才能維持正方形
+    const marginSize = 60;
     // console.log(calculateForm.width);
     // console.log(calculateForm.height);
     // console.log(layoutWidth);
@@ -34,6 +35,7 @@ export class ChartService {
         const wRatio = calculateForm.height / calculateForm.width;
         layoutHeight = layoutWidth * wRatio;
       }
+      layoutWidth += marginSize;
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
       layoutHeight = layoutWidth * ratio;
@@ -52,9 +54,9 @@ export class ChartService {
         const wRatio = calculateForm.width / calculateForm.height;
         layoutWidth = layoutHeight * wRatio;
       }
+      layoutWidth += marginSize;
     } else {
-      // marginSize 60 grid才能維持正方形
-      const marginSize = 60;
+      
       layoutWidth = layoutHeight + marginSize;
       if (layoutWidth > gd.clientWidth) {
         // has scroll bar
@@ -104,6 +106,7 @@ export class ChartService {
     if (layoutHeight > maxHeight) {
       layoutHeight = maxHeight;
     }
+    const marginSize = 60;
 
     if (Number(calculateForm.width) < Number(calculateForm.height)) {
       const ratio = calculateForm.width / calculateForm.height;
@@ -115,6 +118,7 @@ export class ChartService {
         const wRatio = calculateForm.height / calculateForm.width;
         layoutHeight = layoutWidth * wRatio;
       }
+      layoutWidth += marginSize;
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
       layoutHeight = layoutWidth * ratio;
@@ -132,8 +136,8 @@ export class ChartService {
         const wRatio = calculateForm.width / calculateForm.height;
         layoutWidth = layoutHeight * wRatio;
       }
+      layoutWidth += marginSize;
     } else {
-      const marginSize = 60;
       layoutHeight = maxHeight;
       layoutWidth = layoutHeight + marginSize;
       if (layoutWidth > maxWidth) {
