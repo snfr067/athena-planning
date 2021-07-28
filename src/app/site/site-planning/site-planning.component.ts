@@ -2761,18 +2761,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         console.log(`rotate: ${isRotate}`)
         let width = 0;
         if (isRotate) {
-          let cogX = Number(this.dragObject[svgId].width) + Number(this.dragObject[svgId].x);
-          console.log(cogX);
-          console.log(this.dragObject[svgId].width);
-          console.log(this.dragObject[svgId].rotate);
-          console.log(typeof this.dragObject[svgId].rotate);
-          console.log(Math.sin(Number(this.dragObject[svgId].rotate)));
-          console.log(Math.cos(Number(this.dragObject[svgId].rotate)));
-          width  = Number(this.dragObject[svgId].width)*Math.abs(Math.cos(Number(this.dragObject[svgId].rotate))) + 
-          Number(this.dragObject[svgId].height)*Math.sin(Number(this.dragObject[svgId].rotate));
-          console.log(`rotate width: ${width}`)
-          console.log(`CoG+HalfWidth: ${cogX+Number(this.dragObject[svgId].x)}`)
-          if (cogX + width/2 > Number(this.calculateForm.width)) {
+          let angle = Number(this.dragObject[svgId].rotate%360);
+          let obWid = Number(this.dragObject[svgId].width);
+          let obHei = Number(this.dragObject[svgId].height);
+          let deg = 2*Math.PI/360;
+          let x = Number(this.dragObject[svgId].x);
+          // let y = Number(this.dragObject[svgId].y);
+          let cogX = obWid/2 + x;
+          if (angle < 0) {angle+=360};
+          if (svgId.split('_')[0] == 'rect') {
+            width  = obWid*Math.cos(angle*deg)+ obHei*Math.sin(angle*deg);
+          } else if (svgId.split('_')[0] == 'polygon') {
+            width = 0;
+          } else if (svgId.split('_')[0] == 'trapezoid') {
+            
+          } else if (svgId.split('_')[0] == 'ellipse') {
+
+          }
+          console.log(`cogX: ${cogX}`);
+          console.log(Math.sin(angle*(2*Math.PI/360)));
+          console.log(Math.cos(angle*(2*Math.PI/360)));
+          console.log(`rotate width: ${width/2}`)
+          console.log(`CoG+Half Width: ${cogX+width/2}`)
+          console.log(`CoG+Half Width: ${cogX-width/2}`)
+          if ((cogX + width/2) > Number(this.calculateForm.width) || (cogX - width/2) < 0) {
             this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
             let msg = this.translateService.instant('x_greater_then_field_width');
             this.msgDialogConfig.data = {
@@ -2813,23 +2825,51 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges {
         console.log(`rotate: ${isRotate}`)
         let height = 0;
         if (isRotate) {
-          height  = Number(this.dragObject[svgId].height)*Math.abs(Math.cos(this.dragObject[svgId].rotate)) + 
-          Number(this.dragObject[svgId].width)*Math.sin(this.dragObject[svgId].rotate);
-          // console.log(`rotate height: ${height}`)
-          // console.log(`rotate : ${height}`)
+          let angle = Number(this.dragObject[svgId].rotate%360);
+          let obWid = Number(this.dragObject[svgId].width);
+          let obHei = Number(this.dragObject[svgId].height);
+          let deg = 2*Math.PI/360;
+          // let x = Number(this.dragObject[svgId].x);
+          let y = Number(this.dragObject[svgId].y);
+          let cogY = obHei/2 + y;
+          if (svgId.split('_')[0] == 'rect') {
+            height  = obWid*Math.sin(angle*deg)+ obHei*Math.cos(angle*deg);
+          } else if (svgId.split('_')[0] == 'ellipse') {
+
+          } else if (svgId.split('_')[0] == 'polygon') {
+            
+          } else if (svgId.split('_')[0] == 'trapezoid') {
+
+          }
+          console.log(`cogY: ${cogY}`);
+          console.log(Math.sin(angle*(2*Math.PI/360)));
+          console.log(Math.cos(angle*(2*Math.PI/360)));
+          console.log(`rotate height: ${height/2}`)
+          console.log(`CoG+Half Height: ${cogY+height/2}`)
+          console.log(`CoG+Half Height: ${cogY-height/2}`)
+          console.log(`${Number(this.calculateForm.height)}`)
+          if ((cogY + height/2) > Number(this.calculateForm.height) || (cogY - height/2) < 0) {
+            this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+            let msg = this.translateService.instant('y_greater_then_field_height');
+            this.msgDialogConfig.data = {
+              type: 'error',
+              infoMessage: msg
+            };
+            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            return;
+          }
         } else {
           height = Number(this.dragObject[svgId].height);
-        }
-        console.log(this.dragObject[svgId].height);
-        if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
-          this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
-          let msg = this.translateService.instant('y_greater_then_field_height');
-          this.msgDialogConfig.data = {
-            type: 'error',
-            infoMessage: msg
-          };
-          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-          return;
+          if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
+            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+            let msg = this.translateService.instant('y_greater_then_field_height');
+            this.msgDialogConfig.data = {
+              type: 'error',
+              infoMessage: msg
+            };
+            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            return;
+          }
         }
       }
     }

@@ -1020,7 +1020,8 @@
                     <input type="text" [(ngModel)]="dragObject[item].rotate"
                     (select)="tempParamStorage(dragObject[item].y)"
                     (click)="tempParamStorage(dragObject[item].y)"
-                    (change)="changeRotate(item)">
+                    (change)="changeRotate(item)"
+                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
                   <br>
                   <span>
