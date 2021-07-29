@@ -2775,34 +2775,77 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let obHei = Number(this.dragObject[svgId].height);
           let deg = 2*Math.PI/360;
           let x = Number(this.dragObject[svgId].x);
-          // let y = Number(this.dragObject[svgId].y);
+          let y = Number(this.dragObject[svgId].y);
           let cogX = obWid/2 + x;
           if (angle < 0) {angle+=360};
           if (svgId.split('_')[0] == 'rect') {
-            width  = obWid*Math.cos(angle*deg)+ obHei*Math.sin(angle*deg);
+            width  = obWid*Math.cos(angle*deg) + obHei*Math.sin(angle*deg);
+            if ((cogX + width/2) > Number(this.calculateForm.width) || (cogX - width/2) < 0) {
+              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('x_greater_then_field_width');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
           } else if (svgId.split('_')[0] == 'polygon') {
-            width = 0;
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let top = [x+obWid/2,y+obHei];
+            let left = [x,y];
+            let right = [x+obWid,y];
+            let rotTop = [
+              (top[0]-rcc[0])*Math.cos(tempAngle*deg)-(top[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (top[0]-rcc[0])*Math.sin(tempAngle*deg)+(top[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotLeft = [
+              (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotRight = [
+              (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            // console.log(rotTop);
+            // console.log(rotLeft);
+            // console.log(rotRight);
+            let maxX = Math.max(rotTop[0],rotLeft[0],rotRight[0]);
+            let minX = Math.min(rotTop[0],rotLeft[0],rotRight[0]);
+            if (maxX > this.calculateForm.width || minX < 0) {
+              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('x_greater_then_field_width');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
           } else if (svgId.split('_')[0] == 'trapezoid') {
-            
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let leftbot = [x,y];
+            let lefttop = [x+obWid/4,y+obHei];
+            let rightbot = [x+obWid,y];
+            let righttop = [x+(3*obWid/4),y+obHei];
+            let rotleftbot = [
+
+            ];
+            let rotlefttop = [
+
+            ];
+            let rotrightbot = [
+
+            ];
+            let rotrighttop = [
+              
+            ];
           } else if (svgId.split('_')[0] == 'ellipse') {
 
           }
-          console.log(`cogX: ${cogX}`);
-          console.log(Math.sin(angle*(2*Math.PI/360)));
-          console.log(Math.cos(angle*(2*Math.PI/360)));
-          console.log(`rotate width: ${width/2}`)
-          console.log(`CoG+Half Width: ${cogX+width/2}`)
-          console.log(`CoG+Half Width: ${cogX-width/2}`)
-          if ((cogX + width/2) > Number(this.calculateForm.width) || (cogX - width/2) < 0) {
-            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
-            let msg = this.translateService.instant('x_greater_then_field_width');
-            this.msgDialogConfig.data = {
-              type: 'error',
-              infoMessage: msg
-            };
-            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-            return;
-          }
+          
         } else {
           width = Number(this.dragObject[svgId].width);
           if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
