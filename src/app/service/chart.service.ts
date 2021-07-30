@@ -54,7 +54,7 @@ export class ChartService {
         const wRatio = calculateForm.width / calculateForm.height;
         layoutWidth = layoutHeight * wRatio;
       }
-      layoutWidth += marginSize;
+      // layoutWidth += marginSize;
     } else {
       
       layoutWidth = layoutHeight + marginSize;
@@ -65,6 +65,50 @@ export class ChartService {
       }
     }
     
+    return this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
+  }
+
+  checkSize(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
+
+    const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+
+    const gridWidth = xy.width;
+    const gridHeight = xy.height;
+
+    const pixelXLinear = Plotly.d3.scale.linear()
+        .domain([0, calculateForm.width])
+        .range([0, gridWidth]);
+
+    const pixelYLinear = Plotly.d3.scale.linear()
+        .domain([0, calculateForm.height])
+        .range([0, gridHeight]);
+    
+    // 模擬1個正方形
+    const width = Math.ceil(pixelXLinear(calculateForm.height));
+    const height = Math.ceil(pixelYLinear(calculateForm.height));
+    
+    if (width !== height) {
+      // 結果非正方形時變更場域大小至正方形為止
+      if (width > height) {
+        layoutWidth--;
+  
+      } else if (width < height) {
+        layoutHeight--;
+      }
+
+      Plotly.relayout(gd, {
+        width: layoutWidth,
+        height: layoutHeight
+      }).then(gd2 => {
+        // console.log(width, height, layoutWidth, layoutHeight);
+        this.checkSize(calculateForm, gd2, layoutWidth, layoutHeight);
+      });
+
+    } else {
+      // 結果為正方形
+      console.log(width, height, layoutWidth, layoutHeight);
+    }
+
     return [layoutWidth, layoutHeight];
   }
 

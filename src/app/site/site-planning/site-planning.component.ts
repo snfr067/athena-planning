@@ -301,6 +301,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     top: 0,
     left: 0
   };
+  /** 左邊寬度 */
+  leftWidth = 0;
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -404,12 +406,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   ngAfterViewInit(): void {
-    // 1920尺寸右邊選單會再拉長一次
-    if (screen.availWidth >= 1920) {
-      window.setTimeout(() => {
-        this.chartResize();
-      }, 1000);
-    }
+    // 物件就位後再顯示
+    this.chart.nativeElement.style.opacity = 0;
+    this.resetChartWidth();
   }
 
   ngOnInit() {
@@ -856,9 +855,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param isImportImg 是否import image
    */
   initData(isImportXls, isImportImg, isHWAChange) {
-    if (typeof this.chart !== 'undefined') {
-      this.chart.nativeElement.style.opacity = 0;
-    }
+
     console.log(this.defaultBSList);
     //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
@@ -937,8 +934,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       showTips: false,
       editable: false,
       scrollZoom: false,
-      displayModeBar: false,
-      responsive: true
+      displayModeBar: false
     };
     // 繪圖layout
     this.plotLayout = {
@@ -963,12 +959,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     };
 
     window.setTimeout(() => {
-      // 圖區不出現scroll bar，否則物件位置會跑掉
-      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
-      // console.log
-      const maxWidth = window.innerWidth - 180 - matdrawer;
-      document.getElementById('chart').style.width = `${maxWidth}px`;
-      document.getElementById('chart').style.overflow = 'hidden';
   
       if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
         const reader = new FileReader();
@@ -1005,8 +995,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
   
             // image放進圖裡後需取得比例尺
-            Plotly.relayout('chart', layoutOption).then((gd2) => {
-              this.chart.nativeElement.style.opacity = 1;
+            Plotly.relayout('chart', layoutOption).then((gd2) => {              
               const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
               const rect2 = xy2.getBoundingClientRect();
               // drag範圍
@@ -1036,6 +1025,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   }
                   console.log(this.calculateForm);
                 }
+
+                this.chartResize();
               }, 100);
               
             });  
@@ -1043,9 +1034,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         };
   
       } else {
-        if (typeof this.chart !== 'undefined') {
-          this.chart.nativeElement.style.opacity = 1;
-        }
         // this.plotLayout['width'] = window.innerWidth * 0.68;
         // this.plotLayout['width'] = window.innerWidth;
         // draw background image chart
@@ -1096,6 +1084,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   this.edit(true);
                 }
               }
+
+              this.chartResize();
+
             }, 100);
           });
         });
@@ -1134,6 +1125,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.chartTop = rect.top;
     this.chartBottom = rect.bottom;
     this.chartHeight = rect.height;
+    const ognWidth = rect.width;
+    const ognHeight = rect.height;
+    const chartWidth = gd.clientWidth;
+    const chartHeight = gd.clientHeight;
 
     this.dragStyle = {
       left: `${xy.getAttribute('x')}px`,
@@ -1159,6 +1154,45 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       .domain([0, this.calculateForm.height])
       .range([0, rect.height]);
 
+    let width = Math.ceil(this.pixelXLinear(5));
+    let height = Math.ceil(this.pixelYLinear(5));
+    const w = rect.width;
+    const h = rect.height;
+
+    // const result = this.checkSize(width, height, w, h)
+    // width = result[0];
+    // height = result[1];
+
+    // console.log(width, height, ognWidth - width, ognHeight - height)
+    
+    // Plotly.relayout('chart', {
+    //   width: ognWidth,
+    //   height: ognHeight - 1
+    // });
+  }
+
+  checkSize(width, height, w, h) {
+    if (width > height) {
+      w--;
+      this.pixelXLinear = Plotly.d3.scale.linear()
+        .domain([0, this.calculateForm.width])
+        .range([0, w]);
+      width = Math.ceil(this.pixelXLinear(5));
+    } else if (width < height) {
+      h--;
+      this.pixelYLinear = Plotly.d3.scale.linear()
+        .domain([0, this.calculateForm.height])
+        .range([0, h]);
+      height = Math.ceil(this.pixelXLinear(5));
+    }
+    if (width !== height) {
+      console.log(width, height);
+      this.checkSize(width, height, w, h);
+    } else {
+      console.log(width, height, w, h);
+    }
+
+    return [w, h];
   }
 
   /**
@@ -4217,18 +4251,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   chartResize() {
     window.setTimeout(() => {
       // 重取區域寬度
-      const matdrawer = document.querySelector('.mat-drawer-inner-container').clientWidth;
-      (<HTMLDivElement>document.querySelector('.mat-drawer-content')).style.overflowY = 'hidden';
-      // 最大寬度再縮小，避免出現scroll bar
-      const maxWidth = window.innerWidth - 180 - matdrawer;
-      document.getElementById('chart').style.width = `${maxWidth}px`;
+      this.resetChartWidth();
+
       const dArea = <HTMLDivElement>document.getElementById('top_area');
       // top區域+head menu + 一點buffer
       const dAreaHeight = dArea.clientHeight + 90;
       document.getElementById('chart').style.height = `${window.innerHeight - dAreaHeight}px`;
 
       Plotly.relayout('chart', {
-        width: maxWidth,
+        width: this.leftWidth,
         // autosize: true
         // height: '100%'
       }).then((gd) => {
@@ -4239,27 +4270,42 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         };
         console.log(layoutOption);
         Plotly.relayout('chart', layoutOption).then((gd2) => {
-          // 重新計算比例尺
-          this.calScale(gd2);
-          // set 障礙物尺寸與位置
-          for (const id of this.obstacleList) {
-            this.setObstacleSize(id);
-          }
-          // set 新增基站位置
-          for (const id of this.candidateList) {
-            this.setCandidateSize(id);
-          }
-          // set 既有基站位置
-          for (const id of this.defaultBSList) {
-            this.setDefaultBsSize(id);
-          }
-          // set 既有基站位置
-          for (const id of this.ueList) {
-            this.setUeSize(id);
-          }
+          window.setTimeout(() => {
+            // 重新計算比例尺
+            this.calScale(gd2);
+            // set 障礙物尺寸與位置
+            for (const id of this.obstacleList) {
+              this.setObstacleSize(id);
+            }
+            // set 新增基站位置
+            for (const id of this.candidateList) {
+              this.setCandidateSize(id);
+            }
+            // set 既有基站位置
+            for (const id of this.defaultBSList) {
+              this.setDefaultBsSize(id);
+            }
+            // set 既有基站位置
+            for (const id of this.ueList) {
+              this.setUeSize(id);
+            }
+            // drag範圍
+            const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+            this.bounds = {
+              left: xy.left,
+              top: xy.top,
+              right: xy.right,
+              bottom: xy.top + xy.height
+            };
+
+            if (typeof this.chart !== 'undefined') {
+              this.chart.nativeElement.style.opacity = 1;
+            }
+          }, 0);
+          
         });
       });
-    }, 300);
+    }, 0);
     
 
   }
@@ -4398,6 +4444,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.pathStyle[id] = {
       fill: this.dragObject[id].color
     };
+  }
+
+  /** 重設區域寬度 */
+  resetChartWidth() {
+    const contentWidth = window.innerWidth - 64;
+    this.leftWidth = contentWidth - (contentWidth * 0.3) - 50;
+    document.getElementById('chart').style.width = `${this.leftWidth}px`;
+    // document.getElementById('chart').style.overflowY = 'hidden';
   }
 
 }
