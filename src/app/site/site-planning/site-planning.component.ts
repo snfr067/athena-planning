@@ -2831,21 +2831,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let rightbot = [x+obWid,y];
             let righttop = [x+(3*obWid/4),y+obHei];
             let rotleftbot = [
-
+              (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
             let rotlefttop = [
-
+              (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
             let rotrightbot = [
-
+              (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
             let rotrighttop = [
-              
+              (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
-          } else if (svgId.split('_')[0] == 'ellipse') {
-
-          }
-          
+            let maxX = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            let minX = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            if (maxX > this.calculateForm.width || minX < 0) {
+              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('x_greater_then_field_width');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
+          } 
+          // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
           width = Number(this.dragObject[svgId].width);
           if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
@@ -2860,7 +2874,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-    } else {
+    } else { // Y coordination
       if (!isOb) {
         if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
           this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
@@ -2881,35 +2895,98 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let obWid = Number(this.dragObject[svgId].width);
           let obHei = Number(this.dragObject[svgId].height);
           let deg = 2*Math.PI/360;
-          // let x = Number(this.dragObject[svgId].x);
+          let x = Number(this.dragObject[svgId].x);
           let y = Number(this.dragObject[svgId].y);
           let cogY = obHei/2 + y;
           if (svgId.split('_')[0] == 'rect') {
             height  = obWid*Math.sin(angle*deg)+ obHei*Math.cos(angle*deg);
-          } else if (svgId.split('_')[0] == 'ellipse') {
-
+            // console.log(`cogY: ${cogY}`);
+            // console.log(Math.sin(angle*(2*Math.PI/360)));
+            // console.log(Math.cos(angle*(2*Math.PI/360)));
+            // console.log(`rotate height: ${height/2}`)
+            // console.log(`CoG+Half Height: ${cogY+height/2}`)
+            // console.log(`CoG+Half Height: ${cogY-height/2}`)
+            // console.log(`${Number(this.calculateForm.height)}`)
+            if ((cogY + height/2) > Number(this.calculateForm.height) || (cogY - height/2) < 0) {
+              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('y_greater_then_field_height');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
           } else if (svgId.split('_')[0] == 'polygon') {
-            
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let top = [x+obWid/2,y+obHei];
+            let left = [x,y];
+            let right = [x+obWid,y];
+            let rotTop = [
+              (top[0]-rcc[0])*Math.cos(tempAngle*deg)-(top[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (top[0]-rcc[0])*Math.sin(tempAngle*deg)+(top[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotLeft = [
+              (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotRight = [
+              (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            // console.log(rotTop);
+            // console.log(rotLeft);
+            // console.log(rotRight);
+            let maxY = Math.max(rotTop[1],rotLeft[1],rotRight[1]);
+            let minY = Math.min(rotTop[1],rotLeft[1],rotRight[1]);
+            if (maxY > this.calculateForm.height || minY < 0) {
+              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('y_greater_then_field_width');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
           } else if (svgId.split('_')[0] == 'trapezoid') {
-
-          }
-          console.log(`cogY: ${cogY}`);
-          console.log(Math.sin(angle*(2*Math.PI/360)));
-          console.log(Math.cos(angle*(2*Math.PI/360)));
-          console.log(`rotate height: ${height/2}`)
-          console.log(`CoG+Half Height: ${cogY+height/2}`)
-          console.log(`CoG+Half Height: ${cogY-height/2}`)
-          console.log(`${Number(this.calculateForm.height)}`)
-          if ((cogY + height/2) > Number(this.calculateForm.height) || (cogY - height/2) < 0) {
-            this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
-            let msg = this.translateService.instant('y_greater_then_field_height');
-            this.msgDialogConfig.data = {
-              type: 'error',
-              infoMessage: msg
-            };
-            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-            return;
-          }
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let leftbot = [x,y];
+            let lefttop = [x+obWid/4,y+obHei];
+            let rightbot = [x+obWid,y];
+            let righttop = [x+(3*obWid/4),y+obHei];
+            let rotleftbot = [
+              (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotlefttop = [
+              (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrightbot = [
+              (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrighttop = [
+              (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let maxY = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            let minY = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            if (maxY > this.calculateForm.width || minY < 0) {
+              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              let msg = this.translateService.instant('y_greater_then_field_width');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+              return;
+            }
+          } 
+          // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
           height = Number(this.dragObject[svgId].height);
           if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
