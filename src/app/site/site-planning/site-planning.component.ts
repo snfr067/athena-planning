@@ -991,43 +991,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               height: sizes[1]
             };
   
-            sessionStorage.removeItem('layoutSize');
-            sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
-  
             // image放進圖裡後需取得比例尺
-            Plotly.relayout('chart', layoutOption).then((gd2) => {              
-              const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
-              const rect2 = xy2.getBoundingClientRect();
-              // drag範圍
-              this.bounds = {
-                left: rect2.left,
-                top: rect2.top,
-                right: rect2.right,
-                bottom: rect2.top + rect2.height
-              };
+            Plotly.relayout('chart', layoutOption).then((gd2) => {
 
-              // 圓形有時會變形，延遲載入物件
-              window.setTimeout(() => {
-                // 計算比例尺
-                this.calScale(gd2);
+              // 計算比例尺
+              this.calScale(gd2);
 
-                if (isImportXls) {
-                  // import xlsx
-                  this.setImportData();
-                } else if (isImportImg) {
-                  // do noting
-                } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-                  // 編輯
-                  if (isHWAChange !== '') {
-                    // this.edit(false);
-                  } else {
-                    this.edit(true);
-                  }
-                  console.log(this.calculateForm);
+              if (isImportXls) {
+                // import xlsx
+                this.setImportData();
+              } else if (isImportImg) {
+                // do noting
+              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                // 編輯
+                if (isHWAChange !== '') {
+                  // this.edit(false);
+                } else {
+                  this.edit(true);
                 }
+                console.log(this.calculateForm);
+              }
 
-                this.chartResize();
-              }, 100);
+              // 重設場域尺寸與載入物件
+              this.chartResize();
               
             });  
           });
@@ -1051,43 +1037,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             height: sizes[1]
           };
   
-          sessionStorage.removeItem('layoutSize');
-          sessionStorage.setItem('layoutSize', JSON.stringify(layoutOption));
-  
           // 重設長寬
           Plotly.relayout('chart', layoutOption).then((gd2) => {
-            const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
-            const rect2 = xy2.getBoundingClientRect();
-            // drag範圍
-            this.bounds = {
-              left: rect2.left,
-              top: rect2.top,
-              right: rect2.right,
-              bottom: rect2.top + rect2.height
-            };
     
-            // 圓形有時會變形，延遲載入物件
-            window.setTimeout(() => {
-              // 計算比例尺
-              this.calScale(gd2);
-              // import xlsx
-              if (isImportXls) {
-                this.setImportData();
-              } else if (isImportImg) {
-                // do nothing
-              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-                // 編輯
-                console.log(this.calculateForm);
-                if (isHWAChange !== '') {
-                  // this.edit(false);
-                } else {
-                  this.edit(true);
-                }
+            // 計算比例尺
+            this.calScale(gd2);
+            // import xlsx
+            if (isImportXls) {
+              this.setImportData();
+            } else if (isImportImg) {
+              // do nothing
+            } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+              // 編輯
+              console.log(this.calculateForm);
+              if (isHWAChange !== '') {
+                // this.edit(false);
+              } else {
+                this.edit(true);
               }
-
-              this.chartResize();
-
-            }, 100);
+            }
+            // 重設場域尺寸與載入物件
+            this.chartResize();
           });
         });
       }
@@ -3504,7 +3474,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         
         this.defaultBSList.push(id);
         // set 既有基站位置
-        this.setDefaultBsSize(id);
+        // this.setDefaultBsSize(id);
       }
     }
     /* candidate sheet */
@@ -3573,7 +3543,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.ulScs = candidateData[i][16+offset];
 
         // set UE位置
-        this.setCandidateSize(id);
+        // this.setCandidateSize(id);
 
         // RF parameter import
         // this.bsListRfParam[id] = {
@@ -3630,7 +3600,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           };
 
           // set UE位置
-          this.setUeSize(id);
+          // this.setUeSize(id);
         }
       }
     }
@@ -3695,7 +3665,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.dragObject[id].altitude = this.calculateForm.altitude;
         }
         // set 障礙物尺寸與位置
-        this.setObstacleSize(id);
+        // this.setObstacleSize(id);
         this.obstacleList.push(id);
       }
     }
@@ -3850,7 +3820,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             element: shape
           };
           // set 障礙物尺寸與位置
-          this.setObstacleSize(id);
+          // this.setObstacleSize(id);
           
           this.obstacleList.push(id);
         }
@@ -3882,7 +3852,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           };
 
           // set 新增基站位置
-          this.setCandidateSize(id);
+          // this.setCandidateSize(id);
           
           this.tempCalParamSet.txpower = txpower[0];
           this.tempCalParamSet.beampattern = beamId[0];
@@ -3995,7 +3965,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             element: 'defaultBS'
           };
           // set 既有基站位置
-          this.setDefaultBsSize(id);
+          // this.setDefaultBsSize(id);
         }
       }
       
@@ -4022,7 +3992,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             element: 'UE'
           };
           // set UE位置
-          this.setUeSize(id);
+          // this.setUeSize(id);
         }
       }
       if (this.calculateForm.objectiveIndex === '2') {
@@ -4035,9 +4005,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ognSpanStyle = _.cloneDeep(this.spanStyle);
       this.ognDragObject = _.cloneDeep(this.dragObject);
       // 檢查圓形高度
-      window.setTimeout(() => {
-        this.checkCircle();
-      }, 0);
+      // window.setTimeout(() => {
+      //   this.checkCircle();
+      // }, 0);
     }
   }
 
@@ -4367,13 +4337,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               this.setUeSize(id);
             }
             // drag範圍
-            const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
-            this.bounds = {
-              left: xy.left,
-              top: xy.top,
-              right: xy.right,
-              bottom: xy.top + xy.height
-            };
+            window.setTimeout(() => {
+              const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+              this.bounds = {
+                left: xy.left,
+                top: xy.top,
+                right: xy.right,
+                bottom: xy.top + xy.height
+              };
+            }, 0);
 
             if (typeof this.chart !== 'undefined') {
               this.chart.nativeElement.style.opacity = 1;

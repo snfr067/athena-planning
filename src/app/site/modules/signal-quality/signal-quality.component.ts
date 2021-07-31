@@ -597,17 +597,18 @@ export class SignalQualityComponent implements OnInit {
           });
         }
       }
-      // 尺寸跟場域設定一樣
-      const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
-      // const sizes = this.chartService.calSize(this.calculateForm, gd);
-      layoutOption = {
-        width: sizes.width + 60,
-        height: sizes.height,
-        shapes: this.shapes,
-        annotations: this.annotations
-      };
-      // resize layout
-      this.reLayout(id, layoutOption, isPDF);
+      // 場域尺寸計算
+      const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+        layoutOption = {
+          width: res[0],
+          height: res[1],
+          shapes: this.shapes,
+          annotations: this.annotations
+        };
+        // resize layout
+        this.reLayout(id, layoutOption, isPDF);
+      });      
 
     });
   }
@@ -685,14 +686,12 @@ export class SignalQualityComponent implements OnInit {
       } else if (item.shape === 2) {
         item['ellipseStyle'] = {
           cx: width / 2,
-          cy: height / 2,
+          cy: width / 2,
           rx: width / 2,
-          ry: height / 2
+          ry: width / 2
         };
       }
-      if (item.y === 0.6) {
-        console.log(item)
-      }
+
       // 延遲轉角度，讓位置正確
       window.setTimeout(() => {
         item['style']['transform'] = `rotate(${item.rotate}deg)`;

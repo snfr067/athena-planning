@@ -650,26 +650,29 @@ export class SignalCoverComponent implements OnInit {
         }
       }
 
-      // 尺寸跟場域設定一樣
-      const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
-      // const sizes = this.chartService.calSize(this.calculateForm, gd);
-      layoutOption = {
-        width: sizes.width + 80,
-        height: sizes.height,
-        shapes: this.shapes,
-        annotations: this.annotations
-      };
-
-      if (images.length > 0) {
-        const image = new Image();
-        image.src = images[0].source;
-        image.onload = () => {
-          this.reLayout(id, layoutOption);
+      // 場域尺寸計算
+      const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+        layoutOption = {
+          width: res[0],
+          height: res[1],
+          shapes: this.shapes,
+          annotations: this.annotations
         };
-        
-      } else {
-        this.reLayout(id, layoutOption);
-      }
+        // resize layout
+        if (images.length > 0) {
+          const image = new Image();
+          image.src = images[0].source;
+          image.onload = () => {
+            this.reLayout(id, layoutOption);
+          };
+          
+        } else {
+          this.reLayout(id, layoutOption);
+        }
+      });    
+
+      
     });
   }
 
@@ -715,7 +718,7 @@ export class SignalCoverComponent implements OnInit {
         // }
 
         const leftPosition = pixelXLinear(item.x);
-console.log(width, height)
+
         item['style'].top = `${rect2.height - height - pixelYLinear(item.y)}px`;
         item['style'].left = `${leftPosition}px`;
         item['style'].width = `${width}px`;
@@ -729,9 +732,9 @@ console.log(width, height)
         } else if (item.shape === 2) {
           item['ellipseStyle'] = {
             cx: width / 2,
-            cy: height / 2,
+            cy: width / 2,
             rx: width / 2,
-            ry: height / 2
+            ry: width / 2
           };
         }
 

@@ -68,7 +68,7 @@ export class ChartService {
     return this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
-  checkSize(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
+  async checkSize(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
 
     const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
 
@@ -96,19 +96,19 @@ export class ChartService {
         layoutHeight--;
       }
 
-      Plotly.relayout(gd, {
+      return await Plotly.relayout(gd, {
         width: layoutWidth,
         height: layoutHeight
       }).then(gd2 => {
         // console.log(width, height, layoutWidth, layoutHeight);
-        this.checkSize(calculateForm, gd2, layoutWidth, layoutHeight);
+        return this.checkSize(calculateForm, gd2, layoutWidth, layoutHeight);
       });
 
     } else {
       // 結果為正方形
       console.log(width, height, layoutWidth, layoutHeight);
     }
-
+    // console.log(layoutWidth, layoutHeight);
     return [layoutWidth, layoutHeight];
   }
 
@@ -142,7 +142,7 @@ export class ChartService {
    * @param calculateForm 
    * @param gd 
    */
-  calResultSize(calculateForm: CalculateForm, gd, maxWidth) {
+  async calResultSize(calculateForm: CalculateForm, gd, maxWidth) {
     
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
@@ -191,7 +191,8 @@ export class ChartService {
       }
     }
     
-    return [layoutWidth, layoutHeight];
+    // return [layoutWidth, layoutHeight];
+    return await this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
 }

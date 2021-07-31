@@ -230,23 +230,26 @@ export class ProposeComponent implements OnInit {
         layout: this.plotLayout,
         config: defaultPlotlyConfiguration
       }).then((gd) => {
-  
-        // 尺寸跟場域設定一樣
-        const sizes = JSON.parse(sessionStorage.getItem('layoutSize'));
-        const layoutOption = {
-          width: sizes.width,
-          height: sizes.height,
-        };
-        // 重新指定圖的長寬
-        Plotly.relayout(id, layoutOption).then((gd2) => {
-          this.layoutChart.nativeElement.style.opacity = 1;
-          if (isPDF) {
-            window.setTimeout(() => {
-              this.toImg();
-            }, 0);
-          }
-          console.log('layout plot done.');
+
+        // 場域尺寸計算
+        const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+        this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+          const layoutOption = {
+            width: res[0],
+            height: res[1]
+          };
+          // resize layout
+          Plotly.relayout(id, layoutOption).then((gd2) => {
+            this.layoutChart.nativeElement.style.opacity = 1;
+            if (isPDF) {
+              window.setTimeout(() => {
+                this.toImg();
+              }, 0);
+            }
+            console.log('layout plot done.');
+          });
         });
+        
   
       });
     }
