@@ -985,37 +985,40 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             config: defaultPlotlyConfiguration
           }).then((gd) => {
             
-            const sizes = this.chartService.calSize(this.calculateForm, gd);
-            const layoutOption = {
-              width: sizes[0],
-              height: sizes[1]
-            };
-  
-            // image放進圖裡後需取得比例尺
-            Plotly.relayout('chart', layoutOption).then((gd2) => {
+            this.chartService.calSize(this.calculateForm, gd).then(res => {
+              const layoutOption = {
+                width: res[0],
+                height: res[1]
+              };
+              // image放進圖裡後需取得比例尺
+              Plotly.relayout('chart', layoutOption).then((gd2) => {
 
-              // 計算比例尺
-              this.calScale(gd2);
+                // 計算比例尺
+                this.calScale(gd2);
 
-              if (isImportXls) {
-                // import xlsx
-                this.setImportData();
-              } else if (isImportImg) {
-                // do noting
-              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-                // 編輯
-                if (isHWAChange !== '') {
-                  // this.edit(false);
-                } else {
-                  this.edit(true);
+                if (isImportXls) {
+                  // import xlsx
+                  this.setImportData();
+                } else if (isImportImg) {
+                  // do noting
+                } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                  // 編輯
+                  if (isHWAChange !== '') {
+                    // this.edit(false);
+                  } else {
+                    this.edit(true);
+                  }
+                  console.log(this.calculateForm);
                 }
-                console.log(this.calculateForm);
-              }
 
-              // 重設場域尺寸與載入物件
-              this.chartResize();
-              
-            });  
+                // 重設場域尺寸與載入物件
+                this.chartResize();
+                
+              }); 
+
+            });
+  
+             
           });
         };
   
@@ -1029,36 +1032,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           config: defaultPlotlyConfiguration
         }).then((gd) => {
   
-          // 無image時圖長寬
-          const sizes = this.chartService.calSize(this.calculateForm, gd);
-          // console.log(sizes);
-          const layoutOption = {
-            width: sizes[0],
-            height: sizes[1]
-          };
-  
-          // 重設長寬
-          Plotly.relayout('chart', layoutOption).then((gd2) => {
-    
-            // 計算比例尺
-            this.calScale(gd2);
-            // import xlsx
-            if (isImportXls) {
-              this.setImportData();
-            } else if (isImportImg) {
-              // do nothing
-            } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-              // 編輯
-              console.log(this.calculateForm);
-              if (isHWAChange !== '') {
-                // this.edit(false);
-              } else {
-                this.edit(true);
+          this.chartService.calSize(this.calculateForm, gd).then(res => {
+            const layoutOption = {
+              width: res[0],
+              height: res[1]
+            };
+            // 重設長寬
+            Plotly.relayout('chart', layoutOption).then((gd2) => {
+                
+              // 計算比例尺
+              this.calScale(gd2);
+              // import xlsx
+              if (isImportXls) {
+                this.setImportData();
+              } else if (isImportImg) {
+                // do nothing
+              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                // 編輯
+                console.log(this.calculateForm);
+                if (isHWAChange !== '') {
+                  // this.edit(false);
+                } else {
+                  this.edit(true);
+                }
               }
-            }
-            // 重設場域尺寸與載入物件
-            this.chartResize();
+              // 重設場域尺寸與載入物件
+              this.chartResize();
+            });
           });
+          
         });
       }
 
@@ -1095,10 +1097,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.chartTop = rect.top;
     this.chartBottom = rect.bottom;
     this.chartHeight = rect.height;
-    const ognWidth = rect.width;
-    const ognHeight = rect.height;
-    const chartWidth = gd.clientWidth;
-    const chartHeight = gd.clientHeight;
 
     this.dragStyle = {
       left: `${xy.getAttribute('x')}px`,
@@ -1123,22 +1121,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.pixelYLinear = Plotly.d3.scale.linear()
       .domain([0, this.calculateForm.height])
       .range([0, rect.height]);
-
-    let width = Math.ceil(this.pixelXLinear(5));
-    let height = Math.ceil(this.pixelYLinear(5));
-    const w = rect.width;
-    const h = rect.height;
-
-    // const result = this.checkSize(width, height, w, h)
-    // width = result[0];
-    // height = result[1];
-
-    // console.log(width, height, ognWidth - width, ognHeight - height)
-    
-    // Plotly.relayout('chart', {
-    //   width: ognWidth,
-    //   height: ognHeight - 1
-    // });
   }
 
   checkSize(width, height, w, h) {
@@ -4310,49 +4292,56 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // autosize: true
         // height: '100%'
       }).then((gd) => {
-        const sizes = this.chartService.calSize(this.calculateForm, document.getElementById('chart'));
-        const layoutOption = {
-          width: sizes[0],
-          height: sizes[1]
-        };
-        console.log(layoutOption);
-        Plotly.relayout('chart', layoutOption).then((gd2) => {
-          window.setTimeout(() => {
-            // 重新計算比例尺
-            this.calScale(gd2);
-            // set 障礙物尺寸與位置
-            for (const id of this.obstacleList) {
-              this.setObstacleSize(id);
-            }
-            // set 新增基站位置
-            for (const id of this.candidateList) {
-              this.setCandidateSize(id);
-            }
-            // set 既有基站位置
-            for (const id of this.defaultBSList) {
-              this.setDefaultBsSize(id);
-            }
-            // set 既有基站位置
-            for (const id of this.ueList) {
-              this.setUeSize(id);
-            }
-            // drag範圍
-            window.setTimeout(() => {
-              const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
-              this.bounds = {
-                left: xy.left,
-                top: xy.top,
-                right: xy.right,
-                bottom: xy.top + xy.height
-              };
-            }, 0);
 
-            if (typeof this.chart !== 'undefined') {
-              this.chart.nativeElement.style.opacity = 1;
-            }
-          }, 0);
-          
+        this.chartService.calSize(this.calculateForm, gd).then(res => {
+          const layoutOption = {
+            width: res[0],
+            height: res[1]
+          };
+          // resize layout
+          console.log(layoutOption);
+          Plotly.relayout('chart', layoutOption).then((gd2) => {
+            window.setTimeout(() => {
+              // 重新計算比例尺
+              this.calScale(gd2);
+              // set 障礙物尺寸與位置
+              for (const id of this.obstacleList) {
+                this.setObstacleSize(id);
+              }
+              // set 新增基站位置
+              for (const id of this.candidateList) {
+                this.setCandidateSize(id);
+              }
+              // set 既有基站位置
+              for (const id of this.defaultBSList) {
+                this.setDefaultBsSize(id);
+              }
+              // set 既有基站位置
+              for (const id of this.ueList) {
+                this.setUeSize(id);
+              }
+              // drag範圍
+              window.setTimeout(() => {
+                const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+                this.bounds = {
+                  left: xy.left,
+                  top: xy.top,
+                  right: xy.right,
+                  bottom: xy.top + xy.height
+                };
+              }, 0);
+
+              if (typeof this.chart !== 'undefined') {
+                this.chart.nativeElement.style.opacity = 1;
+              }
+            }, 0);
+            
+          });
         });
+
+
+
+        
       });
     }, 0);
     

@@ -15,7 +15,7 @@ export class ChartService {
    * @param calculateForm 
    * @param gd 
    */
-  calSize(calculateForm: CalculateForm, gd) {
+  async calSize(calculateForm: CalculateForm, gd) {
     
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
@@ -65,7 +65,7 @@ export class ChartService {
       }
     }
     
-    return this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
+    return await this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
   async checkSize(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
