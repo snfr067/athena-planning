@@ -2741,8 +2741,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.dragObject[svgId].rotate = Number(window.sessionStorage.getItem('tempParam'));
     } else if (type == 'width') {
       this.dragObject[svgId].width = Number(window.sessionStorage.getItem('tempParam'));
+      this.changeSize(svgId,'width');
     } else if (type == 'height') {
       this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
+      this.changeSize(svgId,'height');
     }
   }
 
@@ -2867,8 +2869,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           } 
           // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
+          console.log(Number(this.dragObject[svgId].width));
+          console.log(Number(this.dragObject[svgId].x));
+          console.log(Number(this.calculateForm.width));
           width = Number(this.dragObject[svgId].width);
-          if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
+          if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width) || Number(this.dragObject[svgId].x) < 0) {
             // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
             this.recoverParam(svgId,type);
             let msg = this.translateService.instant('x_greater_then_field_width');
@@ -3002,7 +3007,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
           height = Number(this.dragObject[svgId].height);
-          if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
+          if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height) || Number(this.dragObject[svgId].y) < 0) {
             // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
             this.recoverParam(svgId,type);
             let msg = this.translateService.instant('y_greater_then_field_height');
@@ -3015,7 +3020,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-      this.moveClick(svgId);
+      
     }
     // 0713 Xean修改
     this.spanStyle[svgId].left = `${this.pixelXLinear(this.dragObject[svgId].x)}px`;
@@ -3040,6 +3045,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate') {
       this.moveNumber(svgId);
     }
+    // this.setTransform(this.target);
+    // this.moveClick(svgId);
   }
 
   /**
