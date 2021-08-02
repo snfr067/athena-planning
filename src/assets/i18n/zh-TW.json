@@ -168,8 +168,8 @@
 	"max_min_txpower_same": "最大功率與最小功率值相同，請修改",
 	"min_txpower_greater_than_max": "最大功率不可小於最小功率，請修改",
 	"must_less_then": "必須小於待選位置數量",
-	"x_greater_then_field_width": "X座標需要小於場域長度和大於0",
-	"y_greater_then_field_height": "Y座標需要小於場域寬度和大於0",
+	"x_greater_then_field_width": "修改後因為超出場域長度，故恢復原值",
+	"y_greater_then_field_height": "修改後因為超出場域寬度，故恢復原值",
 	"view.3d": "3D 顯示",
 	"rfParamLink": "RF參數設定",
 
@@ -227,6 +227,7 @@
 	"cancel": "取消",
 	"loading": "讀取中",
 	"calculating": "運算中...",
+	"Resulting": "取得結果中...",
 	"view3d.show.type": "顯示項目",
 	"view3d.heatmap.type": "Heat Map 類型",
 	"ap.num": "連線對象",

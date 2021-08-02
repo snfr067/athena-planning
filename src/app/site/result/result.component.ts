@@ -171,6 +171,7 @@ export class ResultComponent implements OnInit {
    */
   getResult() {
     let url;
+    this.authService.spinnerShowResult();
     if (this.isHst) {
       // 歷史紀錄
       url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
@@ -501,6 +502,7 @@ export class ResultComponent implements OnInit {
         this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
         this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
         this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
+        this.authService.spinnerHide();
       }
     );
     // this.getCandidateList();

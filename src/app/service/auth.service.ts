@@ -92,6 +92,11 @@ export class AuthService {
     document.getElementById('ngxSpinnerShowAsHome').click();
   }
 
+  /** show loading, 有home link */
+  spinnerShowResult() {
+    document.getElementById('ngxSpinnerShowResult').click();
+  }
+
   /**
    * dataURI to blob
    * @param dataURI

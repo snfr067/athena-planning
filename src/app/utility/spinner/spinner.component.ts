@@ -18,6 +18,8 @@ export class SpinnerComponent implements OnInit {
   showHome = false;
   /** 顯示運算中 */
   showCal = true;
+  /** 顯示運算中 */
+  showRes = false;
   /** 顯示loading */
   showLoad = false;
   /** 進度百分比 */
@@ -45,6 +47,7 @@ export class SpinnerComponent implements OnInit {
   show() {
     this.showCal = false;
     this.showLoad = true;
+    this.showRes = false;
     this.showHome = false;
     this.showPercentage = false;
     this.spinner.show();
@@ -60,6 +63,7 @@ export class SpinnerComponent implements OnInit {
     this.showLoad = false;
     this.showCal = true;
     this.showHome = true;
+    this.showRes = false;
     this.percentageVal = 0;
     this.showPercentage = true;
     window.clearTimeout(this.time);
@@ -72,9 +76,21 @@ export class SpinnerComponent implements OnInit {
     this.showLoad = false;
     this.showCal = true;
     this.showHome = false;
+    this.showRes = false;
     this.percentageVal = 0;
     this.showPercentage = true;
     this.addTime();
+    this.spinner.show();
+  }
+
+  showResult() {
+    this.showLoad = false;
+    this.showCal = false;
+    this.showHome = false;
+    this.showRes = true;
+    // this.percentageVal = 0;
+    this.showPercentage = false;
+    // this.addTime();
     this.spinner.show();
   }
 

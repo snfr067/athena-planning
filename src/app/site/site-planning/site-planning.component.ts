@@ -2744,22 +2744,41 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
     }
     // 調整完size需校正位置
-    this.changePosition(document.querySelector(`#${svgId}`), svgId, 'x');
+    this.changePosition(type, svgId);
+  }
+
+  recoverParam(svgId,type) {
+    console.log(`svgId: ${svgId}`);
+    console.log(`type: ${type}`);
+    if (type == 'x') {
+      this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+    } else if (type == 'y') {
+      this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+    } else if (type == 'rotate') {
+      this.dragObject[svgId].rotate = Number(window.sessionStorage.getItem('tempParam'));
+    } else if (type == 'width') {
+      this.dragObject[svgId].width = Number(window.sessionStorage.getItem('tempParam'));
+      this.changeSize(svgId,'width');
+    } else if (type == 'height') {
+      this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
+      this.changeSize(svgId,'height');
+    }
   }
 
   /**
    * 變更物件位置
    * @param svgId 物件id
    */
-  changePosition($event,svgId,xy) {
+  changePosition(type,svgId) {
     // 先進行檢查，數字不可為負數，且不可超過場域長寬
     const isOb = (svgId.split('_')[0]!='UE' && svgId.split('_')[0]!='defaultBS' && svgId.split('_')[0]!='candidate') ? true : false;
-    
-    if (xy == 'x') {
+    if (type != 'y') {
+    // if (type == 'x') {
       // console.log(typeof this.calculateForm.width);
       if (!isOb) {
         if (Number(this.dragObject[svgId].x) < 0 || Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
-          this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          this.recoverParam(svgId,type);
           let msg = this.translateService.instant('x_greater_then_field_width');
           this.msgDialogConfig.data = {
             type: 'error',
@@ -2784,7 +2803,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if (svgId.split('_')[0] == 'rect') {
             width  = obWid*Math.cos(angle*deg) + obHei*Math.sin(angle*deg);
             if ((cogX + width/2) > Number(this.calculateForm.width) || (cogX - width/2) < 0) {
-              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('x_greater_then_field_width');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2817,7 +2837,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let maxX = Math.max(rotTop[0],rotLeft[0],rotRight[0]);
             let minX = Math.min(rotTop[0],rotLeft[0],rotRight[0]);
             if (maxX > this.calculateForm.width || minX < 0) {
-              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('x_greater_then_field_width');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2852,7 +2873,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let maxX = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             let minX = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             if (maxX > this.calculateForm.width || minX < 0) {
-              this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('x_greater_then_field_width');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2864,9 +2886,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           } 
           // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
+          console.log(Number(this.dragObject[svgId].width));
+          console.log(Number(this.dragObject[svgId].x));
+          console.log(Number(this.calculateForm.width));
           width = Number(this.dragObject[svgId].width);
-          if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width)) {
-            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          if (width + Number(this.dragObject[svgId].x) > Number(this.calculateForm.width) || Number(this.dragObject[svgId].x) < 0) {
+            // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+            this.recoverParam(svgId,type);
             let msg = this.translateService.instant('x_greater_then_field_width');
             this.msgDialogConfig.data = {
               type: 'error',
@@ -2877,10 +2903,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-    } else { // Y coordination
+    } 
+    if (type != 'x') { // Y coordination
+    // } else { // Y coordination
       if (!isOb) {
         if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
-          this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+          // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+          this.recoverParam(svgId,type);
           let msg = this.translateService.instant('y_greater_then_field_height');
           this.msgDialogConfig.data = {
             type: 'error',
@@ -2911,7 +2940,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // console.log(`CoG+Half Height: ${cogY-height/2}`)
             // console.log(`${Number(this.calculateForm.height)}`)
             if ((cogY + height/2) > Number(this.calculateForm.height) || (cogY - height/2) < 0) {
-              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('y_greater_then_field_height');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2944,7 +2974,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let maxY = Math.max(rotTop[1],rotLeft[1],rotRight[1]);
             let minY = Math.min(rotTop[1],rotLeft[1],rotRight[1]);
             if (maxY > this.calculateForm.height || minY < 0) {
-              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('y_greater_then_field_width');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2979,7 +3010,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let maxY = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             let minY = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             if (maxY > this.calculateForm.width || minY < 0) {
-              this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
+              this.recoverParam(svgId,type);
               let msg = this.translateService.instant('y_greater_then_field_width');
               this.msgDialogConfig.data = {
                 type: 'error',
@@ -2992,8 +3024,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // else if (svgId.split('_')[0] == 'ellipse') {}
         } else {
           height = Number(this.dragObject[svgId].height);
-          if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
-            this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+          if (height + Number(this.dragObject[svgId].y) > Number(this.calculateForm.height) || Number(this.dragObject[svgId].y) < 0) {
+            // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+            this.recoverParam(svgId,type);
             let msg = this.translateService.instant('y_greater_then_field_height');
             this.msgDialogConfig.data = {
               type: 'error',
@@ -3004,6 +3037,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
+      
     }
     // 0713 Xean修改
     this.spanStyle[svgId].left = `${this.pixelXLinear(this.dragObject[svgId].x)}px`;
@@ -3028,6 +3062,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate') {
       this.moveNumber(svgId);
     }
+    // this.setTransform(this.target);
+    // this.moveClick(svgId);
   }
 
   /**
@@ -3039,6 +3075,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.target = document.querySelector(`#${svgId}`);
     this.frame.set('transform', 'rotate', `${this.dragObject[svgId].rotate}deg`);
     // 初始化物件
+    this.changePosition('rotate', svgId);
     this.moveClick(svgId);
     this.setTransform(this.target);
   }
