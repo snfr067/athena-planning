@@ -1007,31 +1007,37 @@
                     <input type="text" [(ngModel)]="dragObject[item].x" 
                     (select)="tempParamStorage(dragObject[item].x)"
                     (click)="tempParamStorage(dragObject[item].x)"
-                    (change)="changePosition($event,item,'x')">
+                    (change)="changePosition('x',item)">
                   </span>
                   <span>
                     <label>Y</label>
                     <input type="text" [(ngModel)]="dragObject[item].y" 
                     (select)="tempParamStorage(dragObject[item].y)"
                     (click)="tempParamStorage(dragObject[item].y)"
-                    (change)="changePosition($event,item,'y')">
+                    (change)="changePosition('y',item)">
                   </span>
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].rotate"
-                    (select)="tempParamStorage(dragObject[item].y)"
-                    (click)="tempParamStorage(dragObject[item].y)"
+                    (select)="tempParamStorage(dragObject[item].rotate)"
+                    (click)="tempParamStorage(dragObject[item].rotate)"
                     (change)="changeRotate(item)"
                     [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
                   <br>
                   <span>
                     <label>{{ 'width' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].width" (change)="changeSize(item, 'width')">
+                    <input type="text" [(ngModel)]="dragObject[item].width"
+                    (select)="tempParamStorage(dragObject[item].width)"
+                    (click)="tempParamStorage(dragObject[item].width)"
+                    (change)="changeSize(item, 'width')">
                   </span>
                   <span>
                     <label>{{ 'height' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].height" (change)="changeSize(item, 'height')">
+                    <input type="text" [(ngModel)]="dragObject[item].height"
+                    (select)="tempParamStorage(dragObject[item].height)"
+                    (click)="tempParamStorage(dragObject[item].height)"
+                    (change)="changeSize(item, 'height')">
                   </span>
                   <span>
                     <label>{{ 'altitude' | translate }}</label>
@@ -1076,14 +1082,14 @@
                         <input type="text" [(ngModel)]="dragObject[item].x" 
                         (select)="tempParamStorage(dragObject[item].x)"
                         (click)="tempParamStorage(dragObject[item].x)"
-                        (change)="changePosition($event,item,'x')">
+                        (change)="changePosition('x',item)">
                       </span>
                       <span>
                         <label>Y</label>
                         <input type="text" [(ngModel)]="dragObject[item].y"
                         (select)="tempParamStorage(dragObject[item].y)"
                         (click)="tempParamStorage(dragObject[item].y)"
-                        (change)="changePosition($event,item,'y')">
+                        (change)="changePosition('y',item)">
                       </span>
                       <span>
                         <label>Z</label>
@@ -1130,14 +1136,14 @@
                     <input type="text" [(ngModel)]="dragObject[item].x"
                     (select)="tempParamStorage(dragObject[item].x)"
                     (click)="tempParamStorage(dragObject[item].x)"
-                    (change)="changePosition($event,item,'x')">
+                    (change)="changePosition('x',item)">
                   </span>
                   <span>
                     <label>Y</label>
                     <input type="text" [(ngModel)]="dragObject[item].y"
                     (select)="tempParamStorage(dragObject[item].y)"
                     (click)="tempParamStorage(dragObject[item].y)"
-                    (change)="changePosition($event,item,'y')">
+                    (change)="changePosition('y',item)">
                   </span>
                   <span>
                     <label>Z</label>
@@ -1168,14 +1174,14 @@
                         <input type="text" [(ngModel)]="dragObject[item].x"
                         (select)="tempParamStorage(dragObject[item].x)"
                         (click)="tempParamStorage(dragObject[item].x)"
-                        (change)="changePosition($event,item,'x')">
+                        (change)="changePosition('x',item)">
                       </span>
                       <span>
                         <label>Y</label>
                         <input type="text" [(ngModel)]="dragObject[item].y"
                         (select)="tempParamStorage(dragObject[item].y)"
                         (click)="tempParamStorage(dragObject[item].y)"
-                        (change)="changePosition($event,item,'y')">
+                        (change)="changePosition('y',item)">
                       </span>
                       <span>
                         <label>Z</label>

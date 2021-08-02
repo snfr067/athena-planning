@@ -5,6 +5,7 @@
   type="ball-scale-multiple">
   <p class="going">
     <span *ngIf="showCal">{{ 'calculating' | translate }}</span>
+    <span *ngIf="showRes">{{ 'Resulting' | translate }}</span>
     <span *ngIf="showLoad">{{ 'loading' | translate }}</span>
     <span *ngIf="showPercentage"><span id="percentageVal">{{ percentageVal }}</span>%</span>
   </p>

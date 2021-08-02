@@ -228,6 +228,7 @@
 	"cancel": "Cancel",
 	"loading": "Loading",
 	"calculating": "Calculating...",
+	"Resulting": "Geting Result...",
 	"view3d.show.type": "Show types",
 	"view3d.heatmap.type": "Heat map types",
 	"ap.num": "connection target",
