@@ -1708,7 +1708,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ognSpanStyle[this.svgId] = _.cloneDeep(this.spanStyle[this.svgId]);
       this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
     }
-    this.moveClick(this.target.id);
+    // 讓xy正確
+    window.setTimeout(() => {
+      this.moveClick(this.target.id);
+      window.setTimeout(() => {
+        this.moveable.destroy();
+      }, 0);
+    }, 0);
+    
+  }
+
+  /** resize end */
+  resizeEnd() {
+    // resize後bound會跑掉，重設frame
+    const left = `${this.pixelXLinear(this.dragObject[this.svgId].x)}px`;
+    const top = `${this.chartHeight - this.pixelYLinear(this.dragObject[this.svgId].height) - this.pixelYLinear(this.dragObject[this.svgId].y)}px`;
+    this.frame.set('left', left);
+    this.frame.set('top', top);
+    this.setTransform(this.target);
   }
 
   /**
@@ -4490,6 +4507,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.leftWidth = contentWidth - (contentWidth * 0.3) - 50;
     document.getElementById('chart').style.width = `${this.leftWidth}px`;
     // document.getElementById('chart').style.overflowY = 'hidden';
+  }
+
+  divScroll(event) {
+    console.log(222222222)
+    console.log(event)
   }
 
 }
