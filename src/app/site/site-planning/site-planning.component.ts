@@ -2976,7 +2976,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
-              let msg = this.translateService.instant('y_greater_then_field_width');
+              let msg = this.translateService.instant('y_greater_then_field_height');
               this.msgDialogConfig.data = {
                 type: 'error',
                 infoMessage: msg
@@ -3012,7 +3012,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (maxY > this.calculateForm.width || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
-              let msg = this.translateService.instant('y_greater_then_field_width');
+              let msg = this.translateService.instant('y_greater_then_field_height');
               this.msgDialogConfig.data = {
                 type: 'error',
                 infoMessage: msg
