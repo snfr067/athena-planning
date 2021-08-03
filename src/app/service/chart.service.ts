@@ -16,7 +16,9 @@ export class ChartService {
    * @param gd 
    */
   async calSize(calculateForm: CalculateForm, gd) {
-    
+    // 場域1/3寬高度
+    const halfHeight = document.getElementById('chart').clientWidth * 0.3;
+    const halfWidth = (window.innerHeight - 150) / 2;
     let layoutWidth = gd.clientWidth;
     let layoutHeight = gd.clientHeight;
     // marginSize 60 grid才能維持正方形
@@ -36,9 +38,19 @@ export class ChartService {
         layoutHeight = layoutWidth * wRatio;
       }
       layoutWidth += marginSize;
+
+      if (layoutWidth < halfWidth) {
+        layoutWidth = halfWidth;
+        layoutHeight = layoutHeight * (calculateForm.height / calculateForm.width);
+      }
+
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
       layoutHeight = layoutWidth * ratio;
+      if (layoutHeight < halfHeight) {
+        layoutHeight = halfHeight;
+        layoutWidth = layoutHeight * (calculateForm.width / calculateForm.height);
+      }
       const winHeight = window.innerHeight - 150;
       if (layoutHeight > winHeight) {
         const wRatio = winHeight / layoutHeight;
@@ -64,7 +76,7 @@ export class ChartService {
         layoutHeight = layoutWidth - marginSize;
       }
     }
-    
+    // return [layoutWidth, layoutHeight]
     return await this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
@@ -84,8 +96,8 @@ export class ChartService {
         .range([0, gridHeight]);
     
     // 模擬1個正方形
-    const width = Math.ceil(pixelXLinear(calculateForm.height));
-    const height = Math.ceil(pixelYLinear(calculateForm.height));
+    const width = Math.ceil(pixelXLinear(50));
+    const height = Math.ceil(pixelYLinear(50));
     
     if (width !== height) {
       // 結果非正方形時變更場域大小至正方形為止

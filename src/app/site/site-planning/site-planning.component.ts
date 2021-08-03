@@ -303,6 +303,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   };
   /** 左邊寬度 */
   leftWidth = 0;
+  scrollLeft = 0;
+  scrollTop = 0;
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -1375,7 +1377,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = document.getElementById(`${this.svgId}`);
       this.live = true;
       if (this.svgMap[id].type === 'obstacle') {
-        this.moveable.rotatable = true;
+        if (this.dragObject[this.svgId].element === 2) {
+          // 圓形關閉旋轉
+          this.moveable.rotatable = false;
+          // 只開4個拖拉點
+          this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
+        } else {
+          this.moveable.rotatable = true;
+          // 拖拉點全開
+          this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
+        }
         this.moveable.resizable = true;
       } else {
         this.moveable.rotatable = false;
@@ -1543,30 +1554,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (mOrigin != null) {
       // 有找到中心點
       const moveableOrigin = mOrigin.getBoundingClientRect();
-      const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2);
-      const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2);
+      const x = moveableOrigin.left - this.chartLeft + (moveableOrigin.width / 2) - (this.svgStyle[this.svgId].width / 2) + this.scrollLeft;
+      const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2) - this.scrollTop;
       this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
       this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
       if (this.dragObject[this.svgId].type === 'obstacle') {
         this.dragObject[this.svgId].width = wVal;
         this.dragObject[this.svgId].height = hVal;
-      }
-      const numX = Number(this.dragObject[this.svgId].x);
-      // 加上長寬後是否超出邊界
-      const xEnd = numX + Number(this.dragObject[this.svgId].width);
-      if (xEnd > this.calculateForm.width) {
-        this.dragObject[this.svgId].x = Number(this.calculateForm.width) - Number(this.dragObject[this.svgId].width);
-      } else if (numX < 0) {
-        this.dragObject[this.svgId].x = 0;
-      }
 
-      const numY = Number(this.dragObject[this.svgId].y);
-      const yEnd = numY + Number(this.dragObject[this.svgId].height);
-      if (yEnd > this.calculateForm.height) {
-        this.dragObject[this.svgId].y = Number(this.calculateForm.height) - Number(this.dragObject[this.svgId].height);
-      } else if (numY < 0) {
-        this.dragObject[this.svgId].y = 0;
-      }
+        // 檢查加上長寬後是否超出邊界
+        const numX = Number(this.dragObject[this.svgId].x);
+        const xEnd = numX + Number(this.dragObject[this.svgId].width);
+        if (xEnd > this.calculateForm.width) {
+          this.dragObject[this.svgId].x = Number(this.calculateForm.width) - Number(this.dragObject[this.svgId].width);
+        } else if (numX < 0) {
+          this.dragObject[this.svgId].x = 0;
+        }
+
+        const numY = Number(this.dragObject[this.svgId].y);
+        const yEnd = numY + Number(this.dragObject[this.svgId].height);
+        if (yEnd > this.calculateForm.height) {
+          this.dragObject[this.svgId].y = Number(this.calculateForm.height) - Number(this.dragObject[this.svgId].height);
+        } else if (numY < 0) {
+          this.dragObject[this.svgId].y = 0;
+        }
+      }  
     }
     
   }
@@ -1599,7 +1611,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.frame.set('top', `${top}px`);
       this.frame.set('z-index', 9999999);
       this.setTransform(target);
-      
+
       this.spanStyle[this.svgId].left = `${left}px`;
       this.spanStyle[this.svgId].top = `${top}px`;
 
@@ -1611,6 +1623,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         };
       }
       this.setLabel();
+
     } catch (error) {
       console.log(error);
       // 發生error，onEnd還原位置
@@ -4407,6 +4420,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               for (const id of this.ueList) {
                 this.setUeSize(id);
               }
+
+              // scrollbar event
+              gd2.addEventListener('scroll', (event) => {
+                event.preventDefault();
+                this.scrollLeft = gd2.scrollLeft;
+                this.scrollTop = gd2.scrollTop;
+                const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+                this.bounds = {
+                  left: xy.left - this.scrollLeft,
+                  top: xy.top - this.scrollTop,
+                  right: xy.right,
+                  bottom: xy.top + xy.height
+                };
+              });
+
               // drag範圍
               window.setTimeout(() => {
                 const xy = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
@@ -4575,7 +4603,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   resetChartWidth() {
     const contentWidth = window.innerWidth - 64;
     this.leftWidth = contentWidth - (contentWidth * 0.3) - 50;
-    document.getElementById('chart').style.width = `${this.leftWidth}px`;
+    // document.getElementById('chart').style.width = `${this.leftWidth}px`;
     // document.getElementById('chart').style.overflowY = 'hidden';
   }
 

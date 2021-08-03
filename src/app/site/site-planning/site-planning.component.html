@@ -147,8 +147,8 @@
     <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
       
     </div> -->
-    <div #chart id="chart" style="position: relative; overflow-x: auto" (scroll)="divScroll($event)">
-      <div #dragArea [ngStyle]="dragStyle" (scroll)="divScroll($event)">
+    <div #chart id="chart" style="position: relative; overflow-x: auto">
+      <div #dragArea [ngStyle]="dragStyle">
         <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <ng-container *ngIf="svgStyle[item]">
             <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
