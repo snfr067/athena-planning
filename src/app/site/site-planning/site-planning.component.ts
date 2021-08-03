@@ -1444,7 +1444,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // console.log(this.dragObject[id])
     this.live = true;
     if (this.dragObject[id].type === 'obstacle') {
-      this.moveable.rotatable = true;
+      if (this.dragObject[id].element === 2) {
+        // 圓形關閉旋轉
+        this.moveable.rotatable = false;
+        // 只開4個拖拉點
+        this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
+      } else {
+        this.moveable.rotatable = true;
+        // 拖拉點全開
+        this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
+      }
+      
       this.moveable.resizable = true;
     } else {
       this.moveable.rotatable = false;
@@ -1540,6 +1550,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.dragObject[this.svgId].type === 'obstacle') {
         this.dragObject[this.svgId].width = wVal;
         this.dragObject[this.svgId].height = hVal;
+      }
+      const numX = Number(this.dragObject[this.svgId].x);
+      // 加上長寬後是否超出邊界
+      const xEnd = numX + Number(this.dragObject[this.svgId].width);
+      if (xEnd > this.calculateForm.width) {
+        this.dragObject[this.svgId].x = Number(this.calculateForm.width) - Number(this.dragObject[this.svgId].width);
+      } else if (numX < 0) {
+        this.dragObject[this.svgId].x = 0;
+      }
+
+      const numY = Number(this.dragObject[this.svgId].y);
+      const yEnd = numY + Number(this.dragObject[this.svgId].height);
+      if (yEnd > this.calculateForm.height) {
+        this.dragObject[this.svgId].y = Number(this.calculateForm.height) - Number(this.dragObject[this.svgId].height);
+      } else if (numY < 0) {
+        this.dragObject[this.svgId].y = 0;
       }
     }
     
@@ -2689,7 +2715,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   /**
-   * 變更場域size
+   * 變更障礙物size
    * @param svgId 物件id 
    */
   changeSize(svgId, type) {
@@ -2741,6 +2767,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.polygonStyle[svgId] = {
         points: points,
         fill: this.dragObject[svgId].color
+      };
+    } else if (shape === 'trapezoid' || Number(shape) === 3) {
+      // 梯形
+      this.trapezoidStyle[svgId] = {
+        fill: this.dragObject[svgId].color,
+        width: elementWidth,
+        height: elementHeight
       };
     }
     // 調整完size需校正位置
