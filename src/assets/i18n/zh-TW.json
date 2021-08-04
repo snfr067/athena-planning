@@ -170,6 +170,7 @@
 	"must_less_then": "必須小於待選位置數量",
 	"x_greater_then_field_width": "修改後因為超出場域長度，故恢復原值",
 	"y_greater_then_field_height": "修改後因為超出場域寬度，故恢復原值",
+	"wha_cant_less_than_0": "障礙物的長寬高不可小於等於0",
 	"view.3d": "3D 顯示",
 	"rfParamLink": "RF參數設定",
 

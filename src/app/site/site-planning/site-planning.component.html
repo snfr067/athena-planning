@@ -1041,7 +1041,10 @@
                   </span>
                   <span>
                     <label>{{ 'altitude' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].altitude">
+                    <input type="text" [(ngModel)]="dragObject[item].altitude"
+                    (select)="tempParamStorage(dragObject[item].altitude)"
+                    (click)="tempParamStorage(dragObject[item].altitude)"
+                    (change)="changeSize(item, 'altitude',true)">
                     <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
                   </span>
                   <span>

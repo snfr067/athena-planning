@@ -1565,17 +1565,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // 檢查加上長寬後是否超出邊界
         const numX = Number(this.dragObject[this.svgId].x);
         const xEnd = numX + Number(this.dragObject[this.svgId].width);
-        if (xEnd > this.calculateForm.width) {
+        if (xEnd > this.calculateForm.width && Number(this.dragObject[this.svgId].rotate) == 0) {
           this.dragObject[this.svgId].x = Number(this.calculateForm.width) - Number(this.dragObject[this.svgId].width);
-        } else if (numX < 0) {
+        } else if (numX < 0  && Number(this.dragObject[this.svgId].rotate) == 0) {
           this.dragObject[this.svgId].x = 0;
         }
 
         const numY = Number(this.dragObject[this.svgId].y);
         const yEnd = numY + Number(this.dragObject[this.svgId].height);
-        if (yEnd > this.calculateForm.height) {
+        if (yEnd > this.calculateForm.height && Number(this.dragObject[this.svgId].rotate) == 0) {
           this.dragObject[this.svgId].y = Number(this.calculateForm.height) - Number(this.dragObject[this.svgId].height);
-        } else if (numY < 0) {
+        } else if (numY < 0  && Number(this.dragObject[this.svgId].rotate) == 0) {
           this.dragObject[this.svgId].y = 0;
         }
       }  
@@ -2732,6 +2732,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param svgId 物件id 
    */
   changeSize(svgId, type, first) {
+    if (type == 'altitude') {
+      if (this.dragObject[svgId].altitude <= 0) {
+        this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
+        let msg = this.translateService.instant('wha_cant_less_than_0');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      }
+      return;
+    }
+    if (type == 'width' && this.dragObject[svgId].width <= 0) {
+      this.dragObject[svgId].width = Number(window.sessionStorage.getItem('tempParam'));
+      let msg = this.translateService.instant('wha_cant_less_than_0');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    } else if (type == 'height' && this.dragObject[svgId].height <= 0) {
+      this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
+      let msg = this.translateService.instant('wha_cant_less_than_0');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
     this.svgId = svgId;
     // this.target = document.querySelector(`#${svgId}`);
     const elementWidth = this.pixelXLinear(this.dragObject[svgId].width);

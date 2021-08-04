@@ -170,6 +170,7 @@
 	"must_less_then": "must less than",
 	"x_greater_then_field_width": "x coordinate can't greater than field width or less than zero",
 	"y_greater_then_field_height": "y coordinate can't greater than field height or less than zero",
+	"wha_cant_less_than_0": "Obstacle's width, height, and altitude cannot less than zero",
 	"view.3d": "3D model",
 	"rfParamLink": "RF Parameter setting",
 
