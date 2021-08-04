@@ -942,7 +942,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     };
     // 繪圖layout
     this.plotLayout = {
-      autosize: true,
+      autosize: false,
+      width: this.calculateForm.width,
+      height: this.calculateForm.height,
       xaxis: {
         linewidth: 1,
         mirror: 'all',
@@ -989,16 +991,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             config: defaultPlotlyConfiguration
           }).then((gd) => {
             
-            this.chartService.calSize(this.calculateForm, gd).then(res => {
-              const layoutOption = {
-                width: res[0],
-                height: res[1]
-              };
-              // image放進圖裡後需取得比例尺
-              Plotly.relayout('chart', layoutOption).then((gd2) => {
+            // this.chartService.calSize(this.calculateForm, gd).then(res => {
+            //   const layoutOption = {
+            //     width: res[0],
+            //     height: res[1]
+            //   };
+            //   // image放進圖裡後需取得比例尺
+            //   Plotly.relayout('chart', layoutOption).then((gd2) => {
 
                 // 計算比例尺
-                this.calScale(gd2);
+                this.calScale(gd);
 
                 if (isImportXls) {
                   // import xlsx
@@ -1018,9 +1020,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 // 重設場域尺寸與載入物件
                 this.chartResize();
                 
-              }); 
+            //   }); 
 
-            });
+            // });
   
              
           });
@@ -1036,16 +1038,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           config: defaultPlotlyConfiguration
         }).then((gd) => {
   
-          this.chartService.calSize(this.calculateForm, gd).then(res => {
-            const layoutOption = {
-              width: res[0],
-              height: res[1]
-            };
-            // 重設長寬
-            Plotly.relayout('chart', layoutOption).then((gd2) => {
+          // this.chartService.calSize(this.calculateForm, gd).then(res => {
+          //   const layoutOption = {
+          //     width: res[0],
+          //     height: res[1]
+          //   };
+          //   // 重設長寬
+          //   Plotly.relayout('chart', layoutOption).then((gd2) => {
                 
               // 計算比例尺
-              this.calScale(gd2);
+              this.calScale(gd);
               // import xlsx
               if (isImportXls) {
                 this.setImportData();
@@ -1062,8 +1064,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               }
               // 重設場域尺寸與載入物件
               this.chartResize();
-            });
-          });
+          //   });
+          // });
           
         });
       }
@@ -1644,6 +1646,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
+    }
+    // 超出邊界即中斷
+    const rect = target.getBoundingClientRect();
+    // console.log(rect, this.bounds)
+    if (rect.right >= this.bounds.right
+      || rect.top <= this.bounds.top
+      || rect.bottom >= this.bounds.bottom
+      || rect.left <= this.bounds.left ) {
+      return;
     }
 
     const deg = parseFloat(this.frame.get('transform', 'rotate')) + beforeDelta;
@@ -4683,9 +4694,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // document.getElementById('chart').style.overflowY = 'hidden';
   }
 
-  divScroll(event) {
-    console.log(222222222)
-    console.log(event)
-  }
+  // lazyResize() {
+  //   window.setTimeout(() => {
+  //     this.chartResize();
+  //   }, 00);
+  // }
 
 }

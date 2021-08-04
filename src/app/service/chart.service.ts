@@ -28,8 +28,7 @@ export class ChartService {
     // console.log(layoutWidth);
     // console.log(layoutHeight);
     if (Number(calculateForm.width) < Number(calculateForm.height)) {
-      const ratio = calculateForm.width / calculateForm.height;
-      // layoutWidth = layoutHeight * ratio;
+      const ratio = calculateForm.width / calculateForm.height;      
       layoutWidth = layoutHeight * ratio + 160;
       if (layoutWidth > gd.clientWidth) {
         // has scroll bar
@@ -41,16 +40,17 @@ export class ChartService {
 
       if (layoutWidth < halfWidth) {
         layoutWidth = halfWidth;
-        layoutHeight = layoutHeight * (calculateForm.height / calculateForm.width);
+        layoutHeight = layoutWidth * (calculateForm.height / calculateForm.width);
       }
 
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
       const ratio = calculateForm.height / calculateForm.width;
       layoutHeight = layoutWidth * ratio;
-      if (layoutHeight < halfHeight) {
-        layoutHeight = halfHeight;
-        layoutWidth = layoutHeight * (calculateForm.width / calculateForm.height);
-      }
+      
+      // if (layoutHeight < halfHeight) {
+      //   layoutHeight = halfHeight;
+      //   layoutWidth = layoutHeight * (calculateForm.width / calculateForm.height);
+      // }
       const winHeight = window.innerHeight - 150;
       if (layoutHeight > winHeight) {
         const wRatio = winHeight / layoutHeight;
@@ -60,12 +60,16 @@ export class ChartService {
           layoutWidth = gd.clientWidth;
         }
       }
-      if (layoutHeight > gd.clientHeight) {
-        // has scroll bar
-        layoutHeight = gd.clientHeight;
-        const wRatio = calculateForm.width / calculateForm.height;
-        layoutWidth = layoutHeight * wRatio;
+      if (layoutHeight < halfHeight) {
+        layoutHeight = halfHeight;
+        layoutWidth = layoutHeight * (calculateForm.width / calculateForm.height);
       }
+      // if (layoutHeight > gd.clientHeight) {
+      //   // has scroll bar
+      //   layoutHeight = gd.clientHeight;
+      //   const wRatio = calculateForm.width / calculateForm.height;
+      //   layoutWidth = layoutHeight * wRatio;
+      // }
       // layoutWidth += marginSize;
     } else {
       
@@ -77,10 +81,46 @@ export class ChartService {
       }
     }
     // return [layoutWidth, layoutHeight]
-    return await this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
+    return await this.checkSize1(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
-  async checkSize(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
+  /** 用比例校正場域長寬 */
+  async checkSize1(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
+    return await Plotly.relayout(gd, {
+      width: layoutWidth,
+      height: layoutHeight
+    }).then(gd2 => {
+      const xy: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
+
+      const gridWidth = xy.width;
+      const gridHeight = xy.height;
+
+      const pixelXLinear = Plotly.d3.scale.linear()
+          .domain([0, calculateForm.width])
+          .range([0, gridWidth]);
+
+      const pixelYLinear = Plotly.d3.scale.linear()
+          .domain([0, calculateForm.height])
+          .range([0, gridHeight]);
+      
+      // 模擬1個正方形
+      const width = Math.ceil(pixelXLinear(100));
+      const height = Math.ceil(pixelYLinear(100));
+      if (width !== height) {
+        // 避免遞迴卡死，先用比例讓尺寸接近些
+        if (width > height) {
+          layoutWidth = layoutWidth * (height / width);
+        } else if (width < height) {
+          layoutHeight = layoutHeight * (width / height);
+        }
+      }
+
+      return this.checkSize2(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
+    });
+  }
+
+  /** 進階校正場域長寬 */
+  async checkSize2(calculateForm: CalculateForm, gd, layoutWidth, layoutHeight) {
 
     const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0].getBoundingClientRect();
 
@@ -96,14 +136,13 @@ export class ChartService {
         .range([0, gridHeight]);
     
     // 模擬1個正方形
-    const width = Math.ceil(pixelXLinear(50));
-    const height = Math.ceil(pixelYLinear(50));
+    const width = Math.ceil(pixelXLinear(100));
+    const height = Math.ceil(pixelYLinear(100));
     
     if (width !== height) {
-      // 結果非正方形時變更場域大小至正方形為止
+      // 結果非正方形時，每次變更1px場域大小至正方形為止
       if (width > height) {
         layoutWidth--;
-  
       } else if (width < height) {
         layoutHeight--;
       }
@@ -113,7 +152,7 @@ export class ChartService {
         height: layoutHeight
       }).then(gd2 => {
         // console.log(width, height, layoutWidth, layoutHeight);
-        return this.checkSize(calculateForm, gd2, layoutWidth, layoutHeight);
+        return this.checkSize2(calculateForm, gd2, layoutWidth, layoutHeight);
       });
 
     } else {
@@ -204,7 +243,7 @@ export class ChartService {
     }
     
     // return [layoutWidth, layoutHeight];
-    return await this.checkSize(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
+    return await this.checkSize1(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
 }
