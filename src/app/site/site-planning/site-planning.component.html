@@ -1030,14 +1030,14 @@
                     <input type="text" [(ngModel)]="dragObject[item].width"
                     (select)="tempParamStorage(dragObject[item].width)"
                     (click)="tempParamStorage(dragObject[item].width)"
-                    (change)="changeSize(item, 'width')">
+                    (change)="changeSize(item, 'width', true)">
                   </span>
                   <span>
                     <label>{{ 'height' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].height"
                     (select)="tempParamStorage(dragObject[item].height)"
                     (click)="tempParamStorage(dragObject[item].height)"
-                    (change)="changeSize(item, 'height')">
+                    (change)="changeSize(item, 'height',true)">
                   </span>
                   <span>
                     <label>{{ 'altitude' | translate }}</label>

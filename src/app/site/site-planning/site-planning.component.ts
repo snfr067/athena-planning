@@ -2731,7 +2731,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 變更障礙物size
    * @param svgId 物件id 
    */
-  changeSize(svgId, type) {
+  changeSize(svgId, type, first) {
     this.svgId = svgId;
     // this.target = document.querySelector(`#${svgId}`);
     const elementWidth = this.pixelXLinear(this.dragObject[svgId].width);
@@ -2790,7 +2790,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
     }
     // 調整完size需校正位置
-    this.changePosition(type, svgId);
+    if (first) {
+      this.changePosition(type, svgId);
+    }
   }
 
   recoverParam(svgId,type) {
@@ -2804,10 +2806,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.dragObject[svgId].rotate = Number(window.sessionStorage.getItem('tempParam'));
     } else if (type == 'width') {
       this.dragObject[svgId].width = Number(window.sessionStorage.getItem('tempParam'));
-      this.changeSize(svgId,'width');
+      this.changeSize(svgId,'width',false);
     } else if (type == 'height') {
       this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
-      this.changeSize(svgId,'height');
+      this.changeSize(svgId,'height',false);
     }
   }
 
@@ -2844,11 +2846,33 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let deg = 2*Math.PI/360;
           let x = Number(this.dragObject[svgId].x);
           let y = Number(this.dragObject[svgId].y);
-          let cogX = obWid/2 + x;
           if (angle < 0) {angle+=360};
           if (svgId.split('_')[0] == 'rect') {
-            width  = obWid*Math.cos(angle*deg) + obHei*Math.sin(angle*deg);
-            if ((cogX + width/2) > Number(this.calculateForm.width) || (cogX - width/2) < 0) {
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let leftbot = [x,y];
+            let lefttop = [x,y+obHei];
+            let rightbot = [x+obWid,y];
+            let righttop = [x+obWid,y+obHei];
+            let rotleftbot = [
+              (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotlefttop = [
+              (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrightbot = [
+              (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrighttop = [
+              (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let maxX = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            let minX = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            if (maxX > this.calculateForm.width || minX < 0) {
               // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
               let msg = this.translateService.instant('x_greater_then_field_width');
@@ -2975,17 +2999,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let deg = 2*Math.PI/360;
           let x = Number(this.dragObject[svgId].x);
           let y = Number(this.dragObject[svgId].y);
-          let cogY = obHei/2 + y;
           if (svgId.split('_')[0] == 'rect') {
-            height  = obWid*Math.sin(angle*deg)+ obHei*Math.cos(angle*deg);
-            // console.log(`cogY: ${cogY}`);
-            // console.log(Math.sin(angle*(2*Math.PI/360)));
-            // console.log(Math.cos(angle*(2*Math.PI/360)));
-            // console.log(`rotate height: ${height/2}`)
-            // console.log(`CoG+Half Height: ${cogY+height/2}`)
-            // console.log(`CoG+Half Height: ${cogY-height/2}`)
-            // console.log(`${Number(this.calculateForm.height)}`)
-            if ((cogY + height/2) > Number(this.calculateForm.height) || (cogY - height/2) < 0) {
+            let tempAngle = 360 - angle; 
+            let rcc = [x+obWid/2,y+obHei/2];
+            let leftbot = [x,y];
+            let lefttop = [x,y+obHei];
+            let rightbot = [x+obWid,y];
+            let righttop = [x+obWid,y+obHei];
+            let rotleftbot = [
+              (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotlefttop = [
+              (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrightbot = [
+              (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let rotrighttop = [
+              (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+              (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+            ];
+            let maxY = Math.max(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
+            let minY = Math.min(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
+            if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
               let msg = this.translateService.instant('y_greater_then_field_height');
@@ -3053,9 +3092,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
               (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
-            let maxY = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
-            let minY = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
-            if (maxY > this.calculateForm.width || minY < 0) {
+            let maxY = Math.max(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
+            let minY = Math.min(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
+            console.log(maxY);
+            console.log(minY);
+            if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
               let msg = this.translateService.instant('y_greater_then_field_height');
