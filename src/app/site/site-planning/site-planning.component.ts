@@ -184,6 +184,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 當下互動物件的id */
   svgId;
   svgNum;
+  /** 新增物件的起始pixel位置 */
+  initpxl = 50;
   /** 互動物件的真實id，避免互動時id錯亂用 */
   realId;
   /** 互動物件的tooltip */
@@ -1326,8 +1328,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
 
     this.spanStyle[this.svgId] = {
-      left: `200px`,
-      top: `100px`,
+      left: `${this.initpxl}px`,
+      top: `${this.initpxl}px`,
       width: `${width}px`,
       height: `${height}px`
     };
@@ -1358,8 +1360,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.frame = new Frame({
       width: `${width}px`,
       height: `${height}px`,
-      left: '200px',
-      top: '100px',
+      left: `${this.initpxl}px`,
+      top: `${this.initpxl}px`,
       'z-index': 99999,
       transform: {
         rotate: '0deg',
@@ -1367,6 +1369,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
+
+    // this.initpxl += 10;
 
     // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
     this.bgdivStyle.width = `${window.innerWidth}px`;
