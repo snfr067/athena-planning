@@ -191,9 +191,10 @@ export class ResultComponent implements OnInit {
           console.log(this.calculateForm);
           console.log(this.result);
           defaultidx = this.result['defaultidx'];
-          // setTimeout(() => {
-          this.getCandidateList();
-          // }, 3000);
+          if (!this.calculateForm.isSimulation) {
+            this.getCandidateList();
+            console.log(`Get Candidate`);
+          }
           
         } else {
           this.calculateForm = res['input'];
@@ -201,7 +202,10 @@ export class ResultComponent implements OnInit {
           console.log(this.calculateForm);
           console.log(this.result);
           defaultidx = this.result['defaultIdx'];
-          this.getCandidateList();
+          if (!this.calculateForm.isSimulation) {
+            this.getCandidateList();
+            console.log(`Get Candidate`);
+          }
         }
         //是否為模擬
         this.isSimulate = this.calculateForm.isSimulation;
@@ -239,11 +243,11 @@ export class ResultComponent implements OnInit {
               }
             }
           }
-          console.log(defaultidx);
-          console.log(unsorttxpower);
-          console.log(unsortbeamid);
-          console.log(txpower);
-          console.log(beamid);
+          // console.log(defaultidx);
+          // console.log(unsorttxpower);
+          // console.log(unsortbeamid);
+          // console.log(txpower);
+          // console.log(beamid);
           const frequency = JSON.parse(this.calculateForm.frequencyList);
           const bandwidth = JSON.parse(this.calculateForm.bandwidth);
           const mimoNumber = JSON.parse(this.calculateForm.mimoNumber);
@@ -267,7 +271,10 @@ export class ResultComponent implements OnInit {
             dlScs = JSON.parse(this.calculateForm.dlScs);
             ulScs = JSON.parse(this.calculateForm.ulScs);
           }
-          const scs = JSON.parse(this.calculateForm.scs);
+          let scs = [];
+          if (this.calculateForm.duplex === "tdd") {
+            scs = JSON.parse(this.calculateForm.scs);
+          }
           const dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth);
           const ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth);
           

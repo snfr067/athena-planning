@@ -141,7 +141,7 @@
       <mat-button-toggle-group class="inline-block ml_5">
         <mat-button-toggle value="go" (click)="calculate()">{{ 'planning.calculate' | translate }}</mat-button-toggle>
         <mat-button-toggle *ngIf="taskid !== ''" value="result" (click)="result()">{{ 'planning.result' | translate }}</mat-button-toggle>
-        <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle>
+        <!-- <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle> -->
       </mat-button-toggle-group>
     </div>
     <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
@@ -397,7 +397,7 @@
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
                     <option value="0">4G</option>
                     <option value="1">5G</option>
-                    <option value="2" disabled>WiFi</option>
+                    <option value="2">WiFi</option>
                   </select>
                 </td>
               </tr>
@@ -800,7 +800,7 @@
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
                     <option value="0">4G</option>
                     <option value="1">5G</option>
-                    <option value="2" disabled>WiFi</option>
+                    <option value="2">WiFi</option>
                   </select>
                 </li>
                 <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
@@ -2176,7 +2176,58 @@
         </td>
       </tr>
     </tbody>
-    <tbody></tbody>
+    <!------------------------------>
+    <!--   WiFi                   -->
+    <!------------------------------>
+    <tbody *ngIf="calculateForm.objectiveIndex == '2'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>TxPower</td>
+        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+      </tr>
+      <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern"></td>
+      </tr>
+      <tr>
+        <td>Frequency</td>
+        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'tddBandwidth' | translate }}</td>
+        <td><input type="number" class="inputNum" step="5" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'wifiProtocol' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].wifiProtocol" style="width: 100px;">
+            <option value="wifi4">WiFi4</option>
+            <option value="wifi5">WiFi5</option>
+            <option value="wifi6">WiFi6</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'guardInterval' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].guardInterval" style="width: 100px;">
+            <option value="400ns">400ns</option>
+            <option value="800ns">800ns</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'wifiMimo' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].wifiMimo" style="width: 100px;">
+            <option value="1x1">1x1</option>
+            <option value="2x2">2x2</option>
+            <option value="3x3">3x3</option>
+            <option value="4x4">4x4</option>
+          </select>
+        </td>
+        
+      </tr>
+    </tbody>
   </table>
 </ng-template>
 

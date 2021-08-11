@@ -50,6 +50,10 @@ export class SignalDlThroughputComponent implements OnInit {
   showCandidate = true;
   /** slide */
   opacityValue: number = 0.8;
+  /** Max */
+  maxZ = [];
+  /** Min */
+  minZ = [];
   /** AP */
   shapes = [];
   /** AP文字 */
@@ -181,6 +185,12 @@ export class SignalDlThroughputComponent implements OnInit {
       zText.push([]);
     }
     let xIndex = 0;
+    for (let i = 0;i < this.result['throughputMap'][0][0].length;i++) {
+      this.maxZ.push(this.result['throughputMap'][0][0][i]);
+      this.minZ.push(this.result['throughputMap'][0][0][i]);
+    }
+    // this.maxZ = Number(this.result['throughputMap'][0][0]);
+    // this.minZ = Number(this.result['throughputMap'][0][0]);
     const mapX = [];
     const mapY = [];
     const mapText = [];
@@ -193,9 +203,18 @@ export class SignalDlThroughputComponent implements OnInit {
             zText[i][yIndex] = [];
           }
           zData[i][yIndex][xIndex] = yData[i];
+          //抓最大最小
+          if (Number(zData[i][yIndex][xIndex]) > this.maxZ[i]) {
+            this.maxZ[i] = Number(zData[i][yIndex][xIndex]);
+            // console.log('歐拉歐拉歐拉歐拉歐拉歐拉歐拉'+this.maxZ[i]);
+          }
+          if (Number(zData[i][yIndex][xIndex]) < this.minZ[i]) {
+            this.minZ[i] = Number(zData[i][yIndex][xIndex]);
+            // console.log('無馱無馱無馱無馱無馱無馱無馱'+this.minZ[i]);
+          }
           if (yData[i] == null) {
-            console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
-            console.log(item);
+            // console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
+            // console.log(item);
           }
           zText[i][yIndex][xIndex] = Math.round(yData[i] * 100) / 100;
 
@@ -267,29 +286,36 @@ export class SignalDlThroughputComponent implements OnInit {
       });
     }
 
+    // console.log(this.maxZ);
+    // console.log(this.minZ);
+    // console.log(this.maxZ);
+    // console.log(this.minZ);
+
     const trace = {
       x: x,
       y: y,
       z: zData[zValues.indexOf(this.zValue)],
       text: zText[zValues.indexOf(this.zValue)],
-      colorscale: [
-        [0, 'rgb(12,51,131)'],
-        [0.2, 'rgb(10,136,186)'],
-        [0.3, 'rgb(136, 224, 53)'],
-        [0.4, 'rgb(242,211,56)'],
-        [0.75, 'rgb(242,143,56)'],
-        [1, 'rgb(217,30,30)'],
-      ],
+      // colorscale: [
+      //   [0, 'rgb(12,51,131)'],
+      //   [0.2, 'rgb(10,136,186)'],
+      //   [0.3, 'rgb(136, 224, 53)'],
+      //   [0.4, 'rgb(242,211,56)'],
+      //   [0.75, 'rgb(242,143,56)'],
+      //   [1, 'rgb(217,30,30)'],
+      // ],
+      colorscale: 'Portland',
       type: 'heatmap',
       hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('throughput')}: %{text}Mbps<extra></extra>`,
       // showscale: false,
       opacity: this.opacityValue,
       zsmooth: 'fast',
-      zmin: 100,
-      zmax: 1200,
+      zmin: Math.round(this.minZ[zValues.indexOf(this.zValue)]),
+      zmax: Math.round(this.maxZ[zValues.indexOf(this.zValue)]),
       colorbar: {
         autotick: false,
-        tickvals: [1200, 800, 500, 300, 200, 100],
+        tickvals: [Math.round(this.maxZ[zValues.indexOf(this.zValue)]),Math.round(this.minZ[zValues.indexOf(this.zValue)])],
+        // tickvals: [1200, 800, 500, 300, 200, 100, 0],
         ticksuffix: 'Mbps',
         // ticktext: [24, 16, 8, 0, -8],
         ticklabelposition: 'inside bottom'

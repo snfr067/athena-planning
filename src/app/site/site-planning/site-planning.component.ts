@@ -2918,6 +2918,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ];
             let maxX = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             let minX = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            if (minX.toString().length > 10) {
+              minX = 0;
+            }
+            console.log(maxX);
+            console.log(minX);
             if (maxX > this.calculateForm.width || minX < 0) {
               // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -2952,6 +2957,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // console.log(rotRight);
             let maxX = Math.max(rotTop[0],rotLeft[0],rotRight[0]);
             let minX = Math.min(rotTop[0],rotLeft[0],rotRight[0]);
+            if (minX.toString().length > 10) {
+              minX = 0;
+            }
             if (maxX > this.calculateForm.width || minX < 0) {
               // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -2988,6 +2996,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ];
             let maxX = Math.max(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
             let minX = Math.min(rotleftbot[0],rotlefttop[0],rotrightbot[0],rotrighttop[0]);
+            if (minX.toString().length > 10) {
+              minX = 0;
+            }
             if (maxX > this.calculateForm.width || minX < 0) {
               // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -3070,6 +3081,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ];
             let maxY = Math.max(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
             let minY = Math.min(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
+            if (minY.toString().length > 10) {
+              minY = 0;
+            }
             if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -3104,6 +3118,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // console.log(rotRight);
             let maxY = Math.max(rotTop[1],rotLeft[1],rotRight[1]);
             let minY = Math.min(rotTop[1],rotLeft[1],rotRight[1]);
+            if (minY.toString().length > 10) {
+              minY = 0;
+            }
             if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -3140,8 +3157,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ];
             let maxY = Math.max(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
             let minY = Math.min(rotleftbot[1],rotlefttop[1],rotrightbot[1],rotrighttop[1]);
-            console.log(maxY);
-            console.log(minY);
+            if (minY.toString().length > 10) {
+              minY = 0;
+            }
             if (maxY > this.calculateForm.height || minY < 0) {
               // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
               this.recoverParam(svgId,type);
@@ -4100,6 +4118,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.duplexMode = 'tdd';
             this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
             this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
+            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
           }
           if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
             // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
@@ -4112,7 +4131,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let dlmsc = this.calculateForm.dlMcsTable;
             this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
             this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
-            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
             this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
             this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();
             // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
