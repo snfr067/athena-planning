@@ -21,6 +21,9 @@ export class CalculateForm {
   zValue: string = null;
   pathLossModelId: number = 0;
   ueCoordinate: string = null;
+  ueRsrp: number = null;
+  ueSinr: number = null;
+  ueSignallevel: number = null;
   useUeCoordinate: number = 1;
   powerMaxRange: number = 10;
   powerMinRange: number = 0;

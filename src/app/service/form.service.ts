@@ -180,6 +180,9 @@ export class FormService {
     output['ulThroughputMap'] = JSON.parse(result['ulthroughputmap']);
     output['throughputMap'] = JSON.parse(result['throughputmap']);
     output['candidateIdx'] = JSON.parse(result['candidateidx']);
+    output['uersrp'] = JSON.parse(result['uersrp']);
+    output['uesinr'] = JSON.parse(result['uesinr']);
+
 
     return output;
   }

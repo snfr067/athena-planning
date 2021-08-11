@@ -462,12 +462,12 @@ export class PdfComponent implements OnInit {
     for (let k = 0; k < this.zValues.length; k++) {
       list.push(`signal2_${k}`);
     }
-    for (let k = 0; k < this.zValues.length; k++) {
-      list.push(`view_3d_${k}`);
-    }
-    for (let k = 0; k < this.zValues.length; k++) {
-      list.push(`view_3d2_${k}`);
-    }
+    // for (let k = 0; k < this.zValues.length; k++) {
+    //   list.push(`view_3d_${k}`);
+    // }
+    // for (let k = 0; k < this.zValues.length; k++) {
+    //   list.push(`view_3d2_${k}`);
+    // }
     // 基站資訊
     let pos = 10;
     const margin = 8;
@@ -650,11 +650,15 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
       this.translateService.instant('result.propose.candidateBs.z'),
+      'RSRP',
+      'SINR',
     ];
     const ueData = [];
     for (let k = 0; k < this.ueList.length; k++) {
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
+        , this.result['uersrp'][k]
+        , this.result['uesinr'][k]
       ]);
     }
     pdf.autoTable(ueTitle, ueData, {
