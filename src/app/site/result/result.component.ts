@@ -585,7 +585,10 @@ export class ResultComponent implements OnInit {
       dlScs = JSON.parse(this.calculateForm.dlScs);
       ulScs = JSON.parse(this.calculateForm.ulScs);
     }
-    const scs = JSON.parse(this.calculateForm.scs);
+    let scs = [];
+    if (this.calculateForm.duplex === "tdd") {
+      scs = JSON.parse(this.calculateForm.scs);
+    }
     const dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth);
     const ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth);
     const protocol = this.calculateForm.objectiveIndex;

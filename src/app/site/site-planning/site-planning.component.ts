@@ -2895,12 +2895,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             overlaped = true;
           }
         }
-        // console.log(dlfreq);
-        // console.log(ulfreq);
-        // console.log(dlmax);
-        // console.log(ulmax);
-        // console.log(dlmin);
-        // console.log(ulmin);
       }
       for (let i = 0;i < this.candidateList.length;i++) {
         if (this.candidateList[i] == svgId) {
@@ -2949,9 +2943,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  changeBandwidth(svgId, dir) {
+
+  }
+
   recoverParam(svgId,type) {
-    console.log(`svgId: ${svgId}`);
-    console.log(`type: ${type}`);
+    // console.log(`svgId: ${svgId}`);
+    // console.log(`type: ${type}`);
     if (type == 'x') {
       this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
     } else if (type == 'y') {

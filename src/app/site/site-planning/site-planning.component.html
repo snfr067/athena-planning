@@ -1786,7 +1786,11 @@
       <tr>
         <td>{{ 'ulBandwidth' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;">MHz
+          <select 
+          [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
+          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (change)="changeBandwidth(svgId, 'dl')"
+          style="width: 100px;">MHz
             <option value="1.4">1.4</option>
             <option value="3">3</option>
             <option value="5">5</option>
@@ -1799,7 +1803,11 @@
       <tr>
         <td>{{ 'dlBandwidth' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;">
+          <select 
+          [(ngModel)]="bsListRfParam[svgId].dlBandwidth" 
+          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (change)="changeBandwidth(svgId, 'dl')"
+          style="width: 100px;">
             <option value="1.4">1.4</option>
             <option value="3">3</option>
             <option value="5">5</option>
