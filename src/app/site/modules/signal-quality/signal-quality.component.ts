@@ -70,18 +70,20 @@ export class SignalQualityComponent implements OnInit {
 
   @HostListener('window:resize') windowResize() {
     const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+    const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
     Plotly.relayout(this.chartId, {
-      width: leftArea.clientWidth
+      width: maxWidth
     }).then(gd => {
-      const sizes = this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120);
-      const layoutOption = {
-        width: sizes[0] + 100,
-        height: sizes[1]
-      };
-      Plotly.relayout(this.chartId, layoutOption).then(gd2 => {
-        this.setChartObjectSize(gd2);
+      this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res => {
+        const layoutOption = {
+          width: res[0],
+          height: res[1]
+        };
+        // resize layout
+        this.reLayout(this.chartId, layoutOption, false);
       });
     });
+    
   }
 
   ngOnInit(): void {
@@ -619,7 +621,7 @@ export class SignalQualityComponent implements OnInit {
       }
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
-      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
         layoutOption = {
           width: res[0],
           height: res[1],

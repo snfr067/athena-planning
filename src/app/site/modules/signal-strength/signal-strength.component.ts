@@ -545,7 +545,7 @@ export class SignalStrengthComponent implements OnInit {
 
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
-      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
         layoutOption = {
           width: res[0],
           height: res[1],

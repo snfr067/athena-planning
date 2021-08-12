@@ -10,6 +10,9 @@ export class ChartService {
 
   constructor() { }
 
+  /** 左邊圖保留空間 */
+  public leftSpace = 70;
+
   /**
    * 計算圖長寬
    * @param calculateForm 
@@ -201,6 +204,9 @@ export class ChartService {
     if (layoutHeight > maxHeight) {
       layoutHeight = maxHeight;
     }
+
+    const wRatio = calculateForm.height / calculateForm.width;
+
     const marginSize = 60;
 
     if (Number(calculateForm.width) < Number(calculateForm.height)) {
@@ -210,28 +216,19 @@ export class ChartService {
       if (layoutWidth > gd.clientWidth) {
         // has scroll bar
         layoutWidth = gd.clientWidth;
-        const wRatio = calculateForm.height / calculateForm.width;
         layoutHeight = layoutWidth * wRatio;
       }
-      layoutWidth += marginSize;
+
     } else if (Number(calculateForm.width) > Number(calculateForm.height)) {
-      const ratio = calculateForm.height / calculateForm.width;
-      layoutHeight = layoutWidth * ratio;
+      
+      layoutHeight = layoutWidth * wRatio;
       if (layoutHeight > maxHeight) {
-        const wRatio = maxHeight / layoutHeight;
         layoutHeight = maxHeight;
         layoutWidth = layoutWidth * wRatio + 100;
-        if (layoutWidth > gd.clientWidth) {
-          layoutWidth = gd.clientWidth;
-        }
       }
-      if (layoutHeight > gd.clientHeight) {
-        // has scroll bar
-        layoutHeight = gd.clientHeight;
-        const wRatio = calculateForm.width / calculateForm.height;
-        layoutWidth = layoutHeight * wRatio;
+      if (layoutWidth > gd.clientWidth) {
+        layoutWidth = gd.clientWidth;
       }
-      layoutWidth += marginSize;
     } else {
       layoutHeight = maxHeight;
       layoutWidth = layoutHeight + marginSize;
@@ -240,6 +237,11 @@ export class ChartService {
         layoutWidth = maxWidth;
         layoutHeight = layoutWidth - marginSize;
       }
+    }
+
+    if (layoutWidth > maxWidth) {
+      layoutWidth = maxWidth;
+      layoutHeight = layoutWidth * wRatio;
     }
     
     // return [layoutWidth, layoutHeight];

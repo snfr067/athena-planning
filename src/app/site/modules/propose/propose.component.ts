@@ -45,10 +45,11 @@ export class ProposeComponent implements OnInit {
 
   @HostListener('window:resize') windowResize() {
     const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+    const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
     Plotly.relayout('layout_chart', {
-      width: leftArea.clientWidth
+      width: maxWidth
     }).then(gd => {
-      const sizes = this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120);
+      const sizes = this.chartService.calResultSize(this.calculateForm, gd, maxWidth);
       const layoutOption = {
         width: sizes[0],
         height: sizes[1]
@@ -233,7 +234,7 @@ export class ProposeComponent implements OnInit {
 
         // 場域尺寸計算
         const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
-        this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - 120).then(res => {
+        this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
           const layoutOption = {
             width: res[0],
             height: res[1]
