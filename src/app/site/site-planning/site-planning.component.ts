@@ -1233,8 +1233,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.bsListRfParam[this.svgId] = {
         txpower: 0,
         beampattern: 0,
-        fddDlFrequency: 2400,
-        fddUlFrequency: 2450,
+        fddDlFrequency: 2140,
+        fddUlFrequency: 1950,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
         dlMimoLayer: '1',
@@ -1242,12 +1242,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         //TDD 5G
         tddscs: '15',
         tddbandwidth: 5,
-        tddfrequency: 2400,
+        tddfrequency: 2350,
         //FDD 5G
         dlScs: '15',
         ulScs: '15',
-        dlBandwidth: '5',
-        ulBandwidth: '5',
+        dlBandwidth: 5,
+        ulBandwidth: 5,
         subcarrier: 15,
         scsBandwidth: 0,
         //4G Only
@@ -2841,6 +2841,114 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  // 檢查頻率+頻寬是否與其他基地台重疊
+  changeFrequency(svgId, dir) {
+    let overlaped = false;
+    if (this.duplexMode == 'tdd') {
+      for (let i = 0;i < this.defaultBSList.length;i++) {
+        if (this.defaultBSList[i] == svgId) {
+          continue;
+        }
+        let freq = this.bsListRfParam[svgId].tddfrequency;
+        let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+        let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+        console.log(max);
+        console.log(min);
+        if (freq > min && freq < max) {
+          overlaped = true;
+        }
+      }
+      for (let i = 0;i < this.candidateList.length;i++) {
+        if (this.candidateList[i] == svgId) {
+          continue;
+        }
+        let freq = this.bsListRfParam[svgId].tddfrequency;
+        let max = this.bsListRfParam[this.candidateList[i]].tddfrequency + this.bsListRfParam[this.candidateList[i]].tddbandwidth/2;
+        let min = this.bsListRfParam[this.candidateList[i]].tddfrequency - this.bsListRfParam[this.candidateList[i]].tddbandwidth/2;
+        if (freq > min && freq < max) {
+          overlaped = true;
+        }
+      }
+    } else { //FDD
+      for (let i = 0;i < this.defaultBSList.length;i++) {
+        if (this.defaultBSList[i] == svgId) {
+          continue;
+        }
+        let dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
+        let ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
+        let dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
+        let ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
+        let dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
+        let ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
+        if (dir == 'dl') {
+          if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+            continue;
+          }
+          if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
+            overlaped = true;
+          }
+        } else {
+          if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+            continue;
+          }
+          if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
+            overlaped = true;
+          }
+        }
+        // console.log(dlfreq);
+        // console.log(ulfreq);
+        // console.log(dlmax);
+        // console.log(ulmax);
+        // console.log(dlmin);
+        // console.log(ulmin);
+      }
+      for (let i = 0;i < this.candidateList.length;i++) {
+        if (this.candidateList[i] == svgId) {
+          continue;
+        }
+        let dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
+        let ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
+        let dlmax = this.bsListRfParam[this.candidateList[i]].fddDlFrequency + this.bsListRfParam[this.candidateList[i]].dlBandwidth/2;
+        let ulmax = this.bsListRfParam[this.candidateList[i]].fddUlFrequency + this.bsListRfParam[this.candidateList[i]].ulBandwidth/2;
+        let dlmin = this.bsListRfParam[this.candidateList[i]].fddDlFrequency - this.bsListRfParam[this.candidateList[i]].dlBandwidth/2;
+        let ulmin = this.bsListRfParam[this.candidateList[i]].fddUlFrequency - this.bsListRfParam[this.candidateList[i]].ulBandwidth/2;
+        if (dir == 'dl') {
+          if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+            continue;
+          }
+          if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
+            overlaped = true;
+          }
+        } else {
+          if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+            continue;
+          }
+          if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
+            overlaped = true;
+          }
+        }
+      }
+    }
+    if (overlaped == true) {
+      if (this.duplexMode == 'tdd') {
+        this.bsListRfParam[svgId].tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
+      } else {
+        if (dir == 'dl') {
+          this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+        } else {
+          this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+        }
+      }
+      let msg = this.translateService.instant('freq_overlaped');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+  }
+
   recoverParam(svgId,type) {
     console.log(`svgId: ${svgId}`);
     console.log(`type: ${type}`);
@@ -3720,8 +3828,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.ulBandwidth = candidateData[i][6+offset];
         this.tempCalParamSet.fddDlFrequency = candidateData[i][7+offset];
         this.tempCalParamSet.fddUlFrequency = candidateData[i][8+offset];
-        this.tempCalParamSet.mimoNumber4G = candidateData[i][9];
-        this.tempCalParamSet.tddscs = candidateData[i][10];
+        this.tempCalParamSet.mimoNumber4G = candidateData[i][9+offset];
+        this.tempCalParamSet.tddscs = candidateData[i][10+offset];
         this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11+offset];
         this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12+offset];
         this.tempCalParamSet.dlMimoLayer = candidateData[i][13+offset];

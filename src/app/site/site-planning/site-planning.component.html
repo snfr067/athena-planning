@@ -1767,11 +1767,21 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (change)="changeFrequency(svgId, 'ul')"
+          ></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (change)="changeFrequency(svgId, 'dl')"
+          ></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulBandwidth' | translate }}</td>
@@ -1833,7 +1843,12 @@
       </tr>
       <tr>
         <td>Frequency</td>
-        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].tddfrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].tddfrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (change)="changeFrequency(svgId, '')"
+          ></td>MHz
       </tr>
       <!-- <tr>
         <td>{{ 'tddBandwidth' | translate }}</td>
@@ -1974,11 +1989,21 @@
       </tr>
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
-        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (change)="changeFrequency(svgId, 'ul')"
+          ></td>MHz
       </tr>
       <tr>
         <td>{{ 'downlink.frequency' | translate }}</td>
-        <td><input type="number" class="inputNumFreq" step="5" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"></td>MHz
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (change)="changeFrequency(svgId, 'dl')"
+          ></td>MHz
       </tr>
       <tr>
         <td>{{ 'ulMimolayer' | translate }}</td>
