@@ -2235,6 +2235,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         else if (obj.tddfrequency < 0) { msg += `${this.translateService.instant('less_0_tddfrequency')}<br/>`;  }
       } else {
         if (this.isEmpty(obj.mimoNumber4G)) { msg += `${this.translateService.instant('nf_mimonum')}<br/>`;  }
+        console.log(this.isEmpty(obj.dlBandwidth));
+        console.log(obj.dlBandwidth);
         if (this.isEmpty(obj.dlBandwidth)) { msg += `${this.translateService.instant('nf_ulBandwidth')}<br/>`;  }
         else if (Number(obj.dlBandwidth) < 0) { msg += `${this.translateService.instant('less_0_ulBandwidth')}<br/>`;  }
         if (this.isEmpty(obj.ulBandwidth)) { msg += `${this.translateService.instant('nf_dlBandwidth')}<br/>`;  }
@@ -4163,6 +4165,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.duplexMode = 'tdd';
             this.tempCalParamSet.tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i];
             this.tempCalParamSet.tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+            this.tempCalParamSet.tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
           }
           if (this.calculateForm.mapProtocol === '4g') {
             this.tempCalParamSet.mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i];
@@ -4172,7 +4175,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             let dlmsc = this.calculateForm.dlMcsTable;
             this.tempCalParamSet.ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i];
             this.tempCalParamSet.dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i];
-            this.tempCalParamSet.tddscs = JSON.parse(this.calculateForm.scs)[i].toString();
             this.tempCalParamSet.ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i].toString();
             this.tempCalParamSet.dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i].toString();
             this.scalingFactor = this.calculateForm.scalingFactor;
@@ -4360,6 +4362,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+    if (this.calculateForm.objectiveIndex == '1') {
+      if (this.duplexMode == 'tdd') {
+        this.tempCalParamSet.tddscs = '15';
+        this.tempCalParamSet.tddbandwidth = '5';
+      } else {
+        this.tempCalParamSet.dlScs = '15';
+        this.tempCalParamSet.dlBandwidth = '5';
+        this.tempCalParamSet.ulScs = '15';
+        this.tempCalParamSet.ulBandwidth = '5';
+      }
+    } else if (this.calculateForm.objectiveIndex == '0') {
+      if (this.duplexMode == 'tdd') {
+        this.tempCalParamSet.tddbandwidth = '5';
+      } else {
+        this.tempCalParamSet.dlBandwidth = '1.4';
+        this.tempCalParamSet.ulBandwidth = '1.4';
+        
+      }
     }
   }
 
