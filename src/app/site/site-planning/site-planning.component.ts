@@ -318,6 +318,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
+  @ViewChild('deleteModal3') deleteModal3: TemplateRef<any>;
   
 
   
@@ -416,6 +417,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   ngOnInit() {
+    window.sessionStorage.removeItem('tempParamForSelect');
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
@@ -777,6 +779,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.moveable.destroy();
     } catch (error) {}
     document.querySelector('body').style.overflow = 'auto';
+  }
+
+  tempParamStorageForSelect (temp) {
+    // console.log(window.sessionStorage.getItem('tempParamForSelect'));
+    if (null == window.sessionStorage.getItem('tempParamForSelect')) {
+      window.sessionStorage.setItem('tempParamForSelect',temp);
+    }
   }
 
   tempParamStorage (temp) {
@@ -1241,13 +1250,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulMimoLayer: '1',
         //TDD 5G
         tddscs: '15',
-        tddbandwidth: 5,
+        tddbandwidth: '5',
         tddfrequency: 2350,
         //FDD 5G
         dlScs: '15',
         ulScs: '15',
-        dlBandwidth: 5,
-        ulBandwidth: 5,
+        dlBandwidth: '5',
+        ulBandwidth: '5',
         subcarrier: 15,
         scsBandwidth: 0,
         //4G Only
@@ -1284,7 +1293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulMimoLayer: '1',
         //TDD 5G
         tddscs: '15',
-        tddbandwidth: 5,
+        tddbandwidth: '5',
         tddfrequency: 2400,
         //FDD 5G
         dlScs: '15',
@@ -2150,32 +2159,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  hintDlUlDiff(uldl) {
-    let msg = '';
-    if (uldl == 'ul') {
-      if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
-        msg = this.translateService.instant('dlfrequency_same_ulfrequency2')
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: msg
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        // this.tempCalParamSet.fddUlFrequency = 0;
-      }
-    } else {
-      if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
-        if (this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
-          msg = this.translateService.instant('dlfrequency_same_ulfrequency3')
-          this.msgDialogConfig.data = {
-            type: 'error',
-            infoMessage: msg
-          };
-          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-          // this.tempCalParamSet.fddDlFrequency = 0;
-        }
-      }
-    }
-  }
+  // hintDlUlDiff(dir) {
+  //   let msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+  //   if (this.duplexMode == 'fdd' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) { 
+  //     this.msgDialogConfig.data = {
+  //       type: 'error',
+  //       infoMessage: msg
+  //     };
+  //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+  //   }
+  // }
 
   //Todo
   checkCandidateRFParamIsEmpty(protocol, duplex) {
@@ -2844,40 +2837,80 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   // 檢查頻率+頻寬是否與其他基地台重疊
-  changeFrequency(svgId, dir) {
+  changeFrequency(svgId, dir, isCandidate) {
+    console.log('changeFrequency changeFrequency changeFrequency');
+    // 若為FDD先檢查上下行有沒有一樣
+    if (isCandidate) {
+      if (dir != '' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+        if (dir == 'dl') {
+          this.tempCalParamSet.fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        } else {
+          this.tempCalParamSet.fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        }
+        let msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+    } else {
+      if (dir != '' && this.bsListRfParam[svgId].fddUlFrequency == this.bsListRfParam[svgId].fddDlFrequency) {
+        if (dir == 'dl') {
+          this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        } else {
+          this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        }
+        let msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+    }
+    //再來檢查有沒有overlaped，前TDD，後FDD
     let overlaped = false;
     if (this.duplexMode == 'tdd') {
+      let freq = 0;
+      if (isCandidate) {
+        freq = this.tempCalParamSet.tddfrequency;
+      } else {
+        freq = this.bsListRfParam[svgId].tddfrequency;
+      }
       for (let i = 0;i < this.defaultBSList.length;i++) {
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
-        let freq = this.bsListRfParam[svgId].tddfrequency;
         let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
         let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
-        console.log(max);
-        console.log(min);
         if (freq > min && freq < max) {
           overlaped = true;
         }
       }
-      for (let i = 0;i < this.candidateList.length;i++) {
-        if (this.candidateList[i] == svgId) {
-          continue;
-        }
-        let freq = this.bsListRfParam[svgId].tddfrequency;
-        let max = this.bsListRfParam[this.candidateList[i]].tddfrequency + this.bsListRfParam[this.candidateList[i]].tddbandwidth/2;
-        let min = this.bsListRfParam[this.candidateList[i]].tddfrequency - this.bsListRfParam[this.candidateList[i]].tddbandwidth/2;
+      if (!isCandidate) {
+        let max = this.tempCalParamSet.tddfrequency + Number(this.tempCalParamSet.tddbandwidth)/2;
+        let min = this.tempCalParamSet.tddfrequency - Number(this.tempCalParamSet.tddbandwidth)/2;
         if (freq > min && freq < max) {
           overlaped = true;
         }
       }
-    } else { //FDD
+    } else { //處理FDD
+      let dlfreq = 0;
+      let ulfreq = 0;
+      if (isCandidate) {
+        dlfreq = this.tempCalParamSet.fddDlFrequency;
+        ulfreq = this.tempCalParamSet.fddUlFrequency;
+      } else {
+        dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
+        ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
+      }
       for (let i = 0;i < this.defaultBSList.length;i++) {
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
-        let dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
-        let ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
         let dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
         let ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
         let dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
@@ -2898,27 +2931,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-      for (let i = 0;i < this.candidateList.length;i++) {
-        if (this.candidateList[i] == svgId) {
-          continue;
-        }
-        let dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
-        let ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
-        let dlmax = this.bsListRfParam[this.candidateList[i]].fddDlFrequency + this.bsListRfParam[this.candidateList[i]].dlBandwidth/2;
-        let ulmax = this.bsListRfParam[this.candidateList[i]].fddUlFrequency + this.bsListRfParam[this.candidateList[i]].ulBandwidth/2;
-        let dlmin = this.bsListRfParam[this.candidateList[i]].fddDlFrequency - this.bsListRfParam[this.candidateList[i]].dlBandwidth/2;
-        let ulmin = this.bsListRfParam[this.candidateList[i]].fddUlFrequency - this.bsListRfParam[this.candidateList[i]].ulBandwidth/2;
+      if (!isCandidate) {
+        let dlmax = this.tempCalParamSet.fddDlFrequency + Number(this.tempCalParamSet.dlBandwidth)/2;
+        let ulmax = this.tempCalParamSet.fddUlFrequency + Number(this.tempCalParamSet.ulBandwidth)/2;
+        let dlmin = this.tempCalParamSet.fddDlFrequency - Number(this.tempCalParamSet.dlBandwidth)/2;
+        let ulmin = this.tempCalParamSet.fddUlFrequency - Number(this.tempCalParamSet.ulBandwidth)/2;
         if (dir == 'dl') {
-          if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
-            continue;
-          }
           if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
             overlaped = true;
           }
         } else {
-          if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
-            continue;
-          }
           if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
             overlaped = true;
           }
@@ -2926,13 +2948,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     }
     if (overlaped == true) {
-      if (this.duplexMode == 'tdd') {
-        this.bsListRfParam[svgId].tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
-      } else {
-        if (dir == 'dl') {
-          this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+      if (isCandidate) {
+        if (this.duplexMode == 'tdd') {
+          this.tempCalParamSet.tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
         } else {
-          this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          if (dir == 'dl') {
+            this.tempCalParamSet.fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          } else {
+            this.tempCalParamSet.fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          }
+        }
+      } else {
+        if (this.duplexMode == 'tdd') {
+          this.bsListRfParam[svgId].tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
+        } else {
+          if (dir == 'dl') {
+            this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          } else {
+            this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          }
         }
       }
       let msg = this.translateService.instant('freq_overlaped');
@@ -2946,7 +2980,72 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   changeBandwidth(svgId, dir) {
+    console.log(this.svgId);
+    let overlaped = false;
+    // let sameFreq = false;
+    if (dir == '') { //TDD
+      let freq = this.bsListRfParam[svgId].tddfrequency;
+      let band = this.bsListRfParam[svgId].tddbandwidth;
+      // check DefaultBs
+      for (let i = 0;i < this.defaultBSList.length;i++) { 
+        if (this.defaultBSList[i] == svgId) {
+          continue;
+        }
+        if (freq != this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+          let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          if ((freq + band/2 > min && freq + band/2 < max) || (freq - band/2 > min && freq - band/2 < max)) {
+            overlaped = true;
+          }
+        } else {
+          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+          this.matDialog.open(this.deleteModal3, { disableClose: true });
+          return;
+        }
+      }
+      // check candidateBs
+      if (freq != this.tempCalParamSet.tddfrequency) {
+        let max = this.tempCalParamSet.tddfrequency + Number(this.tempCalParamSet.tddbandwidth)/2;
+        let min = this.tempCalParamSet.tddfrequency - Number(this.tempCalParamSet.tddbandwidth)/2;
+        if ((freq + band/2 > min && freq + band/2 < max) || (freq - band/2 > min && freq - band/2 < max)) {
+          overlaped = true;
+        }
+      } else {
+        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+        this.matDialog.open(this.deleteModal3, { disableClose: true });
+        return;
+      }
+    } else { //FDD UL or DL
+      
+    }
+    
+  }
 
+  applyAllSameBandwidth() {
+    console.log(this.svgId);
+    if (this.duplexMode == 'tdd') { //TDD
+      for (let i = 0;i < this.defaultBSList.length;i++) {
+        if (this.defaultBSList[i] == this.svgId) {
+          continue;
+        }
+        let freq = this.bsListRfParam[this.svgId].tddfrequency;
+        let band = this.bsListRfParam[this.svgId].tddbandwidth;
+        if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+          this.bsListRfParam[this.defaultBSList[i]].tddbandwidth = band;
+        }
+      }
+    } else { //FDD
+
+    }
+    this.matDialog.closeAll();
+    window.sessionStorage.removeItem('tempParamForSelect');
+  }
+
+  notApplySameBandwidth() {
+    console.log('dodoro');
+    this.bsListRfParam[this.svgId].tddbandwidth = Number(window.sessionStorage.getItem('tempParamForSelect'));
+    window.sessionStorage.removeItem('tempParamForSelect');
+    this.matDialog.closeAll();
   }
 
   recoverParam(svgId,type) {
@@ -4226,7 +4325,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.duplexMode = 'tdd';
             this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
             this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
-            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
+            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum];
+            // this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
           }
           if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
             // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];

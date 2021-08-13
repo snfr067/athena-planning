@@ -252,6 +252,8 @@
 	"deleteSure": "確定",
 	"deleteCancel": "取消",
 	"deleteExceedField": "我們將刪掉座標大於場域長寬的障礙物，基地台，UE，您同意嗎?",
+	"applyAllSameBandwidth": "我們將會把相同頻率的基地台改成一樣的頻寬，您同意嗎?",
+	"applyTitle": "Bandwidth提醒",
 	
 
 	"bs": "基地台",

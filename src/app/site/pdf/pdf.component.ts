@@ -654,7 +654,10 @@ export class PdfComponent implements OnInit {
       'SINR',
     ];
     const ueData = [];
+    
     for (let k = 0; k < this.ueList.length; k++) {
+      console.log(this.result['uersrp'][k]);
+      console.log(this.result['uesinr'][k]);
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
         , this.result['uersrp'][k]
