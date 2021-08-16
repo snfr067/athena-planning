@@ -1856,7 +1856,9 @@
     <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
       <tr *ngIf="planningIndex == '3'">
         <td>TxPower</td>
-        <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].txpower"></td>dbm
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          ></td>dbm
       </tr>
       <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>

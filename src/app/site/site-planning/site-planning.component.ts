@@ -2843,7 +2843,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   // 檢查頻率+頻寬是否與其他基地台重疊
   changeFrequency(svgId, dir, isCandidate) {
-    console.log('changeFrequency changeFrequency changeFrequency');
+    // console.log('changeFrequency changeFrequency changeFrequency');
     // 若為FDD先檢查上下行有沒有一樣
     if (isCandidate) {
       if (dir != '' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
@@ -2893,8 +2893,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
-        let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
-        let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+        let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + Number(this.bsListRfParam[this.defaultBSList[i]].tddbandwidth)/2;
+        let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - Number(this.bsListRfParam[this.defaultBSList[i]].tddbandwidth)/2;
         if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
           console.log('flag');
           //若有既有基地台的頻率一樣，則必須讓該基地台的頻寬也跟著一樣
@@ -2918,7 +2918,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           overlaped = true;
         }
       }
-    } else { //處理FDD
+    } else { //處理FDD------------------------------------------
       let dlfreq = 0;
       let ulfreq = 0;
       if (isCandidate) {
@@ -2934,11 +2934,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
-        // console.log(svgId);
-        let dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
-        let ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
-        let dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
-        let ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
+        let dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+        let ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
+        let dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+        let ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
         if (dir == 'dl') {
           this.modalParam.dir = 'dl';
           if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
@@ -2957,6 +2956,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
             // 如果頻率要改成跟別人相同，頻寬也要跟別人一樣
             this.matDialog.open(this.deleteModal4, { disableClose: true });
+            console.log('same freq');
             // continue;
             break;
           }
