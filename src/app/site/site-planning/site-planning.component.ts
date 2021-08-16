@@ -319,6 +319,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
   @ViewChild('deleteModal3') deleteModal3: TemplateRef<any>;
+  @ViewChild('deleteModal4') deleteModal4: TemplateRef<any>;
   
 
   
@@ -2836,6 +2837,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  modalParam = {
+    dir: '',
+    isCandidate: false
+  }
   // 檢查頻率+頻寬是否與其他基地台重疊
   changeFrequency(svgId, dir, isCandidate) {
     console.log('changeFrequency changeFrequency changeFrequency');
@@ -2871,29 +2876,45 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         return;
       }
     }
-    //再來檢查有沒有overlaped，前TDD，後FDD
+    //再來檢查有沒有overlaped，前TDD，後FDD-----------------------------------------
     let overlaped = false;
     if (this.duplexMode == 'tdd') {
+      this.modalParam.dir = '';
       let freq = 0;
-      if (isCandidate) {
+      if (isCandidate) { //改的是否為candidate參數
         freq = this.tempCalParamSet.tddfrequency;
+        this.modalParam.isCandidate = true;
       } else {
         freq = this.bsListRfParam[svgId].tddfrequency;
+        this.modalParam.isCandidate = false;
       }
-      for (let i = 0;i < this.defaultBSList.length;i++) {
+      //跟所有的既有基地台比對，
+      for (let i = 0;i < this.defaultBSList.length;i++) { 
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
         let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
         let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
-        if (freq > min && freq < max) {
+        if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+          console.log('flag');
+          //若有既有基地台的頻率一樣，則必須讓該基地台的頻寬也跟著一樣
+          this.matDialog.open(this.deleteModal4, { disableClose: true });
+          overlaped = false;
+        } else if (freq > min && freq < max) {
+          console.log('flag');
           overlaped = true;
         }
       }
+      //若改的不是candidate的頻率，則需要再跟candidate頻率比對一次
       if (!isCandidate) {
         let max = this.tempCalParamSet.tddfrequency + Number(this.tempCalParamSet.tddbandwidth)/2;
         let min = this.tempCalParamSet.tddfrequency - Number(this.tempCalParamSet.tddbandwidth)/2;
-        if (freq > min && freq < max) {
+        if (freq == this.tempCalParamSet.tddfrequency) {
+          //若待選基地台的頻率一樣，則必須讓該基地台的頻寬也跟著一樣
+          this.matDialog.open(this.deleteModal4, { disableClose: true });
+          overlaped = false;
+        } else if (freq > min && freq < max) {
+          console.log('flag');
           overlaped = true;
         }
       }
@@ -2903,45 +2924,70 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (isCandidate) {
         dlfreq = this.tempCalParamSet.fddDlFrequency;
         ulfreq = this.tempCalParamSet.fddUlFrequency;
+        this.modalParam.isCandidate = true;
       } else {
         dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
         ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
+        this.modalParam.isCandidate = false;
       }
       for (let i = 0;i < this.defaultBSList.length;i++) {
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
+        // console.log(svgId);
         let dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
         let ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
         let dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
         let ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
         if (dir == 'dl') {
+          this.modalParam.dir = 'dl';
           if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
-            continue;
+            console.log('continue');
+            // continue;
+            this.matDialog.open(this.deleteModal4, { disableClose: true });
+            break;
+            // 如果頻率要改成跟別人相同，頻寬也要跟別人一樣
           }
           if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
+            console.log('overlaped with other dl');
             overlaped = true;
           }
         } else {
+          this.modalParam.dir = 'ul';
           if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
-            continue;
+            // 如果頻率要改成跟別人相同，頻寬也要跟別人一樣
+            this.matDialog.open(this.deleteModal4, { disableClose: true });
+            // continue;
+            break;
           }
           if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
+            console.log('overlaped with other ul');
             overlaped = true;
           }
         }
       }
+      //若改的不是candidate的頻率，則需要再跟candidate頻率比對一次
       if (!isCandidate) {
         let dlmax = this.tempCalParamSet.fddDlFrequency + Number(this.tempCalParamSet.dlBandwidth)/2;
         let ulmax = this.tempCalParamSet.fddUlFrequency + Number(this.tempCalParamSet.ulBandwidth)/2;
         let dlmin = this.tempCalParamSet.fddDlFrequency - Number(this.tempCalParamSet.dlBandwidth)/2;
         let ulmin = this.tempCalParamSet.fddUlFrequency - Number(this.tempCalParamSet.ulBandwidth)/2;
         if (dir == 'dl') {
-          if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
+          this.modalParam.dir = 'dl';
+          if (dlfreq == this.tempCalParamSet.fddDlFrequency) {
+            console.log('same frequency');
+            this.matDialog.open(this.deleteModal4, { disableClose: true });
+            overlaped = false;
+          } else if ((dlfreq > dlmin && dlfreq < dlmax) || (dlfreq > ulmin && dlfreq < ulmax)) {
             overlaped = true;
           }
         } else {
-          if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
+          this.modalParam.dir = 'ul';
+          if (ulfreq == this.tempCalParamSet.fddUlFrequency) {
+            console.log('same frequency');
+            this.matDialog.open(this.deleteModal4, { disableClose: true });
+            overlaped = false;
+          } else if ((ulfreq > dlmin && ulfreq < dlmax) || (ulfreq > ulmin && ulfreq < ulmax)) {
             overlaped = true;
           }
         }
@@ -2979,72 +3025,380 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  changeBandwidth(svgId, dir) {
-    console.log(this.svgId);
+  changeBandwidth(svgId, dir, isCandidate) {
+    // console.log(this.svgId);
     let overlaped = false;
+    let freq = 0;
+    let band = 0;
     // let sameFreq = false;
-    if (dir == '') { //TDD
-      let freq = this.bsListRfParam[svgId].tddfrequency;
-      let band = this.bsListRfParam[svgId].tddbandwidth;
-      // check DefaultBs
+    if (this.duplexMode == 'tdd') { //TDD
+      this.modalParam.dir = '';
+      // 判斷改的是candidate還是default
+      if (isCandidate) {
+        this.modalParam.isCandidate = true;
+        freq = this.tempCalParamSet.tddfrequency;
+        band = Number(this.tempCalParamSet.tddbandwidth);
+      } else {
+        this.modalParam.isCandidate = false;
+        freq = this.bsListRfParam[svgId].tddfrequency;
+        band = this.bsListRfParam[svgId].tddbandwidth;
+      }
+      // 無論default還是candidate都要跟所有的defualt做比對
       for (let i = 0;i < this.defaultBSList.length;i++) { 
         if (this.defaultBSList[i] == svgId) {
           continue;
         }
+        //若頻率不同，則檢查加上頻寬後有沒有overlap
         if (freq != this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
-          let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
-          let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          let max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + Number(this.bsListRfParam[this.defaultBSList[i]].tddbandwidth)/2;
+          let min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - Number(this.bsListRfParam[this.defaultBSList[i]].tddbandwidth)/2;
           if ((freq + band/2 > min && freq + band/2 < max) || (freq - band/2 > min && freq - band/2 < max)) {
             overlaped = true;
           }
+        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
         } else {
-          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
           this.matDialog.open(this.deleteModal3, { disableClose: true });
           return;
         }
       }
       // check candidateBs
+      //若與candidate頻率不同，則檢查加上頻寬後有沒有overlap
       if (freq != this.tempCalParamSet.tddfrequency) {
         let max = this.tempCalParamSet.tddfrequency + Number(this.tempCalParamSet.tddbandwidth)/2;
         let min = this.tempCalParamSet.tddfrequency - Number(this.tempCalParamSet.tddbandwidth)/2;
         if ((freq + band/2 > min && freq + band/2 < max) || (freq - band/2 > min && freq - band/2 < max)) {
           overlaped = true;
         }
+      // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
       } else {
-        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
         this.matDialog.open(this.deleteModal3, { disableClose: true });
         return;
       }
     } else { //FDD UL or DL
-      
+      let dlfreq = 0;
+      let dlband = 0;
+      let ulfreq = 0;
+      let ulband = 0;
+      if (isCandidate) {
+        this.modalParam.isCandidate = true;
+        dlfreq = this.tempCalParamSet.fddDlFrequency;
+        dlband = Number(this.tempCalParamSet.dlBandwidth);
+        ulfreq = this.tempCalParamSet.fddUlFrequency;
+        ulband = Number(this.tempCalParamSet.ulBandwidth);
+        // this.modalParam.isCandidate = true;
+      } else {
+        this.modalParam.isCandidate = false;
+        dlfreq = this.bsListRfParam[svgId].fddDlFrequency;
+        dlband = Number(this.bsListRfParam[svgId].dlBandwidth);
+        ulfreq = this.bsListRfParam[svgId].fddUlFrequency;
+        ulband = Number(this.bsListRfParam[svgId].ulBandwidth);
+        // this.modalParam.isCandidate = false;
+      }
+      if (dir == 'dl') {
+        this.modalParam.dir = 'dl';
+        // 無論default還是candidate都要跟所有的defualt做比對
+        for (let i = 0;i < this.defaultBSList.length;i++) { 
+          if (this.defaultBSList[i] == svgId) {
+            continue;
+          }
+          //若頻率不同，則檢查加上頻寬後有沒有overlap
+          if (dlfreq != this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+            let max = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+            let min = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+            if ((dlfreq + dlband/2 > min && dlfreq + dlband/2 < max) || (dlfreq - dlband/2 > min && dlfreq - dlband/2 < max)) {
+              overlaped = true;
+            }
+          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+          } else {
+            this.matDialog.open(this.deleteModal3, { disableClose: true });
+            return;
+          }
+        }
+        // check candidateBs
+        //若與candidate頻率不同，則檢查加上頻寬後有沒有overlap
+        if (dlfreq != this.tempCalParamSet.fddDlFrequency) {
+          let max = this.tempCalParamSet.fddDlFrequency + Number(this.tempCalParamSet.dlBandwidth)/2;
+          let min = this.tempCalParamSet.fddDlFrequency - Number(this.tempCalParamSet.dlBandwidth)/2;
+          if ((dlfreq + dlband/2 > min && dlfreq + dlband/2 < max) || (dlfreq - dlband/2 > min && dlfreq - dlband/2 < max)) {
+            overlaped = true;
+          }
+        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+        } else {
+          this.matDialog.open(this.deleteModal3, { disableClose: true });
+          return;
+        }
+      } else {
+        this.modalParam.dir = 'ul';
+        // 無論default還是candidate都要跟所有的defualt做比對
+        for (let i = 0;i < this.defaultBSList.length;i++) { 
+          if (this.defaultBSList[i] == svgId) {
+            continue;
+          }
+          //若頻率不同，則檢查加上頻寬後有沒有overlap
+          if (ulfreq != this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+            let max = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
+            let min = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
+            if ((ulfreq + ulband/2 > min && ulfreq + ulband/2 < max) || (ulfreq - ulband/2 > min && ulfreq - ulband/2 < max)) {
+              overlaped = true;
+            }
+          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+          } else {
+            this.matDialog.open(this.deleteModal3, { disableClose: true });
+            return;
+          }
+        }
+        // check candidateBs
+        //若與candidate頻率不同，則檢查加上頻寬後有沒有overlap
+        if (ulfreq != this.tempCalParamSet.fddUlFrequency) {
+          let max = this.tempCalParamSet.fddUlFrequency + Number(this.tempCalParamSet.ulBandwidth)/2;
+          let min = this.tempCalParamSet.fddUlFrequency - Number(this.tempCalParamSet.ulBandwidth)/2;
+          if ((ulfreq + ulband/2 > min && ulfreq + ulband/2 < max) || (ulfreq - ulband/2 > min && ulfreq - ulband/2 < max)) {
+            overlaped = true;
+          }
+        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+        } else {
+          this.matDialog.open(this.deleteModal3, { disableClose: true });
+          return;
+        }
+      }
     }
-    
+    if (overlaped == true) {
+      let msg = this.translateService.instant('freq_overlaped');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
   }
 
-  applyAllSameBandwidth() {
-    console.log(this.svgId);
+  //FOR changeFrequency
+  //如果要改成其他基地台有的"頻率"，"頻寬"也要跟其他人一致
+  applyAllSameFrequency(dlul, isCandidate) { 
     if (this.duplexMode == 'tdd') { //TDD
-      for (let i = 0;i < this.defaultBSList.length;i++) {
-        if (this.defaultBSList[i] == this.svgId) {
-          continue;
+      if (isCandidate) {
+        let freq = this.tempCalParamSet.tddfrequency;
+        for (let i = 0;i < this.defaultBSList.length;i++) {
+          if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+            this.tempCalParamSet.tddbandwidth = this.bsListRfParam[this.defaultBSList[i]].tddbandwidth;
+            break;
+          }
         }
+      } else {
         let freq = this.bsListRfParam[this.svgId].tddfrequency;
-        let band = this.bsListRfParam[this.svgId].tddbandwidth;
-        if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
-          this.bsListRfParam[this.defaultBSList[i]].tddbandwidth = band;
+        for (let i = 0;i < this.defaultBSList.length;i++) {
+          if (this.defaultBSList[i] == this.svgId) {
+            continue;
+          }
+          if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+            this.bsListRfParam[this.svgId].tddbandwidth = this.bsListRfParam[this.defaultBSList[i]].tddbandwidth;
+          }
+        }
+        if (freq == this.tempCalParamSet.tddfrequency) {
+          console.log('default Bs changes tddBandwidth');
+          this.bsListRfParam[this.svgId].tddbandwidth = this.tempCalParamSet.tddbandwidth;
         }
       }
     } else { //FDD
+      if (isCandidate) {
+        if (dlul == 'dl') {
+          let dlfreq = this.tempCalParamSet.fddDlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+              this.tempCalParamSet.dlBandwidth = this.bsListRfParam[this.defaultBSList[i]].dlBandwidth;
+              break;
+            }
+          }
+        } else {
+          let ulfreq = this.tempCalParamSet.fddUlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+              this.tempCalParamSet.ulBandwidth = this.bsListRfParam[this.defaultBSList[i]].ulBandwidth;
+              break;
+            }
+          }
+        }
+      } else {
+        if (dlul == 'dl') {
+          let dlfreq = this.bsListRfParam[this.svgId].fddDlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (this.defaultBSList[i] == this.svgId) {
+              continue;
+            }
+            if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+              this.bsListRfParam[this.svgId].dlBandwidth = this.bsListRfParam[this.defaultBSList[i]].dlBandwidth;
+            }
+          }
+          if (dlfreq == this.tempCalParamSet.fddDlFrequency) {
+            this.bsListRfParam[this.svgId].dlBandwidth = this.tempCalParamSet.dlBandwidth;
+          }
+        } else {
+          let ulfreq = this.bsListRfParam[this.svgId].fddUlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (this.defaultBSList[i] == this.svgId) {
+              continue;
+            }
+            if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+              this.bsListRfParam[this.svgId].ulBandwidth = this.bsListRfParam[this.defaultBSList[i]].ulBandwidth;
+            }
+          }
+          if (ulfreq == this.tempCalParamSet.fddUlFrequency) {
+            this.bsListRfParam[this.svgId].ulBandwidth = this.tempCalParamSet.ulBandwidth;
+          }
+        }
+      }
+    }
+    this.matDialog.closeAll();
+  }
 
+
+  //FOR changeFrequency
+  notApplyAllSameFrequency(dlul, isCandidate) {
+    if (this.duplexMode == 'tdd') {
+      if (isCandidate) {
+        this.tempCalParamSet.tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
+        window.sessionStorage.removeItem('tempParam');
+      } else {
+        this.bsListRfParam[this.svgId].tddfrequency = Number(window.sessionStorage.getItem('tempParam'));
+        window.sessionStorage.removeItem('tempParam');
+      }
+    } else {
+      if (dlul == 'dl') {
+        if (isCandidate) {
+          this.tempCalParamSet.fddDlFrequency =  Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+        } else {
+          this.bsListRfParam[this.svgId].fddDlFrequency =  Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+        }
+      } else {
+        if (isCandidate) {
+          this.tempCalParamSet.fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+        } else {
+          this.bsListRfParam[this.svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+        }
+      }
+    }
+    this.matDialog.closeAll();
+  }
+
+  //FOR changeBandwidth
+  //如果場域內有其他基地台的"頻率"一致，"頻寬"全部都要改
+  applyAllSameBandwidth(dir,isCandidate) {
+    // console.log(this.svgId);
+    // TDD
+    if (this.duplexMode == 'tdd') {
+      if (isCandidate) {
+        let band = this.tempCalParamSet.tddbandwidth;
+        let freq = this.tempCalParamSet.tddfrequency;
+        for (let i = 0;i < this.defaultBSList.length;i++) {
+          if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+            this.bsListRfParam[this.defaultBSList[i]].tddbandwidth = band;
+          }
+        }
+      } else {
+        let band = this.bsListRfParam[this.svgId].tddbandwidth;
+        let freq = this.bsListRfParam[this.svgId].tddfrequency;
+        for (let i = 0;i < this.defaultBSList.length;i++) {
+          if (this.defaultBSList[i] == this.svgId) {
+            continue;
+          }
+          if (freq == this.bsListRfParam[this.defaultBSList[i]].tddfrequency) {
+            this.bsListRfParam[this.defaultBSList[i]].tddbandwidth = band;
+          }
+        }
+        if (freq == this.tempCalParamSet.tddfrequency) {
+          this.tempCalParamSet.tddbandwidth = band;
+        }
+      }
+    //FDD
+    } else { 
+      if (isCandidate) {
+        if (dir == 'dl') {
+          let dlband = this.tempCalParamSet.dlBandwidth;
+          let dlfreq = this.tempCalParamSet.fddDlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+              this.bsListRfParam[this.defaultBSList[i]].dlBandwidth = dlband;
+            }
+          }
+        } else {
+          let ulband = this.tempCalParamSet.ulBandwidth;
+          let ulfreq = this.tempCalParamSet.fddUlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+              this.bsListRfParam[this.defaultBSList[i]].ulBandwidth = ulband;
+            }
+          }
+        }
+      } else {
+        if (dir == 'dl') {
+          let dlband = this.bsListRfParam[this.svgId].dlBandwidth;
+          let dlfreq = this.bsListRfParam[this.svgId].fddDlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (this.defaultBSList[i] == this.svgId) {
+              continue;
+            }
+            if (dlfreq == this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency) {
+              this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency = dlband;
+            }
+          }
+          if (dlfreq == this.tempCalParamSet.fddDlFrequency) {
+            this.tempCalParamSet.dlBandwidth = dlband;
+          }
+        } else {
+          let ulband = this.bsListRfParam[this.svgId].ulBandwidth;
+          let ulfreq = this.bsListRfParam[this.svgId].fddUlFrequency;
+          for (let i = 0;i < this.defaultBSList.length;i++) {
+            if (this.defaultBSList[i] == this.svgId) {
+              continue;
+            }
+            if (ulfreq == this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency) {
+              this.bsListRfParam[this.defaultBSList[i]].ulBandwidth = ulband;
+            }
+          }
+          if (ulfreq == this.tempCalParamSet.fddUlFrequency) {
+            this.tempCalParamSet.ulBandwidth = ulband;
+          }
+        }
+      }
     }
     this.matDialog.closeAll();
     window.sessionStorage.removeItem('tempParamForSelect');
   }
 
-  notApplySameBandwidth() {
-    console.log('dodoro');
-    this.bsListRfParam[this.svgId].tddbandwidth = Number(window.sessionStorage.getItem('tempParamForSelect'));
-    window.sessionStorage.removeItem('tempParamForSelect');
+  //FOR changeBandwidth
+  notApplySameBandwidth(dir,isCandidate) {
+    if (this.duplexMode == 'tdd') {
+      if (isCandidate) {
+        this.tempCalParamSet.tddbandwidth = window.sessionStorage.getItem('tempParamForSelect');
+        window.sessionStorage.removeItem('tempParamForSelect');
+      } else {
+        this.bsListRfParam[this.svgId].tddbandwidth = Number(window.sessionStorage.getItem('tempParamForSelect'));
+        window.sessionStorage.removeItem('tempParamForSelect');
+      }
+    } else {
+      if (dir == 'dl') {
+        if (isCandidate) {
+          this.tempCalParamSet.dlBandwidth =  window.sessionStorage.getItem('tempParamForSelect');
+          window.sessionStorage.removeItem('tempParamForSelect');
+        } else {
+          this.bsListRfParam[this.svgId].dlBandwidth =  Number(window.sessionStorage.getItem('tempParamForSelect'));
+          window.sessionStorage.removeItem('tempParamForSelect');
+        }
+      } else {
+        if (isCandidate) {
+          this.tempCalParamSet.ulBandwidth = window.sessionStorage.getItem('tempParamForSelect');
+          window.sessionStorage.removeItem('tempParamForSelect');
+        } else {
+          this.bsListRfParam[this.svgId].ulBandwidth = Number(window.sessionStorage.getItem('tempParamForSelect'));
+          window.sessionStorage.removeItem('tempParamForSelect');
+        }
+      }
+    }
     this.matDialog.closeAll();
   }
 

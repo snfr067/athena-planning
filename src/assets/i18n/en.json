@@ -254,6 +254,7 @@
 	"deleteCancel": "Cancel",
 	"deleteExceedField": "We will delete obstacles, base stations, and UEs whose coordinates are larger than the length and width of the field. Do you agree?",
 	"applyAllSameBandwidth": "We will change the base stations of the same frequency to the same bandwidth. Do you agree?",
+	"applyAllSameFrequency": "We will change the bandwidth of this base station to that of other base stations with the same frequency. Do you agree??",
 	"applyTitle": "Bandwidth Warning",
 
 	"bs": "BS",
