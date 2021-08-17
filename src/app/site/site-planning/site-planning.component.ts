@@ -489,7 +489,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               this.hstOutput['gaResult'] = {};
               this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
               this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
-              this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
+              // this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
               this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
               this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
               this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
@@ -785,6 +785,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   tempParamStorageForSelect (temp) {
     // console.log(window.sessionStorage.getItem('tempParamForSelect'));
     if (null == window.sessionStorage.getItem('tempParamForSelect')) {
+      console.log('tempParamStorageForSelect');
       window.sessionStorage.setItem('tempParamForSelect',temp);
     }
   }
@@ -3111,21 +3112,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
           } else {
             this.matDialog.open(this.deleteModal3, { disableClose: true });
+            console.log(`same freq with ${this.defaultBSList[i]}`);
             return;
           }
         }
         // check candidateBs
         //若與candidate頻率不同，則檢查加上頻寬後有沒有overlap
-        if (dlfreq != this.tempCalParamSet.fddDlFrequency) {
-          let max = this.tempCalParamSet.fddDlFrequency + Number(this.tempCalParamSet.dlBandwidth)/2;
-          let min = this.tempCalParamSet.fddDlFrequency - Number(this.tempCalParamSet.dlBandwidth)/2;
-          if ((dlfreq + dlband/2 > min && dlfreq + dlband/2 < max) || (dlfreq - dlband/2 > min && dlfreq - dlband/2 < max)) {
-            overlaped = true;
+        if (!isCandidate) {
+          if (dlfreq != this.tempCalParamSet.fddDlFrequency) {
+            let max = this.tempCalParamSet.fddDlFrequency + Number(this.tempCalParamSet.dlBandwidth)/2;
+            let min = this.tempCalParamSet.fddDlFrequency - Number(this.tempCalParamSet.dlBandwidth)/2;
+            if ((dlfreq + dlband/2 > min && dlfreq + dlband/2 < max) || (dlfreq - dlband/2 > min && dlfreq - dlband/2 < max)) {
+              overlaped = true;
+            }
+          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+          } else {
+            this.matDialog.open(this.deleteModal3, { disableClose: true });
+            return;
           }
-        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
-        } else {
-          this.matDialog.open(this.deleteModal3, { disableClose: true });
-          return;
         }
       } else {
         this.modalParam.dir = 'ul';
@@ -3149,16 +3153,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         // check candidateBs
         //若與candidate頻率不同，則檢查加上頻寬後有沒有overlap
-        if (ulfreq != this.tempCalParamSet.fddUlFrequency) {
-          let max = this.tempCalParamSet.fddUlFrequency + Number(this.tempCalParamSet.ulBandwidth)/2;
-          let min = this.tempCalParamSet.fddUlFrequency - Number(this.tempCalParamSet.ulBandwidth)/2;
-          if ((ulfreq + ulband/2 > min && ulfreq + ulband/2 < max) || (ulfreq - ulband/2 > min && ulfreq - ulband/2 < max)) {
-            overlaped = true;
+        if (!isCandidate) {
+          if (ulfreq != this.tempCalParamSet.fddUlFrequency) {
+            let max = this.tempCalParamSet.fddUlFrequency + Number(this.tempCalParamSet.ulBandwidth)/2;
+            let min = this.tempCalParamSet.fddUlFrequency - Number(this.tempCalParamSet.ulBandwidth)/2;
+            if ((ulfreq + ulband/2 > min && ulfreq + ulband/2 < max) || (ulfreq - ulband/2 > min && ulfreq - ulband/2 < max)) {
+              overlaped = true;
+            }
+          // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
+          } else {
+            this.matDialog.open(this.deleteModal3, { disableClose: true });
+            return;
           }
-        // 若有相同頻率的基地台，會詢問是否所有的頻寬都要改，否則不改
-        } else {
-          this.matDialog.open(this.deleteModal3, { disableClose: true });
-          return;
         }
       }
     }

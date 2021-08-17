@@ -117,7 +117,7 @@ export class FormService {
 
     output['chosenCandidate'] = JSON.parse(result['chosecandidate']);
     output['connectionMap'] = JSON.parse(result['connectionmap']);
-    output['connectionMapAll'] = JSON.parse(result['connectionmapall']);
+    // output['connectionMapAll'] = JSON.parse(result['connectionmapall']);
     output['coverage'] = result['coverage'];
     output['cqiCount'] = result['cqicount'];
     output['cqiMap'] = JSON.parse(result['cqimap']);

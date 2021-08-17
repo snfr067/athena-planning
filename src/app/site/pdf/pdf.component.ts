@@ -236,7 +236,7 @@ export class PdfComponent implements OnInit {
             this.result['gaResult'] = {};
             this.result['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
             this.result['gaResult']['sinrMap'] = this.result['sinrMap'];
-            this.result['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
+            // this.result['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
             this.result['gaResult']['rsrpMap'] = this.result['rsrpMap'];
             this.result['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
             this.result['gaResult']['dlThroughputMap'] = this.result['throughputMap'];

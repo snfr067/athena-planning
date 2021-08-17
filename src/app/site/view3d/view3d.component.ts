@@ -471,7 +471,8 @@ export class View3dComponent implements OnInit {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     let allZero = true;
     const ary = [];
-    this.result['gaResult']['connectionMapAll'].map(v => {
+    this.result['gaResult']['connectionMap'].map(v => {
+      // this.result['gaResult']['connectionMapAll'].map(v => {
       v.map(m => {
         m.map(d => {
           if (d != null && d > 0) {
@@ -494,10 +495,12 @@ export class View3dComponent implements OnInit {
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
             const n = (j * this.width + i) * 3;
-            if (typeof this.result['gaResult'].connectionMapAll[i][j] === 'undefined') {
+            if (typeof this.result['gaResult'].connectionMap[i][j] === 'undefined') {
+            // if (typeof this.result['gaResult'].connectionMapAll[i][j] === 'undefined') {
               continue;
             }
-            const value = this.result['gaResult'].connectionMapAll[i][j][zIndex];
+            const value = this.result['gaResult'].connectionMap[i][j][zIndex];
+            // const value = this.result['gaResult'].connectionMapAll[i][j][zIndex];
             if (value == null) {
               colorMap[n] = 255;
               colorMap[n + 1] = 255;

@@ -446,7 +446,7 @@
                 <td>
                   <select type="number" class="inputNum" step="5"
                   [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.tddbandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.tddbandwidth)"
                   (change)="changeBandwidth(svgId, '', true)"
                   >
                     <option value="1.4">1.4</option>
@@ -484,7 +484,7 @@
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth" 
                   style="width: 100px;"
-                  (click)="tempParamStorage(tempCalParamSet.ulBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.ulBandwidth)"
                   (change)="changeBandwidth(svgId, 'ul', true)"
                   >
                     <option value="1.4">1.4</option>
@@ -501,7 +501,7 @@
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
                   style="width: 100px;"
-                  (click)="tempParamStorage(tempCalParamSet.dlBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.dlBandwidth)"
                   (change)="changeBandwidth(svgId, 'dl', true)"
                   >
                     <option value="1.4">1.4</option>
@@ -547,7 +547,7 @@
                 <td>{{ 'scsBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.tddbandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.tddbandwidth)"
                   (change)="changeBandwidth(svgId, '', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '15'">
                     <option value="5">5</option>
@@ -560,7 +560,7 @@
                     <option value="50">50</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.tddbandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.tddbandwidth)"
                   (change)="changeBandwidth(svgId, '', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '30'">
                     <option value="5">5</option>
@@ -578,7 +578,7 @@
                     <option value="100">100</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.tddbandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.tddbandwidth)"
                   (change)="changeBandwidth(svgId, '', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '60'">
                     <option value="10">10</option>
@@ -596,7 +596,7 @@
                     <option value="200">200</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.tddbandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.tddbandwidth)"
                   (change)="changeBandwidth(svgId, '', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '120'">
                     <option value="50">50</option>
@@ -679,7 +679,7 @@
                 <td>{{ 'ulBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.ulBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.ulBandwidth)"
                   (change)="changeBandwidth(svgId, 'ul', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '15'">
                     <option value="5">5</option>
@@ -692,7 +692,7 @@
                     <option value="50">50</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.ulBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.ulBandwidth)"
                   (change)="changeBandwidth(svgId, 'ul', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '30'">
                     <option value="5">5</option>
@@ -710,7 +710,7 @@
                     <option value="100">100</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.ulBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.ulBandwidth)"
                   (change)="changeBandwidth(svgId, 'ul', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '60'">
                     <option value="10">10</option>
@@ -728,7 +728,7 @@
                     <option value="200">200</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.ulBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.ulBandwidth)"
                   (change)="changeBandwidth(svgId, 'ul', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '120'">
                     <option value="50">50</option>
@@ -755,7 +755,7 @@
                 <td>{{ 'dlBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.dlBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.dlBandwidth)"
                   (change)="changeBandwidth(svgId, 'dl', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '15'">
                     <option value="5">5</option>
@@ -768,7 +768,7 @@
                     <option value="50">50</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.dlBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.dlBandwidth)"
                   (change)="changeBandwidth(svgId, 'dl', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '30'">
                     <option value="5">5</option>
@@ -786,7 +786,7 @@
                     <option value="100">100</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.dlBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.dlBandwidth)"
                   (change)="changeBandwidth(svgId, 'dl', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '60'">
                     <option value="10">10</option>
@@ -804,7 +804,7 @@
                     <option value="200">200</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
-                  (click)="tempParamStorage(tempCalParamSet.dlBandwidth)"
+                  (click)="tempParamStorageForSelect(tempCalParamSet.dlBandwidth)"
                   (change)="changeBandwidth(svgId, 'dl', true)"
                   style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '120'">
                     <option value="50">50</option>
@@ -956,97 +956,6 @@
                     <option value="2">5GHz</option>
                   </select>
                 </li>
-                
-                <!-- <li>
-                  <p>{{ 'bandwidth' | translate }}</p>
-                  <span>
-                    <ng-container *ngIf="calculateForm.objectiveIndex == '0'">
-                      <select [(ngModel)]="calculateForm.bandwidth">
-                        <option value="3">3</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                      </select>
-                    </ng-container>
-                    <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
-                      <select [(ngModel)]="calculateForm.bandwidth">
-                        <ng-container *ngIf="subcarrier == 15 || subcarrier == 30">
-                          <option value="5">5</option>
-                          <option value="10">10</option>
-                          <option value="15">15</option>
-                          <option value="20">20</option>
-                          <option value="25">25</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                          <option value="50">50</option>
-                        </ng-container>
-                        <ng-container *ngIf="subcarrier == 30">
-                          <option value="60">60</option>
-                          <option value="70">70</option>
-                          <option value="80">80</option>
-                          <option value="90">90</option>
-                          <option value="100">100</option>
-                        </ng-container>
-                        <ng-container *ngIf="subcarrier == 60">
-                          <option value="10">10</option>
-                          <option value="15">15</option>
-                          <option value="20">20</option>
-                          <option value="25">25</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                          <option value="50">50</option>
-                          <option value="60">60</option>
-                          <option value="70">70</option>
-                          <option value="80">80</option>
-                          <option value="90">90</option>
-                          <option value="100">100</option>
-                          <option value="200">200</option>
-                        </ng-container>
-                        <ng-container *ngIf="subcarrier == 120">
-                          <option value="50">50</option>
-                          <option value="100">100</option>
-                          <option value="200">200</option>
-                          <option value="400">400</option>
-                        </ng-container>
-                      </select>
-                    </ng-container>
-                    <ng-container *ngIf="calculateForm.objectiveIndex == '2'">
-                      <select [(ngModel)]="calculateForm.bandwidth">
-                        <ng-container *ngIf="wifiFrequency == '0'">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="4">4</option>
-                          <option value="8">8</option>
-                          <option value="16">16</option>
-                        </ng-container>
-                        <ng-template [ngIf]="wifiFrequency == '1'">
-                          <option value="20">20</option>
-                          <option value="40">40</option>
-                        </ng-template>
-                        <ng-template [ngIf]="wifiFrequency == '2'">
-                          <option value="20">20</option>
-                          <option value="40">40</option>
-                          <option value="80">80</option>
-                          <option value="120">120</option>
-                        </ng-template>
-                      </select>
-                    </ng-container>
-                    MHz
-                  </span>
-                </li> -->
-
-                <!-- <li>
-                  <p>{{ 'frequency' | translate }}</p>
-                  <span>
-                    <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else otherFrequency">
-                      {{ calculateForm.frequency }} MHz
-                    </ng-container>
-                    <ng-template #otherFrequency>
-                      <input type="text" [(ngModel)]="calculateForm.frequency">
-                    </ng-template>
-                  </span>
-                </li> -->
 
                 <li *ngIf="calculateForm.objectiveIndex == '2'">
                   <p>{{ 'powerRange' | translate }}</p>
@@ -1322,42 +1231,6 @@
         </div>        
       </mat-expansion-panel>
 
-
-      
-      <!--<mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>基站參數設定</mat-panel-title>
-        </mat-expansion-panel-header>
-            <ul>
-              <li>
-                <label>傳輸功率</label>
-                <span>
-                  <input type="text" [(ngModel)]="calculateForm.powerMinRange" placeholder="下限">~<input [(ngModel)]="calculateForm.powerMaxRange" type="text" placeholder="上限">dBm
-                </span>
-              </li>
-              
-              <li>
-                <label>系統頻寬</label>
-                <span>
-                  <select [(ngModel)]="calculateForm.bandwidth">
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                  </select>
-                  /
-                  <label>頻率</label>
-                  <input type="text" [(ngModel)]="calculateForm.frequency">
-                </span>
-              </li>
-            
-          </ul>
-      </mat-expansion-panel>-->
-
-      
-
-
       <mat-expansion-panel *ngIf="0">
         <mat-expansion-panel-header>
           <mat-panel-title>{{ 'planning.algorithm' | translate }}</mat-panel-title>
@@ -1474,319 +1347,6 @@
   </table>
 </ng-template>
 
-<!-- <ng-template #RfModal>
-    <h5 mat-dialog-title>{{ 'rfparam.setting' | translate }}</h5>
-    <ul class="highset">
-      <li *ngIf="planningIndex == '3'">
-        <label>Txower 123</label> 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].txpower"><span>dbm</span>
-        <label>BeamId </label> 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern">
-        <label *ngIf="duplexMode === 'tdd'">{{ 'frequency' | translate }} </label> 
-        <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency"><span>MHz</span> 
-      </li>
-
-      <li *ngIf="planningIndex !== '3'">
-        <label *ngIf="duplexMode === 'tdd'">{{ 'frequency' | translate }} </label> 
-        <input *ngIf="duplexMode === 'tdd'" type="text" [(ngModel)]="bsListRfParam[svgId].tddfrequency">
-      </li>
-
-      <ng-container *ngIf="planningIndex != '3' && calculateForm.objectiveIndex == '2'">
-        <label>{{ 'wifi.bandwidth' | translate }} </label> 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].wifiBandwidth">
-
-        <label>{{ 'frequency' | translate }} </label>
-        <select [(ngModel)]="bsListRfParam[svgId].tddfrequency" style="width: 100px;">
-          <option value=950>950</option>
-          <option value=2400>2400</option>
-          <option value=5800>5800</option>
-        </select>
-      </ng-container>
-
-      <li class="mt-2">
-        <label *ngIf="calculateForm.objectiveIndex == '0'">{{ 'mimoNum' | translate }}</label>
-        <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;" *ngIf="calculateForm.objectiveIndex == '0'">
-          <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
-            <option value=1>1</option>
-            <option value=2>2</option>
-            <option value=3>3</option>
-            <option value=4>4</option>
-          </ng-container>
-          <ng-template #otherMimoNumber4G>
-            <option value=1>1</option>
-            <option value=2>2</option>
-            <option value=4>4</option>
-            <option value=8>8</option>
-          </ng-template>
-        </select>
-        <label *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">{{ 'tddBandwidth' | translate }}</label>
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
-      </li>
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
-        {{ 'wifiProtocol' | translate }} 
-        <mat-radio-group [(ngModel)]="bsListRfParam[svgId].wifiProtocol" aria-label="Select an option">
-          <mat-radio-button class="ml-2" value="wifi4">{{ 'wifi4' | translate }}</mat-radio-button>
-          <mat-radio-button class="ml-2" value="wifi5">{{ 'wifi5' | translate }}</mat-radio-button>
-        </mat-radio-group>
-      </li>
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
-        {{ 'guardInterval' | translate }} 
-        <mat-radio-group [(ngModel)]="bsListRfParam[svgId].guardInterval" aria-label="Select an option">
-          <mat-radio-button class="ml-2" value="400ns">400ns</mat-radio-button>
-          <mat-radio-button class="ml-2" value="800ns">800ns</mat-radio-button>
-        </mat-radio-group>
-      </li>
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '2'">
-        {{ 'mimoNum' | translate }} 
-        <select [(ngModel)]="bsListRfParam[svgId].wifiMimo" style="width: 100px;" >
-          <option value="1x1">1x1</option>
-          <option value="2x2">2x2</option>
-          <option value="3x3">3x3</option>
-        </select>
-      </li>
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'" >
-        {{ 'uplink.frequency' | translate }} 
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddUlFrequency">
-        {{ 'downlink.frequency' | translate }}
-        <input type="text" [(ngModel)]="bsListRfParam[svgId].fddDlFrequency">
-      </li>
-
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
-        {{ 'ULModulationCodingScheme' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 150px;" >
-          <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-            <option value="64QAM-table">64QAM</option>
-            <option value="256QAM-table">256QAM</option>
-            <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-          </ng-container>
-          <ng-template #othterUlModulationCodScheme>
-            <option value="64QAM-table">64QAM-table</option>
-            <option value="256QAM-table">256QAM-table</option>
-            <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-          </ng-template>
-        </select>
-        {{ 'DLModulationCodingScheme' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 150px;" >
-          <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-            <option value="64QAM-table">64QAM</option>
-            <option value="256QAM-table">256QAM</option>
-            <option value="64QAM-Low-SE">64QAM-Low-SE</option>
-          </ng-container>
-          <ng-template #othterUlModulationCodScheme>
-            <option value="64QAM-table">64QAM-table</option>
-            <option value="256QAM-table">256QAM-table</option>
-            <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-          </ng-template>
-        </select>
-      </li>
-
-      <li class="mt-2" *ngIf="calculateForm.objectiveIndex == '1'">
-        {{ 'dlMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="4">4</option>
-          <option value="8">8</option>
-        </select>
-        {{ 'ulMimolayer' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="4">4</option>
-          <option value="8">8</option>
-        </select>
-      </li>
-      <li class="mt-2" *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
-        {{ 'subcarrier' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 100px;" >
-          <option value=15>15</option>
-          <option value=30>30</option>
-          <option value=60>60</option>
-          <option value=120>120</option>
-        </select>
-        {{ 'scsBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '15'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '30'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '60'">
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].tddscs === '120'">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="400">400</option>
-        </select>
-      </li>
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
-        {{ 'dlBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;">
-          <option value="1.4">1.4</option>
-          <option value="3">3</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-        {{ 'ulBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;">
-          <option value="1.4">1.4</option>
-          <option value="3">3</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-      </li>
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
-        {{ 'dlSubcarrier' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlScs" style="width: 100px;" >
-          <option value=15>15</option>
-          <option value=30>30</option>
-          <option value=60>60</option>
-          <option value=120>120</option>
-        </select>
-        {{ 'dlBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '15'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '30'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '60'">
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '120'">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="400">400</option>
-        </select>
-      </li>
-      <li class="mt-2" *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
-        {{ 'ulSubcarrier' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulScs" style="width: 100px;" >
-          <option value=15>15</option>
-          <option value=30>30</option>
-          <option value=60>60</option>
-          <option value=120>120</option>
-        </select>
-        {{ 'ulBandwidth' | translate }}
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '15'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs === '30'">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs === '60'">
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="80">80</option>
-          <option value="90">90</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-        </select>
-        <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth" style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs === '120'">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="400">400</option>
-        </select>
-      </li>
-    </ul>
-</ng-template> -->
-
 <ng-template #RfModalTable>
   <h5 mat-dialog-title>BS {{svgNum}}{{'for' | translate}} {{ 'rfparam.setting' | translate }}</h5>
   <table class="rfParamTable">
@@ -1887,7 +1447,7 @@
         <td>
           <select 
           [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].ulBandwidth)"
           (change)="changeBandwidth(svgId, 'ul', false)"
           style="width: 100px;">MHz
             <option value="1.4">1.4</option>
@@ -1904,7 +1464,7 @@
         <td>
           <select 
           [(ngModel)]="bsListRfParam[svgId].dlBandwidth" 
-          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].dlBandwidth)"
           (change)="changeBandwidth(svgId, 'dl', false)"
           style="width: 100px;">
             <option value="1.4">1.4</option>
@@ -2207,7 +1767,7 @@
         <td>{{ 'ulBandwidth' | translate }}</td>
         <td>
           <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].ulBandwidth)"
           (change)="changeBandwidth(svgId, 'ul', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '15'">
             <option value="5">5</option>
@@ -2220,7 +1780,7 @@
             <option value="50">50</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].ulBandwidth)"
           (change)="changeBandwidth(svgId, 'ul', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '30'">
             <option value="5">5</option>
@@ -2238,7 +1798,7 @@
             <option value="100">100</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].ulBandwidth)"
           (change)="changeBandwidth(svgId, 'ul', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '60'">
             <option value="10">10</option>
@@ -2256,7 +1816,7 @@
             <option value="200">200</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].ulBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].ulBandwidth)"
           (change)="changeBandwidth(svgId, 'ul', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '120'">
             <option value="50">50</option>
@@ -2283,7 +1843,7 @@
         <td>{{ 'dlBandwidth' | translate }}</td>
         <td>
           <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].dlBandwidth)"
           (change)="changeBandwidth(svgId, 'dl', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '15'">
             <option value="5">5</option>
@@ -2296,7 +1856,7 @@
             <option value="50">50</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].dlBandwidth)"
           (change)="changeBandwidth(svgId, 'dl', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '30'">
             <option value="5">5</option>
@@ -2314,7 +1874,7 @@
             <option value="100">100</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].dlBandwidth)"
           (change)="changeBandwidth(svgId, 'dl', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '60'">
             <option value="10">10</option>
@@ -2332,7 +1892,7 @@
             <option value="200">200</option>
           </select>
           <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
-          (click)="tempParamStorage(bsListRfParam[svgId].dlBandwidth)"
+          (click)="tempParamStorageForSelect(bsListRfParam[svgId].dlBandwidth)"
           (change)="changeBandwidth(svgId, 'dl', false)"
           style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '120'">
             <option value="50">50</option>

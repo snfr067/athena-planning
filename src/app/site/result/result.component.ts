@@ -452,7 +452,7 @@ export class ResultComponent implements OnInit {
         this.hstOutput['gaResult'] = {};
         this.hstOutput['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
         this.hstOutput['gaResult']['sinrMap'] = this.result['sinrMap'];
-        this.hstOutput['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
+        // this.hstOutput['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
         this.hstOutput['gaResult']['rsrpMap'] = this.result['rsrpMap'];
         this.hstOutput['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
         this.hstOutput['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
