@@ -55,6 +55,8 @@ export class PdfComponent implements OnInit {
   obstacleList = [];
   /** 行動終端 */
   ueList = [];
+  /** 行動終端 */
+  isHst = false;
 
   /** 建議方案 Component */
   @ViewChild('propose') propose: ProposeComponent;
@@ -116,6 +118,7 @@ export class PdfComponent implements OnInit {
           }
           if (isHst) {
             // 歷史紀錄
+            this.isHst = true;
             this.result = this.formService.setHstOutputToResultOutput(res['output']);
             this.result['createTime'] = res['createtime'];
             const form = res;
@@ -125,6 +128,7 @@ export class PdfComponent implements OnInit {
             this.result['inputHeight'] = this.calculateForm.height;
             console.log(this.calculateForm);
           } else {
+            this.isHst = false;
             this.calculateForm = res['input'];
             this.result = res['output'];
           }
@@ -421,6 +425,7 @@ export class PdfComponent implements OnInit {
             // 統計資訊
             this.performance.calculateForm = this.calculateForm;
             this.performance.result = this.result;
+            this.performance.isHst = this.isHst;
             this.performance.setData();
             this.statistics.calculateForm = this.calculateForm;
             this.statistics.result = this.result;
@@ -652,16 +657,35 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.propose.candidateBs.z'),
       'RSRP',
       'SINR',
+      'DL Throughput',
+      'UL Throughput',
     ];
     const ueData = [];
+    let uedlTpt = [];
+    let ueulTpt = [];
+    if (this.isHst) {
+      uedlTpt = this.result['ueTpt_dlTptIndividualUe'];
+      ueulTpt = this.result['ueTpt_ulTptIndividualUe'];
+      console.log(uedlTpt);
+      console.log(ueulTpt);
+    } else {
+      uedlTpt = this.result['ueTpt']['dlTptIndividualUe'];
+      ueulTpt = this.result['ueTpt']['ulTptIndividualUe'];
+      console.log(uedlTpt);
+      console.log(ueulTpt);
+    }
+    
+    
     
     for (let k = 0; k < this.ueList.length; k++) {
-      console.log(this.result['uersrp'][k]);
-      console.log(this.result['uesinr'][k]);
+      // console.log(this.result['uersrp'][k]);
+      // console.log(this.result['uesinr'][k]);
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
         , this.result['uersrp'][k]
         , this.result['uesinr'][k]
+        , uedlTpt[k]
+        , ueulTpt[k]
       ]);
     }
     pdf.autoTable(ueTitle, ueData, {

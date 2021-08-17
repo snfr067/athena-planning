@@ -434,6 +434,7 @@ export class ResultComponent implements OnInit {
         // 預估效能
         this.performance.calculateForm = this.calculateForm;
         this.performance.result = this.result;
+        this.performance.isHst = this.isHst;
         this.performance.setData();
         // 統計資訊
         this.statistics.calculateForm = this.calculateForm;

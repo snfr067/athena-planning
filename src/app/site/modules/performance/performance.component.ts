@@ -20,6 +20,8 @@ export class PerformanceComponent implements OnInit {
   calculateForm = new CalculateForm();
   /** 地圖切面 list */
   zValueList = [];
+  bsTptList = [];
+  isHst = false;
 
   ngOnInit(): void {
   }
@@ -36,6 +38,33 @@ export class PerformanceComponent implements OnInit {
         Number(this.result['layeredAverageRsrp'][i])
       ]);
     }
+    // console.log(totalServingUe);
+    if (this.isHst) {
+      let totalServingBs = this.calculateForm.availableNewBsNumber;
+      for (let i = 0;i < totalServingBs; i++) {
+        this.bsTptList.push([
+          '0.0',
+          this.result['ueCon_perBsUeConnection'][i],
+          this.result['ueTpt_dlTptIndividualBs'][i],
+          this.result['ueTpt_ulTptIndividualBs'][i],
+          this.result['ueTpt_dlTptIndividualBs'][i]/this.calculateForm.ueCoordinate.length,
+          this.result['ueTpt_ulTptIndividualBs'][i]/this.calculateForm.ueCoordinate.length,
+        ]);
+      }
+    } else {
+      let totalServingBs = this.calculateForm.availableNewBsNumber;
+      for (let i = 0;i < totalServingBs; i++) {
+        this.bsTptList.push([
+          '0.0',
+          this.result['ueCon']['perBsUeConnection'][i],
+          this.result['ueTpt']['dlTptIndividualBs'][i],
+          this.result['ueTpt']['ulTptIndividualBs'][i],
+          this.result['ueTpt']['ulTptIndividualBs'][i]/this.calculateForm.ueCoordinate.length,
+          this.result['ueTpt']['ulTptIndividualBs'][i]/this.calculateForm.ueCoordinate.length,
+        ]);
+      }
+    }
+    
   }
 
   /** parse無資料為 - */

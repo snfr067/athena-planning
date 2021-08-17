@@ -182,6 +182,16 @@ export class FormService {
     output['candidateIdx'] = JSON.parse(result['candidateidx']);
     output['uersrp'] = JSON.parse(result['uersrp']);
     output['uesinr'] = JSON.parse(result['uesinr']);
+    //For UE Tpt
+    output['ueCon_perBsUeConnection'] = JSON.parse(result['ueCon_perBsUeConnection']);
+    output['ueCon_perUeConnectionInfo'] = JSON.parse(result['ueCon_perUeConnectionInfo']);
+    output['ueTpt_dlTpt'] = Number(result['ueTpt_dlTpt']);
+    output['ueTpt_ulTpt'] = Number(result['ueTpt_ulTpt']);
+    output['ueTpt_dlTptIndividualBs'] = JSON.parse(result['ueTpt_dlTptIndividualBs']);
+    output['ueTpt_ulTptIndividualBs'] = JSON.parse(result['ueTpt_ulTptIndividualBs']);
+    output['uesiueTpt_dlTptIndividualUenr'] = JSON.parse(result['ueTpt_dlTptIndividualUe']);
+    output['ueTpt_ulTptIndividualUe'] = JSON.parse(result['ueTpt_ulTptIndividualUe']);
+    output['ueTpt_dlTptIndividualUe'] = JSON.parse(result['ueTpt_dlTptIndividualUe']);
 
 
     return output;

@@ -1,19 +1,51 @@
 <table id="performace" class="thCenter">
-  <tbody>
-      <tr>
-          <th class="panel" colspan="3"><label class="bold">{{ 'result.performance.field' | translate }}</label></th>
-      </tr>
-      <tr>
-          <th>{{ 'result.coverage' | translate }}</th>
-          <th>{{ 'result.averageSinr' | translate }}</th>
-          <th>{{ 'result.averageRsrp' | translate }}</th>
-      </tr>
-      <tr>
-          <td>{{ result['coverage'] }}%</td>
-          <td>{{ result['averageSinr'] | number }}dB</td>
-          <td>{{ result['averageRsrp'] | number }}dBm</td>
-      </tr>
-  </tbody>
+    <tbody>
+        <tr>
+            <th class="panel" colspan="4"><label class="bold">{{ 'result.performance.field' | translate }}</label></th>
+        </tr>
+        <tr>
+            <th>{{ 'result.img.section' | translate }}</th>
+            <th>{{ 'result.coverage' | translate }}</th>
+            <th>{{ 'result.averageSinr' | translate }}</th>
+            <th>{{ 'result.averageRsrp' | translate }}</th>
+        </tr>
+        <tr *ngFor="let item of zValueList">
+            <td>{{ item[0] }} {{ 'meter' | translate }}</td>
+            <td>{{ item[1] }}%</td>
+            <td>{{ item[2] | number }}dB</td>
+            <td>{{ item[3] | number }}dBm</td>
+        </tr>
+        <tr>
+            <td>{{ 'result.average' | translate }}</td>
+            <td>{{ result['coverage'] }}%</td>
+            <td>{{ result['averageSinr'] | number }}dB</td>
+            <td>{{ result['averageRsrp'] | number }}dBm</td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="performace" class="thCenter">
+    <tbody>
+        <tr>
+            <th class="panel" colspan="6"><label class="bold">{{ 'result.performance.bs' | translate }}</label></th>
+        </tr>
+        <tr>
+            <th>{{ 'result.propose.candidateBs.num' | translate }}</th>
+            <th>{{ 'result.bs.per.ue' | translate }}</th>
+            <th>{{ 'result.bs.all.uedltpt' | translate }}</th>
+            <th>{{ 'result.bs.all.ueultpt' | translate }}</th>
+            <th>{{ 'result.bs.avg.uedltpt' | translate }}</th>
+            <th>{{ 'result.bs.avg.ueultpt' | translate }}</th>
+        </tr>
+        <tr *ngFor="let item of bsTptList">
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] | number }}</td>
+            <td>{{ item[2] | number }}Mbps</td>
+            <td>{{ item[3] | number }}Mbps</td>
+            <td>{{ item[3] | number }}Mbps</td>
+            <td>{{ item[3] | number }}Mbps</td>
+        </tr>
+    </tbody>
 </table>
 
 <table id="performace" class="thCenter">
@@ -36,7 +68,7 @@
     </tbody>
   </table>
 
-  <table id="performace" class="thCenter">
+  <!-- <table id="performace" class="thCenter">
     <tbody>
         <tr>
             <th class="panel" colspan="4"><label class="bold">{{ 'result.performance.height' | translate }}</label></th>
@@ -54,4 +86,4 @@
             <td>{{ item[3] | number }}dBm</td>
         </tr>
     </tbody>
-  </table>
+  </table> -->
