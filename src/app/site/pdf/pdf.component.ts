@@ -674,8 +674,11 @@ export class PdfComponent implements OnInit {
       console.log(uedlTpt);
       console.log(ueulTpt);
     }
-    
+
     for (let k = 0; k < this.ueList.length; k++) {
+      if (typeof this.result['uersrp'] === 'undefined') {
+        continue;
+      }
       // console.log(this.result['uersrp'][k]);
       // console.log(this.result['uesinr'][k]);
       ueData.push([
@@ -789,16 +792,31 @@ export class PdfComponent implements OnInit {
     });
 
     //UE平均效能分析*****************************************************************************
-    const performanceHeader3 = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      // pdf.rect(14, 100, 182, 7, 'F');
-      pdf.rect(14, 53, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.ue'), 90, 58);
-      // pdf.text(this.translateService.instant('result.performance.ue'), 90, 105);
-    };
+    // const performanceHeader3 = (data) => {
+    //   pdf.setFontSize(12);
+    //   pdf.setTextColor(255);
+    //   pdf.setFontStyle('normal');
+    //   pdf.setFillColor(42, 58, 93);
+    //   // pdf.rect(14, 100, 182, 7, 'F');
+    //   pdf.rect(14, 53, 182, 7, 'F');
+    //   pdf.text(this.translateService.instant('result.performance.ue'), 90, 58);
+    //   // pdf.text(this.translateService.instant('result.performance.ue'), 90, 105);
+    // };
+    pdf.autoTable([this.translateService.instant('result.performance.ue')], [], {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      margin: { top: 0 },
+      headerStyles: {
+        cellPadding: 1,
+        lineWidth: 0,
+        fontSize: 12,
+        valign: 'bottom',
+        halign: 'center',
+        fillColor: [42, 58, 93],
+        textColor: [255, 255, 255],
+      }
+    });
+
     const p3Title = [
       this.translateService.instant('ue.corver'),
       this.translateService.instant('ue.quality'),
@@ -821,18 +839,34 @@ export class PdfComponent implements OnInit {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       margin: { top: 0 },
-      beforePageContent: performanceHeader3
+      startY: pdf.autoTable.previous.finalY
+      // beforePageContent: performanceHeader3
     });
 
     //基地台效能分析-----------------------------------------------------------------------------------------
-    const performanceHeader2 = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 75, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.bs'), 90, 80);
-    };
+    // const performanceHeader2 = (data) => {
+    //   pdf.setFontSize(12);
+    //   pdf.setTextColor(255);
+    //   pdf.setFontStyle('normal');
+    //   pdf.setFillColor(42, 58, 93);
+    //   pdf.rect(14, 75, 182, 7, 'F');
+    //   pdf.text(this.translateService.instant('result.performance.bs'), 90, 80);
+    // };
+    pdf.autoTable([this.translateService.instant('result.performance.bs')], [], {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      margin: { top: 0 },
+      headerStyles: {
+        cellPadding: 1,
+        lineWidth: 0,
+        fontSize: 12,
+        valign: 'bottom',
+        halign: 'center',
+        fillColor: [42, 58, 93],
+        textColor: [255, 255, 255],
+      }
+    });
+
     const p2Title = [
       this.translateService.instant('result.propose.candidateBs.num'),
       this.translateService.instant('result.bs.per.ue'),
@@ -842,6 +876,7 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.bs.avg.ueultpt'),
     ];
     let p2Data = [];
+    
     if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
       if (this.isHst) {
         let candidateNum = 0;
@@ -969,7 +1004,7 @@ export class PdfComponent implements OnInit {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       margin: { top: 0 },
-      beforePageContent: performanceHeader2
+      startY: pdf.autoTable.previous.finalY
     });
     
 
