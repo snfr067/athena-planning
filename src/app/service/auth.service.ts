@@ -137,6 +137,8 @@ export class AuthService {
       return this.translateService.instant('material.fireproof');
     } else if (val === '6' || val === 6) {
       return this.translateService.instant('material.fireSoundproof');
+    } else if (val === '7' || val === 7) {
+      return this.translateService.instant('material.whiteBrick');
     }
   }
 
