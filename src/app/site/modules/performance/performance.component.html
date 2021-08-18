@@ -24,7 +24,7 @@
     </tbody>
 </table>
 
-<table id="performace" class="thCenter">
+<table id="performace" class="thCenter" *ngIf="calculateForm.ueCoordinate !== ''">
     <tbody>
         <tr>
             <th class="panel" colspan="6"><label class="bold">{{ 'result.performance.bs' | translate }}</label></th>
@@ -42,13 +42,13 @@
             <td>{{ item[1] | number }}</td>
             <td>{{ item[2] | number }}Mbps</td>
             <td>{{ item[3] | number }}Mbps</td>
-            <td>{{ item[3] | number }}Mbps</td>
-            <td>{{ item[3] | number }}Mbps</td>
+            <td>{{ item[4] | number }}Mbps</td>
+            <td>{{ item[5] | number }}Mbps</td>
         </tr>
     </tbody>
 </table>
 
-<table id="performace" class="thCenter">
+<table id="performace" class="thCenter" *ngIf="calculateForm.ueCoordinate !== ''">
     <tbody>
         <tr>
             <th class="panel" colspan="4"><label class="bold">{{ 'result.performance.ue' | translate }}</label></th>

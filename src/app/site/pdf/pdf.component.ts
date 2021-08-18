@@ -675,8 +675,6 @@ export class PdfComponent implements OnInit {
       console.log(ueulTpt);
     }
     
-    
-    
     for (let k = 0; k < this.ueList.length; k++) {
       // console.log(this.result['uersrp'][k]);
       // console.log(this.result['uesinr'][k]);
@@ -711,7 +709,6 @@ export class PdfComponent implements OnInit {
         pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
       });
     }
-    
 
     for (const id of list) {
       pdf.addPage();
@@ -749,87 +746,76 @@ export class PdfComponent implements OnInit {
         console.log(id);
       });
     }
-    // 預估效能
+
+    //新增performance頁面
     pdf.addPage();
+    //場域平均，切面高度----------------------------------------------------------------------------------
     const performanceHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
       pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.field'), 100, 12);
+      pdf.text(this.translateService.instant('result.performance.field'), 90, 12);
     };
     const p1Title = [
+      this.translateService.instant('result.img.section'),
       this.translateService.instant('result.coverage'),
       this.translateService.instant('result.averageSinr'),
       this.translateService.instant('result.averageRsrp'),
       ''
     ];
-    const p1Data = [[
-      this.result['coverage']+'%', `${Number(this.result['averageSinr'])}db`,
-      `${Number(this.result['averageRsrp'])}dBm`, ''
-    ]];
+
+    let p1Data = [];
+    for (let k = 0; k < this.zValues.length; k++) {
+      p1Data.push([
+        `${this.zValues[k]}m`,
+        `${this.result['layeredCoverage'][k]}%`,
+        `${Math.round(this.result['layeredAverageSinr'][k] * 1000) / 1000}db`,
+        `${Math.round(this.result['layeredAverageRsrp'][k] * 1000) / 1000}dBm`
+      ]);
+    }
+    p1Data.push([
+      this.translateService.instant('result.average'),
+      this.result['coverage']+'%',
+      `${Number(this.result['averageSinr'])}db`,
+      `${Number(this.result['averageRsrp'])}dBm`
+    ]);
+    
     pdf.autoTable(p1Title, p1Data, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: performanceHeader
     });
 
-    const performanceHeader2 = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 30, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.ue'), 100, 35);
-    };
-    const p2Title = [
-      this.translateService.instant('ue.corver'),
-      this.translateService.instant('ue.quality'),
-      this.translateService.instant('ue.strength'),
-      // this.translateService.instant('ue.throughput')
-    ];
-    let p2Data;
-    if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
-      p2Data = [[
-        this.result['ueCoverage'].toString()+'%', `${Math.round(this.result['ueAverageSinr'] * 1000) / 1000}db`,
-        `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000}dBm`
-        // `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000} `, `${Math.round(this.result['ueThroughput'] * 1000) / 1000} `
-      ]];
-    } else {
-      p2Data = [[
-        `-`, `-`, `-`, `-`
-      ]];
-    }
-    pdf.autoTable(p2Title, p2Data, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
-      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      margin: { top: 0 },
-      beforePageContent: performanceHeader2
-    });
-    
+    //UE平均效能分析*****************************************************************************
     const performanceHeader3 = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
+      // pdf.rect(14, 100, 182, 7, 'F');
       pdf.rect(14, 53, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.height'), 100, 58);
+      pdf.text(this.translateService.instant('result.performance.ue'), 90, 58);
+      // pdf.text(this.translateService.instant('result.performance.ue'), 90, 105);
     };
     const p3Title = [
-      this.translateService.instant('result.img.section'),
-      this.translateService.instant('result.section.coverage'),
-      this.translateService.instant('result.section.sinr'),
-      this.translateService.instant('result.section.rsrp')
+      this.translateService.instant('ue.corver'),
+      this.translateService.instant('ue.quality'),
+      this.translateService.instant('ue.strength'),
+      // this.translateService.instant('ue.throughput')
     ];
-    const p3Data = [];
-    for (let k = 0; k < this.zValues.length; k++) {
-      p3Data.push([
-        `${this.zValues[k]}m`,
-        `${this.result['layeredCoverage'][k]}%`,
-        `${Math.round(this.result['layeredAverageSinr'][k] * 1000) / 1000}db`,
-        `${Math.round(this.result['layeredAverageRsrp'][k] * 1000) / 1000}dBm`
-      ]);
+    let p3Data;
+    if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
+      p3Data = [[
+        this.result['ueCoverage'].toString()+'%', `${Math.round(this.result['ueAverageSinr'] * 1000) / 1000}db`,
+        `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000}dBm`
+        // `${Math.round(this.result['ueAverageRsrp'] * 1000) / 1000} `, `${Math.round(this.result['ueThroughput'] * 1000) / 1000} `
+      ]];
+    } else {
+      p3Data = [[
+        `-`, `-`, `-`, `-`
+      ]];
     }
     pdf.autoTable(p3Title, p3Data, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -837,6 +823,155 @@ export class PdfComponent implements OnInit {
       margin: { top: 0 },
       beforePageContent: performanceHeader3
     });
+
+    //基地台效能分析-----------------------------------------------------------------------------------------
+    const performanceHeader2 = (data) => {
+      pdf.setFontSize(12);
+      pdf.setTextColor(255);
+      pdf.setFontStyle('normal');
+      pdf.setFillColor(42, 58, 93);
+      pdf.rect(14, 75, 182, 7, 'F');
+      pdf.text(this.translateService.instant('result.performance.bs'), 90, 80);
+    };
+    const p2Title = [
+      this.translateService.instant('result.propose.candidateBs.num'),
+      this.translateService.instant('result.bs.per.ue'),
+      this.translateService.instant('result.bs.all.uedltpt'),
+      this.translateService.instant('result.bs.all.ueultpt'),
+      this.translateService.instant('result.bs.avg.uedltpt'),
+      this.translateService.instant('result.bs.avg.ueultpt'),
+    ];
+    let p2Data = [];
+    if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
+      if (this.isHst) {
+        let candidateNum = 0;
+        if (this.calculateForm.candidateBs.includes('|')) {
+          candidateNum = this.calculateForm.candidateBs.split('|').length;
+        } else {
+          if (this.calculateForm.candidateBs != '') {candidateNum = 1;}
+        }
+        let choseCand = this.result['candidateIdx'].sort(function(a, b){return a - b});
+        console.log(candidateNum);
+        console.log(choseCand);
+        let k = 0;
+        for (let i = 0;i < candidateNum; i++) {
+          if (choseCand[k] != i) {
+            continue;
+          } else {
+            k++
+          }
+          if (this.result['ueCon_perBsUeConnection'][i] == 0) {
+            p2Data.push([
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              0,
+              0,
+              0,
+              0,
+              0,
+            ]);
+          } else {
+            p2Data.push([
+              `${this.translateService.instant('result.propose.candidateBs')}${i}`,
+              this.result['ueCon_perBsUeConnection'][i],
+              this.result['ueTpt_dlTptIndividualBs'][i],
+              this.result['ueTpt_ulTptIndividualBs'][i],
+              Number(this.result['ueTpt_dlTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
+              Number(this.result['ueTpt_ulTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
+            ]);
+          }
+        }
+        for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
+          if (this.result['ueCon_perBsUeConnection'][i+candidateNum] == 0) {
+            p2Data.push([
+              `${this.translateService.instant('defaultBs')}${i+1}`,
+              0,
+              0,
+              0,
+              0,
+              0,
+            ]);
+          } else {
+            p2Data.push([
+              `${this.translateService.instant('defaultBs')}${i+candidateNum}`,
+              this.result['ueCon_perBsUeConnection'][i+candidateNum],
+              this.result['ueTpt_dlTptIndividualBs'][i+candidateNum],
+              this.result['ueTpt_ulTptIndividualBs'][i+candidateNum],
+              Number(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
+              Number(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
+            ]);
+          }
+        }
+      } else {
+        let candidateNum = 0;
+        console.log(this.calculateForm.candidateBs);
+        if (this.calculateForm.candidateBs.includes('|')) {
+          candidateNum = this.calculateForm.candidateBs.split('|').length;
+        } else {
+          if (this.calculateForm.candidateBs != '') {candidateNum = 1;}
+        }
+        console.log(candidateNum);
+        let choseCand = this.result['candidateIdx'].sort(function(a, b){return a - b});
+        let k = 0;
+        for (let i = 0;i < candidateNum; i++) {
+          if (choseCand[k] != i) {
+            continue;
+          } else {
+            k++
+          }
+          if (this.result['ueCon']['perBsUeConnection'][i] == 0) {
+            p2Data.push([
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              0,
+              0,
+              0,
+              0,
+              0,
+            ]);
+          } else {
+            p2Data.push([
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              this.result['ueCon']['perBsUeConnection'][i],
+              this.result['ueTpt']['dlTptIndividualBs'][i],
+              this.result['ueTpt']['ulTptIndividualBs'][i],
+              Number(this.result['ueTpt']['dlTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
+              Number(this.result['ueTpt']['ulTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
+            ]);
+            // console.log(Number(this.result['ueTpt']['dlTptIndividualBs'][i]));
+            // console.log(Number(this.result['ueCon']['perBsUeConnection'][i]));
+          }
+        }
+        // console.log(this.result['defaultBeamId']);
+        for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
+          if (this.result['ueCon']['perBsUeConnection'][i+candidateNum] == 0) {
+            p2Data.push([
+              `${this.translateService.instant('defaultBs')}${i+1}`,
+              0,
+              0,
+              0,
+              0,
+              0,
+            ]);
+          } else {
+            p2Data.push([
+              `${this.translateService.instant('defaultBs')}${i+1}`,
+              this.result['ueCon']['perBsUeConnection'][i+candidateNum],
+              this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum],
+              this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum],
+              Number(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
+              Number(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
+            ]);
+          }
+        }
+      }
+    }
+    
+    pdf.autoTable(p2Title, p2Data, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      margin: { top: 0 },
+      beforePageContent: performanceHeader2
+    });
+    
 
     // 統計資訊
     const statisticsList = ['statistics'];
