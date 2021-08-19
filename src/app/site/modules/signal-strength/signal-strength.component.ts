@@ -271,6 +271,12 @@ export class SignalStrengthComponent implements OnInit {
       });
     }
 
+    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
+    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
+    let unit = (scalemax-scalemin)/4;
+    let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    let scaleunitText = [`${scalemax}dBm`, `${scalemax-unit}dBm`, `${scalemax-2*unit}dBmB`, `${scalemax-3*unit}dBm`, `${scalemin}dBmB`];
+
     const trace = {
       x: x,
       y: y,
@@ -289,13 +295,14 @@ export class SignalStrengthComponent implements OnInit {
       // showscale: false,
       // zmax: -44,
       // zmin: -140,
-      zmin: Math.round(this.minZ[zValues.indexOf(this.zValue)]),
-      zmax: Math.round(this.maxZ[zValues.indexOf(this.zValue)]),
+      zmin: scalemin,
+      zmax: scalemax,
       zsmooth: 'fast',
       opacity: this.opacityValue,
       colorbar: {
         autotick: false,
-        tickvals: [Math.round(this.maxZ[zValues.indexOf(this.zValue)]),Math.round(this.minZ[zValues.indexOf(this.zValue)])],
+        tickvals: scaleunit,
+        ticktext: scaleunitText,
         // tickvals: [-44, -70, -95, -120, -140],
         ticksuffix: 'dBm',
       }

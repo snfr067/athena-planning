@@ -374,6 +374,11 @@ export class SignalQualityComponent implements OnInit {
     //   hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('signalStrength')}: %{text}<extra></extra>`,
     // };
     // traces.push(trace);
+    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
+    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
+    let unit = (scalemax-scalemin)/4;
+    let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    let scaleunitText = [`${scalemax}dB`, `${scalemax-unit}dB`, `${scalemax-2*unit}dB`, `${scalemax-3*unit}dB`, `${scalemin}dB`];
 
     const trace = {
       x: x,
@@ -394,15 +399,17 @@ export class SignalQualityComponent implements OnInit {
       // showscale: false,
       opacity: this.opacityValue,
       zsmooth: 'fast',
-      zmin: Math.round(this.minZ[zValues.indexOf(this.zValue)]),
-      zmax: Math.round(this.maxZ[zValues.indexOf(this.zValue)]),
+      zmin: scalemin,
+      zmax: scalemax,
       // zmin: -8,
       // zmax: 24,
       colorbar: {
         autotick: false,
-        tickvals: [Math.round(this.maxZ[zValues.indexOf(this.zValue)]),Math.round(this.minZ[zValues.indexOf(this.zValue)])],
+        tickvals: scaleunit,
         // tickvals: [24, 16, 8, 0, -8],
         ticksuffix: 'dB',
+        ticktext: scaleunitText,
+        // ticktext: [`${scalemax}dB`, `${scalemin}dB`],
         // ticktext: [24, 16, 8, 0, -8],
         ticklabelposition: 'inside bottom'
         // tick1: 24,

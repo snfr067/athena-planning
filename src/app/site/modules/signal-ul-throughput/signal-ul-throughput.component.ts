@@ -284,6 +284,12 @@ export class SignalUlThroughputComponent implements OnInit {
       });
     }
 
+    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
+    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
+    let unit = (scalemax-scalemin)/4;
+    let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    let scaleunitText = [`${scalemax}Mbps`, `${scalemax-unit}Mbps`, `${scalemax-2*unit}Mbps`, `${scalemax-3*unit}Mbps`, `${scalemin}Mbps`];
+
     const trace = {
       x: x,
       y: y,
@@ -305,14 +311,14 @@ export class SignalUlThroughputComponent implements OnInit {
       zsmooth: 'fast',
       // zmin: 100,
       // zmax: 1200,
-      zmin: Math.round(this.minZ[zValues.indexOf(this.zValue)]),
-      zmax: Math.round(this.maxZ[zValues.indexOf(this.zValue)]),
+      zmin: scalemin,
+      zmax: scalemax,
       colorbar: {
         autotick: false,
         // tickvals: [1200, 800, 500, 300, 200, 100],
-        tickvals: [Math.round(this.maxZ[zValues.indexOf(this.zValue)]),Math.round(this.minZ[zValues.indexOf(this.zValue)])],
+        tickvals: scaleunit,
         ticksuffix: 'Mbps',
-        // ticktext: [24, 16, 8, 0, -8],
+        ticktext: scaleunitText,
         ticklabelposition: 'inside bottom'
         // tick1: 24,
         // dtick: 7
