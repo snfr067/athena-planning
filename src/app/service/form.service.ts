@@ -180,8 +180,8 @@ export class FormService {
     output['ulThroughputMap'] = JSON.parse(result['ulthroughputmap']);
     output['throughputMap'] = JSON.parse(result['throughputmap']);
     output['candidateIdx'] = JSON.parse(result['candidateidx']);
-    output['uersrp'] = JSON.parse(result['uersrp']);
-    output['uesinr'] = JSON.parse(result['uesinr']);
+    output['ueRsrp'] = JSON.parse(result['uersrp']);
+    output['ueSinr'] = JSON.parse(result['uesinr']);
     //For UE Tpt
     output['ueCon_perBsUeConnection'] = JSON.parse(result['ueCon_perBsUeConnection']);
     output['ueCon_perUeConnectionInfo'] = JSON.parse(result['ueCon_perUeConnectionInfo']);

@@ -250,7 +250,7 @@
 	"result.bs.all.uedltpt": "服務UE總下行Throughput",
 	"result.bs.all.ueultpt": "服務UE總上行Throughput",
 	"result.bs.avg.uedltpt": "服務UE平均下行Throughput",
-	"result.bs.avg.ueultpt": "服務UE數量上行Throughput",
+	"result.bs.avg.ueultpt": "服務UE平均上行Throughput",
 	"ulThroughputMap": "上行傳輸速率圖",
 	"dlThroughputMap": "下行傳輸速率圖",
 	"throughput": "傳輸速率",
