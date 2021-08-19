@@ -339,5 +339,9 @@
 	"": "After switching the duplex mode, please remember to check whether the base station RF parameters are filled in",
 
 	"default": "D",
-	"candidate": "C"
+	"candidate": "C",
+
+	"and": "and",
+	"overlap": "overlap",
+	"de": "s'"
 }
