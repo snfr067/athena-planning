@@ -3204,12 +3204,69 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // }
   }
 
-  changeBandwidth(svgId, dir, isCandidate) {
-  //   // console.log(this.svgId);
+  changeScs(value, dir, isCandidate) {
+    if (value == 15) {
+      if (isCandidate) {
+        if (dir == 'tdd') {
+          this.tempCalParamSet.tddbandwidth = '5';
+        } else if (dir == 'dl') {
+          this.tempCalParamSet.dlBandwidth = '5';
+        } else {
+          this.tempCalParamSet.ulBandwidth = '5';
+        }
+      } else {
+        if (dir == 'tdd') {
+          this.bsListRfParam[this.svgId].tddbandwidth = '5';
+        } else if (dir == 'dl') {
+          this.bsListRfParam[this.svgId].dlBandwidth = '5';
+        } else {
+          this.bsListRfParam[this.svgId].ulBandwidth = '5';
+        }
+      }
+    } else if (value == 30) {
+      if (isCandidate) {
+        if (dir == 'tdd') {
+          this.tempCalParamSet.tddbandwidth = '5';
+        } else if (dir == 'dl') {
+          this.tempCalParamSet.dlBandwidth = '5';
+        } else {
+          this.tempCalParamSet.ulBandwidth = '5';
+        }
+      } else {
+        if (dir == 'tdd') {
+          this.bsListRfParam[this.svgId].tddbandwidth = '5';
+        } else if (dir == 'dl') {
+          this.bsListRfParam[this.svgId].dlBandwidth = '5';
+        } else {
+          this.bsListRfParam[this.svgId].ulBandwidth = '5';
+        }
+      }
+    } else {
+      if (isCandidate) {
+        if (dir == 'tdd') {
+          this.tempCalParamSet.tddbandwidth = '10';
+        } else if (dir == 'dl') {
+          this.tempCalParamSet.dlBandwidth = '10';
+        } else {
+          this.tempCalParamSet.ulBandwidth = '10';
+        }
+      } else {
+        if (dir == 'tdd') {
+          this.bsListRfParam[this.svgId].tddbandwidth = '10';
+        } else if (dir == 'dl') {
+          this.bsListRfParam[this.svgId].dlBandwidth = '10';
+        } else {
+          this.bsListRfParam[this.svgId].ulBandwidth = '10';
+        }
+      }
+    }
+  }
+
+  changeBandwidth(dir, isCandidate) {
+    
   //   let overlaped = false;
   //   let freq = 0;
   //   let band = 0;
-  //   // let sameFreq = false;
   //   if (this.duplexMode == 'tdd') { //TDD ---------------------------------------------------------------------------------------------------------------------------
   //     this.modalParam.dir = '';
   //     // 判斷改的是candidate還是default
