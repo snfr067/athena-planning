@@ -2246,7 +2246,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if ((ulmainMax > dlmin && ulmainMax < dlmax) || (ulmainMin > dlmin && ulmainMin < dlmax)) {
             warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
             ${this.translateService.instant('and')} 
-            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
             ${this.translateService.instant('overlap')} <br/>`;
           }
         }
