@@ -594,7 +594,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
             }
             // console.log(this.calculateForm);
-            
             this.initData(false, false, '');
           },
           err => {
@@ -608,7 +607,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else {
         // 新增場域 upload image
         this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
-
         // 頻寬初始值
         this.changeWifiFrequency();
         if (this.calculateForm.objectiveIndex === '0') {
@@ -618,10 +616,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         } else if (this.calculateForm.objectiveIndex === '2') {
           // this.calculateForm.bandwidth = '[1]';
         }
-
         this.initData(false, false, '');
       }
-      
       // setTimeout(()=> {
       //   if (this.calculateForm.defaultBs !== "") {
       //     this.planningIndex = '3';
@@ -2215,8 +2211,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulband = Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth);
         dlmainMax = dlfreq + dlband/2;
         dlmainMin = dlfreq - dlband/2;
-        ulmainMax = ulfreq - ulband/2;
+        ulmainMax = ulfreq + ulband/2;
         ulmainMin = ulfreq - ulband/2;
+        console.log(`${dlmainMax} ${dlmainMin} ${ulmainMax} ${ulmainMin}`);
+        if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
+          warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        }
         for (let j = 0;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           dlmax = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[j]].dlBandwidth/2;
@@ -2257,8 +2259,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulband = Number(this.tempCalParamSet.ulBandwidth);
         dlmainMax = dlfreq + dlband/2;
         dlmainMin = dlfreq - dlband/2;
-        ulmainMax = ulfreq - ulband/2;
+        ulmainMax = ulfreq + ulband/2;
         ulmainMin = ulfreq - ulband/2;
+        if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
+          warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        }
         for (let i = 0;  i < this.defaultBSList.length; i++) {
           dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
           ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
@@ -2313,8 +2320,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const obj = this.tempCalParamSet;
     if (this.isEmpty(this.scalingFactor)) {msg+= `${this.translateService.instant('nf_scalingFactor')}<br/>`}
     else if (this.scalingFactor < 0 || this.scalingFactor > 1) {msg+= `${this.translateService.instant('0to1_scalingFactor')}<br/>`}
-    console.log(this.calculateForm.powerMinRange);
-    console.log(this.calculateForm.powerMaxRange);
+    // console.log(this.calculateForm.powerMinRange);
+    // console.log(this.calculateForm.powerMaxRange);
     if (this.isEmpty(this.calculateForm.powerMaxRange) || this.isEmpty(this.calculateForm.powerMinRange)) {
       if (this.isEmpty(this.calculateForm.powerMaxRange)) {
         msg+= `${this.translateService.instant('nf_maxpower')}<br/>`
@@ -2417,6 +2424,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     //檢查是否有基地台頻寬重疊
     if (this.checkRFParamIsOverlaped()) {
       return;
+    } else {
+      // return;
     }
 
     if (this.planningIndex != '3' && this.duplexMode == 'fdd' && this.checkDlUlDiff()) {
@@ -5151,11 +5160,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // this.calculateForm.frequency = '5800';
     }
     // 場域內無線訊號衰減模型 default value
-    if (Number(this.calculateForm.objectiveIndex) === 2) {
-      this.calculateForm.pathLossModelId = 9;
-    } else {
-      this.calculateForm.pathLossModelId = 0;
-    }
+    // if (Number(this.calculateForm.objectiveIndex) === 2) {
+    //   this.calculateForm.pathLossModelId = 9;
+    // } else {
+    //   this.calculateForm.pathLossModelId = 0;
+    // }
   }
 
   /**
