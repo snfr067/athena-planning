@@ -972,10 +972,10 @@ export class PdfComponent implements OnInit {
             p2Data.push([
               `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i],
-              this.result['ueTpt']['dlTptIndividualBs'][i],
-              this.result['ueTpt']['ulTptIndividualBs'][i],
-              Number(this.result['ueTpt']['dlTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
-              Number(this.result['ueTpt']['ulTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
+              `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i]/this.result['ueCon']['perBsUeConnection'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i]/this.result['ueCon']['perBsUeConnection'][i])} Mbps`,
             ]);
             // console.log(Number(this.result['ueTpt']['dlTptIndividualBs'][i]));
             // console.log(Number(this.result['ueCon']['perBsUeConnection'][i]));
@@ -996,10 +996,10 @@ export class PdfComponent implements OnInit {
             p2Data.push([
               `${this.translateService.instant('defaultBs')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i+candidateNum],
-              this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum],
-              this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum],
-              Number(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
-              Number(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
+              `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum]/this.result['ueCon']['perBsUeConnection'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum]/this.result['ueCon']['perBsUeConnection'][i+candidateNum])} Mbps`,
             ]);
           }
         }

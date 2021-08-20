@@ -2231,6 +2231,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulmainMin = ulfreq - ulband/2;
         console.log(`${dlmainMax} ${dlmainMin} ${ulmainMax} ${ulmainMin}`);
         if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
+          console.log('aaaaaaaa');
           warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
           ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
           ${this.translateService.instant('overlap')} <br/>`;
