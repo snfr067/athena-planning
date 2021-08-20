@@ -2171,7 +2171,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         band = this.bsListRfParam[this.defaultBSList[i]].tddbandwidth;
         mainMax = freq + band/2;
         mainMin = freq - band/2;
-        for (let j = 0;  j < this.defaultBSList.length; j++) {
+        for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency + this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
           min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency - this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
@@ -2219,7 +2219,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
           ${this.translateService.instant('overlap')} <br/>`;
         }
-        for (let j = 0;  j < this.defaultBSList.length; j++) {
+        for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           dlmax = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[j]].dlBandwidth/2;
           ulmax = this.bsListRfParam[this.defaultBSList[j]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[j]].ulBandwidth/2;
