@@ -447,6 +447,10 @@ export class PdfComponent implements OnInit {
     }
   }
 
+  financial(x) {
+    return Number.parseFloat(x).toFixed(1);
+  }
+
   /** export PDF */
   async genericPDF(taskName) {
     this.authService.spinnerShow();
@@ -632,7 +636,8 @@ export class PdfComponent implements OnInit {
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
-      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.element)]);
+      console.log(item);
+      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -679,13 +684,14 @@ export class PdfComponent implements OnInit {
       if (typeof this.result['ueRsrp'] === 'undefined') {
         continue;
       }
-      // console.log(this.result['uesinr'][k]);
+      console.log(typeof this.result['ueRsrp'][k]);
+      console.log(typeof this.result['ueSinr'][k]);
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-        , this.result['ueRsrp'][k]
-        , this.result['ueSinr'][k]
-        , uedlTpt[k]
-        , ueulTpt[k]
+        , `${this.financial(this.result['ueRsrp'][k])} db`
+        , `${this.financial(this.result['ueSinr'][k])} dbm`
+        , `${this.financial(uedlTpt[k])} Mbps`
+        , `${this.financial(ueulTpt[k])} Mbps`
       ]);
     }
     console.log(ueData);
@@ -908,10 +914,10 @@ export class PdfComponent implements OnInit {
             p2Data.push([
               `${this.translateService.instant('result.propose.candidateBs')}${i}`,
               this.result['ueCon_perBsUeConnection'][i],
-              this.result['ueTpt_dlTptIndividualBs'][i],
-              this.result['ueTpt_ulTptIndividualBs'][i],
-              Number(this.result['ueTpt_dlTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
-              Number(this.result['ueTpt_ulTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
+              `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i]/this.result['ueCon_perBsUeConnection'][i])} Mbps`,
+              `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i]/this.result['ueCon_perBsUeConnection'][i])} Mbps`,
             ]);
           }
         }
@@ -929,10 +935,10 @@ export class PdfComponent implements OnInit {
             p2Data.push([
               `${this.translateService.instant('defaultBs')}${i+candidateNum}`,
               this.result['ueCon_perBsUeConnection'][i+candidateNum],
-              this.result['ueTpt_dlTptIndividualBs'][i+candidateNum],
-              this.result['ueTpt_ulTptIndividualBs'][i+candidateNum],
-              Number(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
-              Number(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
+              `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum]/this.result['ueCon_perBsUeConnection'][i+candidateNum])} Mbps`,
+              `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum]/this.result['ueCon_perBsUeConnection'][i+candidateNum])} Mbps`,
             ]);
           }
         }

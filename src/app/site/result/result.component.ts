@@ -516,6 +516,10 @@ export class ResultComponent implements OnInit {
     // this.getCandidateList();
   }
 
+  // financial(x) {
+  //   return Number.parseFloat(x).toFixed(1);
+  // }
+
   getCandidateList() {
     let index = 1;
     const numMap = {};

@@ -164,6 +164,10 @@ export class PerformanceComponent implements OnInit {
     
   }
 
+  financial(x) {
+    return Number.parseFloat(x).toFixed(1);
+  }
+
   /** parse無資料為 - */
   parseNoData(val, isPercentage, type) {
     if (val == null || val === '') {

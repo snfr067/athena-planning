@@ -2175,6 +2175,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency + this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
           min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency - this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
+          if (mainMax == max && mainMin == min) {
+            continue;
+          }
+          if (mainMax > max && mainMin < min) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1} ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1} ${this.translateService.instant('tddfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
           if ((mainMax > min && mainMax < max) || (mainMin > min && mainMin < max)) {
             warnmsg+=`${this.translateService.instant('default')}${i+1} ${this.translateService.instant('and')} 
             ${this.translateService.instant('default')}${j+1} ${this.translateService.instant('tddfrequency')} 
@@ -2192,6 +2200,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         for (let i = 0;  i < this.defaultBSList.length; i++) {
           max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
           min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          if (mainMax == max && mainMin == min) {
+            continue;
+          }
+          if (mainMax > max && mainMin < min) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1} ${this.translateService.instant('and')} 
+            ${this.translateService.instant('candidate')} ${this.translateService.instant('tddfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
           if ((mainMax > min && mainMax < max) || (mainMin > min && mainMin < max)) {
             warnmsg+=`${this.translateService.instant('default')}${i+1} ${this.translateService.instant('and')} 
             ${this.translateService.instant('candidate')} ${this.translateService.instant('tddfrequency')} 
@@ -2221,10 +2237,50 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
-          dlmax = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[j]].dlBandwidth/2;
-          ulmax = this.bsListRfParam[this.defaultBSList[j]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[j]].ulBandwidth/2;
-          dlmin = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[j]].dlBandwidth/2;
-          ulmin = this.bsListRfParam[this.defaultBSList[j]].fddUlFrequency - this.bsListRfParam[this.defaultBSList[j]].ulBandwidth/2;
+          dlmax = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency + Number(this.bsListRfParam[this.defaultBSList[j]].dlBandwidth)/2;
+          ulmax = this.bsListRfParam[this.defaultBSList[j]].fddUlFrequency + Number(this.bsListRfParam[this.defaultBSList[j]].ulBandwidth)/2;
+          dlmin = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency - Number(this.bsListRfParam[this.defaultBSList[j]].dlBandwidth)/2;
+          ulmin = this.bsListRfParam[this.defaultBSList[j]].fddUlFrequency - Number(this.bsListRfParam[this.defaultBSList[j]].ulBandwidth)/2;
+          // default 下行與 default完全重合，上行亦然
+          if ((dlmainMax == dlmax && dlmainMin == dlmin) && (ulmainMax == ulmax && ulmainMin == ulmin)) {
+            continue;
+          }
+          if (dlmainMax == ulmax && dlmainMin == ulmin) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          } else if (ulmainMax == dlmax && ulmainMin == dlmin) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          // default 頻率範圍完全蓋過 defualt
+          if ((dlmainMax >= dlmax && dlmainMin < dlmin) || (dlmainMax > dlmax && dlmainMin <= dlmin)) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((dlmainMax >= ulmax && dlmainMin < ulmin) || (dlmainMax > ulmax && dlmainMin <= ulmin)) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((ulmainMax >= dlmax && ulmainMin < dlmin) || (ulmainMax > dlmax && ulmainMin <= dlmin)) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((ulmainMax >= ulmax && ulmainMin < ulmin) || (ulmainMax > ulmax && ulmainMin <= ulmin)) {
+            warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${j+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
           if ((dlmainMax > dlmin && dlmainMax < dlmax) || (dlmainMin > dlmin && dlmainMin < dlmax)) {
             warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
             ${this.translateService.instant('and')} 
@@ -2251,6 +2307,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
+      console.log(this.calculateForm.isSimulation);
       //規劃才需要比較Candidate
       if (!this.calculateForm.isSimulation) {
         dlfreq = this.tempCalParamSet.fddDlFrequency;
@@ -2261,16 +2318,59 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         dlmainMin = dlfreq - dlband/2;
         ulmainMax = ulfreq + ulband/2;
         ulmainMin = ulfreq - ulband/2;
+        console.log(`${dlmainMax} ${dlmainMin} ${ulmainMax} ${ulmainMin}`)
         if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
           warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
           ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
           ${this.translateService.instant('overlap')} <br/>`;
         }
         for (let i = 0;  i < this.defaultBSList.length; i++) {
-          dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
-          ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
-          dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - this.bsListRfParam[this.defaultBSList[i]].dlBandwidth/2;
-          ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - this.bsListRfParam[this.defaultBSList[i]].ulBandwidth/2;
+          dlmax = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+          ulmax = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency + Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
+          dlmin = this.bsListRfParam[this.defaultBSList[i]].fddDlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].dlBandwidth)/2;
+          ulmin = this.bsListRfParam[this.defaultBSList[i]].fddUlFrequency - Number(this.bsListRfParam[this.defaultBSList[i]].ulBandwidth)/2;
+          // console.log(`${dlmax} ${dlmin} ${ulmax} ${ulmin}`)
+          // Candidate 下行與 default完全重合，上行亦然
+          if ((dlmainMax == dlmax && dlmainMin == dlmin) && (ulmainMax == ulmax && ulmainMin == ulmin)) {
+            continue;
+          }
+          if (dlmainMax == ulmax && dlmainMin == ulmin) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          } else if (ulmainMax == dlmax && ulmainMin == dlmin) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          // Candidate 頻率範圍完全蓋過 defualt
+          if ((dlmainMax >= dlmax && dlmainMin < dlmin) || (dlmainMax > dlmax && dlmainMin <= dlmin)) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((dlmainMax >= ulmax && dlmainMin < ulmin) || (dlmainMax > ulmax && dlmainMin <= ulmin)) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((ulmainMax >= dlmax && ulmainMin < dlmin) || (ulmainMax > dlmax && ulmainMin <= dlmin)) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          if ((ulmainMax >= ulmax && ulmainMin < ulmin) || (ulmainMax > ulmax && ulmainMin <= ulmin)) {
+            warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('and')} 
+            ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
+            ${this.translateService.instant('overlap')} <br/>`;
+          }
+          // Candidate 頻率範圍與部分 defualt 重疊
           if ((dlmainMax > dlmin && dlmainMax < dlmax) || (dlmainMin > dlmin && dlmainMin < dlmax)) {
             warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
             ${this.translateService.instant('and')} 
@@ -2278,7 +2378,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ${this.translateService.instant('overlap')} <br/>`;
           }
           if ((dlmainMax > ulmin && dlmainMax < ulmax) || (dlmainMin > ulmin && dlmainMin < ulmax)) {
-            warnmsg+=`Candidate's DL and Default BS${i+1}'s UL frequency overlaped <br/>`;
+            // warnmsg+=`Candidate's DL and Default BS${i+1}'s UL frequency overlaped <br/>`;
             warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}${this.translateService.instant('dlfrequency')} 
             ${this.translateService.instant('and')} 
             ${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}${this.translateService.instant('ulfrequency')} 
