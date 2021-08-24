@@ -2430,7 +2430,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     }
     if (warnmsg != '') {
-      console.log(warnmsg);
+      // console.log(warnmsg);
       warnmsg = '<br/>'+warnmsg;
       this.msgDialogConfig.data = {
         type: 'error',

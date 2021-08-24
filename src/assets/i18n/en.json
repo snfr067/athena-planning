@@ -184,6 +184,7 @@
 	"result.img.change": "Switch heaymap type",
 	"result.performance": "performance",
 	"result.coverage": "Coverage ratio",
+	"average": "Average",
 	"result.average": "Field Average",
 	"result.averageSinr": "Average signal quality",
 	"result.averageRsrp": "Average signal strength",

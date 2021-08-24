@@ -163,19 +163,15 @@ export class PerformanceComponent implements OnInit {
     }
     //場域平均和加總
     let ueNum = 0;
-    // let fieldAvgDlTpt = 0;
-    // let fieldAvgUlTpt = 0;
     let fieldTotalDlTpt = 0;
     let fieldTotalUlTpt = 0;
     for (let i = 0;i < this.bsTptList.length;i++) {
       ueNum += this.bsTptList[i][1]
-      // fieldAvgDlTpt = this.bsTptList[i][2];
-      // fieldAvgUlTpt = this.bsTptList[i][2];
       fieldTotalDlTpt += this.bsTptList[i][2];
       fieldTotalUlTpt += this.bsTptList[i][3];
     }
     this.bsTptList.push([
-      this.translateService.instant('result.average'),
+      this.translateService.instant('average'),
       ueNum,
       fieldTotalDlTpt,
       fieldTotalUlTpt,

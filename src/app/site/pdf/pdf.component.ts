@@ -491,7 +491,11 @@ export class PdfComponent implements OnInit {
     pdf.text(14, pos, `${this.translateService.instant('result.layered.info')}：`);
     pdf.setFillColor(255, 255, 255);
     pdf.setLineWidth(0.1);
-    pdf.rect(14, pos + (margin / 2), 182, 190);
+    if (this.calculateForm.duplex == 'tdd') {
+      pdf.rect(14, pos + (margin / 2), 182, 190);
+    } else {
+      pdf.rect(14, pos + (margin / 2), 182, 200);
+    }
     pos += margin + 5;
     pdf.text(20, pos, `${this.translateService.instant('planning.target')}：`);
     pos += margin;
@@ -1034,7 +1038,7 @@ export class PdfComponent implements OnInit {
         
       }
       p2Data.push([
-        this.translateService.instant('result.average'),
+        this.translateService.instant('average'),
         ueNum,
         `${this.financial(fieldTotalDlTpt)} Mbps`,
         `${this.financial(fieldTotalUlTpt)} Mbps`,

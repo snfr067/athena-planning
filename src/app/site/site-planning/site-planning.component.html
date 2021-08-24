@@ -545,7 +545,7 @@
                 <td>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
                   (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '15'">
+                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '15'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -557,7 +557,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
                   (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '30'">
+                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '30'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -574,7 +574,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
                   (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs === '60'">
+                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '60'">
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
