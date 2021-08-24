@@ -68,7 +68,7 @@ export class PerformanceComponent implements OnInit {
           ]);
         } else {
           this.bsTptList.push([
-            `${this.translateService.instant('result.propose.candidateBs')}${i}`,
+            `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
             this.result['ueCon_perBsUeConnection'][i],
             this.result['ueTpt_dlTptIndividualBs'][i],
             this.result['ueTpt_ulTptIndividualBs'][i],
@@ -89,7 +89,7 @@ export class PerformanceComponent implements OnInit {
           ]);
         } else {
           this.bsTptList.push([
-            `${this.translateService.instant('defaultBs')}${i+candidateNum}`,
+            `${this.translateService.instant('defaultBs')}${i+1}`,
             this.result['ueCon_perBsUeConnection'][i+candidateNum],
             this.result['ueTpt_dlTptIndividualBs'][i+candidateNum],
             this.result['ueTpt_ulTptIndividualBs'][i+candidateNum],
@@ -161,7 +161,27 @@ export class PerformanceComponent implements OnInit {
         }
       }
     }
-    
+    //場域平均和加總
+    let ueNum = 0;
+    // let fieldAvgDlTpt = 0;
+    // let fieldAvgUlTpt = 0;
+    let fieldTotalDlTpt = 0;
+    let fieldTotalUlTpt = 0;
+    for (let i = 0;i < this.bsTptList.length;i++) {
+      ueNum += this.bsTptList[i][1]
+      // fieldAvgDlTpt = this.bsTptList[i][2];
+      // fieldAvgUlTpt = this.bsTptList[i][2];
+      fieldTotalDlTpt += this.bsTptList[i][2];
+      fieldTotalUlTpt += this.bsTptList[i][3];
+    }
+    this.bsTptList.push([
+      this.translateService.instant('result.average'),
+      ueNum,
+      fieldTotalDlTpt,
+      fieldTotalUlTpt,
+      fieldTotalDlTpt/ueNum,
+      fieldTotalUlTpt/ueNum,
+    ]);
   }
 
   financial(x) {

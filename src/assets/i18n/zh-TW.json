@@ -19,7 +19,7 @@
 	"backto.list": "返回場域清單",
 	"save.success": "儲存完成.",
 	"save.failed": "儲存失敗.",
-	"bandwidth": "預設Channel頻寬",
+	"bandwidth": "頻寬",
 	"frequency": "中心頻率",
 	"zValue": "切面高度",
 	"sinrMap": "訊號品質圖",
@@ -300,6 +300,7 @@
 	"ulbandwidth_less_than_0": "上行頻寬不可小於0",
 	"dlfrequency_same_ulfrequency2": "上行頻率跟下行頻率重複了，請修改上行頻率",
 	"dlfrequency_same_ulfrequency3": "下行頻率跟上行頻率重複了，請修改下行頻率",
+	"frequency_out_of_fr1": "頻率需大於450MHz且小於6000MHz",
 
 	"nf_scalingFactor": "未填入擴展係數",
 	"0to1_scalingFactor": "擴展係數須介於0到1之間",

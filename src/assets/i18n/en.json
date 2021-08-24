@@ -300,6 +300,7 @@
 	"ulbandwidth_less_than_0": "Uplink Bandwidth can't less than 0",
 	"dlfrequency_same_ulfrequency2": "Uplink frequency repeats with downlink frequency，please edit uplink frequency",
 	"dlfrequency_same_ulfrequency3": "Downlink frequency repeats with uplink frequency，please edit downlink frequency",
+	"frequency_out_of_fr1": "The frequency must be greater than 450MHz and less than 6000MHz",
 
 	"nf_scalingFactor": "Scaling factor not filled",
 	"0to1_scalingFactor": "Scaling factor must between 0 and 1",

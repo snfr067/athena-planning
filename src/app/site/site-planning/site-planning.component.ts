@@ -2215,7 +2215,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-    } else {
+    } else { // ------------------------------- FDD ----------------------------------------
       //模擬和規劃都會用到
       let dlfreq, ulfreq, dlband, ulband;
       let dlmainMax, dlmainMin, ulmainMax, ulmainMin;
@@ -2230,12 +2230,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulmainMax = ulfreq + ulband/2;
         ulmainMin = ulfreq - ulband/2;
         console.log(`${dlmainMax} ${dlmainMin} ${ulmainMax} ${ulmainMin}`);
-        if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
-          console.log('aaaaaaaa');
+        // 自己的上下行不能包含於
+        if (dlmainMax == ulmainMax && dlmainMin == ulmainMin) {
+          warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        } else if (dlmainMax >= ulmainMax && dlmainMin <= ulmainMin) {
+          warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        } else if (ulmainMax >= dlmainMax && ulmainMin <= dlmainMin) {
           warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
           ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
           ${this.translateService.instant('overlap')} <br/>`;
         }
+        // 自己的上下行不能重疊到
+        else if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
+          warnmsg+=`${this.translateService.instant('default')}${i+1}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        }
+        // 跟其他既有基站比
         for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           dlmax = this.bsListRfParam[this.defaultBSList[j]].fddDlFrequency + Number(this.bsListRfParam[this.defaultBSList[j]].dlBandwidth)/2;
@@ -2320,7 +2335,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ulmainMax = ulfreq + ulband/2;
         ulmainMin = ulfreq - ulband/2;
         console.log(`${dlmainMax} ${dlmainMin} ${ulmainMax} ${ulmainMin}`)
-        if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
+        // 自己的上下行不能包含於
+        if (dlmainMax == ulmainMax && dlmainMin == ulmainMin) {
+          warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        } else if (dlmainMax >= ulmainMax && dlmainMin <= ulmainMin) {
+          warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        } else if (ulmainMax >= dlmainMax && ulmainMin <= dlmainMin) {
+          warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
+          ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
+          ${this.translateService.instant('overlap')} <br/>`;
+        }
+        else if ((dlmainMax > ulmainMin && dlmainMax < ulmainMax) || (dlmainMin > ulmainMin && dlmainMin < ulmainMax)) {
           warnmsg+=`${this.translateService.instant('candidate')}${this.translateService.instant('de')}
           ${this.translateService.instant('dlfrequency')} ${this.translateService.instant('and')} ${this.translateService.instant('ulfrequency')}
           ${this.translateService.instant('overlap')} <br/>`;
@@ -3096,13 +3125,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // console.log('changeFrequency changeFrequency changeFrequency');
     // 若為FDD先檢查上下行有沒有一樣
     if (isCandidate) {
-      if (dir != '' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
+      let msg = '';
+      if (dir == '' && (Number(this.tempCalParamSet.tddfrequency) > 6000 || Number(this.tempCalParamSet.tddfrequency) < 450)) {
+        msg = this.translateService.instant('frequency_out_of_fr1');
+        this.tempCalParamSet.tddfrequency = Number(window.sessionStorage.getItem('tempParam'))
+      } else if (dir == 'dl' && (Number(this.tempCalParamSet.fddDlFrequency) > 6000 || Number(this.tempCalParamSet.fddDlFrequency) < 450)) {
+        this.tempCalParamSet.fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        msg = this.translateService.instant('frequency_out_of_fr1');
+      } else if (dir == 'ul' && (Number(this.tempCalParamSet.fddUlFrequency) > 6000 || Number(this.tempCalParamSet.fddUlFrequency) < 450)) {
+        this.tempCalParamSet.fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        msg = this.translateService.instant('frequency_out_of_fr1');
+      } else if (dir != '' && this.tempCalParamSet.fddUlFrequency == this.tempCalParamSet.fddDlFrequency) {
         if (dir == 'dl') {
           this.tempCalParamSet.fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
         } else {
           this.tempCalParamSet.fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
         }
-        let msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+        msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+      }
+      if (msg != '') {
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -3111,13 +3152,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         return;
       }
     } else {
-      if (dir != '' && this.bsListRfParam[svgId].fddUlFrequency == this.bsListRfParam[svgId].fddDlFrequency) {
+      let msg = '';
+      if (dir == '' && (Number(this.bsListRfParam[svgId].tddfrequency) > 6000 || Number(this.bsListRfParam[svgId].tddfrequency) < 450)) {
+        msg = this.translateService.instant('frequency_out_of_fr1');
+        this.bsListRfParam[svgId].tddfrequency = Number(window.sessionStorage.getItem('tempParam'))
+      } else if (dir == 'dl' && (Number(this.bsListRfParam[svgId].fddDlFrequency) > 6000 || Number(this.bsListRfParam[svgId].fddDlFrequency) < 450)) {
+        this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        msg = this.translateService.instant('frequency_out_of_fr1');
+      } else if (dir == 'ul' && (Number(this.bsListRfParam[svgId].fddUlFrequency) > 6000 || Number(this.bsListRfParam[svgId].fddUlFrequency) < 450)) {
+        this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
+        msg = this.translateService.instant('frequency_out_of_fr1');
+      } else if (dir != '' && this.bsListRfParam[svgId].fddUlFrequency == this.bsListRfParam[svgId].fddDlFrequency) {
         if (dir == 'dl') {
           this.bsListRfParam[svgId].fddDlFrequency = Number(window.sessionStorage.getItem('tempParam'))
         } else {
           this.bsListRfParam[svgId].fddUlFrequency = Number(window.sessionStorage.getItem('tempParam'))
         }
-        let msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+        msg = (dir == 'ul' ? this.translateService.instant('dlfrequency_same_ulfrequency2'):this.translateService.instant('dlfrequency_same_ulfrequency3'));
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+      if (msg != '') {
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -3126,6 +3185,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         return;
       }
     }
+    
     //再來檢查有沒有overlaped，前TDD，後FDD-----------------------------------------
     // let overlaped = false;
     // if (this.duplexMode == 'tdd') {
@@ -5314,6 +5374,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 設定預設值
     if (this.planningIndex === '1') {
       // this.clearAll('defaultBS');
+      this.calculateForm.isSimulation = false;
       if (!this.calculateForm.isAverageSinr && !this.calculateForm.isCoverage) {
         this.calculateForm.isAverageSinr = true;
         this.calculateForm.isUeCoverage = false;
@@ -5322,6 +5383,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     } else if (this.planningIndex === '2') {
       // this.clearAll('defaultBS');
+      this.calculateForm.isSimulation = false;
       if (!this.calculateForm.isUeAvgSinr 
         && !this.calculateForm.isUeAvgThroughput 
         && !this.calculateForm.isUeTpByDistance) {
@@ -5330,6 +5392,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.calculateForm.isCoverage = false;
       }
     } else {
+      this.calculateForm.isSimulation = true;
       this.clearAll('candidate');
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;

@@ -535,10 +535,23 @@ export class PdfComponent implements OnInit {
     pos += margin;
     pdf.text(leftStart, pos, `${this.translateService.instant('result.beam.range')}： 0 ~ 30`);
     pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequency} MHz`);
-    pos += margin;
+    pdf.text(leftStart, pos, `${this.translateService.instant('duplex')}： ${this.calculateForm.duplex}`);
+      pos += margin;
+    if (this.calculateForm.duplex == 'tdd') {
+      pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
+      pos += margin;
+      pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequencyList} MHz`);
+      pos += margin;
+    } else {
+      pdf.text(leftStart, pos, `${this.translateService.instant('dlBandwidth')}(MHz)： ${this.calculateForm.dlBandwidth} MHz`);
+      pos += margin;
+      pdf.text(leftStart, pos, `${this.translateService.instant('ulBandwidth')}(MHz)： ${this.calculateForm.ulBandwidth} MHz`);
+      pos += margin;
+      pdf.text(leftStart, pos, `${this.translateService.instant('dlfrequency')}(MHz)： ${this.calculateForm.dlFrequency} MHz`);
+      pos += margin;
+      pdf.text(leftStart, pos, `${this.translateService.instant('ulfrequency')}(MHz)： ${this.calculateForm.ulFrequency} MHz`);
+      pos += margin;
+    }
     pdf.text(20, pos, `${this.translateService.instant('planning.algorithm')}：`);
     pos += margin;
     pdf.text(leftStart, pos, `${this.translateService.instant('mctsC')}： ${this.calculateForm.mctsC}`);
@@ -688,8 +701,8 @@ export class PdfComponent implements OnInit {
       console.log(typeof this.result['ueSinr'][k]);
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-        , `${this.financial(this.result['ueRsrp'][k])} db`
-        , `${this.financial(this.result['ueSinr'][k])} dbm`
+        , `${this.financial(this.result['ueRsrp'][k])} dBm`
+        , `${this.financial(this.result['ueSinr'][k])} dB`
         , `${this.financial(uedlTpt[k])} Mbps`
         , `${this.financial(ueulTpt[k])} Mbps`
       ]);
@@ -1004,6 +1017,34 @@ export class PdfComponent implements OnInit {
           }
         }
       }
+      let ueNum = 0;
+      let fieldTotalDlTpt = 0;
+      let fieldTotalUlTpt = 0;
+      for (let i = 0;i < p2Data.length;i++) {
+        console.log();
+        console.log();
+        ueNum += Number(p2Data[i][1]);
+        if (typeof p2Data[i][2] == 'string') {
+          fieldTotalDlTpt += Number(p2Data[i][2].split(' ')[0]);
+          fieldTotalUlTpt += Number(p2Data[i][3].split(' ')[0]);
+        } else {
+          fieldTotalDlTpt += Number(p2Data[i][2]);
+          fieldTotalUlTpt += Number(p2Data[i][3]);
+        }
+        
+      }
+      p2Data.push([
+        this.translateService.instant('result.average'),
+        ueNum,
+        `${this.financial(fieldTotalDlTpt)} Mbps`,
+        `${this.financial(fieldTotalUlTpt)} Mbps`,
+        `${this.financial(fieldTotalDlTpt/ueNum)} Mbps`,
+        `${this.financial(fieldTotalUlTpt/ueNum)} Mbps`,
+      ]);
+    } else {
+      p2Data = [[
+        `-`, `-`, `-`, `-`, `-`, `-`
+      ]];
     }
     
     pdf.autoTable(p2Title, p2Data, {
