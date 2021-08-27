@@ -497,27 +497,32 @@ export class PdfComponent implements OnInit {
       pdf.rect(14, pos + (margin / 2), 182, 200);
     }
     pos += margin + 5;
-    pdf.text(20, pos, `${this.translateService.instant('planning.target')}：`);
-    pos += margin;
-    if (this.calculateForm.isAverageSinr) {
-      pdf.text(leftStart, pos, this.translateService.instant('isAverageSinr'));
+    if (this.calculateForm.isSimulation) {
+      pdf.text(leftStart, pos, this.translateService.instant('simulation'));
       pos += margin;
-    }
-    if (this.calculateForm.isCoverage) {
-      pdf.text(leftStart, pos, this.translateService.instant('isCoverage'));
+    } else {
+      pdf.text(20, pos, `${this.translateService.instant('planning.target')}：`);
       pos += margin;
-    }
-    if (this.calculateForm.isUeAvgSinr) {
-      pdf.text(leftStart, pos, this.translateService.instant('isUeAvgSinr'));
-      pos += margin;
-    }
-    if (this.calculateForm.isUeAvgThroughput) {
-      pdf.text(leftStart, pos, this.translateService.instant('isUeAvgThroughput'));
-      pos += margin;
-    }
-    if (this.calculateForm.isUeTpByDistance) {
-      pdf.text(leftStart, pos, this.translateService.instant('isUeTpByDistance'));
-      pos += margin;
+      if (this.calculateForm.isAverageSinr) {
+        pdf.text(leftStart, pos, this.translateService.instant('isAverageSinr'));
+        pos += margin;
+      }
+      if (this.calculateForm.isCoverage) {
+        pdf.text(leftStart, pos, this.translateService.instant('isCoverage'));
+        pos += margin;
+      }
+      if (this.calculateForm.isUeAvgSinr) {
+        pdf.text(leftStart, pos, this.translateService.instant('isUeAvgSinr'));
+        pos += margin;
+      }
+      if (this.calculateForm.isUeAvgThroughput) {
+        pdf.text(leftStart, pos, this.translateService.instant('isUeAvgThroughput'));
+        pos += margin;
+      }
+      if (this.calculateForm.isUeTpByDistance) {
+        pdf.text(leftStart, pos, this.translateService.instant('isUeTpByDistance'));
+        pos += margin;
+      }
     }
     pdf.text(20, pos, `${this.translateService.instant('planning.size')}：`);
     pos += margin;
@@ -535,26 +540,30 @@ export class PdfComponent implements OnInit {
     pos += margin;
     pdf.text(leftStart, pos, `${this.translateService.instant('defaultBs')}： ${this.translateService.instant('result.bs.count').replace('{0}', defaultBsCount)}`);
     pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.dbm.range')}： ${this.calculateForm.powerMinRange} dBm ~ ${this.calculateForm.powerMaxRange} dBm`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.beam.range')}： 0 ~ 30`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('duplex')}： ${this.calculateForm.duplex}`);
+    if (this.calculateForm.isSimulation) {
+      pdf.text(leftStart, pos, `${this.translateService.instant('result.dbm.range')}： ${this.calculateForm.powerMinRange} dBm ~ ${this.calculateForm.powerMaxRange} dBm`);
       pos += margin;
-    if (this.calculateForm.duplex == 'tdd') {
-      pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
+      pdf.text(leftStart, pos, `${this.translateService.instant('result.beam.range')}： 0 ~ 30`);
       pos += margin;
-      pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequencyList} MHz`);
+    }
+    if (this.calculateForm.mapProtocol != 'wifi') {
+      pdf.text(leftStart, pos, `${this.translateService.instant('duplex')}： ${this.calculateForm.duplex}`);
       pos += margin;
-    } else {
-      pdf.text(leftStart, pos, `${this.translateService.instant('dlBandwidth')}(MHz)： ${this.calculateForm.dlBandwidth} MHz`);
-      pos += margin;
-      pdf.text(leftStart, pos, `${this.translateService.instant('ulBandwidth')}(MHz)： ${this.calculateForm.ulBandwidth} MHz`);
-      pos += margin;
-      pdf.text(leftStart, pos, `${this.translateService.instant('dlfrequency')}(MHz)： ${this.calculateForm.dlFrequency} MHz`);
-      pos += margin;
-      pdf.text(leftStart, pos, `${this.translateService.instant('ulfrequency')}(MHz)： ${this.calculateForm.ulFrequency} MHz`);
-      pos += margin;
+      if (this.calculateForm.duplex == 'tdd') {
+        pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
+        pos += margin;
+        pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequencyList} MHz`);
+        pos += margin;
+      } else {
+        pdf.text(leftStart, pos, `${this.translateService.instant('dlBandwidth')}(MHz)： ${this.calculateForm.dlBandwidth} MHz`);
+        pos += margin;
+        pdf.text(leftStart, pos, `${this.translateService.instant('ulBandwidth')}(MHz)： ${this.calculateForm.ulBandwidth} MHz`);
+        pos += margin;
+        pdf.text(leftStart, pos, `${this.translateService.instant('dlfrequency')}(MHz)： ${this.calculateForm.dlFrequency} MHz`);
+        pos += margin;
+        pdf.text(leftStart, pos, `${this.translateService.instant('ulfrequency')}(MHz)： ${this.calculateForm.ulFrequency} MHz`);
+        pos += margin;
+      }
     }
     pdf.text(20, pos, `${this.translateService.instant('planning.algorithm')}：`);
     pos += margin;
@@ -1038,12 +1047,12 @@ export class PdfComponent implements OnInit {
         
       }
       p2Data.push([
-        this.translateService.instant('average'),
+        this.translateService.instant('result.total'),
         ueNum,
         `${this.financial(fieldTotalDlTpt)} Mbps`,
         `${this.financial(fieldTotalUlTpt)} Mbps`,
-        `${this.financial(fieldTotalDlTpt/ueNum)} Mbps`,
-        `${this.financial(fieldTotalUlTpt/ueNum)} Mbps`,
+        `-`,
+        `-`,
       ]);
     } else {
       p2Data = [[

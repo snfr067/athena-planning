@@ -13,7 +13,7 @@
             <td>{{ item[0] }} {{ 'meter' | translate }}</td>
             <td>{{ item[1] }}%</td>
             <td>{{ item[2] | number }}dB</td>
-            <td>{{ item[3] | number }}dBm</td>
+            <td>{{ item[3] | number }}dBm</td> 
         </tr>
         <tr>
             <td>{{ 'result.average' | translate }}</td>
@@ -42,8 +42,8 @@
             <td>{{ (item[1]) | number }}</td>
             <td>{{ financial(item[2]) }}Mbps</td>
             <td>{{ financial(item[3]) }}Mbps</td>
-            <td>{{ financial(item[4]) }}Mbps</td>
-            <td>{{ financial(item[5]) }}Mbps</td>
+            <td>{{ item[4] }}</td>
+            <td>{{ item[5] }}</td>
         </tr>
     </tbody>
 </table>

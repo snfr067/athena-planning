@@ -63,8 +63,8 @@ export class PerformanceComponent implements OnInit {
             0,
             0,
             0,
-            0,
-            0,
+            `0 Mbps`,
+            `0 Mbps`,
           ]);
         } else {
           this.bsTptList.push([
@@ -72,8 +72,8 @@ export class PerformanceComponent implements OnInit {
             this.result['ueCon_perBsUeConnection'][i],
             this.result['ueTpt_dlTptIndividualBs'][i],
             this.result['ueTpt_ulTptIndividualBs'][i],
-            Number(this.result['ueTpt_dlTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
-            Number(this.result['ueTpt_ulTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]),
+            `${this.financial(Number(this.result['ueTpt_dlTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]))}Mbps`,
+            `${this.financial(Number(this.result['ueTpt_ulTptIndividualBs'][i])/Number(this.result['ueCon_perBsUeConnection'][i]))}Mbps`,
           ]);
         }
       }
@@ -84,8 +84,8 @@ export class PerformanceComponent implements OnInit {
             0,
             0,
             0,
-            0,
-            0,
+            `0 Mbps`,
+            `0 Mbps`,
           ]);
         } else {
           this.bsTptList.push([
@@ -93,8 +93,8 @@ export class PerformanceComponent implements OnInit {
             this.result['ueCon_perBsUeConnection'][i+candidateNum],
             this.result['ueTpt_dlTptIndividualBs'][i+candidateNum],
             this.result['ueTpt_ulTptIndividualBs'][i+candidateNum],
-            Number(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
-            Number(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]),
+            `${this.financial(Number(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]))}Mbps`,
+            `${this.financial(Number(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon_perBsUeConnection'][i+candidateNum]))}Mbps`,
           ]);
         }
       }
@@ -122,8 +122,8 @@ export class PerformanceComponent implements OnInit {
             0,
             0,
             0,
-            0,
-            0,
+            `0 Mbps`,
+            `0 Mbps`,
           ]);
         } else {
           this.bsTptList.push([
@@ -131,8 +131,8 @@ export class PerformanceComponent implements OnInit {
             this.result['ueCon']['perBsUeConnection'][i],
             this.result['ueTpt']['dlTptIndividualBs'][i],
             this.result['ueTpt']['ulTptIndividualBs'][i],
-            Number(this.result['ueTpt']['dlTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
-            Number(this.result['ueTpt']['ulTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]),
+            `${this.financial(Number(this.result['ueTpt']['dlTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]))}Mbps`,
+            `${this.financial(Number(this.result['ueTpt']['ulTptIndividualBs'][i])/Number(this.result['ueCon']['perBsUeConnection'][i]))}Mbps`,
           ]);
           // console.log(Number(this.result['ueTpt']['dlTptIndividualBs'][i]));
           // console.log(Number(this.result['ueCon']['perBsUeConnection'][i]));
@@ -146,8 +146,8 @@ export class PerformanceComponent implements OnInit {
             0,
             0,
             0,
-            0,
-            0,
+            `0 Mbps`,
+            `0 Mbps`,
           ]);
         } else {
           this.bsTptList.push([
@@ -155,8 +155,8 @@ export class PerformanceComponent implements OnInit {
             this.result['ueCon']['perBsUeConnection'][i+candidateNum],
             this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum],
             this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum],
-            Number(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
-            Number(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]),
+            `${this.financial(Number(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]))}Mbps`,
+            `${this.financial(Number(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])/Number(this.result['ueCon']['perBsUeConnection'][i+candidateNum]))}Mbps`,
           ]);
         }
       }
@@ -171,12 +171,12 @@ export class PerformanceComponent implements OnInit {
       fieldTotalUlTpt += this.bsTptList[i][3];
     }
     this.bsTptList.push([
-      this.translateService.instant('average'),
+      this.translateService.instant('result.total'),
       ueNum,
       fieldTotalDlTpt,
       fieldTotalUlTpt,
-      fieldTotalDlTpt/ueNum,
-      fieldTotalUlTpt/ueNum,
+      '-',
+      '-',
     ]);
   }
 
