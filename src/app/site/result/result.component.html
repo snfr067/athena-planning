@@ -246,8 +246,40 @@
 										<td class="choose">{{ item['dlMimoLayer'] }}</td>
 									</tr>
 								</tbody>
-								<tbody *ngIf="calculateForm.objectiveIndex == '2'">
-
+								<tbody *ngIf="calculateForm.objectiveIndex == '2' || calculateForm.mapProtocol == 'wifi'">
+									<tr>
+										<th>{{ 'result.propose.candidateBs.num' | translate }}</th>
+										<th>{{ 'result.propose.candidateBs.xy' | translate }}</th>
+										<th>{{ 'result.propose.candidateBs.dbm' | translate }}</th>
+										<th>{{ 'result.propose.candidateBs.beamId' | translate }}</th>
+										<th>{{ 'frequency' | translate }}</th>
+										<th>{{ 'tddBandwidth' | translate }}</th>
+										<th>{{ 'wifiProtocol' | translate }}</th>
+										<th>{{ 'guardInterval' | translate }}</th>
+										<th>{{ 'wifiMimo' | translate }}</th>
+									</tr>
+									<tr *ngFor="let item of defaultBSListWifi let i = index" [attr.data-index]="i">
+										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['beamid'] }}</td>
+										<td class="choose">{{ item['frequency'] }}</td>
+										<td class="choose">{{ item['bandwidth'] }}</td>
+										<td class="choose">{{ item['wifiProtocol'] }}</td>
+										<td class="choose">{{ item['guardInterval'] }}</td>
+										<td class="choose">{{ item['wifiMimo'] }}</td>
+									</tr>
+									<tr *ngFor="let item of candidateTableWifi; let i = index" [attr.data-index]="i">
+										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
+										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
+										<td class="choose">{{ item['txpower'] }}</td>
+										<td class="choose">{{ item['beamid'] }}</td>
+										<td class="choose">{{ item['frequency'] }}</td>
+										<td class="choose">{{ item['bandwidth'] }}</td>
+										<td class="choose">{{ item['wifiProtocol'] }}</td>
+										<td class="choose">{{ item['guardInterval'] }}</td>
+										<td class="choose">{{ item['wifiMimo'] }}</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>

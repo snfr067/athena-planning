@@ -77,12 +77,14 @@ export class ResultComponent implements OnInit {
   defaultBSList4gFdd = [];
   defaultBSList5gTdd = [];
   defaultBSList5gFdd = [];
+  defaultBSListWifi = [];
   /** AP list */
   candidateList = [];
   candidateTable4gTdd = [];
   candidateTable4gFdd = [];
   candidateTable5gTdd = [];
   candidateTable5gFdd = [];
+  candidateTableWifi = [];
   /** 障礙物 list */
   obstacleList = [];
   /** 行動終端 list */
@@ -259,7 +261,9 @@ export class ResultComponent implements OnInit {
           ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
           let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
           dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
-          console.log(ulMcsTable);
+          let wifiProtocol = (this.calculateForm.wifiProtocol != null) ? this.calculateForm.wifiProtocol.substring(1,(this.calculateForm.wifiProtocol.length)-1).split(',') : [];
+          let guardInterval = (this.calculateForm.guardInterval != null) ? this.calculateForm.guardInterval.substring(1,(this.calculateForm.guardInterval.length)-1).split(',') : [];
+          let wifiMimo = (this.calculateForm.wifiMimo != null) ? this.calculateForm.wifiMimo.substring(1,(this.calculateForm.wifiMimo.length)-1).split(',') : [];
           const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
           const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
           // if (this.calculateForm.objectiveIndex == '1') {
@@ -372,7 +376,23 @@ export class ResultComponent implements OnInit {
             }
           //WiFi below
           } else {
-
+            for (const item of defaultBs) {
+              const obj = JSON.parse(item);
+              this.defaultBSListWifi.push({
+                x: obj[0],
+                y: obj[1],
+                z: obj[2],
+                txpower: txpower[i],
+                beamid: beamid[i],
+                frequency: frequency[i+candidateNum],
+                bandwidth: bandwidth[i+candidateNum],
+                wifiProtocol: wifiProtocol[i+candidateNum],
+                guardInterval: guardInterval[i+candidateNum],
+                wifiMimo: wifiMimo[i+candidateNum]
+              });
+              i++;
+            }
+            //defaultBSListWifi
           }
           
         }
@@ -579,8 +599,9 @@ export class ResultComponent implements OnInit {
     let dlmsc = this.calculateForm.dlMcsTable;
     let ulMcsTable = (ulmsc != null) ? ulmsc.substring(1,(ulmsc.length)-1).split(',') : [];
     let dlMcsTable = (dlmsc != null) ? dlmsc.substring(1,(dlmsc.length)-1).split(',') : [];
-    // ulMcsTable = ulMcsTable.slice(candidateBs.length-1);
-    // dlMcsTable = dlMcsTable.slice(candidateBs.length-1);
+    let wifiProtocol = (this.calculateForm.wifiProtocol != null) ? this.calculateForm.wifiProtocol.substring(1,(this.calculateForm.wifiProtocol.length)-1).split(',') : [];
+    let guardInterval = (this.calculateForm.guardInterval != null) ? this.calculateForm.guardInterval.substring(1,(this.calculateForm.guardInterval.length)-1).split(',') : [];
+    let wifiMimo = (this.calculateForm.wifiMimo != null) ? this.calculateForm.wifiMimo.substring(1,(this.calculateForm.wifiMimo.length)-1).split(',') : [];
     const ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer);
     const dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer);
     let dlScs = [];
@@ -678,7 +699,21 @@ export class ResultComponent implements OnInit {
         }
       }
     } else {
-
+      for (const item of chosenNum) {
+        this.candidateTableWifi.push({
+          num: item,
+          x: xyMap[this.result['chosenCandidate'][i].toString()].x,
+          y: xyMap[this.result['chosenCandidate'][i].toString()].y,
+          txpower: txpower[i],
+          beamid: beamid[i],
+          frequency: frequency[item-1],
+          bandwidth: bandwidth[item-1],
+          wifiProtocol: wifiProtocol[item-1],
+          guardInterval: guardInterval[item-1],
+          wifiMimo: wifiMimo[item-1]
+        });
+        i++
+      }
     }
   }
 

@@ -244,7 +244,7 @@
 	"signal.quality": "Signal quality",
 	"file": "select map file",
 	"nofile": "file name",
-	"result.performance.field": "Field Performance Analysis",
+	"result.performance.field": "Field Signal Coverage Analysis",
 	"result.performance.bs": "BS Performance Analysis",
 	"result.performance.ue": "UE Performance Analysis",
 	"result.performance.height": "Section Height Analysis",
