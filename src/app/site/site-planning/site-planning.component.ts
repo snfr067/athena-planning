@@ -323,8 +323,53 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   // @ViewChild('deleteModal4') deleteModal4: TemplateRef<any>;
   // @ViewChild('deleteModal5') deleteModal5: TemplateRef<any>;
   
-
-  
+  // WiFi頻段:2.4G+5G
+  wifiFreqList2_4g = [
+    2412,
+    2417,
+    2422,
+    2427,
+    2432,
+    2437,
+    2442,
+    2447,
+    2452,
+    2457,
+    2462,
+    2467,
+    2472,
+    2484
+  ]
+  wifiFreqList5g = [
+    5170,
+    5180,
+    5190,
+    5200,
+    5210,
+    5220,
+    5230,
+    5240,
+    5260,
+    5280,
+    5300,
+    5320,
+    5500,
+    5520,
+    5540,
+    5560,
+    5580,
+    5600,
+    5620,
+    5640,
+    5660,
+    5680,
+    5700,
+    5745,
+    5765,
+    5785,
+    5805,
+    5825
+  ]
 
   //4G 5G WiFi new attribute
   duplexMode = "fdd";
@@ -352,7 +397,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     wifiProtocol: 'wifi4',
     guardInterval: '400ns',
     wifiMimo: '2x2',
-    wifiBandwidth: '20'
+    wifiBandwidth: '20',
+    wifiFrequency: 2412,
   }
 
   
@@ -1264,6 +1310,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         wifiProtocol: 'wifi4',
         guardInterval: '400ns',
         wifiMimo: '2x2',
+        wifiFrequency: 2412,
         wifiBandwidth: '20'
       };
       if (this.calculateForm.objectiveIndex === '0') {
@@ -2166,18 +2213,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   // 檢查是否有基地台的參數重疊
   checkRFParamIsOverlaped() {
     let warnmsg = "";
-    if (this.duplexMode == 'tdd') {
+    if (this.duplexMode == 'tdd' || this.calculateForm.objectiveIndex == '2') {
       //模擬和規劃都會用到
       let freq, band, mainMax, mainMin, max, min;
       for (let i = 0; i < this.defaultBSList.length; i++) {
-        freq = this.bsListRfParam[this.defaultBSList[i]].tddfrequency;
-        band = this.bsListRfParam[this.defaultBSList[i]].tddbandwidth;
+        if (this.calculateForm.objectiveIndex == '2') {
+          freq = this.bsListRfParam[this.defaultBSList[i]].wifiFrequency;
+          band = this.bsListRfParam[this.defaultBSList[i]].wifiBandwidth;
+        } else {
+          freq = this.bsListRfParam[this.defaultBSList[i]].tddfrequency;
+          band = this.bsListRfParam[this.defaultBSList[i]].tddbandwidth;
+        }
         mainMax = freq + band/2;
         mainMin = freq - band/2;
         for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
-          max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency + this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
-          min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency - this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
+          if (this.calculateForm.objectiveIndex == '2') {
+            max = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency + this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth/2;
+            min = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency - this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth/2;
+          } else {
+            max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency + this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
+            min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency - this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
+          }
+          
           if (mainMax == max && mainMin == min) {
             continue;
           }
@@ -2195,14 +2253,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       //規劃才需要比較Candidate
       if (!this.calculateForm.isSimulation) {
-        let freq = this.tempCalParamSet.tddfrequency;
-        let band = Number(this.tempCalParamSet.tddbandwidth);
+        let freq, band;
+        if (this.calculateForm.objectiveIndex == '2') {
+          freq = this.tempCalParamSet.wifiFrequency;
+          band = Number(this.tempCalParamSet.wifiBandwidth);
+        } else {
+          freq = this.tempCalParamSet.tddfrequency;
+          band = Number(this.tempCalParamSet.tddbandwidth);
+        }
         let mainMax = freq + band/2;
         let mainMin = freq - band/2;
         let max, min;
         for (let i = 0;  i < this.defaultBSList.length; i++) {
-          max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
-          min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          if (this.calculateForm.objectiveIndex == '2') {
+            max = this.bsListRfParam[this.defaultBSList[i]].wifiFrequency + this.bsListRfParam[this.defaultBSList[i]].wifiBandwidth/2;
+            min = this.bsListRfParam[this.defaultBSList[i]].wifiFrequency - this.bsListRfParam[this.defaultBSList[i]].wifiBandwidth/2;
+          } else {
+            max = this.bsListRfParam[this.defaultBSList[i]].tddfrequency + this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+            min = this.bsListRfParam[this.defaultBSList[i]].tddfrequency - this.bsListRfParam[this.defaultBSList[i]].tddbandwidth/2;
+          }
           if (mainMax == max && mainMin == min) {
             continue;
           }
@@ -2856,10 +2925,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               ulBandwidth.push(this.tempCalParamSet.ulBandwidth);
             }
           } else {
+            frequencyList.push(this.tempCalParamSet.wifiFrequency);
             guardInterval.push(this.tempCalParamSet.guardInterval);
             wifiProtocol.push(this.tempCalParamSet.wifiProtocol);
             wifiMimo.push(this.tempCalParamSet.wifiMimo);
-            frequencyList.push(this.tempCalParamSet.tddfrequency);
             bandwidthList.push(this.tempCalParamSet.wifiBandwidth);
           }
         }
@@ -2896,11 +2965,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             ulBandwidth.push(obj.ulBandwidth);
           }
         } else {
+          frequencyList.push(obj.wifiFrequency);
           guardInterval.push(obj.guardInterval);
           wifiProtocol.push(obj.wifiProtocol);
           wifiMimo.push(obj.wifiMimo);
           bandwidthList.push(obj.wifiBandwidth);
-          frequencyList.push(obj.tddfrequency);
         }
       }
 
@@ -3403,20 +3472,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (value == 'wifi4') {
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '20';
+        this.tempCalParamSet.wifiFrequency = 2412;
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20';
+        this.bsListRfParam[this.svgId].wifiFrequency = 2412;
       }
     } else if (value == 'wifi5') {
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '40';
+        this.tempCalParamSet.wifiFrequency = 5170;
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '40';
+        this.bsListRfParam[this.svgId].wifiFrequency = 5170;
       }
     } else {
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '20';
+        this.tempCalParamSet.wifiFrequency = 2412;
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20';
+        this.bsListRfParam[this.svgId].wifiFrequency = 2412;
       }
     }
   }
@@ -4441,7 +4516,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].guardInterval,
         this.bsListRfParam[item].wifiMimo,
         this.bsListRfParam[item].wifiBandwidth,
-        this.bsListRfParam[item].tddfrequency,
+        this.bsListRfParam[item].wifiFrequency,
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -4484,7 +4559,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.guardInterval,
         this.tempCalParamSet.wifiMimo,
         this.tempCalParamSet.wifiBandwidth,
-        this.tempCalParamSet.tddfrequency,
+        this.tempCalParamSet.wifiFrequency,
       ]);
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
@@ -4737,6 +4812,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           guardInterval: baseStationData[i][20+offset],
           wifiMimo: baseStationData[i][21+offset],
           wifiBandwidth: baseStationData[i][22+offset],
+          wifiFrequency: baseStationData[i][23+offset],
         };
         
         this.defaultBSList.push(id);
@@ -4812,6 +4888,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.guardInterval = candidateData[i][18+offset];
         this.tempCalParamSet.wifiMimo = candidateData[i][19+offset];
         this.tempCalParamSet.wifiBandwidth = candidateData[i][20+offset];
+        this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
 
         // set UE位置
         // this.setCandidateSize(id);
@@ -5159,14 +5236,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.scalingFactor = this.calculateForm.scalingFactor;
           }
 
-          if (this.calculateForm.mapProtocol === '5g') {
-            this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+          if (this.calculateForm.mapProtocol === 'wifi') {
+            this.tempCalParamSet.wifiFrequency = JSON.parse(this.calculateForm.frequencyList)[i];
+            this.tempCalParamSet.wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
             let wifiProtocol = this.calculateForm.wifiProtocol;
             let guardInterval = this.calculateForm.guardInterval;
             let wifiMimo = this.calculateForm.wifiMimo;
-            this.bsListRfParam[id].wifiProtocol = wifiProtocol.substring(1,(wifiProtocol.length)-1).split(',')[i];
-            this.bsListRfParam[id].guardInterval = guardInterval.substring(1,(guardInterval.length)-1).split(',')[i];
-            this.bsListRfParam[id].wifiMimo = wifiMimo.substring(1,(wifiMimo.length)-1).split(',')[i];
+            this.tempCalParamSet.wifiProtocol = wifiProtocol.substring(1,(wifiProtocol.length)-1).split(',')[i];
+            this.tempCalParamSet.guardInterval = guardInterval.substring(1,(guardInterval.length)-1).split(',')[i];
+            this.tempCalParamSet.wifiMimo = wifiMimo.substring(1,(wifiMimo.length)-1).split(',')[i];
           }
         }
       }
@@ -5237,8 +5315,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
             this.scalingFactor = this.calculateForm.scalingFactor;
           }
-          console.log(this.calculateForm.mapProtocol);
           if (this.calculateForm.mapProtocol === 'wifi') {
+            this.bsListRfParam[id].wifiFrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
             this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
             let wifiProtocol = this.calculateForm.wifiProtocol;
             let guardInterval = this.calculateForm.guardInterval;
@@ -5246,9 +5324,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.bsListRfParam[id].wifiProtocol = wifiProtocol.substring(1,(wifiProtocol.length)-1).split(',')[i+candidateNum];
             this.bsListRfParam[id].guardInterval = guardInterval.substring(1,(guardInterval.length)-1).split(',')[i+candidateNum];
             this.bsListRfParam[id].wifiMimo = wifiMimo.substring(1,(wifiMimo.length)-1).split(',')[i+candidateNum];
-            // console.log(this.bsListRfParam[id].wifiProtocol);
-            // console.log(this.bsListRfParam[id].guardInterval);
-            // console.log(this.bsListRfParam[id].wifiMimo);
           }
           this.dragObject[id] = {
             x: item[0],
