@@ -3473,25 +3473,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '20';
         this.tempCalParamSet.wifiFrequency = 2412;
+        this.tempCalParamSet.guardInterval = '400ns';
+        this.tempCalParamSet.wifiMimo = '2x2';
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20';
         this.bsListRfParam[this.svgId].wifiFrequency = 2412;
+        this.bsListRfParam[this.svgId].guardInterval = '400ns';
+        this.bsListRfParam[this.svgId].wifiMimo = '2x2';
       }
     } else if (value == 'wifi5') {
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '40';
         this.tempCalParamSet.wifiFrequency = 5170;
+        this.tempCalParamSet.guardInterval = '400ns';
+        this.tempCalParamSet.wifiMimo = '2x2';
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '40';
         this.bsListRfParam[this.svgId].wifiFrequency = 5170;
+        this.bsListRfParam[this.svgId].guardInterval = '400ns';
+        this.bsListRfParam[this.svgId].wifiMimo = '2x2';
       }
     } else {
       if (isCandidate) {
         this.tempCalParamSet.wifiBandwidth = '20';
         this.tempCalParamSet.wifiFrequency = 2412;
+        this.tempCalParamSet.guardInterval = '400ns';
+        this.tempCalParamSet.wifiMimo = '2x2';
       } else {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20';
         this.bsListRfParam[this.svgId].wifiFrequency = 2412;
+        this.bsListRfParam[this.svgId].guardInterval = '400ns';
+        this.bsListRfParam[this.svgId].wifiMimo = '2x2';
       }
     }
   }

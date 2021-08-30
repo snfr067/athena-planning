@@ -151,8 +151,12 @@ export class StatisticsComponent implements OnInit {
     let x = ['QPSK', '16-QAM', '64-QAM'];
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // WIFI
-      if (layeredLen === 5) {
-        x = ['BPSK', 'QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      if (layeredLen === 3) {
+        x = ['QPSK', '16-QAM', '64-QAM'];
+      } else if (layeredLen === 4) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      } else if (layeredLen === 5) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM', '1024-QAM'];
       }
     } else if (Number(this.calculateForm.objectiveIndex) === 1) {
       // 5G
@@ -272,8 +276,12 @@ export class StatisticsComponent implements OnInit {
     let x = ['QPSK', '16-QAM', '64-QAM'];
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // WIFI
-      if (layeredLen === 5) {
-        x = ['BPSK', 'QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      if (layeredLen === 3) {
+        x = ['QPSK', '16-QAM', '64-QAM'];
+      } else if (layeredLen === 4) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      } else if (layeredLen === 5) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM', '1024-QAM'];
       }
     } else if (Number(this.calculateForm.objectiveIndex) === 1) {
       // 5G
@@ -410,8 +418,12 @@ export class StatisticsComponent implements OnInit {
     let x = ['QPSK', '16-QAM', '64-QAM'];
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // WIFI
-      if (layeredLen === 5) {
-        x = ['BPSK', 'QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      if (layeredLen === 3) {
+        x = ['QPSK', '16-QAM', '64-QAM'];
+      } else if (layeredLen === 4) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      } else if (layeredLen === 5) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM', '1024-QAM'];
       }
     } else if (Number(this.calculateForm.objectiveIndex) === 1) {
       // 5G
@@ -758,8 +770,12 @@ export class StatisticsComponent implements OnInit {
     let x = ['QPSK', '16-QAM', '64-QAM'];
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // WIFI
-      if (layeredLen === 5) {
-        x = ['BPSK', 'QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      if (layeredLen === 3) {
+        x = ['QPSK', '16-QAM', '64-QAM'];
+      } else if (layeredLen === 4) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM'];
+      } else if (layeredLen === 5) {
+        x = ['QPSK', '16-QAM', '64-QAM', '256-QAM', '1024-QAM'];
       }
     } else if (Number(this.calculateForm.objectiveIndex) === 1) {
       // 5G

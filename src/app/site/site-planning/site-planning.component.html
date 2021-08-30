@@ -508,8 +508,10 @@
                 <td>{{ 'guardInterval' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.guardInterval" style="width: 100px;">
-                    <option value="400ns">400ns</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol != 'wifi6'" value="400ns">400ns</option>
                     <option value="800ns">800ns</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'" value="1600ns">1600ns</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'" value="3200ns">3200ns</option>
                   </select>
                 </td>
               </tr>
@@ -521,6 +523,7 @@
                     <option value="2x2">2x2</option>
                     <option value="3x3">3x3</option>
                     <option value="4x4">4x4</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol != 'wifi4'" value="8x8">8x8</option>
                   </select>
                 </td>
               </tr>
@@ -2021,8 +2024,10 @@
         <td>{{ 'guardInterval' | translate }}</td>
         <td>
           <select [(ngModel)]="bsListRfParam[svgId].guardInterval" style="width: 100px;">
-            <option value="400ns">400ns</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi6'" value="400ns">400ns</option>
             <option value="800ns">800ns</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi6'" value="1600ns">1600ns</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi6'" value="3200ns">3200ns</option>
           </select>
         </td>
       </tr>
@@ -2034,6 +2039,7 @@
             <option value="2x2">2x2</option>
             <option value="3x3">3x3</option>
             <option value="4x4">4x4</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi4'" value="8x8">8x8</option>
           </select>
         </td>
       </tr>
