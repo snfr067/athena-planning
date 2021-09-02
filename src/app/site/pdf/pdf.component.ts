@@ -482,26 +482,26 @@ export class PdfComponent implements OnInit {
     const margin = 8;
     const leftStart = 25;
     pdf.setFontStyle('normal');
-    pdf.setFontSize(17);
+    pdf.setFontSize(14);
     pdf.text(14, pos, `${this.translateService.instant('taskName')}：${this.calculateForm['taskName']}`);
     pos += margin;
-    pdf.setFontSize(14);
     pdf.text(14, pos, `${this.translateService.instant('createTime')}：${this.result['createTime']}`);
-    pos += margin;
+    pos += margin+5;
+    pdf.setFontSize(17);
     pdf.text(14, pos, `${this.translateService.instant('result.layered.info')}：`);
     pdf.setFillColor(255, 255, 255);
     pdf.setLineWidth(0.1);
-    if (this.calculateForm.duplex == 'tdd') {
-      pdf.rect(14, pos + (margin / 2), 182, 190);
-    } else {
-      pdf.rect(14, pos + (margin / 2), 182, 200);
-    }
-    pos += margin + 5;
+    // if (this.calculateForm.duplex == 'tdd') {
+    //   pdf.rect(14, pos + (margin / 2), 182, 190);
+    // } else {
+    //   pdf.rect(14, pos + (margin / 2), 182, 200);
+    // }
+    pos += margin;
     if (this.calculateForm.isSimulation) {
-      pdf.text(leftStart, pos, this.translateService.instant('simulation'));
+      pdf.text(14, pos, this.translateService.instant('simulation'));
       pos += margin;
     } else {
-      pdf.text(20, pos, `${this.translateService.instant('planning.target')}：`);
+      pdf.text(14, pos, `${this.translateService.instant('planning.target')}：`);
       pos += margin;
       if (this.calculateForm.isAverageSinr) {
         pdf.text(leftStart, pos, this.translateService.instant('isAverageSinr'));
@@ -524,8 +524,10 @@ export class PdfComponent implements OnInit {
         pos += margin;
       }
     }
-    pdf.text(20, pos, `${this.translateService.instant('planning.size')}：`);
+    pdf.setFontSize(17);
+    pdf.text(14, pos, `${this.translateService.instant('planning.size')}：`);
     pos += margin;
+    pdf.setFontSize(14);
     pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.width')}： ${this.result['inputWidth']} ${this.translateService.instant('meter')}`);
     pos += margin;
     pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.height')}： ${this.result['inputHeight']} ${this.translateService.instant('meter')}`);
@@ -534,217 +536,105 @@ export class PdfComponent implements OnInit {
     pos += margin;
     pdf.text(leftStart, pos, `${this.translateService.instant('zValue')}： ${this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')} ${this.translateService.instant('meter')}`);
     pos += margin;
-    pdf.text(20, pos, `${this.translateService.instant('result.bs.info')}：`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.propose.wait_select_1')}： ${this.translateService.instant('result.propose.wait_select_2').replace('{0}', this.inputBsList.length)}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('defaultBs')}： ${this.translateService.instant('result.bs.count').replace('{0}', defaultBsCount)}`);
-    pos += margin;
-    if (this.calculateForm.isSimulation) {
-      pdf.text(leftStart, pos, `${this.translateService.instant('result.dbm.range')}： ${this.calculateForm.powerMinRange} dBm ~ ${this.calculateForm.powerMaxRange} dBm`);
-      pos += margin;
-      pdf.text(leftStart, pos, `${this.translateService.instant('result.beam.range')}： 0 ~ 30`);
-      pos += margin;
-    }
-    if (this.calculateForm.mapProtocol != 'wifi') {
-      pdf.text(leftStart, pos, `${this.translateService.instant('duplex')}： ${this.calculateForm.duplex}`);
-      pos += margin;
-      if (this.calculateForm.duplex == 'tdd') {
-        pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
-        pos += margin;
-        pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequencyList} MHz`);
-        pos += margin;
-      } else {
-        pdf.text(leftStart, pos, `${this.translateService.instant('dlBandwidth')}(MHz)： ${this.calculateForm.dlBandwidth} MHz`);
-        pos += margin;
-        pdf.text(leftStart, pos, `${this.translateService.instant('ulBandwidth')}(MHz)： ${this.calculateForm.ulBandwidth} MHz`);
-        pos += margin;
-        pdf.text(leftStart, pos, `${this.translateService.instant('dlfrequency')}(MHz)： ${this.calculateForm.dlFrequency} MHz`);
-        pos += margin;
-        pdf.text(leftStart, pos, `${this.translateService.instant('ulfrequency')}(MHz)： ${this.calculateForm.ulFrequency} MHz`);
-        pos += margin;
-      }
-    }
-    pdf.text(20, pos, `${this.translateService.instant('planning.algorithm')}：`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsC')}： ${this.calculateForm.mctsC}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsMimo')}： ${this.calculateForm.mctsMimo}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsTemperature')}： ${this.calculateForm.mctsTemperature}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsTime')}： ${this.calculateForm.mctsTime}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsTestTime')}： ${this.calculateForm.mctsTestTime}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('mctsTotalTime')}： ${this.calculateForm.mctsTotalTime}`);
 
-    // 現有基站
-    const defaultBsTitle = [
-      this.translateService.instant('result.num'), 
-      this.translateService.instant('result.propose.candidateBs.x'),
-      this.translateService.instant('result.propose.candidateBs.y'),
-      this.translateService.instant('result.propose.candidateBs.z'),
+    // 基地台相關表格
+    pdf.setFontSize(17);
+    pdf.text(14, pos, `${this.translateService.instant('result.bs.info')}：`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('result.propose.wait_select_1')}： ${this.translateService.instant('result.propose.wait_select_2').replace('{0}', this.inputBsList.length)}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('defaultBs')}： ${this.translateService.instant('result.bs.count').replace('{0}', defaultBsCount)}`);
+    // pos += margin;
+    // if (this.calculateForm.isSimulation) {
+    //   pdf.text(leftStart, pos, `${this.translateService.instant('result.dbm.range')}： ${this.calculateForm.powerMinRange} dBm ~ ${this.calculateForm.powerMaxRange} dBm`);
+    //   pos += margin;
+    //   pdf.text(leftStart, pos, `${this.translateService.instant('result.beam.range')}： 0 ~ 30`);
+    //   pos += margin;
+    // }
+    // if (this.calculateForm.mapProtocol != 'wifi') {
+    //   pdf.text(leftStart, pos, `${this.translateService.instant('duplex')}： ${this.calculateForm.duplex}`);
+    //   pos += margin;
+    //   if (this.calculateForm.duplex == 'tdd') {
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('bandwidth')}(MHz)： ${this.calculateForm.bandwidth} MHz`);
+    //     pos += margin;
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('frequency')}(MHz)： ${this.calculateForm.frequencyList} MHz`);
+    //     pos += margin;
+    //   } else {
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('dlBandwidth')}(MHz)： ${this.calculateForm.dlBandwidth} MHz`);
+    //     pos += margin;
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('ulBandwidth')}(MHz)： ${this.calculateForm.ulBandwidth} MHz`);
+    //     pos += margin;
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('dlfrequency')}(MHz)： ${this.calculateForm.dlFrequency} MHz`);
+    //     pos += margin;
+    //     pdf.text(leftStart, pos, `${this.translateService.instant('ulfrequency')}(MHz)： ${this.calculateForm.ulFrequency} MHz`);
+    //     pos += margin;
+    //   }
+    // }
+    // pdf.text(20, pos, `${this.translateService.instant('planning.algorithm')}：`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsC')}： ${this.calculateForm.mctsC}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsMimo')}： ${this.calculateForm.mctsMimo}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTemperature')}： ${this.calculateForm.mctsTemperature}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTime')}： ${this.calculateForm.mctsTime}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTestTime')}： ${this.calculateForm.mctsTestTime}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTotalTime')}： ${this.calculateForm.mctsTotalTime}`);
+
+    let specData = [
+      ['頻段',0],
+      ['頻寬',0],
+      ['子載波間距',0],
+      ['天線',0],
+      ['功率範圍',0],
     ];
-    const defaultBsHeader = (data) => {
+
+    const specDataHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, pos + 23, 182, 7, 'F');
-      pdf.text(this.translateService.instant('defaultBs'), 100, pos + 28);
     };
-    const defaultBsData = [];
-    for (let k = 0; k < this.defaultBs.length; k++) {
-      defaultBsData.push([
-        (k + 1), this.defaultBs[k][0], this.defaultBs[k][1], this.defaultBs[k][2]
-      ]);
-    }
-    if (this.defaultBs.length === 0) {
-      defaultBsData.push([{ content: this.translateService.instant('result.no.defaultBs'), colSpan: 4, styles: { halign: 'center' } }]);
-    }
-    pdf.autoTable(defaultBsTitle, defaultBsData, {
+
+    pdf.autoTable(['項目','內容'], specData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: defaultBsHeader,
-      startY: pos + 30,
+      beforePageContent: specDataHeader,
+      startY: pos+5,
       halign: 'center'
     });
-    // 新增基站
-    if (this.inputBsList.length > 0) {
-      pdf.addPage();
-      const candidateHeader = (data) => {
-        pdf.setFontSize(12);
-        pdf.setTextColor(255);
-        pdf.setFontStyle('normal');
-        pdf.setFillColor(42, 58, 93);
-        pdf.rect(14, 7, 182, 7, 'F');
-        pdf.text(this.translateService.instant('candidateBs'), 100, 12);
-      };
-      const candidateTitle = [
-        this.translateService.instant('result.num'), 
-        this.translateService.instant('result.propose.candidateBs.x'),
-        this.translateService.instant('result.propose.candidateBs.y'),
-        this.translateService.instant('result.propose.candidateBs.z'),
+
+    // 編輯場域畫面
+    pdf.addPage();
+
+    let statistics;
+    if (this.calculateForm.isSimulation) {
+      statistics = [
+        ['既有基地台總數',this.defaultBs.length],
+        ['使用者終端總數',this.ueList.length],
       ];
-      const candidateData = [];
-      for (let k = 0; k < this.inputBsList.length; k++) {
-        candidateData.push([
-          (k + 1), this.inputBsList[k][0], this.inputBsList[k][1], this.inputBsList[k][2]
-        ]);
-      }
-      pdf.autoTable(candidateTitle, candidateData, {
-        styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
-        headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-        beforePageContent: candidateHeader
-      });
-    }
-    
-    // 障礙物資訊
-    pdf.addPage();
-    const obstacleHeader = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, 12);
-    };
-    const obstacleTitle = [
-      this.translateService.instant('result.num'),
-      this.translateService.instant('result.propose.candidateBs.x'),
-      this.translateService.instant('result.propose.candidateBs.y'),
-      `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
-      `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
-      `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
-      this.translateService.instant('material')
-    ];
-    const obstacleData = [];
-    for (let k = 0; k < this.obstacleList.length; k++) {
-      const item = this.obstacleList[k];
-      console.log(item);
-      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
-    }
-    pdf.autoTable(obstacleTitle, obstacleData, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
-      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: obstacleHeader
-    });
-    // 行動終端分佈
-    pdf.addPage();
-    pdf.page++;
-    const ueHeader = (data) => {
-      pdf.setFontSize(12);
-      pdf.setTextColor(255);
-      pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.pdf.ue'), 100, 12);
-    };
-    const ueTitle = [
-      this.translateService.instant('result.num'), 
-      this.translateService.instant('result.propose.candidateBs.x'),
-      this.translateService.instant('result.propose.candidateBs.y'),
-      this.translateService.instant('result.propose.candidateBs.z'),
-      'RSRP',
-      'SINR',
-      'DL Throughput',
-      'UL Throughput',
-    ];
-    const ueData = [];
-    let uedlTpt = [];
-    let ueulTpt = [];
-    if (this.isHst) {
-      uedlTpt = this.result['ueTpt_dlTptIndividualUe'];
-      ueulTpt = this.result['ueTpt_ulTptIndividualUe'];
-      console.log(uedlTpt);
-      console.log(ueulTpt);
     } else {
-      uedlTpt = this.result['ueTpt']['dlTptIndividualUe'];
-      ueulTpt = this.result['ueTpt']['ulTptIndividualUe'];
-      console.log(uedlTpt);
-      console.log(ueulTpt);
+      statistics = [
+        ['既有基地台總數',this.defaultBs.length],
+        ['待選基地台位置總數',this.inputBsList.length],
+        ['已選基地台總數',this.calculateForm.availableNewBsNumber-this.defaultBs.length],
+        ['使用者終端總數',this.ueList.length],
+      ];
     }
-    console.log(this.ueList);
-    for (let k = 0; k < this.ueList.length; k++) {
-      if (typeof this.result['ueRsrp'] === 'undefined') {
-        continue;
-      }
-      console.log(typeof this.result['ueRsrp'][k]);
-      console.log(typeof this.result['ueSinr'][k]);
-      ueData.push([
-        (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-        , `${this.financial(this.result['ueRsrp'][k])} dBm`
-        , `${this.financial(this.result['ueSinr'][k])} dB`
-        , `${this.financial(uedlTpt[k])} Mbps`
-        , `${this.financial(ueulTpt[k])} Mbps`
-      ]);
-    }
-    console.log(ueData);
-    pdf.autoTable(ueTitle, ueData, {
+
+    pdf.autoTable(['項目','內容'], statistics, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: ueHeader
+      beforePageContent: specDataHeader,
+      startY: pos+5,
+      halign: 'center'
     });
 
-    // 建議方案
-    if (this.inputBsList.length > 0) {
-      pdf.addPage();
-      const proposeData = <HTMLDivElement> area.querySelector(`#propose`);
-      await html2canvas(proposeData, {
-        useCORS: true,
-        // allowTaint: true,
-      }).then(canvas => {
-        console.log('propose to img');
-        // Few necessary setting options
-        const imgWidth = 182;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        const contentDataURL = canvas.toDataURL('image/png');
-        const position = 10;
-        pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
-      });
-    }
 
+    // Heatmap ----------------------------------------------------------------------------------------
     for (const id of list) {
       pdf.addPage();
       console.log(id);
@@ -757,14 +647,14 @@ export class PdfComponent implements OnInit {
         // 訊號強度圖等待轉png
         await this.sleep(1000);
       }
-      if (data.querySelector('#is_ulThroughputMap') != null) {
-        // 上行傳輸速率圖等待轉png
-        await this.sleep(1000);
-      }
-      if (data.querySelector('#is_dlThroughputMap') != null) {
-        // 下行傳輸速率圖等待轉png
-        await this.sleep(1000);
-      }
+      // if (data.querySelector('#is_ulThroughputMap') != null) {
+      //   // 上行傳輸速率圖等待轉png
+      //   await this.sleep(1000);
+      // }
+      // if (data.querySelector('#is_dlThroughputMap') != null) {
+      //   // 下行傳輸速率圖等待轉png
+      //   await this.sleep(1000);
+      // }
       await html2canvas(data, {
         useCORS: true,
         // allowTaint: true,
@@ -781,6 +671,28 @@ export class PdfComponent implements OnInit {
         console.log(id);
       });
     }
+
+    
+
+    // // 建議方案
+    // if (this.inputBsList.length > 0) {
+    //   pdf.addPage();
+    //   const proposeData = <HTMLDivElement> area.querySelector(`#propose`);
+    //   await html2canvas(proposeData, {
+    //     useCORS: true,
+    //     // allowTaint: true,
+    //   }).then(canvas => {
+    //     console.log('propose to img');
+    //     // Few necessary setting options
+    //     const imgWidth = 182;
+    //     const imgHeight = canvas.height * imgWidth / canvas.width;
+    //     const contentDataURL = canvas.toDataURL('image/png');
+    //     const position = 10;
+    //     pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+    //   });
+    // }
+
+    
 
     //新增performance頁面
     pdf.addPage();
@@ -1083,6 +995,155 @@ export class PdfComponent implements OnInit {
         pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
       });
     }
+
+    // 現有基站
+    pdf.addPage();
+    const defaultBsTitle = [
+      this.translateService.instant('result.num'), 
+      this.translateService.instant('result.propose.candidateBs.x'),
+      this.translateService.instant('result.propose.candidateBs.y'),
+      this.translateService.instant('result.propose.candidateBs.z'),
+    ];
+    const defaultBsHeader = (data) => {
+      pdf.setFontSize(12);
+      pdf.setTextColor(255);
+      pdf.setFontStyle('normal');
+      pdf.setFillColor(42, 58, 93);
+      pdf.rect(14, 7, 182, 7, 'F');
+      pdf.text(this.translateService.instant('defaultBs'), 100, 12);
+    };
+    const defaultBsData = [];
+    for (let k = 0; k < this.defaultBs.length; k++) {
+      defaultBsData.push([
+        (k + 1), this.defaultBs[k][0], this.defaultBs[k][1], this.defaultBs[k][2]
+      ]);
+    }
+    if (this.defaultBs.length === 0) {
+      defaultBsData.push([{ content: this.translateService.instant('result.no.defaultBs'), colSpan: 4, styles: { halign: 'center' } }]);
+    }
+    pdf.autoTable(defaultBsTitle, defaultBsData, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: defaultBsHeader,
+      // startY: pos + 30,
+      halign: 'center'
+    });
+    // 新增基站
+    if (this.inputBsList.length > 0) {
+      pdf.addPage();
+      const candidateHeader = (data) => {
+        pdf.setFontSize(12);
+        pdf.setTextColor(255);
+        pdf.setFontStyle('normal');
+        pdf.setFillColor(42, 58, 93);
+        pdf.rect(14, 7, 182, 7, 'F');
+        pdf.text(this.translateService.instant('candidateBs'), 100, 12);
+      };
+      const candidateTitle = [
+        this.translateService.instant('result.num'), 
+        this.translateService.instant('result.propose.candidateBs.x'),
+        this.translateService.instant('result.propose.candidateBs.y'),
+        this.translateService.instant('result.propose.candidateBs.z'),
+      ];
+      const candidateData = [];
+      for (let k = 0; k < this.inputBsList.length; k++) {
+        candidateData.push([
+          (k + 1), this.inputBsList[k][0], this.inputBsList[k][1], this.inputBsList[k][2]
+        ]);
+      }
+      pdf.autoTable(candidateTitle, candidateData, {
+        styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+        headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+        beforePageContent: candidateHeader
+      });
+    }
+    
+    // 障礙物資訊
+    pdf.addPage();
+    const obstacleHeader = (data) => {
+      pdf.setFontSize(12);
+      pdf.setTextColor(255);
+      pdf.setFontStyle('normal');
+      pdf.setFillColor(42, 58, 93);
+      pdf.rect(14, 7, 182, 7, 'F');
+      pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, 12);
+    };
+    const obstacleTitle = [
+      this.translateService.instant('result.num'),
+      this.translateService.instant('result.propose.candidateBs.x'),
+      this.translateService.instant('result.propose.candidateBs.y'),
+      `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
+      `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
+      `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
+      this.translateService.instant('material')
+    ];
+    const obstacleData = [];
+    for (let k = 0; k < this.obstacleList.length; k++) {
+      const item = this.obstacleList[k];
+      console.log(item);
+      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
+    }
+    pdf.autoTable(obstacleTitle, obstacleData, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: obstacleHeader
+    });
+    // 行動終端分佈
+    pdf.addPage();
+    pdf.page++;
+    const ueHeader = (data) => {
+      pdf.setFontSize(12);
+      pdf.setTextColor(255);
+      pdf.setFontStyle('normal');
+      pdf.setFillColor(42, 58, 93);
+      pdf.rect(14, 7, 182, 7, 'F');
+      pdf.text(this.translateService.instant('result.pdf.ue'), 100, 12);
+    };
+    const ueTitle = [
+      this.translateService.instant('result.num'), 
+      this.translateService.instant('result.propose.candidateBs.x'),
+      this.translateService.instant('result.propose.candidateBs.y'),
+      this.translateService.instant('result.propose.candidateBs.z'),
+      'RSRP',
+      'SINR',
+      'DL Throughput',
+      'UL Throughput',
+    ];
+    const ueData = [];
+    let uedlTpt = [];
+    let ueulTpt = [];
+    if (this.isHst) {
+      uedlTpt = this.result['ueTpt_dlTptIndividualUe'];
+      ueulTpt = this.result['ueTpt_ulTptIndividualUe'];
+      console.log(uedlTpt);
+      console.log(ueulTpt);
+    } else {
+      uedlTpt = this.result['ueTpt']['dlTptIndividualUe'];
+      ueulTpt = this.result['ueTpt']['ulTptIndividualUe'];
+      console.log(uedlTpt);
+      console.log(ueulTpt);
+    }
+    console.log(this.ueList);
+    for (let k = 0; k < this.ueList.length; k++) {
+      if (typeof this.result['ueRsrp'] === 'undefined') {
+        continue;
+      }
+      console.log(typeof this.result['ueRsrp'][k]);
+      console.log(typeof this.result['ueSinr'][k]);
+      ueData.push([
+        (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
+        , `${this.financial(this.result['ueRsrp'][k])} dBm`
+        , `${this.financial(this.result['ueSinr'][k])} dB`
+        , `${this.financial(uedlTpt[k])} Mbps`
+        , `${this.financial(ueulTpt[k])} Mbps`
+      ]);
+    }
+    // console.log(ueData);
+    pdf.autoTable(ueTitle, ueData, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: ueHeader
+    });
 
     const pageCount = pdf.internal.getNumberOfPages();
     for (let k = 0; k < pageCount; k++) {

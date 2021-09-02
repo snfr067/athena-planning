@@ -1044,7 +1044,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             layout: this.plotLayout,
             config: defaultPlotlyConfiguration
           }).then((gd) => {
-            
             // this.chartService.calSize(this.calculateForm, gd).then(res => {
             //   const layoutOption = {
             //     width: res[0],
@@ -1052,10 +1051,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             //   };
             //   // image放進圖裡後需取得比例尺
             //   Plotly.relayout('chart', layoutOption).then((gd2) => {
-
                 // 計算比例尺
                 this.calScale(gd);
-
                 if (isImportXls) {
                   // import xlsx
                   this.setImportData();
@@ -1070,15 +1067,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   }
                   console.log(this.calculateForm);
                 }
-
                 // 重設場域尺寸與載入物件
                 this.chartResize();
-                
             //   }); 
-
             // });
-  
-             
           });
         };
   
@@ -1091,7 +1083,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           layout: this.plotLayout,
           config: defaultPlotlyConfiguration
         }).then((gd) => {
-  
           // this.chartService.calSize(this.calculateForm, gd).then(res => {
           //   const layoutOption = {
           //     width: res[0],

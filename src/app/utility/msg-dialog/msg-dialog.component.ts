@@ -38,7 +38,7 @@ export class MsgDialogComponent implements OnInit {
   /** message */
   infoMessage;
   /** auto close time */
-  closeTime = 2000;
+  closeTime = 10000;
   /** text color */
   type = 'success';
   /** text css class */

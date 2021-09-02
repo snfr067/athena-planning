@@ -3,6 +3,8 @@ import { AuthService } from '../../../service/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CalculateForm } from '../../../form/CalculateForm';
 import { ChartService } from '../../../service/chart.service';
+import { MsgDialogComponent } from '../../../utility/msg-dialog/msg-dialog.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 declare var Plotly: any;
 
@@ -16,8 +18,9 @@ export class SignalUlThroughputComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private translateService: TranslateService,
-    private chartService: ChartService
-  ) { }
+    private chartService: ChartService,
+    private matDialog: MatDialog,
+    ) { }
 
   /** 結果form */
   calculateForm = new CalculateForm();
@@ -64,6 +67,8 @@ export class SignalUlThroughputComponent implements OnInit {
   imageSRC = '';
   /** 障礙物element */
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
+  msgDialogConfig: MatDialogConfig = new MatDialogConfig();
+
 
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
@@ -80,6 +85,10 @@ export class SignalUlThroughputComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  financial(x) {
+    return Number.parseFloat(x).toFixed(1);
   }
 
   /**
@@ -144,7 +153,7 @@ export class SignalUlThroughputComponent implements OnInit {
         range: [0, this.calculateForm.width],
         showgrid: false,
         zeroline: false,
-        fixedrange: true,
+        // fixedrange: true,
         ticks: 'inside',
         ticksuffix: 'm'
       },
@@ -154,7 +163,7 @@ export class SignalUlThroughputComponent implements OnInit {
         range: [0, this.calculateForm.height],
         showgrid: false,
         zeroline: false,
-        fixedrange: false,
+        // fixedrange: false,
         ticks: 'inside',
         ticksuffix: 'm'
       },
@@ -590,6 +599,41 @@ export class SignalUlThroughputComponent implements OnInit {
         }
       });
 
+    });
+
+    id.on('plotly_relayout',
+    (eventdata) => {
+      let x_start = eventdata['xaxis.range[0]'];
+      let x_end = eventdata['xaxis.range[1]'];
+      let y_start = eventdata['yaxis.range[0]'];
+      let y_end = eventdata['yaxis.range[1]'];
+      if ((x_start != undefined && x_end != undefined && y_start != undefined && y_end != undefined)
+        || (x_start == 0 && y_start == 0)) {
+        x_start = Math.ceil(x_start);
+        x_end = Math.floor(x_end);
+        y_start = Math.ceil(y_start);
+        y_end = Math.floor(y_end);
+        let x_range = x_end - x_start;
+        let y_range = y_end - y_start;
+        let area = x_range*y_range;
+        let totolTpt = 0;
+        console.log(`${x_start} ${x_end} ${y_start} ${y_end}`);
+        console.log(zData);
+        for (let i = y_start;i <= y_end;i++) {
+          for (let j = x_start;j <= x_end;j++) {
+            console.log(`${i} ${j} ${zData[0][i][j]}`);
+            totolTpt += zData[0][i][j];
+          }
+        }
+        console.log(totolTpt/area);
+        this.msgDialogConfig.data = {
+          // type: 'success',
+          infoMessage: `<br/>子場域Throughput: ${this.financial(totolTpt/area)}<br/>
+            x軸範圍: ${x_start}m~${x_end}m <br/>
+            y軸範圍: ${y_start}m~${y_end}m <br/>`
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      }
     });
   }
 

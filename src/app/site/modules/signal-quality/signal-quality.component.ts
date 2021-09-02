@@ -135,7 +135,7 @@ export class SignalQualityComponent implements OnInit {
       displaylogo: false,
       showTips: false,
       editable: false,
-      scrollZoom: false,
+      scrollZoom: true,
       displayModeBar: false
     };
 
@@ -151,7 +151,7 @@ export class SignalQualityComponent implements OnInit {
         range: [0, this.calculateForm.width],
         showgrid: false,
         zeroline: false,
-        fixedrange: true,
+        // fixedrange: true,
         ticks: 'inside',
         ticksuffix: 'm'
       },
@@ -161,7 +161,7 @@ export class SignalQualityComponent implements OnInit {
         range: [0, this.calculateForm.height],
         showgrid: false,
         zeroline: false,
-        fixedrange: false,
+        // fixedrange: false,
         ticks: 'inside',
         ticksuffix: 'm'
       },
@@ -640,6 +640,18 @@ export class SignalQualityComponent implements OnInit {
       });      
 
     });
+
+    // id.on('plotly_relayout',
+    // (eventdata) => {
+    //   let x_start = eventdata['xaxis.range[0]'];
+    //   let x_end = eventdata['xaxis.range[1]'];
+    //   let y_start = eventdata['yaxis.range[0]'];
+    //   let y_end = eventdata['yaxis.range[1]'];
+    //   if (x_start != undefined && x_end != undefined && y_start != undefined && y_end != undefined) {
+    //     console.log(`${x_start} ${x_end} ${y_start} ${y_end}`);
+    //     console.log(zData);
+    //   }
+    // });
   }
 
   /**
