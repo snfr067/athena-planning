@@ -706,7 +706,7 @@ export class SignalCoverComponent implements OnInit {
         .range([0, rect2.height]);
 
       for (const item of this.rectList) {
-        console.log(item)
+        // console.log(item)
         // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
         let width = pixelXLinear(item.width);
         // if (width < 5) {

@@ -631,7 +631,8 @@ export class SignalDlThroughputComponent implements OnInit {
         }
         this.msgDialogConfig.data = {
           // type: 'success',
-          infoMessage: `<br/>子場域Throughput: ${this.financial(totolTpt/area)}<br/>
+          infoMessage: `<br/>子場域平均傳輸速率: ${this.financial(totolTpt/area)}<br/>
+          子場域總傳輸速率: ${this.financial(totolTpt)}<br/>
             x軸範圍: ${x_start}m~${x_end}m <br/>
             y軸範圍: ${y_start}m~${y_end}m <br/>`
         };

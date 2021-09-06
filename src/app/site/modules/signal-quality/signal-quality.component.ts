@@ -135,7 +135,7 @@ export class SignalQualityComponent implements OnInit {
       displaylogo: false,
       showTips: false,
       editable: false,
-      scrollZoom: true,
+      scrollZoom: false,
       displayModeBar: false
     };
 

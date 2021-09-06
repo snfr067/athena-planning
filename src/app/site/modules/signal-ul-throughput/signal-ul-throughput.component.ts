@@ -220,8 +220,8 @@ export class SignalUlThroughputComponent implements OnInit {
             // console.log('無馱無馱無馱無馱無馱無馱無馱'+this.minZ[i]);
           }
           if (yData[i] == null) {
-            console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
-            console.log(item);
+            // console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
+            // console.log(item);
           }
           zText[i][yIndex][xIndex] = Math.round(yData[i] * 100) / 100;
 
@@ -628,7 +628,8 @@ export class SignalUlThroughputComponent implements OnInit {
         console.log(totolTpt/area);
         this.msgDialogConfig.data = {
           // type: 'success',
-          infoMessage: `<br/>子場域Throughput: ${this.financial(totolTpt/area)}<br/>
+          infoMessage: `<br/>子場域平均傳輸速率: ${this.financial(totolTpt/area)}<br/>
+            子場域總傳輸速率: ${this.financial(totolTpt)}<br/>
             x軸範圍: ${x_start}m~${x_end}m <br/>
             y軸範圍: ${y_start}m~${y_end}m <br/>`
         };

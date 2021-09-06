@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ProposeComponent } from '../modules/propose/propose.component';
+import { SitePlanningMapComponent } from '../modules/site-planning-map/site-planning-map.component';
 import { SignalQualityComponent } from '../modules/signal-quality/signal-quality.component';
 import { SignalCoverComponent } from '../modules/signal-cover/signal-cover.component';
 import { SignalStrengthComponent } from '../modules/signal-strength/signal-strength.component';
@@ -60,6 +61,8 @@ export class PdfComponent implements OnInit {
 
   /** 建議方案 Component */
   @ViewChild('propose') propose: ProposeComponent;
+  /** 建議方案 Component */
+  @ViewChildren('sitePlanningMap') sitePlanningMap: QueryList<SitePlanningMapComponent>;
   /** 訊號品質圖 Component */
   @ViewChildren('quality') quality: QueryList<SignalQualityComponent>;
   /** 訊號覆蓋圖 Component */
@@ -94,6 +97,8 @@ export class PdfComponent implements OnInit {
     // this.export(this.taskId, true);
 
     // this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
+    console.log(this.result);
+
   }
 
   /**
@@ -191,6 +196,15 @@ export class PdfComponent implements OnInit {
               this.propose.isPDF = true;
               this.propose.drawLayout(true);
             }
+            // 編輯場域
+            let idx = 0;
+            this.sitePlanningMap.forEach(element => {
+              element.calculateForm = this.calculateForm;
+              element.result = this.result;
+              element.draw(true, this.zValues[idx]);
+              idx++;
+            });
+
             // 訊號品質圖
             let index = 0;
             this.quality.forEach(element => {
@@ -539,7 +553,7 @@ export class PdfComponent implements OnInit {
 
     // 基地台相關表格
     pdf.setFontSize(17);
-    pdf.text(14, pos, `${this.translateService.instant('result.bs.info')}：`);
+    // pdf.text(14, pos, `${this.translateService.instant('result.bs.info')}：`);
     // pos += margin;
     // pdf.text(leftStart, pos, `${this.translateService.instant('result.propose.wait_select_1')}： ${this.translateService.instant('result.propose.wait_select_2').replace('{0}', this.inputBsList.length)}`);
     // pos += margin;
@@ -583,32 +597,12 @@ export class PdfComponent implements OnInit {
     // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTestTime')}： ${this.calculateForm.mctsTestTime}`);
     // pos += margin;
     // pdf.text(leftStart, pos, `${this.translateService.instant('mctsTotalTime')}： ${this.calculateForm.mctsTotalTime}`);
-
-    let specData = [
-      ['頻段',0],
-      ['頻寬',0],
-      ['子載波間距',0],
-      ['天線',0],
-      ['功率範圍',0],
-    ];
-
     const specDataHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
     };
-
-    pdf.autoTable(['項目','內容'], specData, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
-      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: specDataHeader,
-      startY: pos+5,
-      halign: 'center'
-    });
-
-    // 編輯場域畫面
-    pdf.addPage();
 
     let statistics;
     if (this.calculateForm.isSimulation) {
@@ -632,14 +626,96 @@ export class PdfComponent implements OnInit {
       startY: pos+5,
       halign: 'center'
     });
+    // 編輯場域畫面
+    pdf.addPage();
+    let mapHeight = 0;
+    const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
+    console.log(data);
+    await html2canvas(data, {
+      useCORS: true,
+    }).then(canvas => {
+      console.log(canvas);
+      const imgWidth = 182;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      mapHeight = imgHeight;
+      const contentDataURL = canvas.toDataURL('image/png');
+      const position = 10;
+      pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+    });
 
+    let specData;
+    console.log(this.result);
+    if (this.calculateForm.duplex == 'tdd') {
+      let frequency = [];
+      let scs = [];
+      let bandwidth = [];
+      let candidateLen = this.result['candidateIdx'].length;
+      for (let i = 0;i < candidateLen;i++) {
+        frequency.push(JSON.parse(this.calculateForm.frequencyList)[this.result['candidateIdx'][i]]);
+        scs.push(JSON.parse(this.calculateForm.scs)[this.result['candidateIdx'][i]]);
+        bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[this.result['candidateIdx'][i]]);
+      }
+      for (let i = 0;i < this.result['defaultidx'].length;i++) {
+        frequency.push(JSON.parse(this.calculateForm.frequencyList)[candidateLen+i]);
+        scs.push(JSON.parse(this.calculateForm.scs)[candidateLen+i]);
+        bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[candidateLen+i]);
+      }
+      specData = [
+        ['頻段',frequency],
+        ['子載波間距',scs],
+        ['頻寬',bandwidth],
+        ['功率範圍',`${this.calculateForm.powerMinRange}~${this.calculateForm.powerMaxRange}`],
+      ];
+    } else {
+      let ulfrequency = [];
+      let dlfrequency = [];
+      let ulscs = [];
+      let dlscs = [];
+      let ulbandwidth = [];
+      let dlbandwidth = [];
+      let candidateLen = this.result['candidateIdx'].length;
+      for (let i = 0;i < candidateLen;i++) {
+        ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[this.result['candidateIdx'][i]]);
+        dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[this.result['candidateIdx'][i]]);
+        ulscs.push(JSON.parse(this.calculateForm.ulScs)[this.result['candidateIdx'][i]]);
+        dlscs.push(JSON.parse(this.calculateForm.dlScs)[this.result['candidateIdx'][i]]);
+        ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[this.result['candidateIdx'][i]]);
+        dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[this.result['candidateIdx'][i]]);
+      }
+      for (let i = 0;i < this.result['defaultidx'].length;i++) {
+        ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[candidateLen+i]);
+        dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[candidateLen+i]);
+        ulscs.push(JSON.parse(this.calculateForm.ulScs)[candidateLen+i]);
+        dlscs.push(JSON.parse(this.calculateForm.dlScs)[candidateLen+i]);
+        ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[candidateLen+i]);
+        dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[candidateLen+i]);
+      }
+      specData = [
+        ['上行頻段',this.calculateForm.ulFrequency],
+        ['下行頻段',this.calculateForm.dlFrequency],
+        ['上行子載波間距',this.calculateForm.ulScs],
+        ['上行頻寬',this.calculateForm.ulBandwidth],
+        ['下行子載波間距',this.calculateForm.dlScs],
+        ['下行頻寬',this.calculateForm.dlBandwidth],
+        ['功率範圍',`${this.calculateForm.powerMinRange}~${this.calculateForm.powerMaxRange}`],
+      ];
+    }
+    
 
+    pdf.autoTable(['項目','待選 -> 既有'], specData, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: specDataHeader,
+      startY: mapHeight+15,
+      halign: 'center'
+    });
     // Heatmap ----------------------------------------------------------------------------------------
     for (const id of list) {
       pdf.addPage();
-      console.log(id);
+      // console.log(id);
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
       if (data.querySelector('#is_quality') != null) {
+        // console.log(data.querySelector('#is_quality'));
         // 訊號品質圖等待轉png
         await this.sleep(1000);
       }
@@ -647,24 +723,28 @@ export class PdfComponent implements OnInit {
         // 訊號強度圖等待轉png
         await this.sleep(1000);
       }
-      // if (data.querySelector('#is_ulThroughputMap') != null) {
-      //   // 上行傳輸速率圖等待轉png
-      //   await this.sleep(1000);
-      // }
-      // if (data.querySelector('#is_dlThroughputMap') != null) {
-      //   // 下行傳輸速率圖等待轉png
-      //   await this.sleep(1000);
-      // }
+      if (data.querySelector('#is_ulThroughputMap') != null) {
+        // 上行傳輸速率圖等待轉png
+        await this.sleep(1000);
+      }
+      if (data.querySelector('#is_dlThroughputMap') != null) {
+        // 下行傳輸速率圖等待轉png
+        await this.sleep(1000);
+      }
+      console.log(data);
       await html2canvas(data, {
         useCORS: true,
         // allowTaint: true,
       }).then(canvas => {
+        console.log(canvas);
         // Few necessary setting options
         const imgWidth = 182;
         let imgHeight = canvas.height * imgWidth / canvas.width;
-        if (imgHeight > 260) {
-          imgHeight = 260;
-        }
+        console.log(canvas.height);
+        console.log(canvas.width);
+        // if (imgHeight > 260) {
+        //   imgHeight = 260;
+        // }
         const contentDataURL = canvas.toDataURL('image/png');
         const position = 10;
         pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');

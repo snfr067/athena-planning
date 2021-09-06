@@ -275,7 +275,7 @@ export class SignalStrengthComponent implements OnInit {
     let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
     let unit = (scalemax-scalemin)/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
-    let scaleunitText = [`${scalemax}dBm`, `${scalemax-unit}dBm`, `${scalemax-2*unit}dBmB`, `${scalemax-3*unit}dBm`, `${scalemin}dBmB`];
+    let scaleunitText = [`${scalemax}dBm`, `${scalemax-unit}dBm`, `${scalemax-2*unit}dBm`, `${scalemax-3*unit}dBm`, `${scalemin}dBm`];
 
     const trace = {
       x: x,

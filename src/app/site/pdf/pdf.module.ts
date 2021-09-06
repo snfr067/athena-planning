@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PerformanceModule } from '../modules/performance/performance.module';
+import { SitePlanningMapModule } from '../modules/site-planning-map/site-planning-map.module';
 import { ProposeModule } from '../modules/propose/propose.module';
 import { SignalCoverModule } from '../modules/signal-cover/signal-cover.module';
 import { SignalQualityModule } from '../modules/signal-quality/signal-quality.module';
@@ -28,6 +29,7 @@ import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal
     RouterModule,
     MatButtonToggleModule,
     PerformanceModule,
+    SitePlanningMapModule,
     ProposeModule,
     SignalCoverModule,
     SignalQualityModule,
