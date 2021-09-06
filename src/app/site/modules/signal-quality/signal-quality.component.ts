@@ -3,6 +3,7 @@ import { AuthService } from '../../../service/auth.service';
 import { CalculateForm } from '../../../form/CalculateForm';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartService } from '../../../service/chart.service';
+import html2canvas from 'html2canvas';
 
 declare var Plotly: any;
 
@@ -668,12 +669,16 @@ export class SignalQualityComponent implements OnInit {
       if (isPDF) {
         // pdf轉成png，避免colorbar空白
         this.showImg = true;
-        const gd2Rect = gd2.getBoundingClientRect();
-        Plotly.toImage(gd2, {width: gd2Rect.width, height: gd2Rect.height}).then(dataUri => {
+        Plotly.toImage(gd2, {width: layoutOption.width, height: layoutOption.height}).then(dataUri => {
           this.imageSRC = dataUri;
           Plotly.d3.select(gd2.querySelector('.plotly')).remove();
+          this.style['z-index'] = 0;
+          this.style['opacity'] = 0.2;
+          this.divStyle['text-align'] = 'left';
+          for (const item of this.rectList) {
+            item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0.2)';
+          }
         });
-
       }
     });
   }

@@ -664,11 +664,11 @@ export class SignalCoverComponent implements OnInit {
           const image = new Image();
           image.src = images[0].source;
           image.onload = () => {
-            this.reLayout(id, layoutOption);
+            this.reLayout(id, layoutOption, isPDF);
           };
           
         } else {
-          this.reLayout(id, layoutOption);
+          this.reLayout(id, layoutOption, isPDF);
         }
       });    
 
@@ -681,7 +681,7 @@ export class SignalCoverComponent implements OnInit {
    * @param id 
    * @param layoutOption 
    */
-  reLayout(id, layoutOption) {
+  reLayout(id, layoutOption, isPDF) {
     Plotly.relayout(id, layoutOption).then((gd2) => {
       this.divStyle.opacity = 1;
       const xy2: SVGRectElement = gd2.querySelector('.xy').querySelectorAll('rect')[0];
@@ -780,6 +780,15 @@ export class SignalCoverComponent implements OnInit {
           position: 'absolute',
           // visibility: this.showCandidate
         };
+      }
+
+      if (isPDF) {
+        this.style['z-index'] = 0;
+        this.style['opacity'] = 0.2;
+        this.divStyle['text-align'] = 'left';
+        for (const item of this.rectList) {
+          item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0.2)';
+        }
       }
 
     });
