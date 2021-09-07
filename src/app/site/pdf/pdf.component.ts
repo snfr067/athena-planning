@@ -630,15 +630,19 @@ export class PdfComponent implements OnInit {
     pdf.addPage();
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
+    if (data.querySelector('#is_site_map') != null) {
+      await this.sleep(1000);
+    }
     console.log(data);
     await html2canvas(data, {
-      useCORS: true,
+      // useCORS: true,
     }).then(canvas => {
       console.log(canvas);
       const imgWidth = 182;
       const imgHeight = canvas.height * imgWidth / canvas.width;
       mapHeight = imgHeight;
       const contentDataURL = canvas.toDataURL('image/png');
+      console.log(contentDataURL);
       const position = 10;
       pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
     });
@@ -655,7 +659,14 @@ export class PdfComponent implements OnInit {
         scs.push(JSON.parse(this.calculateForm.scs)[this.result['candidateIdx'][i]]);
         bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[this.result['candidateIdx'][i]]);
       }
-      for (let i = 0;i < this.result['defaultidx'].length;i++) {
+
+      let defaultLen;
+      if (this.isHst) {
+        defaultLen = this.result['defaultidx'].length;
+      } else {
+        defaultLen = this.result['defaultIdx'].length;
+      }
+      for (let i = 0;i < defaultLen;i++) {
         frequency.push(JSON.parse(this.calculateForm.frequencyList)[candidateLen+i]);
         scs.push(JSON.parse(this.calculateForm.scs)[candidateLen+i]);
         bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[candidateLen+i]);
@@ -682,7 +693,13 @@ export class PdfComponent implements OnInit {
         ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[this.result['candidateIdx'][i]]);
         dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[this.result['candidateIdx'][i]]);
       }
-      for (let i = 0;i < this.result['defaultidx'].length;i++) { // error
+      let defaultLen;
+      if (this.isHst) {
+        defaultLen = this.result['defaultidx'].length;
+      } else {
+        defaultLen = this.result['defaultIdx'].length;
+      }
+      for (let i = 0;i < defaultLen;i++) { //error
         ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[candidateLen+i]);
         dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[candidateLen+i]);
         ulscs.push(JSON.parse(this.calculateForm.ulScs)[candidateLen+i]);
@@ -748,7 +765,7 @@ export class PdfComponent implements OnInit {
         const contentDataURL = canvas.toDataURL('image/png');
         const position = 10;
         pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
-        console.log(id);
+        // console.log(id);
       });
     }
 
@@ -1208,8 +1225,8 @@ export class PdfComponent implements OnInit {
       if (typeof this.result['ueRsrp'] === 'undefined') {
         continue;
       }
-      console.log(typeof this.result['ueRsrp'][k]);
-      console.log(typeof this.result['ueSinr'][k]);
+      // console.log(typeof this.result['ueRsrp'][k]);
+      // console.log(typeof this.result['ueSinr'][k]);
       ueData.push([
         (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
         , `${this.financial(this.result['ueRsrp'][k])} dBm`

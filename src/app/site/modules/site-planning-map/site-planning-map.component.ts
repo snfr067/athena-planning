@@ -39,7 +39,7 @@ export class SitePlanningMapComponent implements OnInit {
   /** 圖區style */
   divStyle = {
     position: 'relative',
-    opacity: 0
+    opacity: 1
   };
   /** 障礙物顯示 */
   showObstacle = 'visible';
@@ -64,23 +64,22 @@ export class SitePlanningMapComponent implements OnInit {
   /** 障礙物element */
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
 
-  // @HostListener('window:resize') windowResize() {
-  //   const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
-  //   const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
-  //   Plotly.relayout(this.chartId, {
-  //     width: maxWidth
-  //   }).then(gd => {
-  //     this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res => {
-  //       const layoutOption = {
-  //         width: res[0],
-  //         height: res[1]
-  //       };
-  //       // resize layout
-  //       this.reLayout(this.chartId, layoutOption, false);
-  //     });
-  //   });
-    
-  // }
+  @HostListener('window:resize') windowResize() {
+    const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+    const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
+    Plotly.relayout(this.chartId, {
+      width: maxWidth
+    }).then(gd => {
+      this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res => {
+        const layoutOption = {
+          width: res[0],
+          height: res[1]
+        };
+        // resize layout
+        this.reLayout(this.chartId, layoutOption, false);
+      });
+    });
+  }
 
   ngOnInit(): void {
   }
@@ -340,14 +339,15 @@ export class SitePlanningMapComponent implements OnInit {
             height: oData[3],
             // transform: `rotate(${oData[5]}deg)`,
             position: 'absolute',
-            visibility: 'visible',
+            visibility: this.showObstacle,
             fill: oColor,
-            // opacity: 0
+            opacity: 1
           },
           svgStyle: {
             width: oData[2],
             height: oData[3],
             fill: oColor,
+            opacity: 1
           },
           hover: text
         });
@@ -431,7 +431,7 @@ export class SitePlanningMapComponent implements OnInit {
           style: {
             // visibility: this.showBs,
             visibility: 'hidden',
-            opacity: 0
+            opacity: 1
           },
           circleStyle: {
             // visibility: this.showBs
@@ -524,7 +524,7 @@ export class SitePlanningMapComponent implements OnInit {
         showlegend: false,
         visible: this.showCandidate,
         uid: `AP`,
-        opacity: 0
+        opacity: 1
       });
     }
 
@@ -651,10 +651,17 @@ export class SitePlanningMapComponent implements OnInit {
       if (isPDF) {
         // pdf轉成png，避免colorbar空白
         this.showImg = true;
-        const gd2Rect = gd2.getBoundingClientRect();
-        Plotly.toImage(gd2, {width: gd2Rect.width, height: gd2Rect.height}).then(dataUri => {
+        // const gd2Rect = gd2.getBoundingClientRect();
+        // Plotly.toImage(gd2, {width: gd2Rect.width, height: gd2Rect.height}).then(dataUri => {
+        Plotly.toImage(gd2, {width: layoutOption.width, height: layoutOption.height}).then(dataUri => {
           this.imageSRC = dataUri;
           Plotly.d3.select(gd2.querySelector('.plotly')).remove();
+          this.style['z-index'] = 0;
+          this.style['opacity'] = 1;
+          this.divStyle['text-align'] = 'left';
+          // for (const item of this.rectList) {
+          //   item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0)';
+          // }
         });
 
       }

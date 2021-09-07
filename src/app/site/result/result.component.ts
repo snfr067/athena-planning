@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
 import { PdfComponent } from '../pdf/pdf.component';
 import { ProposeComponent } from '../modules/propose/propose.component';
+import { SitePlanningMapComponent } from '../modules/site-planning-map/site-planning-map.component';
 import { SignalQualityComponent } from '../modules/signal-quality/signal-quality.component';
 import { SignalCoverComponent } from '../modules/signal-cover/signal-cover.component';
 import { SignalStrengthComponent } from '../modules/signal-strength/signal-strength.component';
@@ -151,6 +152,7 @@ export class ResultComponent implements OnInit {
   @ViewChild('ulThroughputMap') ulThroughputMap: SignalUlThroughputComponent;
   /** 下行傳輸速率圖 */
   @ViewChild('dlThroughputMap') dlThroughputMap: SignalDlThroughputComponent;
+  @ViewChild('sitePlanningMap') sitePlanningMap: SitePlanningMapComponent;
 
   ngOnInit() {
     this.view3dDialogConfig.autoFocus = false;
@@ -460,6 +462,13 @@ export class ResultComponent implements OnInit {
         this.statistics.calculateForm = this.calculateForm;
         this.statistics.result = this.result;
         this.statistics.drawChart(false);
+        // TEST
+        window.setTimeout(() => {
+          this.sitePlanningMap.calculateForm = this.calculateForm;
+        this.sitePlanningMap.result = this.result;
+        this.sitePlanningMap.draw(false, this.zValue);
+        }, 0);
+        
 
         this.siteInfo.calculateForm = this.calculateForm;
         this.siteInfo.result = this.result;

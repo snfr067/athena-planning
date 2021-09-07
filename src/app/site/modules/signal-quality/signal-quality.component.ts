@@ -80,7 +80,6 @@ export class SignalQualityComponent implements OnInit {
           width: res[0],
           height: res[1]
         };
-        // resize layout
         this.reLayout(this.chartId, layoutOption, false);
       });
     });
@@ -663,9 +662,7 @@ export class SignalQualityComponent implements OnInit {
    */
   reLayout(id, layoutOption, isPDF) {
     Plotly.relayout(id, layoutOption).then((gd2) => {
-
       this.setChartObjectSize(gd2);
-
       if (isPDF) {
         // pdf轉成png，避免colorbar空白
         this.showImg = true;

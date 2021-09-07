@@ -85,6 +85,9 @@
 						<app-signal-ul-throughput *ngIf="showUlThroughputMap" #ulThroughputMap></app-signal-ul-throughput>
 						<!-- 下行傳輸速率圖 -->
 						<app-signal-dl-throughput *ngIf="showDlThroughputMap" #dlThroughputMap></app-signal-dl-throughput>
+
+						<!-- <app-site-planning-map *ngIf="showDlThroughputMap" #sitePlanningMap></app-site-planning-map> -->
+
 						<div>
 							<label class="m-0">{{ 'result.opacity' | translate }}</label>
 							<ngx-slider [(value)]="opacityValue" [options]="opacityOptions" (userChange)="changeOpacity()"></ngx-slider>
@@ -293,6 +296,9 @@
 		
 		<!-- 統計資訊 -->
 		<app-statistics #statistics></app-statistics>
+
+		<!-- <app-site-planning-map #sitePlanningMap></app-site-planning-map> -->
+
 
 	</div>
     
