@@ -631,7 +631,7 @@ export class PdfComponent implements OnInit {
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
     if (data.querySelector('#is_site_map') != null) {
-      await this.sleep(1000);
+      await this.sleep(1500);
     }
     console.log(data);
     await html2canvas(data, {
@@ -753,15 +753,15 @@ export class PdfComponent implements OnInit {
         useCORS: true,
         // allowTaint: true,
       }).then(canvas => {
-        console.log(canvas);
+        // console.log(canvas);
         // Few necessary setting options
         const imgWidth = 182;
         let imgHeight = canvas.height * imgWidth / canvas.width;
+        if (imgHeight > 260) {
+          imgHeight = 260;
+        }
         console.log(canvas.height);
         console.log(canvas.width);
-        // if (imgHeight > 260) {
-        //   imgHeight = 260;
-        // }
         const contentDataURL = canvas.toDataURL('image/png');
         const position = 10;
         pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
