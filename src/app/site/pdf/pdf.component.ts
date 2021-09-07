@@ -682,7 +682,7 @@ export class PdfComponent implements OnInit {
         ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[this.result['candidateIdx'][i]]);
         dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[this.result['candidateIdx'][i]]);
       }
-      for (let i = 0;i < this.result['defaultidx'].length;i++) {
+      for (let i = 0;i < this.result['defaultidx'].length;i++) { // error
         ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[candidateLen+i]);
         dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[candidateLen+i]);
         ulscs.push(JSON.parse(this.calculateForm.ulScs)[candidateLen+i]);
