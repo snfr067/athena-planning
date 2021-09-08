@@ -106,6 +106,11 @@ export class PdfComponent implements OnInit {
    * @param isHst 歷史紀錄
    */
   async export(taskId, isHst) {
+    // Initial
+    this.defaultBs.length = 0;
+    this.inputBsList.length = 0;
+    this.ueList.length = 0;
+    //
     this.taskId = taskId;
     this.authService.spinnerShow();
     if (typeof this.taskId !== 'undefined') {
@@ -631,7 +636,7 @@ export class PdfComponent implements OnInit {
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
     if (data.querySelector('#is_site_map') != null) {
-      await this.sleep(1500);
+      await this.sleep(2000);
     }
     console.log(data);
     await html2canvas(data, {

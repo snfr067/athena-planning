@@ -463,11 +463,11 @@ export class ResultComponent implements OnInit {
         this.statistics.result = this.result;
         this.statistics.drawChart(false);
         // TEST
-        window.setTimeout(() => {
-          this.sitePlanningMap.calculateForm = this.calculateForm;
-        this.sitePlanningMap.result = this.result;
-        this.sitePlanningMap.draw(false, this.zValue);
-        }, 0);
+        // window.setTimeout(() => {
+        //   this.sitePlanningMap.calculateForm = this.calculateForm;
+        //   this.sitePlanningMap.result = this.result;
+        //   this.sitePlanningMap.draw(false, this.zValue);
+        // }, 0);
         
 
         this.siteInfo.calculateForm = this.calculateForm;

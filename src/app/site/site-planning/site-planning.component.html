@@ -343,10 +343,12 @@
             </mat-radio-button>
           </mat-radio-group>
           <div *ngIf="planningIndex == '1'" class="subTarget">
-            <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}">
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}"
+            (change)="selected = 1;calculateForm.isAverageSinr = true">
               {{ 'isAverageSinr' | translate }}
-            </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isCoverage" matTooltip="{{ 'isCoverage.tooltip' | translate }}">
+            </mat-checkbox> -->
+            <mat-checkbox [(ngModel)]="calculateForm.isCoverage" matTooltip="{{ 'isCoverage.tooltip' | translate }}"
+            (change)="changePlanningTarget('isCoverage')">
               {{ 'isCoverage' | translate }}
             </mat-checkbox>
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
@@ -360,13 +362,16 @@
             </mat-radio-button>
           </mat-radio-group>
           <div *ngIf="planningIndex == '2'" class="subTarget">
-            <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}">
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}" 
+            [checked]="selected === 3" (change)="selected = 3">
               {{ 'isUeAvgSinr' | translate }}
-            </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isUeAvgThroughput" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}">
+            </mat-checkbox> -->
+            <mat-checkbox [(ngModel)]="calculateForm.isUeAvgThroughput" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}"
+            (change)="changePlanningTarget('isUeAvgThroughput')">
               {{ 'isUeAvgThroughput' | translate }}
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isUeCoverage" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="calculateForm.isUeCoverage" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
+            (change)="changePlanningTarget('isUeCoverage')">
               {{ 'isUeCoverage' | translate }}
             </mat-checkbox>
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeTpByDistance" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">

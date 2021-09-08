@@ -39,7 +39,7 @@ export class SitePlanningMapComponent implements OnInit {
   /** 圖區style */
   divStyle = {
     position: 'relative',
-    opacity: 1
+    opacity:0
   };
   /** 障礙物顯示 */
   showObstacle = 'visible';
@@ -90,6 +90,11 @@ export class SitePlanningMapComponent implements OnInit {
    * @param zValue 
    */
   draw(isPDF, zValue) {
+    //Initial
+    this.rectList.length = 0;
+    this.candidateList.length = 0;
+    this.defaultBsList.length = 0;
+    //
     zValue = Number(zValue);
     this.zValue = zValue;
     const images = [];
@@ -524,7 +529,7 @@ export class SitePlanningMapComponent implements OnInit {
         showlegend: false,
         visible: this.showCandidate,
         uid: `AP`,
-        opacity: 1
+        opacity: 0
       });
     }
 

@@ -43,6 +43,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     private chartService: ChartService,
     private http: HttpClient) {
     }
+  
+  // UC 新增變數使用
+  selected = -1; //將checkbox改成單選
+  // changePlanningTarget();
 
   /**
    * NgxMoveableComponent
@@ -3102,6 +3106,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     );
   }
 
+  changePlanningTarget(target) {
+    if (target == 'isCoverage') {
+      this.calculateForm.isUeAvgThroughput = false;
+      this.calculateForm.isUeCoverage = false;
+    } else if (target == 'isUeAvgThroughput') {
+      this.calculateForm.isCoverage = false;
+      this.calculateForm.isUeCoverage = false;
+    } else {
+      this.calculateForm.isCoverage = false;
+      this.calculateForm.isUeAvgThroughput = false;
+    }
+  }
+
   /**
    * 變更障礙物size
    * @param svgId 物件id 
@@ -5530,24 +5547,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   changePlanningIndex() {
     // 設定預設值
     if (this.planningIndex === '1') {
-      // this.clearAll('defaultBS');
       this.calculateForm.isSimulation = false;
-      if (!this.calculateForm.isAverageSinr && !this.calculateForm.isCoverage) {
-        this.calculateForm.isAverageSinr = true;
-        this.calculateForm.isUeCoverage = false;
-        this.calculateForm.isUeAvgSinr = false;
-        this.calculateForm.isUeAvgThroughput = false;
-      }
+      this.calculateForm.isCoverage = true;
+      this.calculateForm.isUeCoverage = false;
+      this.calculateForm.isUeAvgThroughput = false;
     } else if (this.planningIndex === '2') {
-      // this.clearAll('defaultBS');
       this.calculateForm.isSimulation = false;
-      if (!this.calculateForm.isUeAvgSinr 
-        && !this.calculateForm.isUeAvgThroughput 
-        && !this.calculateForm.isUeTpByDistance) {
-        this.calculateForm.isUeAvgSinr = true;
-        this.calculateForm.isAverageSinr = false;
-        this.calculateForm.isCoverage = false;
-      }
+      this.calculateForm.isUeCoverage = false;
+      this.calculateForm.isUeAvgThroughput = true;
+      this.calculateForm.isCoverage = false;
     } else {
       this.calculateForm.isSimulation = true;
       this.clearAll('candidate');
@@ -5556,7 +5564,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
-      // this.clearAllDrag();
     }
   }
 
