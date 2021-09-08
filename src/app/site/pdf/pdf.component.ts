@@ -204,6 +204,7 @@ export class PdfComponent implements OnInit {
             // 編輯場域
             let idx = 0;
             this.sitePlanningMap.forEach(element => {
+              element.drawDown = false;
               element.calculateForm = this.calculateForm;
               element.result = this.result;
               element.draw(true, this.zValues[idx]);
@@ -636,20 +637,25 @@ export class PdfComponent implements OnInit {
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
     if (data.querySelector('#is_site_map') != null) {
-      await this.sleep(2000);
+      await this.sleep(1000);
     }
+    
+    await this.checkSiteMap();
+
     console.log(data);
+    console.log('start sitePlanningMap.');
     await html2canvas(data, {
-      // useCORS: true,
+      useCORS: true
     }).then(canvas => {
       console.log(canvas);
       const imgWidth = 182;
       const imgHeight = canvas.height * imgWidth / canvas.width;
       mapHeight = imgHeight;
       const contentDataURL = canvas.toDataURL('image/png');
-      console.log(contentDataURL);
+      // console.log(contentDataURL);
       const position = 10;
       pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+      console.log('sitePlanningMap add done.');
     });
 
     let specData;
@@ -1273,6 +1279,22 @@ export class PdfComponent implements OnInit {
     return new Promise<void>((res, rej) => {
         setTimeout(res, time);
     });
-}
+  }
+
+  async checkSiteMap() {
+    let elm;
+    this.sitePlanningMap.forEach(element => {
+      elm = element;
+    });
+
+    if (!elm.drawDown) {
+      console.log('recheck');
+      await this.sleep(500);
+      return this.checkSiteMap();
+    } else {
+      console.log('site map done');
+      return true;
+    }
+  }
 
 }

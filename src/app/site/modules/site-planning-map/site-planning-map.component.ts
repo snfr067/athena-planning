@@ -61,6 +61,8 @@ export class SitePlanningMapComponent implements OnInit {
   showImg = false;
   /** 圖轉換的image src */
   imageSRC = '';
+  drawDown = false;
+
   /** 障礙物element */
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
 
@@ -664,6 +666,8 @@ export class SitePlanningMapComponent implements OnInit {
           this.style['z-index'] = 0;
           this.style['opacity'] = 1;
           this.divStyle['text-align'] = 'left';
+          this.drawDown = true;
+          console.log('site-planning-map to image done.');
           // for (const item of this.rectList) {
           //   item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0)';
           // }
@@ -774,4 +778,5 @@ export class SitePlanningMapComponent implements OnInit {
       };
     }
   }
+
 }
