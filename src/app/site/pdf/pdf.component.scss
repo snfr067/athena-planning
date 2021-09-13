@@ -47,7 +47,7 @@
   border-right:none;
 }
 .mapType {
-  border-right:1px solid #5aa5e2!important;
+  // border-right:1px solid #5aa5e2!important;
 }
 .leftArea table th {
   background-color: #eaf3f8;
@@ -108,7 +108,9 @@
   display: inline-block;
 }
 .mapType label{
-  font-size: .9em;
+  // font-size: .9em;
+  font-size: 1.5em;
+  font-weight: bold;
   }
 .mapType mat-button-toggle-group {
   margin: .5em 0 0 0;

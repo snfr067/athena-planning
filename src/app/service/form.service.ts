@@ -26,7 +26,7 @@ export class FormService {
     calculateForm.candidateBs = result['candidatebs'];
     calculateForm.crossover = result['crossover'];
     calculateForm.defaultBs = result['defaultbs'];
-    // calculateForm.frequency = result['frequency'];
+    calculateForm.frequency = result['frequency'];
     calculateForm.frequencyList = result['frequency'];
     //Add RF Param
     calculateForm.ulMcsTable = result['ulmcstable'];
@@ -122,7 +122,8 @@ export class FormService {
     output['cqiCount'] = result['cqicount'];
     output['cqiMap'] = JSON.parse(result['cqimap']);
     output['defaultBeamId'] = JSON.parse(result['defaultbeamid']);
-    output['defaultidx'] = JSON.parse(result['defaultidx']);
+    output['defaultBsPower'] = JSON.parse(result['defaultbspower']);
+    output['defaultIdx'] = JSON.parse(result['defaultidx']);
     // output['defaultBs'] = JSON.parse(result['defaultbs']);
     // output['defaultBs'] = result['defaultbs'];
     // output['txPower'] = result['defaultbspower'];
@@ -192,8 +193,6 @@ export class FormService {
     output['uesiueTpt_dlTptIndividualUenr'] = JSON.parse(result['ueTpt_dlTptIndividualUe']);
     output['ueTpt_ulTptIndividualUe'] = JSON.parse(result['ueTpt_ulTptIndividualUe']);
     output['ueTpt_dlTptIndividualUe'] = JSON.parse(result['ueTpt_dlTptIndividualUe']);
-
-
     return output;
   }
 }

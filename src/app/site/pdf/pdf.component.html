@@ -31,7 +31,7 @@
 			<!-- 建議方案 -->
 			<app-propose #propose *ngIf="inputBsList.length != 0"></app-propose>
 					
-			<table *ngFor="let zValue of zValues; let idx = index;" id="signal_{{ idx }}">
+			<!-- <table *ngFor="let zValue of zValues; let idx = index;" id="signal_{{ idx }}">
 				<tbody>
 					<tr>
 						<th colspan="2" class="panel center"><label>{{ 'result.sinr_result' | translate }}</label></th>
@@ -51,9 +51,29 @@
 						</td>
 					</tr>
 				</tbody>
-			</table>
+			</table> -->
 
-			<table *ngFor="let zValue of zValues; let idx = index;" id="signal2_{{ idx }}">
+			<div *ngFor="let zValue of zValues; let idx = index;" id="signal_{{ idx }}" class="mapType">
+				<label class="mL_1">{{ 'sinrMap' | translate }}</label>
+				<app-signal-quality #quality></app-signal-quality>
+
+				<label class="mL_1">{{ 'connectionMap' | translate }}</label>
+				<app-signal-cover #cover></app-signal-cover>
+
+				<label class="mL_1">{{ 'rsrpMap' | translate }}</label>
+				<app-signal-strength #strength></app-signal-strength>
+			</div>
+
+			<div *ngFor="let zValue of zValues; let idx = index;" id="signal2_{{ idx }}" class="mapType">
+				<!-- 上行傳輸速率圖 -->
+				<label class="mL_1">{{ 'ulThroughputMap' | translate }}</label>
+				<app-signal-ul-throughput #ulThroughputMap></app-signal-ul-throughput>
+				<!-- 下行傳輸速率圖 -->
+				<label class="mL_1">{{ 'dlThroughputMap' | translate }}</label>
+				<app-signal-dl-throughput #dlThroughputMap></app-signal-dl-throughput>
+			</div>
+
+			<!-- <table *ngFor="let zValue of zValues; let idx = index;" id="signal2_{{ idx }}">
 				<tbody>
 					<tr>
 						<th colspan="2" class="panel center"><label>{{ 'result.sinr_result' | translate }}</label></th>
@@ -62,16 +82,16 @@
 						<td class="mapType">
 							<label>{{ 'zValue' | translate }}{{ zValue }} {{ 'meter' | translate }}</label>
 				
-							<!-- 上行傳輸速率圖 -->
+							上行傳輸速率圖
 							<label class="mL_1">{{ 'ulThroughputMap' | translate }}</label>
 							<app-signal-ul-throughput #ulThroughputMap></app-signal-ul-throughput>
-							<!-- 下行傳輸速率圖 -->
+							下行傳輸速率圖
 							<label class="mL_1">{{ 'dlThroughputMap' | translate }}</label>
 							<app-signal-dl-throughput #dlThroughputMap></app-signal-dl-throughput>
 						</td>
 					</tr>
 				</tbody>
-			</table>
+			</table> -->
 
 			<!-- <table *ngFor="let zValue of zValues; let idx = index;" id="view_3d_{{ idx }}">
 				<tbody>

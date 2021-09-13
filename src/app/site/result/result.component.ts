@@ -187,17 +187,17 @@ export class ResultComponent implements OnInit {
     this.http.get(url).subscribe(
       res => {
         // console.log(res);
-        let defaultidx = [];
+        // let defaultidx = [];
         if (this.isHst) {
           // 大小寫不同，各自塞回form
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
           console.log(this.calculateForm);
           console.log(this.result);
-          defaultidx = this.result['defaultidx'];
+          // defaultidx = this.result['defaultidx'];
           if (!this.calculateForm.isSimulation) {
             this.getCandidateList();
-            console.log(`Get Candidate`);
+            // console.log(`Get Candidate`);
           }
           
         } else {
@@ -205,10 +205,10 @@ export class ResultComponent implements OnInit {
           this.result = res['output'];
           console.log(this.calculateForm);
           console.log(this.result);
-          defaultidx = this.result['defaultIdx'];
+          // defaultidx = this.result['defaultIdx'];
           if (!this.calculateForm.isSimulation) {
             this.getCandidateList();
-            console.log(`Get Candidate`);
+            // console.log(`Get Candidate`);
           }
         }
         //是否為模擬
@@ -238,9 +238,9 @@ export class ResultComponent implements OnInit {
               unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
               unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
             }
-            for (let i = 0;i < defaultidx.length;i++) {
-              for (let j = 0;j < defaultidx.length;j++) {
-                if (i == defaultidx[j]) {
+            for (let i = 0;i < this.result['defaultIdx'].length;i++) {
+              for (let j = 0;j < this.result['defaultIdx'].length;j++) {
+                if (i == this.result['defaultIdx'][j]) {
                   txpower.push(unsorttxpower[j]);
                   beamid.push(unsortbeamid[j]);
                 }

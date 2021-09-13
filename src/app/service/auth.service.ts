@@ -97,6 +97,10 @@ export class AuthService {
     document.getElementById('ngxSpinnerShowResult').click();
   }
 
+  spinnerShowPdf() {
+    document.getElementById('ngxSpinnerShowPdf').click();
+  }
+
   /**
    * dataURI to blob
    * @param dataURI

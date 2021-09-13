@@ -7,6 +7,7 @@
     <span *ngIf="showCal">{{ 'calculating' | translate }}</span>
     <span *ngIf="showRes">{{ 'Resulting' | translate }}</span>
     <span *ngIf="showLoad">{{ 'loading' | translate }}</span>
+    <span *ngIf="showPdf">{{ 'pdfing' | translate }}</span>
     <span *ngIf="showPercentage"><span id="percentageVal">{{ percentageVal }}</span>%</span>
   </p>
   <p *ngIf="showHome"><a style="color:#fff" href="javascript:void(0)" (click)="home()">

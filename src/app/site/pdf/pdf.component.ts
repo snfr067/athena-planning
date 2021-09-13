@@ -112,7 +112,7 @@ export class PdfComponent implements OnInit {
     this.ueList.length = 0;
     //
     this.taskId = taskId;
-    this.authService.spinnerShow();
+    this.authService.spinnerShowPdf();
     if (typeof this.taskId !== 'undefined') {
       let url;
       if (isHst) {
@@ -450,6 +450,7 @@ export class PdfComponent implements OnInit {
             this.statistics.calculateForm = this.calculateForm;
             this.statistics.result = this.result;
             this.statistics.drawChart(true);
+            this.statistics.showTitle = false;
 
             this.siteInfo.calculateForm = this.calculateForm;
             this.siteInfo.result = this.result;
@@ -473,7 +474,7 @@ export class PdfComponent implements OnInit {
 
   /** export PDF */
   async genericPDF(taskName) {
-    this.authService.spinnerShow();
+    this.authService.spinnerShowPdf();
     const pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
     // 設定字型
     this.jsPDFFontService.AddFontArimo(pdf);
@@ -487,28 +488,32 @@ export class PdfComponent implements OnInit {
     const list = [];
     for (let k = 0; k < this.zValues.length; k++) {
       list.push(`signal_${k}`);
-    }
-    for (let k = 0; k < this.zValues.length; k++) {
       list.push(`signal2_${k}`);
     }
+    // for (let k = 0; k < this.zValues.length; k++) {
+    //   list.push(`signal2_${k}`);
+    // }
     // for (let k = 0; k < this.zValues.length; k++) {
     //   list.push(`view_3d_${k}`);
     // }
     // for (let k = 0; k < this.zValues.length; k++) {
     //   list.push(`view_3d2_${k}`);
     // }
+
     // 基站資訊
     let pos = 10;
     const margin = 8;
     const leftStart = 25;
     pdf.setFontStyle('normal');
-    pdf.setFontSize(14);
-    pdf.text(14, pos, `${this.translateService.instant('taskName')}：${this.calculateForm['taskName']}`);
-    pos += margin;
-    pdf.text(14, pos, `${this.translateService.instant('createTime')}：${this.result['createTime']}`);
-    pos += margin+5;
     pdf.setFontSize(17);
-    pdf.text(14, pos, `${this.translateService.instant('result.layered.info')}：`);
+    pdf.text(14, pos, '場域基本資料');
+    pos += margin;
+    // pdf.text(14, pos, `${this.translateService.instant('taskName')}：${this.calculateForm['taskName']}`);
+    // pos += margin;
+    // pdf.text(14, pos, `${this.translateService.instant('createTime')}：${this.result['createTime']}`);
+    // pos += margin+5;
+    // pdf.setFontSize(17);
+    // pdf.text(14, pos, `${this.translateService.instant('result.layered.info')}：`);
     pdf.setFillColor(255, 255, 255);
     pdf.setLineWidth(0.1);
     // if (this.calculateForm.duplex == 'tdd') {
@@ -516,49 +521,49 @@ export class PdfComponent implements OnInit {
     // } else {
     //   pdf.rect(14, pos + (margin / 2), 182, 200);
     // }
-    pos += margin;
-    if (this.calculateForm.isSimulation) {
-      pdf.text(14, pos, this.translateService.instant('simulation'));
-      pos += margin;
-    } else {
-      pdf.text(14, pos, `${this.translateService.instant('planning.target')}：`);
-      pos += margin;
-      if (this.calculateForm.isAverageSinr) {
-        pdf.text(leftStart, pos, this.translateService.instant('isAverageSinr'));
-        pos += margin;
-      }
-      if (this.calculateForm.isCoverage) {
-        pdf.text(leftStart, pos, this.translateService.instant('isCoverage'));
-        pos += margin;
-      }
-      if (this.calculateForm.isUeAvgSinr) {
-        pdf.text(leftStart, pos, this.translateService.instant('isUeAvgSinr'));
-        pos += margin;
-      }
-      if (this.calculateForm.isUeAvgThroughput) {
-        pdf.text(leftStart, pos, this.translateService.instant('isUeAvgThroughput'));
-        pos += margin;
-      }
-      if (this.calculateForm.isUeTpByDistance) {
-        pdf.text(leftStart, pos, this.translateService.instant('isUeTpByDistance'));
-        pos += margin;
-      }
-    }
-    pdf.setFontSize(17);
-    pdf.text(14, pos, `${this.translateService.instant('planning.size')}：`);
-    pos += margin;
-    pdf.setFontSize(14);
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.width')}： ${this.result['inputWidth']} ${this.translateService.instant('meter')}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.height')}： ${this.result['inputHeight']} ${this.translateService.instant('meter')}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.altitude')}： ${this.calculateForm['altitude']} ${this.translateService.instant('meter')}`);
-    pos += margin;
-    pdf.text(leftStart, pos, `${this.translateService.instant('zValue')}： ${this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')} ${this.translateService.instant('meter')}`);
-    pos += margin;
+    // pos += margin;
+    // if (this.calculateForm.isSimulation) {
+    //   pdf.text(14, pos, this.translateService.instant('simulation'));
+    //   pos += margin;
+    // } else {
+    //   pdf.text(14, pos, `${this.translateService.instant('planning.target')}：`);
+    //   pos += margin;
+    //   if (this.calculateForm.isAverageSinr) {
+    //     pdf.text(leftStart, pos, this.translateService.instant('isAverageSinr'));
+    //     pos += margin;
+    //   }
+    //   if (this.calculateForm.isCoverage) {
+    //     pdf.text(leftStart, pos, this.translateService.instant('isCoverage'));
+    //     pos += margin;
+    //   }
+    //   if (this.calculateForm.isUeAvgSinr) {
+    //     pdf.text(leftStart, pos, this.translateService.instant('isUeAvgSinr'));
+    //     pos += margin;
+    //   }
+    //   if (this.calculateForm.isUeAvgThroughput) {
+    //     pdf.text(leftStart, pos, this.translateService.instant('isUeAvgThroughput'));
+    //     pos += margin;
+    //   }
+    //   if (this.calculateForm.isUeTpByDistance) {
+    //     pdf.text(leftStart, pos, this.translateService.instant('isUeTpByDistance'));
+    //     pos += margin;
+    //   }
+    // }
+    // pdf.setFontSize(17);
+    // pdf.text(14, pos, `${this.translateService.instant('planning.size')}：`);
+    // pos += margin;
+    // pdf.setFontSize(14);
+    // pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.width')}： ${this.result['inputWidth']} ${this.translateService.instant('meter')}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.height')}： ${this.result['inputHeight']} ${this.translateService.instant('meter')}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('result.pdf.altitude')}： ${this.calculateForm['altitude']} ${this.translateService.instant('meter')}`);
+    // pos += margin;
+    // pdf.text(leftStart, pos, `${this.translateService.instant('zValue')}： ${this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')} ${this.translateService.instant('meter')}`);
+    // pos += margin;
+    // pdf.setFontSize(17);
 
     // 基地台相關表格
-    pdf.setFontSize(17);
     // pdf.text(14, pos, `${this.translateService.instant('result.bs.info')}：`);
     // pos += margin;
     // pdf.text(leftStart, pos, `${this.translateService.instant('result.propose.wait_select_1')}： ${this.translateService.instant('result.propose.wait_select_2').replace('{0}', this.inputBsList.length)}`);
@@ -610,6 +615,37 @@ export class PdfComponent implements OnInit {
       pdf.setFillColor(42, 58, 93);
     };
 
+    let target;
+    if (this.calculateForm.isAverageSinr) {
+      target = this.translateService.instant('isAverageSinr');
+    } else if (this.calculateForm.isCoverage) {
+      target = this.translateService.instant('isCoverage');
+    } else if (this.calculateForm.isUeAvgSinr) {
+      target = this.translateService.instant('isUeAvgSinr');
+    } else if (this.calculateForm.isUeAvgThroughput) {
+      target = this.translateService.instant('isUeAvgThroughput');
+    } else if (this.calculateForm.isUeTpByDistance) {
+      target = this.translateService.instant('isUeTpByDistance');
+    }
+    let fieldParameter = [
+      [this.translateService.instant('taskName'),this.calculateForm['taskName']],
+      [this.translateService.instant('createTime'),this.result['createTime']],
+      [this.translateService.instant('result.layered.info'),target],
+      [this.translateService.instant('result.pdf.width'),this.result['inputWidth']+this.translateService.instant('meter')],
+      [this.translateService.instant('result.pdf.height'),this.result['inputHeight']+this.translateService.instant('meter')],
+      [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+this.translateService.instant('meter')],
+      [this.translateService.instant('zValue'),this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')+this.translateService.instant('meter')],
+    ]
+    pdf.autoTable(['場域參數','內容'], fieldParameter, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: specDataHeader,
+      startY: pos,
+      halign: 'center'
+    });
+
+    pos+=70;
+
     let statistics;
     if (this.calculateForm.isSimulation) {
       statistics = [
@@ -619,21 +655,26 @@ export class PdfComponent implements OnInit {
     } else {
       statistics = [
         ['既有基地台總數',this.defaultBs.length],
-        ['待選基地台位置總數',this.inputBsList.length],
-        ['已選基地台總數',this.calculateForm.availableNewBsNumber-this.defaultBs.length],
+        ['待選基地台總數',this.inputBsList.length],
+        ['已選待選基地台總數',this.calculateForm.availableNewBsNumber-this.defaultBs.length],
         ['使用者終端總數',this.ueList.length],
       ];
     }
 
-    pdf.autoTable(['項目','內容'], statistics, {
+    pdf.autoTable(['總數','數量'], statistics, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
-      startY: pos+5,
+      startY: pos,
       halign: 'center'
     });
+
     // 編輯場域畫面
+    pos = 10;
     pdf.addPage();
+    pdf.setFontSize(17);
+    pdf.text(14, pos, '場域基地台與終端資訊');
+    pos += margin;
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
     if (data.querySelector('#is_site_map') != null) {
@@ -653,129 +694,202 @@ export class PdfComponent implements OnInit {
       mapHeight = imgHeight;
       const contentDataURL = canvas.toDataURL('image/png');
       // console.log(contentDataURL);
-      const position = 10;
-      pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+      // const position = 10;
+      pdf.addImage(contentDataURL, 'PNG', 14, pos, imgWidth, imgHeight, undefined, 'FAST');
       console.log('sitePlanningMap add done.');
     });
 
-    let specData;
-    console.log(this.result);
+    pos += margin;
+    let specData = [];
+    let tableTitle;
+    // console.log(this.result);
     if (this.calculateForm.duplex == 'tdd') {
-      let frequency = [];
-      let scs = [];
-      let bandwidth = [];
+      const defaultBs = this.calculateForm.defaultBs.split('|');
+      let ulmsc = this.calculateForm.ulMcsTable;
+      let dlmsc = this.calculateForm.dlMcsTable;
+      let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+      // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+      let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
+      // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+      tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+      '下行調變能力','上行資料串流層數','下行資料串流層數'];
       let candidateLen = this.result['candidateIdx'].length;
-      for (let i = 0;i < candidateLen;i++) {
-        frequency.push(JSON.parse(this.calculateForm.frequencyList)[this.result['candidateIdx'][i]]);
-        scs.push(JSON.parse(this.calculateForm.scs)[this.result['candidateIdx'][i]]);
-        bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[this.result['candidateIdx'][i]]);
+      for (let i=0;i < candidateLen;i++) {
+        specData.push([
+          `待選${this.result['candidateIdx'][i]+1}`,
+          `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+          `${this.result['candidateBsPower'][i]}`,
+          `${this.result['candidateBeamId'][i]}`,
+          `${JSON.parse(this.calculateForm.frequencyList)[0]}`,
+          `${JSON.parse(this.calculateForm.scs)[0]}`,
+          `${JSON.parse(this.calculateForm.bandwidth)[0]}`,
+          `${ulMcsTable[0]}`,
+          `${dlMcsTable[0]}`,
+          `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+        ]);
       }
-
-      let defaultLen;
-      if (this.isHst) {
-        defaultLen = this.result['defaultidx'].length;
+      let unsorttxpower = [];
+      let unsortbeamid = [];
+      let txpower = [];
+      let beamid = [];
+      if (this.calculateForm.isSimulation) {
+        txpower = JSON.parse(this.calculateForm.txPower);
+        beamid = JSON.parse(this.calculateForm.beamId);
       } else {
-        defaultLen = this.result['defaultIdx'].length;
+        unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+        unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+        for (let i = 0;i < this.result['defaultIdx'].length;i++) {
+          for (let j = 0;j < this.result['defaultIdx'].length;j++) {
+            if (i == this.result['defaultIdx'][j]) {
+              txpower.push(unsorttxpower[j]);
+              beamid.push(unsortbeamid[j]);
+            }
+          }
+        }
       }
-      for (let i = 0;i < defaultLen;i++) {
-        frequency.push(JSON.parse(this.calculateForm.frequencyList)[candidateLen+i]);
-        scs.push(JSON.parse(this.calculateForm.scs)[candidateLen+i]);
-        bandwidth.push(JSON.parse(this.calculateForm.bandwidthList)[candidateLen+i]);
+      
+      let defaultLen = defaultBs.length;
+      for (let i=0;i < defaultLen;i++) {
+        specData.push([
+          `既有${i+1}`,
+          `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
+          `${txpower[i]}`,
+          `${beamid[i]}`,
+          `${JSON.parse(this.calculateForm.frequency)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.scs)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bandwidth)[i+this.inputBsList.length]}`,
+          `${ulMcsTable[i+this.inputBsList.length]}`,
+          `${dlMcsTable[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+        ]);
       }
-      specData = [
-        ['頻段',frequency],
-        ['子載波間距',scs],
-        ['頻寬',bandwidth],
-        ['功率範圍',`${this.calculateForm.powerMinRange}~${this.calculateForm.powerMaxRange}`],
-      ];
     } else {
-      let ulfrequency = [];
-      let dlfrequency = [];
-      let ulscs = [];
-      let dlscs = [];
-      let ulbandwidth = [];
-      let dlbandwidth = [];
+      const defaultBs = this.calculateForm.defaultBs.split('|');
+      let ulmsc = this.calculateForm.ulMcsTable;
+      let dlmsc = this.calculateForm.dlMcsTable;
+      let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
+      // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+      let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
+      // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+      // Candidate
+      tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
+      '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
       let candidateLen = this.result['candidateIdx'].length;
-      for (let i = 0;i < candidateLen;i++) {
-        ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[this.result['candidateIdx'][i]]);
-        dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[this.result['candidateIdx'][i]]);
-        ulscs.push(JSON.parse(this.calculateForm.ulScs)[this.result['candidateIdx'][i]]);
-        dlscs.push(JSON.parse(this.calculateForm.dlScs)[this.result['candidateIdx'][i]]);
-        ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[this.result['candidateIdx'][i]]);
-        dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[this.result['candidateIdx'][i]]);
+      for (let i=0;i < candidateLen;i++) {
+        specData.push([
+          `待選${this.result['candidateIdx'][i]+1}`,
+          `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+          `${this.result['candidateBsPower'][i]}`,
+          `${this.result['candidateBeamId'][i]}`,
+          `${JSON.parse(this.calculateForm.dlFrequency)[0]}`,
+          `${JSON.parse(this.calculateForm.ulFrequency)[0]}`,
+          `${JSON.parse(this.calculateForm.ulBandwidth)[0]}`,
+          `${JSON.parse(this.calculateForm.dlBandwidth)[0]}`,
+          `${JSON.parse(this.calculateForm.ulScs)[0]}`,
+          `${JSON.parse(this.calculateForm.dlScs)[0]}`,
+          `${ulMcsTable[0]}`,
+          `${dlMcsTable[0]}`,
+          `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+        ]);
       }
-      let defaultLen;
-      if (this.isHst) {
-        defaultLen = this.result['defaultidx'].length;
+      let unsorttxpower = [];
+      let unsortbeamid = [];
+      let txpower = [];
+      let beamid = [];
+      if (this.calculateForm.isSimulation) {
+        txpower = JSON.parse(this.calculateForm.txPower);
+        beamid = JSON.parse(this.calculateForm.beamId);
       } else {
-        defaultLen = this.result['defaultIdx'].length;
+        unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+        unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+        for (let i = 0;i < this.result['defaultIdx'].length;i++) {
+          for (let j = 0;j < this.result['defaultIdx'].length;j++) {
+            if (i == this.result['defaultIdx'][j]) {
+              txpower.push(unsorttxpower[j]);
+              beamid.push(unsortbeamid[j]);
+            }
+          }
+        }
       }
-      for (let i = 0;i < defaultLen;i++) { //error
-        ulfrequency.push(JSON.parse(this.calculateForm.ulFrequency)[candidateLen+i]);
-        dlfrequency.push(JSON.parse(this.calculateForm.dlFrequency)[candidateLen+i]);
-        ulscs.push(JSON.parse(this.calculateForm.ulScs)[candidateLen+i]);
-        dlscs.push(JSON.parse(this.calculateForm.dlScs)[candidateLen+i]);
-        ulbandwidth.push(JSON.parse(this.calculateForm.ulBandwidth)[candidateLen+i]);
-        dlbandwidth.push(JSON.parse(this.calculateForm.dlBandwidth)[candidateLen+i]);
+      
+      let defaultLen = defaultBs.length;
+      for (let i=0;i < defaultLen;i++) {
+        specData.push([
+          `既有${i+1}`,
+          `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
+          `${txpower[i]}`,
+          `${beamid[i]}`,
+          `${JSON.parse(this.calculateForm.dlFrequency)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.ulFrequency)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.ulBandwidth)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.dlBandwidth)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.ulScs)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.dlScs)[i+this.inputBsList.length]}`,
+          `${ulMcsTable[i+this.inputBsList.length]}`,
+          `${dlMcsTable[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+        ]);
       }
-      specData = [
-        ['上行頻段',this.calculateForm.ulFrequency],
-        ['下行頻段',this.calculateForm.dlFrequency],
-        ['上行子載波間距',this.calculateForm.ulScs],
-        ['上行頻寬',this.calculateForm.ulBandwidth],
-        ['下行子載波間距',this.calculateForm.dlScs],
-        ['下行頻寬',this.calculateForm.dlBandwidth],
-        ['功率範圍',`${this.calculateForm.powerMinRange}~${this.calculateForm.powerMaxRange}`],
-      ];
     }
-    
 
-    pdf.autoTable(['項目','待選 -> 既有'], specData, {
+    pdf.autoTable(tableTitle, specData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
-      startY: mapHeight+15,
+      startY: mapHeight+margin+pos,
       halign: 'center'
     });
+    // pos = 10;
     // Heatmap ----------------------------------------------------------------------------------------
+    let i = 0;
     for (const id of list) {
+      pos = 10;
       pdf.addPage();
       // console.log(id);
+      pdf.setFontSize(17);
+      pdf.text(14, pos, '訊號覆蓋模擬結果 高度:'+this.zValues[Math.floor(i)]+'公尺');
+      i+=0.5;
+      pos += 2;
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
       if (data.querySelector('#is_quality') != null) {
         // console.log(data.querySelector('#is_quality'));
         // 訊號品質圖等待轉png
-        await this.sleep(1000);
+        await this.sleep(1500);
       }
       if (data.querySelector('#is_strength') != null) {
         // 訊號強度圖等待轉png
-        await this.sleep(1000);
+        await this.sleep(1500);
       }
       if (data.querySelector('#is_ulThroughputMap') != null) {
         // 上行傳輸速率圖等待轉png
-        await this.sleep(1000);
+        await this.sleep(1500);
       }
       if (data.querySelector('#is_dlThroughputMap') != null) {
         // 下行傳輸速率圖等待轉png
-        await this.sleep(1000);
+        await this.sleep(1500);
       }
-      console.log(data);
+      // console.log(data);
       await html2canvas(data, {
         useCORS: true,
         // allowTaint: true,
       }).then(canvas => {
         // console.log(canvas);
         // Few necessary setting options
-        const imgWidth = 182;
+        // const imgWidth = 182;
+        const imgWidth = 150;
         let imgHeight = canvas.height * imgWidth / canvas.width;
         if (imgHeight > 260) {
           imgHeight = 260;
         }
-        console.log(canvas.height);
-        console.log(canvas.width);
+        // console.log(canvas.height);
+        // console.log(canvas.width);
         const contentDataURL = canvas.toDataURL('image/png');
-        const position = 10;
-        pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+        // const position = 10;
+        pdf.addImage(contentDataURL, 'PNG', 14, pos, imgWidth, imgHeight, undefined, 'FAST');
         // console.log(id);
       });
     }
@@ -804,14 +918,18 @@ export class PdfComponent implements OnInit {
 
     //新增performance頁面
     pdf.addPage();
+    pos = 10;
+    pdf.setFontSize(17);
+    pdf.text(14, pos, '場域分析');
+    pos += margin;
     //場域平均，切面高度----------------------------------------------------------------------------------
     const performanceHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.performance.field'), 90, 12);
+      pdf.rect(14, pos, 182, 7, 'F'); // y=7
+      pdf.text(this.translateService.instant('result.performance.field'), 90, pos+5); //y=12
     };
     const p1Title = [
       this.translateService.instant('result.img.section'),
@@ -840,7 +958,8 @@ export class PdfComponent implements OnInit {
     pdf.autoTable(p1Title, p1Data, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: performanceHeader
+      beforePageContent: performanceHeader,
+      startY: pos+7,
     });
 
     //UE平均效能分析*****************************************************************************
@@ -1089,23 +1208,33 @@ export class PdfComponent implements OnInit {
     
 
     // 統計資訊
+    pos = 10;
+    // this.statistics.showTitle = false;
+    // pdf.setFontSize(17);
     const statisticsList = ['statistics'];
     for (const id of statisticsList) {
       pdf.addPage();
+      pdf.text(14, pos, '統計資訊');
+      pos += margin;
       pdf.page++;
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
+      // await this.sleep(1500);
       await html2canvas(data).then(canvas => {
         // Few necessary setting options
         const imgWidth = 182;
         const imgHeight = 260;
         const contentDataURL = canvas.toDataURL('image/png');
-        const position = 10;
-        pdf.addImage(contentDataURL, 'PNG', 14, position, imgWidth, imgHeight, undefined, 'FAST');
+        // const position = 10;
+        pdf.addImage(contentDataURL, 'PNG', 14, pos, imgWidth, imgHeight, undefined, 'FAST');
+        // this.statistics.showTitle = true;
       });
     }
 
     // 現有基站
     pdf.addPage();
+    pos = 10;
+    pdf.text(14, pos, '既有基站詳細資訊');
+    pos += margin;
     const defaultBsTitle = [
       this.translateService.instant('result.num'), 
       this.translateService.instant('result.propose.candidateBs.x'),
@@ -1117,8 +1246,8 @@ export class PdfComponent implements OnInit {
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('defaultBs'), 100, 12);
+      pdf.rect(14, pos, 182, 7, 'F'); //7
+      pdf.text(this.translateService.instant('defaultBs'), 100, pos+5); //12
     };
     const defaultBsData = [];
     for (let k = 0; k < this.defaultBs.length; k++) {
@@ -1133,19 +1262,23 @@ export class PdfComponent implements OnInit {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: defaultBsHeader,
-      // startY: pos + 30,
+      // startY: pdf.autoTable.previous.finalY,
+      startY: pos + 7,
       halign: 'center'
     });
     // 新增基站
     if (this.inputBsList.length > 0) {
       pdf.addPage();
+      pos = 10;
+      pdf.text(14, pos, '待選基站詳細資訊');
+      pos += margin;
       const candidateHeader = (data) => {
         pdf.setFontSize(12);
         pdf.setTextColor(255);
         pdf.setFontStyle('normal');
         pdf.setFillColor(42, 58, 93);
-        pdf.rect(14, 7, 182, 7, 'F');
-        pdf.text(this.translateService.instant('candidateBs'), 100, 12);
+        pdf.rect(14, pos, 182, 7, 'F');
+        pdf.text(this.translateService.instant('candidateBs'), 100, pos+5);
       };
       const candidateTitle = [
         this.translateService.instant('result.num'), 
@@ -1162,19 +1295,23 @@ export class PdfComponent implements OnInit {
       pdf.autoTable(candidateTitle, candidateData, {
         styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
         headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-        beforePageContent: candidateHeader
+        beforePageContent: candidateHeader,
+        startY: pos+7,
       });
     }
     
     // 障礙物資訊
     pdf.addPage();
+    pos = 10;
+    pdf.text(14, pos, '障礙物詳細資訊');
+    pos += margin;
     const obstacleHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, 12);
+      pdf.rect(14, pos, 182, 7, 'F');
+      pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, pos+5);
     };
     const obstacleTitle = [
       this.translateService.instant('result.num'),
@@ -1194,18 +1331,22 @@ export class PdfComponent implements OnInit {
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: obstacleHeader
+      beforePageContent: obstacleHeader,
+      startY: pos+7,
     });
-    // 行動終端分佈
+    // 行動終端分佈 ----------------------------------------------------------------------------------------------------
     pdf.addPage();
+    pos = 10;
+    pdf.text(14, pos, '行動終端詳細資訊');
+    pos += margin;
     pdf.page++;
     const ueHeader = (data) => {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
       pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, 7, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.pdf.ue'), 100, 12);
+      pdf.rect(14, pos, 182, 7, 'F');
+      pdf.text(this.translateService.instant('result.pdf.ue'), 100, pos+5);
     };
     const ueTitle = [
       this.translateService.instant('result.num'), 
@@ -1220,37 +1361,68 @@ export class PdfComponent implements OnInit {
     const ueData = [];
     let uedlTpt = [];
     let ueulTpt = [];
+    let ueConInfo = [];
     if (this.isHst) {
       uedlTpt = this.result['ueTpt_dlTptIndividualUe'];
       ueulTpt = this.result['ueTpt_ulTptIndividualUe'];
-      console.log(uedlTpt);
-      console.log(ueulTpt);
+      ueConInfo = this.result['ueCon_perUeConnectionInfo'];
+      // console.log(uedlTpt);
+      // console.log(ueulTpt);
     } else {
       uedlTpt = this.result['ueTpt']['dlTptIndividualUe'];
       ueulTpt = this.result['ueTpt']['ulTptIndividualUe'];
-      console.log(uedlTpt);
-      console.log(ueulTpt);
+      ueConInfo = this.result['ueCon']['perUeConnectionInfo'];
+      // console.log(uedlTpt);
+      // console.log(ueulTpt);
     }
-    console.log(this.ueList);
-    for (let k = 0; k < this.ueList.length; k++) {
-      if (typeof this.result['ueRsrp'] === 'undefined') {
-        continue;
+    // for (let k = 0; k < this.ueList.length; k++) {
+    //   if (typeof this.result['ueRsrp'] === 'undefined') {
+    //     continue;
+    //   }
+    //   ueData.push([
+    //     (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
+    //     , `${this.financial(this.result['ueRsrp'][k])} dBm`
+    //     , `${this.financial(this.result['ueSinr'][k])} dB`
+    //     , `${this.financial(uedlTpt[k])} Mbps`
+    //     , `${this.financial(ueulTpt[k])} Mbps`
+    //   ]);
+    // }
+    let candidateLen = this.result['candidateIdx'].length;
+    for (let i=0;i < candidateLen;i++) {
+      ueData.push([`待選${this.result['candidateIdx'][i]+1}`]);
+      for (let k = 0; k < this.ueList.length; k++) {
+        if (ueConInfo[k] == i+1) {
+          ueData.push([
+            (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
+            , `${this.financial(this.result['ueRsrp'][k])} dBm`
+            , `${this.financial(this.result['ueSinr'][k])} dB`
+            , `${this.financial(uedlTpt[k])} Mbps`
+            , `${this.financial(ueulTpt[k])} Mbps`
+          ]);
+        }
       }
-      // console.log(typeof this.result['ueRsrp'][k]);
-      // console.log(typeof this.result['ueSinr'][k]);
-      ueData.push([
-        (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-        , `${this.financial(this.result['ueRsrp'][k])} dBm`
-        , `${this.financial(this.result['ueSinr'][k])} dB`
-        , `${this.financial(uedlTpt[k])} Mbps`
-        , `${this.financial(ueulTpt[k])} Mbps`
-      ]);
     }
-    // console.log(ueData);
+    let defaultLen = defaultBs.length;
+    for (let i=0;i < defaultLen;i++) {
+      ueData.push([`既有${i+1}`]);
+      for (let k = 0; k < this.ueList.length; k++) {
+        if (ueConInfo[k] == i+1+candidateLen) {
+          ueData.push([
+            (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
+            , `${this.financial(this.result['ueRsrp'][k])} dBm`
+            , `${this.financial(this.result['ueSinr'][k])} dB`
+            , `${this.financial(uedlTpt[k])} Mbps`
+            , `${this.financial(ueulTpt[k])} Mbps`
+          ]);
+        }
+      }
+    }
+    console.log(ueData);
     pdf.autoTable(ueTitle, ueData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
-      beforePageContent: ueHeader
+      beforePageContent: ueHeader,
+      startY: pos+7,
     });
 
     const pageCount = pdf.internal.getNumberOfPages();

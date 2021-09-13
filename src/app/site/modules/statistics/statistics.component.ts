@@ -42,6 +42,8 @@ export class StatisticsComponent implements OnInit {
   /** 顯示UE統計圖 */
   showUE = true;
 
+  showTitle = true;
+
   ngOnInit(): void {
   }
 

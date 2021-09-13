@@ -65,4 +65,8 @@ export class AppComponent {
   showCalculating() {
     this.spinner.showCalculating();
   }
+
+  showpdf() {
+    this.spinner.showpdf();
+  }
 }
