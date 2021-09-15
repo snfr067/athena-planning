@@ -6,6 +6,7 @@ import { SitePlanningModule } from './site-planning/site-planning.module';
 import { View3dModule } from './view3d/view3d.module';
 import { ResultModule } from './result/result.module';
 import { RouterModule } from '@angular/router';
+// import { SubFieldComponent } from './modules/sub-field/sub-field.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { RouterModule } from '@angular/router';
     SitePlanningModule,
     View3dModule,
     ResultModule
-  ]
+  ],
+  // declarations: [SubFieldComponent]
 })
 export class SiteModule { }

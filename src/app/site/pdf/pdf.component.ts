@@ -1233,7 +1233,7 @@ export class PdfComponent implements OnInit {
     // 現有基站
     pdf.addPage();
     pos = 10;
-    pdf.text(14, pos, '既有基站詳細資訊');
+    pdf.text(17, pos, '既有基站詳細資訊');
     pos += margin;
     const defaultBsTitle = [
       this.translateService.instant('result.num'), 
@@ -1245,9 +1245,9 @@ export class PdfComponent implements OnInit {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, pos, 182, 7, 'F'); //7
-      pdf.text(this.translateService.instant('defaultBs'), 100, pos+5); //12
+      // pdf.setFillColor(42, 58, 93);
+      // pdf.rect(14, pos, 182, 7, 'F'); //7
+      // pdf.text(this.translateService.instant('defaultBs'), 100, pos+5); //12
     };
     const defaultBsData = [];
     for (let k = 0; k < this.defaultBs.length; k++) {
@@ -1263,7 +1263,7 @@ export class PdfComponent implements OnInit {
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: defaultBsHeader,
       // startY: pdf.autoTable.previous.finalY,
-      startY: pos + 7,
+      startY: pos,
       halign: 'center'
     });
     // 新增基站
@@ -1276,9 +1276,9 @@ export class PdfComponent implements OnInit {
         pdf.setFontSize(12);
         pdf.setTextColor(255);
         pdf.setFontStyle('normal');
-        pdf.setFillColor(42, 58, 93);
-        pdf.rect(14, pos, 182, 7, 'F');
-        pdf.text(this.translateService.instant('candidateBs'), 100, pos+5);
+        // pdf.setFillColor(42, 58, 93);
+        // pdf.rect(14, pos, 182, 7, 'F');
+        // pdf.text(this.translateService.instant('candidateBs'), 100, pos+5);
       };
       const candidateTitle = [
         this.translateService.instant('result.num'), 
@@ -1296,7 +1296,7 @@ export class PdfComponent implements OnInit {
         styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
         headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
         beforePageContent: candidateHeader,
-        startY: pos+7,
+        startY: pos,
       });
     }
     
@@ -1309,9 +1309,9 @@ export class PdfComponent implements OnInit {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, pos, 182, 7, 'F');
-      pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, pos+5);
+      // pdf.setFillColor(42, 58, 93);
+      // pdf.rect(14, pos, 182, 7, 'F');
+      // pdf.text(this.translateService.instant('planning.obstacleInfo'), 100, pos+5);
     };
     const obstacleTitle = [
       this.translateService.instant('result.num'),
@@ -1332,7 +1332,7 @@ export class PdfComponent implements OnInit {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: obstacleHeader,
-      startY: pos+7,
+      startY: pos,
     });
     // 行動終端分佈 ----------------------------------------------------------------------------------------------------
     pdf.addPage();
@@ -1344,9 +1344,9 @@ export class PdfComponent implements OnInit {
       pdf.setFontSize(12);
       pdf.setTextColor(255);
       pdf.setFontStyle('normal');
-      pdf.setFillColor(42, 58, 93);
-      pdf.rect(14, pos, 182, 7, 'F');
-      pdf.text(this.translateService.instant('result.pdf.ue'), 100, pos+5);
+      // pdf.setFillColor(42, 58, 93);
+      // pdf.rect(14, pos, 182, 7, 'F');
+      // pdf.text(this.translateService.instant('result.pdf.ue'), 100, pos+5);
     };
     const ueTitle = [
       this.translateService.instant('result.num'), 
@@ -1391,7 +1391,7 @@ export class PdfComponent implements OnInit {
     for (let i=0;i < candidateLen;i++) {
       ueData.push([`待選${this.result['candidateIdx'][i]+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
-        if (ueConInfo[k] == i+1) {
+        if (ueConInfo[k] == this.result['candidateIdx'][i]) {
           ueData.push([
             (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
             , `${this.financial(this.result['ueRsrp'][k])} dBm`
@@ -1403,10 +1403,11 @@ export class PdfComponent implements OnInit {
       }
     }
     let defaultLen = defaultBs.length;
+
     for (let i=0;i < defaultLen;i++) {
       ueData.push([`既有${i+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
-        if (ueConInfo[k] == i+1+candidateLen) {
+        if (ueConInfo[k] == i+this.inputBsList.length) {
           ueData.push([
             (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
             , `${this.financial(this.result['ueRsrp'][k])} dBm`
@@ -1422,7 +1423,7 @@ export class PdfComponent implements OnInit {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: ueHeader,
-      startY: pos+7,
+      startY: pos,
     });
 
     const pageCount = pdf.internal.getNumberOfPages();

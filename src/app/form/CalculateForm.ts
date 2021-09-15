@@ -36,7 +36,7 @@ export class CalculateForm {
   addFixedBsNumber: number = 0;
   
   //Field related target
-  isAverageSinr = true;
+  isAverageSinr = false;
   sinrRatio: number = 5;
   isAvgThroughput = false;
   throughputRatio: number = 5;
@@ -45,7 +45,7 @@ export class CalculateForm {
   //UE related target
   isUeCoverage = false;
   ueCoverageRatio: number = 0.95;
-  isUeAvgSinr: boolean = true;
+  isUeAvgSinr: boolean = false;
   ueAvgSinrRatio: number = 16;
   isUeAvgThroughput: boolean = false;
   ueAvgThroughputRatio: number = 100;
