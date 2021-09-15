@@ -622,6 +622,8 @@ export class PdfComponent implements OnInit {
       target = this.translateService.instant('isCoverage');
     } else if (this.calculateForm.isUeAvgSinr) {
       target = this.translateService.instant('isUeAvgSinr');
+    } else if (this.calculateForm.isUeCoverage) {
+      target = this.translateService.instant('isUeCoverage');
     } else if (this.calculateForm.isUeAvgThroughput) {
       target = this.translateService.instant('isUeAvgThroughput');
     } else if (this.calculateForm.isUeTpByDistance) {
@@ -641,7 +643,11 @@ export class PdfComponent implements OnInit {
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
       startY: pos,
-      halign: 'center'
+      halign: 'center',
+      columnStyles: {
+        0: {cellWidth: 90},
+        1: {cellWidth: 90},
+      }
     });
 
     pos+=70;
@@ -666,7 +672,11 @@ export class PdfComponent implements OnInit {
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
       startY: pos,
-      halign: 'center'
+      halign: 'center',
+      columnStyles: {
+        0: {cellWidth: 90},
+        1: {cellWidth: 90},
+      }
     });
 
     // 編輯場域畫面
@@ -711,8 +721,10 @@ export class PdfComponent implements OnInit {
       // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
       let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
       // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
-      tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
-      '下行調變能力','上行資料串流層數','下行資料串流層數'];
+      // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+      // '下行調變能力','上行資料串流層數','下行資料串流層數'];
+      tableTitle = ['#','X/Y','dBm','BeamId','Frequency','SCS(kHz)','Bandwidth','UL MCStable',
+      'DL MCStable','UL MIMOLayer','DL MIMOLayer'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -774,8 +786,10 @@ export class PdfComponent implements OnInit {
       let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
       // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
       // Candidate
-      tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
-      '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
+      // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
+      // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
+      tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
+      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -800,8 +814,8 @@ export class PdfComponent implements OnInit {
       let txpower = [];
       let beamid = [];
       if (this.calculateForm.isSimulation) {
-        txpower = JSON.parse(this.calculateForm.txPower);
-        beamid = JSON.parse(this.calculateForm.beamId);
+        txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+        beamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
       } else {
         unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
         unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
@@ -837,7 +851,7 @@ export class PdfComponent implements OnInit {
     }
 
     pdf.autoTable(tableTitle, specData, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal', fontSize: 6},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
       startY: mapHeight+margin+pos,
@@ -960,6 +974,7 @@ export class PdfComponent implements OnInit {
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: performanceHeader,
       startY: pos+7,
+      
     });
 
     //UE平均效能分析*****************************************************************************
