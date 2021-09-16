@@ -2758,34 +2758,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** 組form */
   setForm() {
-    if (typeof this.calculateForm.isAverageSinr === 'undefined') {
-      this.calculateForm.isAverageSinr = false;
-    }
+    // if (typeof this.calculateForm.isAverageSinr === 'undefined') {
+    this.calculateForm.isAverageSinr = false;
+    // }
     // if (typeof this.calculateForm.isAvgThroughput === 'undefined') {
-    //   this.calculateForm.isAvgThroughput = false;
+    this.calculateForm.isAvgThroughput = false;
     // }
     if (typeof this.calculateForm.isCoverage === 'undefined') {
       this.calculateForm.isCoverage = false;
     }
-    if (typeof this.calculateForm.isUeAvgSinr === 'undefined') {
-      this.calculateForm.isUeAvgSinr = false;
-    }
+    // if (typeof this.calculateForm.isUeAvgSinr === 'undefined') {
+    this.calculateForm.isUeAvgSinr = false;
+    // }
     if (typeof this.calculateForm.isUeAvgThroughput === 'undefined') {
       this.calculateForm.isUeAvgThroughput = false;
     }
     if (typeof this.calculateForm.isUeCoverage === 'undefined') {
       this.calculateForm.isUeCoverage = false;
     }
-    if (typeof this.calculateForm.isUeTpByDistance === 'undefined') {
-      this.calculateForm.isUeTpByDistance = false;
-    }
+    // if (typeof this.calculateForm.isUeTpByDistance === 'undefined') {
+    //   this.calculateForm.isUeTpByDistance = false;
+    // }
     this.calculateForm.useUeCoordinate = 1;
     // 規劃目標預設值
-    this.calculateForm.sinrRatio = this.calculateForm.isAverageSinr ? 5 : null;
-    this.calculateForm.throughputRatio = this.calculateForm.isCoverage ? 5 : null;
-    this.calculateForm.ueAvgSinrRatio = this.calculateForm.isUeAvgSinr ? 16 : null;
-    this.calculateForm.ueCoverageRatio = this.calculateForm.isUeAvgThroughput ? 0.95 : null;
-    this.calculateForm.ueAvgThroughputRatio = this.calculateForm.isUeCoverage ? 100 : null;
+    // this.calculateForm.sinrRatio = this.calculateForm.isAverageSinr ? 5 : null;
+    // this.calculateForm.throughputRatio = this.calculateForm.isCoverage ? 5 : null;
+    // this.calculateForm.ueAvgSinrRatio = this.calculateForm.isUeAvgSinr ? 16 : null;
+    // this.calculateForm.ueCoverageRatio = this.calculateForm.isUeAvgThroughput ? 0.95 : null;
+    // this.calculateForm.ueAvgThroughputRatio = this.calculateForm.isUeCoverage ? 100 : null;
+
+    //FP 
+    if (this.calculateForm.isCoverage == true) {
+      this.calculateForm.isUeAvgThroughput = false;
+      this.calculateForm.isUeCoverage = false;
+    } else if (this.calculateForm.isUeAvgThroughput == true) {
+      this.calculateForm.isCoverage = false;
+      this.calculateForm.isUeCoverage = false;
+    } else {
+      this.calculateForm.isCoverage = false;
+      this.calculateForm.isUeAvgThroughput = false;
+    }
 
     this.calculateForm.sessionid = this.authService.userToken;
     const zValue = this.zValues.filter(
@@ -5047,12 +5059,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.objectiveIndex = bsParametersData[1][2];
       this.duplexMode = bsParametersData[1][3];
       this.dlRatio = Number(bsParametersData[1][4]);
-      this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
+      // this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
+      this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
       // this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgSinr = false;
+      // this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
       this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
       this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
+
+      if (this.calculateForm.isCoverage == true) {
+        this.calculateForm.isUeAvgThroughput = false;
+        this.calculateForm.isUeCoverage = false;
+      } else if (this.calculateForm.isUeAvgThroughput == true) {
+        this.calculateForm.isCoverage = false;
+        this.calculateForm.isUeCoverage = false;
+      } else {
+        this.calculateForm.isCoverage = false;
+        this.calculateForm.isUeAvgThroughput = false;
+      }
+      
       if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
       // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
         this.planningIndex = '1';
