@@ -5577,11 +5577,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 場域標題 */
   getTitle() {
     if (this.calculateForm.objectiveIndex.toString() === '0') {
-      return this.translateService.instant('planning.title').replace('{0}', '4G');
+      return `4G${this.translateService.instant('taskName')}`;
+      // return this.translateService.instant('planning.title').replace('{0}', '4G');
     } else if (this.calculateForm.objectiveIndex.toString() === '1') {
-      return this.translateService.instant('planning.title').replace('{0}', '5G');
+      return `5G${this.translateService.instant('taskName')}`;
+      // return this.translateService.instant('planning.title').replace('{0}', '5G');
     } else if (this.calculateForm.objectiveIndex.toString() === '2') {
-      return this.translateService.instant('planning.title').replace('{0}', 'Wifi');
+      return `WiFi${this.translateService.instant('taskName')}`;
+      // return this.translateService.instant('planning.title').replace('{0}', 'Wifi');
     }
   }
 

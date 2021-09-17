@@ -506,7 +506,7 @@ export class PdfComponent implements OnInit {
     const leftStart = 25;
     pdf.setFontStyle('normal');
     pdf.setFontSize(17);
-    pdf.text(14, pos, this.translateService.instant('fieldInfo'));
+    pdf.text(14, pos, this.translateService.instant('pdf.fieldInfo'));
     pos += margin;
     // pdf.text(14, pos, `${this.translateService.instant('taskName')}：${this.calculateForm['taskName']}`);
     // pos += margin;
@@ -633,12 +633,12 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('taskName'),this.calculateForm['taskName']],
       [this.translateService.instant('createTime'),this.result['createTime']],
       [this.translateService.instant('result.layered.info'),target],
-      [this.translateService.instant('result.pdf.width'),this.result['inputWidth']+this.translateService.instant('meter')],
-      [this.translateService.instant('result.pdf.height'),this.result['inputHeight']+this.translateService.instant('meter')],
-      [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+this.translateService.instant('meter')],
+      [this.translateService.instant('result.pdf.width'),this.result['inputWidth']+' '+this.translateService.instant('meter')],
+      [this.translateService.instant('result.pdf.height'),this.result['inputHeight']+' '+this.translateService.instant('meter')],
+      [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('zValue'),this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')+this.translateService.instant('meter')],
     ]
-    pdf.autoTable([this.translateService.instant('taskName'),this.translateService.instant('taskName')], fieldParameter, {
+    pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.content')], fieldParameter, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
@@ -865,7 +865,7 @@ export class PdfComponent implements OnInit {
       pdf.addPage();
       // console.log(id);
       pdf.setFontSize(17);
-      pdf.text(14, pos, `${this.translateService.instant('pdf.signalCoverage')} ${this.translateService.instant('altitude.setting')}:${this.zValues[Math.floor(i)]}${this.translateService.instant('meter')}`);
+      pdf.text(14, pos, `${this.translateService.instant('pdf.signalCoverage')} - ${this.translateService.instant('altitude.setting')}:${this.zValues[Math.floor(i)]}${this.translateService.instant('meter')}`);
       i+=0.5;
       pos += 2;
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
@@ -1083,7 +1083,7 @@ export class PdfComponent implements OnInit {
           }
           if (this.result['ueCon_perBsUeConnection'][i] == 0) {
             p2Data.push([
-              `${this.translateService.instant('candidate')}${i+1}`,
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
               0,
               0,
               0,
@@ -1092,7 +1092,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('candidate')}${i+1}`,
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
               this.result['ueCon_perBsUeConnection'][i],
               `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i])} Mbps`,
               `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i])} Mbps`,
@@ -1104,7 +1104,7 @@ export class PdfComponent implements OnInit {
         for (let i = 0;i < this.defaultBs.length; i++) {
           if (this.result['ueCon_perBsUeConnection'][i+candidateNum] == 0) {
             p2Data.push([
-              `${this.translateService.instant('default')}${i+1}`,
+              `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
               0,
               0,
               0,
@@ -1113,7 +1113,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('default')}${i+1}`,
+              `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
               this.result['ueCon_perBsUeConnection'][i+candidateNum],
               `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])} Mbps`,
               `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])} Mbps`,
@@ -1141,7 +1141,7 @@ export class PdfComponent implements OnInit {
           }
           if (this.result['ueCon']['perBsUeConnection'][i] == 0) {
             p2Data.push([
-              `${this.translateService.instant('candidate')}${i+1}`,
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
               0,
               0,
               0,
@@ -1150,7 +1150,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('candidate')}${i+1}`,
+              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i],
               `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i])} Mbps`,
               `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i])} Mbps`,
@@ -1165,7 +1165,7 @@ export class PdfComponent implements OnInit {
         for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
           if (this.result['ueCon']['perBsUeConnection'][i+candidateNum] == 0) {
             p2Data.push([
-              `${this.translateService.instant('default')}${i+1}`,
+              `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
               0,
               0,
               0,
@@ -1174,7 +1174,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('default')}${i+1}`,
+              `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i+candidateNum],
               `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])} Mbps`,
               `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])} Mbps`,

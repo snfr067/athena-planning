@@ -17,8 +17,11 @@ export class LayoutComponent implements OnInit {
     private router: Router
   ) { }
 
+  url = '';
+
   ngOnInit() {
     // console.log(this.authService.userId);
+    this.url = this.router.url;
   }
 
   /**

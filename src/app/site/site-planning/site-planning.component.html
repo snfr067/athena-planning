@@ -111,7 +111,7 @@
       </g>
     </svg>
   </span>
-  <hr>
+  <!-- <hr>
   <span class="svg" matTooltip="{{ 'subfield' | translate }}" (click)="addMoveable('subField')">
     <svg id="svg_07" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
       <g>
@@ -119,7 +119,7 @@
         <rect fill="#0d213a" stroke-width="2" x="0" y="0" width="20" height="20" stroke="#fff"/>
       </g>
     </svg>
-  </span>
+  </span> -->
 </div>
 
 <mat-sidenav-container class="example-container">
@@ -424,9 +424,9 @@
                 <td>{{ 'planning.net' | translate }}</td>
                 <td>
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
-                    <option value="0">4G</option>
+                    <!-- <option value="0">4G</option> -->
                     <option value="1">5G</option>
-                    <option value="2">WiFi</option>
+                    <!-- <option value="2">WiFi</option> -->
                   </select>
                 </td>
               </tr>
@@ -950,9 +950,9 @@
                 <li *ngIf="planningIndex == '3'">
                   <p>{{ 'planning.net' | translate }}	</p>
                   <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
-                    <option value="0">4G</option>
+                    <!-- <option value="0">4G</option> -->
                     <option value="1">5G</option>
-                    <option value="2">WiFi</option>
+                    <!-- <option value="2">WiFi</option> -->
                   </select>
                 </li>
                 <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">

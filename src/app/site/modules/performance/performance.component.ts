@@ -80,7 +80,7 @@ export class PerformanceComponent implements OnInit {
       for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
         if (this.result['ueCon_perBsUeConnection'][i+candidateNum] == 0) {
           this.bsTptList.push([
-            `${this.translateService.instant('defaultBs')}${i+1}`,
+            `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
             0,
             0,
             0,
@@ -89,7 +89,7 @@ export class PerformanceComponent implements OnInit {
           ]);
         } else {
           this.bsTptList.push([
-            `${this.translateService.instant('defaultBs')}${i+1}`,
+            `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
             this.result['ueCon_perBsUeConnection'][i+candidateNum],
             this.result['ueTpt_dlTptIndividualBs'][i+candidateNum],
             this.result['ueTpt_ulTptIndividualBs'][i+candidateNum],
