@@ -1,0 +1,24 @@
+<table #proposeTbody id="propose" style="table-layout: fixed">
+  <tbody>
+		<tr>
+				<th class="panel center" colspan="4"><label class="bold">{{ 'result.propose' | translate }}</label>{{ 'result.propose.wait_select_1' | translate }} {{ getWaitSelect() }}</th>
+		</tr>
+		<tr>
+				<td id="layout_td" colspan="4" class="mapType">
+					<div id="layout_chart" #layoutChart></div>
+				</td>
+		</tr>
+		<tr>
+				<th>{{ 'result.propose.candidateBs.num' | translate }}</th>
+				<th>{{ 'result.propose.candidateBs.x' | translate }}</th>
+				<th>{{ 'result.propose.candidateBs.y' | translate }}</th>
+				<th>{{ 'result.propose.candidateBs.dbm' | translate }}</th>
+		</tr>
+		<tr *ngFor="let item of candidateList">
+				<td class="choose"><label>{{ item[0] }}</label></td>
+				<td class="choose">{{ item[1] }}</td>
+				<td class="choose">{{ item[2] }}</td>
+				<td class="choose">{{ item[3] }}</td>
+		</tr>
+	</tbody>	
+</table>

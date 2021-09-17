@@ -122,6 +122,7 @@
 	"planning.user_define": "使用者自定義",
 	"planning.algorithm": "規劃演算法設定",
 	"planning.limit": "檔案限制",
+	"planning.protocolSwitchWarning": "切換協定後請記得檢查是否填入基站RF參數",
 	"rotate": "角度",
 	"z.height": "切面高度",
 	"z.height.note": "( 單位:公尺，最多可設定3組高度 )",

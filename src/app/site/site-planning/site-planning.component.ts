@@ -5516,7 +5516,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   protocolSwitchWarning() {
     if (this.defaultBSList.length !== 0 ) {
-      let msg = "切換協定後請記得檢查是否填入基站RF參數";
+      let msg = this.translateService.instant('planning.protocolSwitchWarning');
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
