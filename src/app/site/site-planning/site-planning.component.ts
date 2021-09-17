@@ -184,6 +184,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title: this.translateService.instant('obstacleInfo'),
       type: 'obstacle',
       element: '3'
+    },
+    subField: {
+      id: 'svg_8',
+      title: this.translateService.instant('subfield'),
+      type: 'subField',
+      element: '4'
     }
   };
   /** 當下互動物件的id */
@@ -312,6 +318,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   leftWidth = 0;
   scrollLeft = 0;
   scrollTop = 0;
+  /** 子場域物件 **/
+  subFieldList = [];
+  subFieldStyle = {};
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -1357,9 +1366,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
         this.bsListRfParam[this.svgId].ulBandwidth = '1.4';
       }
-      
-      
-
     } else if (id === 'UE') {
       color = this.UE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
@@ -1378,6 +1384,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         fill: color,
         width: width,
         height: height
+      };
+    } else if (id === 'subField') {
+      this.svgId = `${id}_${this.generateString(10)}`;
+      this.subFieldList.push(this.svgId);
+      this.subFieldStyle[this.svgId] = {
+        width: 30,
+        height: 30,
+        // fill: '#ffffff',
+        fill: 'pink',
+        fillOpacity:0.2,
+        stroke:'pink',
+        // strokeWidth:5,
+        strokeWidth: 3,
+        // opacity: 0.5
       };
     }
 
@@ -1434,7 +1454,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.setTimeout(() => {
       this.target = document.getElementById(`${this.svgId}`);
       this.live = true;
-      if (this.svgMap[id].type === 'obstacle') {
+      if (this.svgMap[id].type === 'obstacle' || this.svgMap[id].type === 'subField') {
         if (this.dragObject[this.svgId].element === 2) {
           // 圓形關閉旋轉
           this.moveable.rotatable = false;
@@ -1505,14 +1525,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
+    console.log(this.target);
+    console.log(this.spanStyle);
+    console.log(this.frame);
+    console.log(this.dragObject[id]);
+    console.log(this.moveable);
 
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
     this.ognDragObject = _.cloneDeep(this.dragObject);
-    // console.log(this.dragObject[id])
     this.live = true;
-    if (this.dragObject[id].type === 'obstacle') {
+    if (this.dragObject[id].type === 'obstacle' || this.dragObject[id].type === 'subField') {
       if (this.dragObject[id].element === 2) {
         // 圓形關閉旋轉
         this.moveable.rotatable = false;
@@ -1581,12 +1605,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** set drag object data */
   setDragData() {
     const rect = this.target.getBoundingClientRect();
-
     const type = this.dragObject[this.svgId].element;
     let wVal;
     let hVal;
 
-    if (this.dragObject[this.svgId].type === 'obstacle') {
+    if (this.dragObject[this.svgId].type === 'obstacle' || this.dragObject[this.svgId].type === 'subField') {
       // 障礙物才需取長寬
       if (Number(type) === 0) {
         // 方形
@@ -1596,14 +1619,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // 圓形正圓
         wVal = this.roundFormat(this.xLinear(rect.width));
         hVal = this.roundFormat(this.yLinear(rect.width));
-  
       } else if (Number(type) === 1) {
         // 三角形
         wVal = this.roundFormat(this.xLinear(this.svgStyle[this.svgId].width));
         hVal = this.roundFormat(this.yLinear(this.svgStyle[this.svgId].height));
       } else if (Number(type) === 3) {
+        //梯形
         wVal = this.roundFormat(this.xLinear(this.trapezoidStyle[this.svgId].width));
         hVal = this.roundFormat(this.yLinear(this.trapezoidStyle[this.svgId].height));
+      } else if (Number(type) === 4) {
+        //子場域
+        wVal = this.roundFormat(this.xLinear(this.subFieldStyle[this.svgId].width));
+        hVal = this.roundFormat(this.yLinear(this.subFieldStyle[this.svgId].height));
       }
     }
 
@@ -1789,6 +1816,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else if (Number(shape) === 3) {
       this.trapezoidStyle[this.svgId].width = width;
       this.trapezoidStyle[this.svgId].height = height;
+    } else if (Number(shape) === 4) {
+      this.subFieldStyle[this.svgId].width = width;
+      this.subFieldStyle[this.svgId].height = height;
     }
     this.setDragData();
     this.setLabel();
@@ -1887,6 +1917,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.candidateList.splice(this.candidateList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'UE') {
         this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
+      } else if (this.dragObject[this.svgId].type === 'subField') {
+        this.subFieldList.splice(this.ueList.indexOf(this.svgId), 1);
       }
       this.matDialog.closeAll();
     } else {
@@ -5172,6 +5204,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       // obstacleInfo
       this.obstacleList.length = 0;
+      this.subFieldList.length = 0;
       this.dragObject = {};
       this.candidateList.length = 0;
       this.defaultBSList.length = 0;
@@ -5182,6 +5215,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ellipseStyle = {};
       this.polygonStyle = {};
       this.trapezoidStyle = {};
+      this.subFieldStyle = {};
       this.svgStyle = {};
       this.pathStyle = {};
       // this.circleStyle
@@ -5663,6 +5697,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       return 1;
     } else if (type === 'trapezoid') {
       return 3;
+    } else if (type === 'subField') {
+      return 4;
     } else {
       return type;
     }

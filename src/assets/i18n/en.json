@@ -185,6 +185,7 @@
 	"result.performance": "performance",
 	"result.coverage": "Coverage ratio",
 	"average": "Average",
+	"result.total": "Total in Field",
 	"result.average": "Field Average",
 	"result.averageSinr": "Average signal quality",
 	"result.averageRsrp": "Average signal strength",
@@ -346,5 +347,25 @@
 
 	"and": "and",
 	"overlap": "overlap",
-	"de": "s'"
+	"de": "s'",
+	"subfield": "sub-Field",
+	"pdf.fieldInfo": "Field Information",
+	"pdf.fieldParam": "Field Related Parameter",
+	"pdf.content": "Content",
+	"pdf.total.defaultBs": "Total Default BS ",
+	"pdf.total.candidate": "Total Candidate BS",
+	"pdf.total.chosenCandidate": "Total Chosen Candidate BS ",
+	"pdf.total.ue": "Total UE ",
+	"pdf.fieldBsAndUeInfo": "BS and UE Info in Field",
+	"pdf.signalCoverage": "Signal Coverage",
+	"pdf.fieldAnalysis": "Field Analysis",
+	"pdf.totalInField": "Total in Field",
+	"pdf.statistic": "Statistic",
+	"pdf.info.defaultBs": "Default BS Detail",
+	"pdf.info.candidate": "Candidate BS Detail",
+	"pdf.obstacle.Info": "Obstacle Detail",
+	"pdf.ue.info": "UE Detail",
+	"pdf.total.item": "Item",
+	"pdf.total": "Number"
+
 }

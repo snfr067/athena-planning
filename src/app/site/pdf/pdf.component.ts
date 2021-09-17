@@ -506,7 +506,7 @@ export class PdfComponent implements OnInit {
     const leftStart = 25;
     pdf.setFontStyle('normal');
     pdf.setFontSize(17);
-    pdf.text(14, pos, '場域基本資料');
+    pdf.text(14, pos, this.translateService.instant('fieldInfo'));
     pos += margin;
     // pdf.text(14, pos, `${this.translateService.instant('taskName')}：${this.calculateForm['taskName']}`);
     // pos += margin;
@@ -638,7 +638,7 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+this.translateService.instant('meter')],
       [this.translateService.instant('zValue'),this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')+this.translateService.instant('meter')],
     ]
-    pdf.autoTable(['場域參數','內容'], fieldParameter, {
+    pdf.autoTable([this.translateService.instant('taskName'),this.translateService.instant('taskName')], fieldParameter, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
@@ -655,19 +655,19 @@ export class PdfComponent implements OnInit {
     let statistics;
     if (this.calculateForm.isSimulation) {
       statistics = [
-        ['既有基地台總數',this.defaultBs.length],
-        ['使用者終端總數',this.ueList.length],
+        [this.translateService.instant('pdf.total.defaultBs'),this.defaultBs.length],
+        [this.translateService.instant('pdf.total.ue'),this.ueList.length],
       ];
     } else {
       statistics = [
-        ['既有基地台總數',this.defaultBs.length],
-        ['待選基地台總數',this.inputBsList.length],
-        ['已選待選基地台總數',this.calculateForm.availableNewBsNumber-this.defaultBs.length],
-        ['使用者終端總數',this.ueList.length],
+        [this.translateService.instant('pdf.total.defaultBs'),this.defaultBs.length],
+        [this.translateService.instant('pdf.total.candidate'),this.inputBsList.length],
+        [this.translateService.instant('pdf.total.chosenCandidate'),this.calculateForm.availableNewBsNumber-this.defaultBs.length],
+        [this.translateService.instant('pdf.total.ue'),this.ueList.length],
       ];
     }
 
-    pdf.autoTable(['總數','數量'], statistics, {
+    pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.total')], statistics, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
@@ -683,7 +683,7 @@ export class PdfComponent implements OnInit {
     pos = 10;
     pdf.addPage();
     pdf.setFontSize(17);
-    pdf.text(14, pos, '場域基地台與終端資訊');
+    pdf.text(14, pos, this.translateService.instant('pdf.fieldBsAndUeInfo'));
     pos += margin;
     let mapHeight = 0;
     const data = <HTMLDivElement> area.querySelector(`#sitePlanningMap`);
@@ -728,7 +728,7 @@ export class PdfComponent implements OnInit {
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
-          `待選${this.result['candidateIdx'][i]+1}`,
+          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
           `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
           `${this.result['candidateBsPower'][i]}`,
           `${this.result['candidateBeamId'][i]}`,
@@ -764,7 +764,7 @@ export class PdfComponent implements OnInit {
       let defaultLen = defaultBs.length;
       for (let i=0;i < defaultLen;i++) {
         specData.push([
-          `既有${i+1}`,
+          `${this.translateService.instant('default')}${i+1}`,
           `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
           `${txpower[i]}`,
           `${beamid[i]}`,
@@ -793,7 +793,7 @@ export class PdfComponent implements OnInit {
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
-          `待選${this.result['candidateIdx'][i]+1}`,
+          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
           `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
           `${this.result['candidateBsPower'][i]}`,
           `${this.result['candidateBeamId'][i]}`,
@@ -832,7 +832,7 @@ export class PdfComponent implements OnInit {
       let defaultLen = defaultBs.length;
       for (let i=0;i < defaultLen;i++) {
         specData.push([
-          `既有${i+1}`,
+          `${this.translateService.instant('default')}${i+1}`,
           `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
           `${txpower[i]}`,
           `${beamid[i]}`,
@@ -865,7 +865,7 @@ export class PdfComponent implements OnInit {
       pdf.addPage();
       // console.log(id);
       pdf.setFontSize(17);
-      pdf.text(14, pos, '訊號覆蓋模擬結果 高度:'+this.zValues[Math.floor(i)]+'公尺');
+      pdf.text(14, pos, `${this.translateService.instant('pdf.signalCoverage')} ${this.translateService.instant('altitude.setting')}:${this.zValues[Math.floor(i)]}${this.translateService.instant('meter')}`);
       i+=0.5;
       pos += 2;
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
@@ -934,7 +934,7 @@ export class PdfComponent implements OnInit {
     pdf.addPage();
     pos = 10;
     pdf.setFontSize(17);
-    pdf.text(14, pos, '場域分析');
+    pdf.text(14, pos, this.translateService.instant('pdf.fieldAnalysis'));
     pos += margin;
     //場域平均，切面高度----------------------------------------------------------------------------------
     const performanceHeader = (data) => {
@@ -1083,7 +1083,7 @@ export class PdfComponent implements OnInit {
           }
           if (this.result['ueCon_perBsUeConnection'][i] == 0) {
             p2Data.push([
-              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              `${this.translateService.instant('candidate')}${i+1}`,
               0,
               0,
               0,
@@ -1092,7 +1092,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('result.propose.candidateBs')}${i}`,
+              `${this.translateService.instant('candidate')}${i+1}`,
               this.result['ueCon_perBsUeConnection'][i],
               `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i])} Mbps`,
               `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i])} Mbps`,
@@ -1101,10 +1101,10 @@ export class PdfComponent implements OnInit {
             ]);
           }
         }
-        for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
+        for (let i = 0;i < this.defaultBs.length; i++) {
           if (this.result['ueCon_perBsUeConnection'][i+candidateNum] == 0) {
             p2Data.push([
-              `${this.translateService.instant('defaultBs')}${i+1}`,
+              `${this.translateService.instant('default')}${i+1}`,
               0,
               0,
               0,
@@ -1113,7 +1113,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('defaultBs')}${i+candidateNum}`,
+              `${this.translateService.instant('default')}${i+1}`,
               this.result['ueCon_perBsUeConnection'][i+candidateNum],
               `${this.financial(this.result['ueTpt_dlTptIndividualBs'][i+candidateNum])} Mbps`,
               `${this.financial(this.result['ueTpt_ulTptIndividualBs'][i+candidateNum])} Mbps`,
@@ -1141,7 +1141,7 @@ export class PdfComponent implements OnInit {
           }
           if (this.result['ueCon']['perBsUeConnection'][i] == 0) {
             p2Data.push([
-              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              `${this.translateService.instant('candidate')}${i+1}`,
               0,
               0,
               0,
@@ -1150,7 +1150,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('result.propose.candidateBs')}${i+1}`,
+              `${this.translateService.instant('candidate')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i],
               `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i])} Mbps`,
               `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i])} Mbps`,
@@ -1165,7 +1165,7 @@ export class PdfComponent implements OnInit {
         for (let i = 0;i < this.result['defaultBeamId'].length; i++) {
           if (this.result['ueCon']['perBsUeConnection'][i+candidateNum] == 0) {
             p2Data.push([
-              `${this.translateService.instant('defaultBs')}${i+1}`,
+              `${this.translateService.instant('default')}${i+1}`,
               0,
               0,
               0,
@@ -1174,7 +1174,7 @@ export class PdfComponent implements OnInit {
             ]);
           } else {
             p2Data.push([
-              `${this.translateService.instant('defaultBs')}${i+1}`,
+              `${this.translateService.instant('default')}${i+1}`,
               this.result['ueCon']['perBsUeConnection'][i+candidateNum],
               `${this.financial(this.result['ueTpt']['dlTptIndividualBs'][i+candidateNum])} Mbps`,
               `${this.financial(this.result['ueTpt']['ulTptIndividualBs'][i+candidateNum])} Mbps`,
@@ -1201,7 +1201,7 @@ export class PdfComponent implements OnInit {
         
       }
       p2Data.push([
-        this.translateService.instant('result.total'),
+        this.translateService.instant('pdf.totalInField'),
         ueNum,
         `${this.financial(fieldTotalDlTpt)} Mbps`,
         `${this.financial(fieldTotalUlTpt)} Mbps`,
@@ -1229,7 +1229,7 @@ export class PdfComponent implements OnInit {
     const statisticsList = ['statistics'];
     for (const id of statisticsList) {
       pdf.addPage();
-      pdf.text(14, pos, '統計資訊');
+      pdf.text(14, pos, this.translateService.instant('pdf.statistic'));
       pos += margin;
       pdf.page++;
       const data = <HTMLDivElement> area.querySelector(`#${id}`);
@@ -1248,7 +1248,7 @@ export class PdfComponent implements OnInit {
     // 現有基站
     pdf.addPage();
     pos = 10;
-    pdf.text(17, pos, '既有基站詳細資訊');
+    pdf.text(17, pos, this.translateService.instant('pdf.info.defaultBs'));
     pos += margin;
     const defaultBsTitle = [
       this.translateService.instant('result.num'), 
@@ -1285,7 +1285,7 @@ export class PdfComponent implements OnInit {
     if (this.inputBsList.length > 0) {
       pdf.addPage();
       pos = 10;
-      pdf.text(14, pos, '待選基站詳細資訊');
+      pdf.text(14, pos, this.translateService.instant('pdf.info.candidate'));
       pos += margin;
       const candidateHeader = (data) => {
         pdf.setFontSize(12);
@@ -1318,7 +1318,7 @@ export class PdfComponent implements OnInit {
     // 障礙物資訊
     pdf.addPage();
     pos = 10;
-    pdf.text(14, pos, '障礙物詳細資訊');
+    pdf.text(14, pos, this.translateService.instant('pdf.obstacle.Info'));
     pos += margin;
     const obstacleHeader = (data) => {
       pdf.setFontSize(12);
@@ -1352,7 +1352,7 @@ export class PdfComponent implements OnInit {
     // 行動終端分佈 ----------------------------------------------------------------------------------------------------
     pdf.addPage();
     pos = 10;
-    pdf.text(14, pos, '行動終端詳細資訊');
+    pdf.text(14, pos, this.translateService.instant('pdf.ue.info'));
     pos += margin;
     pdf.page++;
     const ueHeader = (data) => {
@@ -1404,7 +1404,7 @@ export class PdfComponent implements OnInit {
     // }
     let candidateLen = this.result['candidateIdx'].length;
     for (let i=0;i < candidateLen;i++) {
-      ueData.push([`待選${this.result['candidateIdx'][i]+1}`]);
+      ueData.push([`${this.translateService.instant('result.propose.candidateBs')}${this.result['candidateIdx'][i]+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
         if (ueConInfo[k] == this.result['candidateIdx'][i]) {
           ueData.push([
@@ -1420,7 +1420,7 @@ export class PdfComponent implements OnInit {
     let defaultLen = defaultBs.length;
 
     for (let i=0;i < defaultLen;i++) {
-      ueData.push([`既有${i+1}`]);
+      ueData.push([`${this.translateService.instant('result.propose.defaultBs')}${i+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
         if (ueConInfo[k] == i+this.inputBsList.length) {
           ueData.push([

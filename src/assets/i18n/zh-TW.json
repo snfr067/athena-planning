@@ -345,7 +345,30 @@
 	"candidate": "待選",
 	"and": "和",
 	"overlap": "重疊",
-	"de": "的"
+	"de": "的",
+
+	"subfield": "子場域",
+	"pdf.fieldInfo": "場域基本資料",
+	"pdf.fieldParam": "場域參數",
+	"pdf.content": "內容",
+	"pdf.total.defaultBs": "既有基地台總數",
+	"pdf.total.candidate": "待選基地台總數",
+	"pdf.total.chosenCandidate": "已選待選基地台總數 ",
+	"pdf.total.ue": "使用者終端總數 ",
+	"pdf.fieldBsAndUeInfo": "場域基地台與終端資訊",
+	"pdf.signalCoverage": "訊號覆蓋模擬結果",
+	"pdf.fieldAnalysis": "場域分析",
+	"pdf.totalInField": "場域總和",
+	"pdf.statistic": "統計資訊",
+	"pdf.info.defaultBs": "既有基站詳細資訊",
+	"pdf.info.candidate": "待選基站詳細資訊",
+	"pdf.obstacle.Info": "障礙物詳細資訊",
+	"pdf.ue.info": "行動終端詳細資訊",
+	"pdf.total.item": "項目",
+	"pdf.total": "總數"
+
+
+
 
 
 }
