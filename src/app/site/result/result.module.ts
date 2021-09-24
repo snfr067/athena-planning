@@ -7,6 +7,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SitePlanningMapModule } from '../modules/site-planning-map/site-planning-map.module';
 import { PerformanceModule } from '../modules/performance/performance.module';
 import { ProposeModule } from '../modules/propose/propose.module';
+import { SubFieldModule } from '../modules/sub-field/sub-field.module';
 import { SignalCoverModule } from '../modules/signal-cover/signal-cover.module';
 import { SignalQualityModule } from '../modules/signal-quality/signal-quality.module';
 import { SignalStrengthModule } from '../modules/signal-strength/signal-strength.module';
@@ -30,6 +31,7 @@ import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal
     // MatButtonModule,
     PerformanceModule,
     ProposeModule,
+    SubFieldModule,
     SignalCoverModule,
     SignalQualityModule,
     SignalStrengthModule,

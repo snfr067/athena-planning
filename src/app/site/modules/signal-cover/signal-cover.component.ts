@@ -587,9 +587,6 @@ export class SignalCoverComponent implements OnInit {
         .range([0, this.calculateForm.height]);
       // 新增基站
       if (this.calculateForm.candidateBs !== '') {
-        
-
-        
         for (const item of this.candidateList) {
           this.shapes.push({
             type: 'rect',

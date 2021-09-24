@@ -355,7 +355,6 @@ export class SignalQualityComponent implements OnInit {
           },
           hover: text
         });
-
       }
     }
 

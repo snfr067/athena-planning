@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
 import { PdfComponent } from '../pdf/pdf.component';
 import { ProposeComponent } from '../modules/propose/propose.component';
+import { SubFieldComponent } from '../modules/sub-field/sub-field.component';
 import { SitePlanningMapComponent } from '../modules/site-planning-map/site-planning-map.component';
 import { SignalQualityComponent } from '../modules/signal-quality/signal-quality.component';
 import { SignalCoverComponent } from '../modules/signal-cover/signal-cover.component';
@@ -131,11 +132,15 @@ export class ResultComponent implements OnInit {
   };
   /* 是否為模擬 */
   isSimulate = false;
+  /* 是否有暫存子場域 */
+  isSubFieldExist = false;
 
   /** PDF Component */
   @ViewChild('pdf') pdf: PdfComponent;
   /** 建議方案 Component */
   @ViewChild('propose') propose: ProposeComponent;
+  /** 子場域 Component */
+  @ViewChild('subField') subField: SubFieldComponent;
   /** 訊號品質圖 Component */
   @ViewChild('quality') quality: SignalQualityComponent;
   /** 訊號覆蓋圖 Component */
@@ -166,8 +171,12 @@ export class ResultComponent implements OnInit {
       }
       this.getResult();
     });
+    if (sessionStorage.getItem('sub_field_coor') == null || sessionStorage.getItem('sub_field_coor') == '[]') {
+      this.isSubFieldExist = false;
+    } else {
+      this.isSubFieldExist = true;
+    }
     // this.getResult();
-
   }
 
   /**
@@ -449,6 +458,12 @@ export class ResultComponent implements OnInit {
         this.propose.calculateForm = this.calculateForm;
         this.propose.result = this.result;
         this.propose.drawLayout(false);
+        // 子場域
+        if (this.isSubFieldExist) {
+          this.subField.calculateForm = this.calculateForm;
+          this.subField.result = this.result;
+          this.subField.drawLayout(false);
+        }
         // 訊號品質圖
         this.zValues = JSON.parse(this.calculateForm.zValue);
         this.zValue = this.zValues[0];

@@ -480,6 +480,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   ngOnInit() {
     window.sessionStorage.removeItem('tempParamForSelect');
+    sessionStorage.removeItem('sub_field_coor');
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
@@ -510,6 +511,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
 
       sessionStorage.removeItem('importFile');
+      sessionStorage.removeItem('sub_field_coor');
 
     // Not import File
     } else {
@@ -1399,6 +1401,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         strokeWidth: 3,
         // opacity: 0.5
       };
+      if (sessionStorage.getItem('sub_field_coor') != undefined) {
+        console.log(sessionStorage.getItem('sub_field_coor'));
+        let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+        console.log(sub_field_arr);
+        sub_field_arr.push({
+          id: this.svgId,
+          x: 0,
+          y: 0,
+          width: 30,
+          height: 30
+        });
+        console.log(sub_field_arr);
+        sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
+      } else {
+        let sub_field_arr = [];
+        sub_field_arr[0] = {
+          id: this.svgId,
+          x: 0,
+          y: 0,
+          width: 30,
+          height: 30
+        };
+        
+        sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
+      }
     }
 
     this.spanStyle[this.svgId] = {
@@ -1525,11 +1552,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
-    console.log(this.target);
-    console.log(this.spanStyle);
-    console.log(this.frame);
-    console.log(this.dragObject[id]);
-    console.log(this.moveable);
+    // console.log(this.target);
+    // console.log(this.spanStyle);
+    // console.log(this.frame);
+    // console.log(this.dragObject[id]);
+    // console.log(this.moveable);
 
     this.currentLeft = _.cloneDeep(this.spanStyle[this.svgId].left);
     this.currentTop = _.cloneDeep(this.spanStyle[this.svgId].top);
@@ -1643,7 +1670,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2) - this.scrollTop;
       this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
       this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
-      if (this.dragObject[this.svgId].type === 'obstacle') {
+      
+      if (this.dragObject[this.svgId].type === 'obstacle' || this.dragObject[this.svgId].type === 'subField') {
         this.dragObject[this.svgId].width = wVal;
         this.dragObject[this.svgId].height = hVal;
 
@@ -1662,6 +1690,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.dragObject[this.svgId].y = Number(this.calculateForm.height) - Number(this.dragObject[this.svgId].height);
         } else if (numY < 0  && Number(this.dragObject[this.svgId].rotate) == 0) {
           this.dragObject[this.svgId].y = 0;
+        }
+
+        if (this.dragObject[this.svgId].type === 'subField') {
+          // console.log('sdfgjsgjslkgjklsdgjlskdjglksdjglksjlkgjslkgjsdlg');
+          let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+          // console.log(sub_field_arr);
+          for (let i = 0;i < sub_field_arr.length;i++) {
+            // console.log(sub_field_arr[i].id);
+            // console.log(this.svgId);
+            if (sub_field_arr[i].id == this.svgId) {
+              sub_field_arr.splice(i, 1, {
+                id: this.svgId,
+                x: this.dragObject[this.svgId].x,
+                y: this.dragObject[this.svgId].y,
+                width: this.dragObject[this.svgId].width,
+                height: this.dragObject[this.svgId].height
+              });
+              sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
+            }
+          }
         }
       }  
     }
@@ -1919,6 +1967,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'subField') {
         this.subFieldList.splice(this.ueList.indexOf(this.svgId), 1);
+        let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+        for (let i = 0;i < sub_field_arr.length;i++) {
+          if (sub_field_arr[i].id == this.svgId) {
+            sub_field_arr.splice(i, 1);
+            sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
+          }
+        }
       }
       this.matDialog.closeAll();
     } else {

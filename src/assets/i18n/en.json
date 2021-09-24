@@ -367,6 +367,12 @@
 	"pdf.obstacle.Info": "Detail of Obstacles",
 	"pdf.ue.info": "Detail of UE",
 	"pdf.total.item": "Item",
-	"pdf.total": "Number"
+	"pdf.total": "Number",
 
+	"subfield.width.height": "Width/Height",
+	"subfield.area": "Area",
+	"subfield.coverage": "Coverage",
+	"subfield.quality": "Quality",
+	"subfield.dltpt": "DL throughput",
+	"subfield.ultpt": "UL throughput"
 }
