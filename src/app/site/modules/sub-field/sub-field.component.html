@@ -28,18 +28,20 @@
 		<tr>
 				<th>X/Y</th>
 				<th>{{ 'subfield.width.height' | translate }}</th>
-				<th>{{ 'subfield.area' | translate }}</th>
-				<th>{{ 'subfield.quality' | translate }}</th>
+				<!-- <th>{{ 'subfield.area' | translate }}</th> -->
 				<th>{{ 'subfield.coverage' | translate }}</th>
+				<th>{{ 'subfield.quality' | translate }}</th>
+				<th>{{ 'subfield.strength' | translate }}</th>
 				<th>{{ 'subfield.dltpt' | translate }}</th>
 				<th>{{ 'subfield.ultpt' | translate }}</th>
 		</tr>
 		<tr *ngFor="let item of subFieldList">
 			<td class="choose">{{ item.x }}/{{ item.y }}</td>
-			<td class="choose">{{ item.width }}/{{item.height}}</td>
-			<td class="choose">{{ item.area }}</td>
-			<td class="choose">{{ item.quality }}dB</td>
+			<td class="choose">{{ item.width }}/{{item.height}}/{{ item.z }} {{ 'meter' | translate }}</td>
+			<!-- <td class="choose">{{ item.area }}</td> -->
 			<td class="choose">{{ item.coverage }}%</td>
+			<td class="choose">{{ item.quality }}dB</td>
+			<td class="choose">{{ item.rsrp }}dBm</td>
 			<td class="choose">{{ item.dltpt }}Mbps</td>
 			<td class="choose">{{ item.ultpt }}Mbps</td>
 				<!-- <td class="choose"><label>{{ item[0] }}</label></td>

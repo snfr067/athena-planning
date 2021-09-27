@@ -32,6 +32,7 @@
 	"isAverageSinr.tooltip": "Higher radio signal quality brings higher throughput",
 	"isAverageThroughput": "Strengthen Field Throughput",
 	"isAverageThroughput.tooltip": "Improved signal quality helps increase the average transmission speed",
+	"isShowSubField": "Show SubField",
 	"isCoverage": "Enhance radio signal coverage area in current field",
 	"isCoverage.tooltip": "Reduce coverage holes caused by fading effect, but may increase inter-cell interference",
 	"isUeAvgSinr": "Enhance radio signal quality for the UE",
@@ -369,9 +370,10 @@
 	"pdf.total.item": "Item",
 	"pdf.total": "Number",
 
-	"subfield.width.height": "Width/Height",
+	"subfield.width.height": "Width/Height/Altitude",
 	"subfield.area": "Area",
 	"subfield.coverage": "Coverage",
+	"subfield.strength": "Strength",
 	"subfield.quality": "Quality",
 	"subfield.dltpt": "DL throughput",
 	"subfield.ultpt": "UL throughput"

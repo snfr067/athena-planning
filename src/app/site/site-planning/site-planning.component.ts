@@ -321,6 +321,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 子場域物件 **/
   subFieldList = [];
   subFieldStyle = {};
+  isShowSubField = true;
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -480,7 +481,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   ngOnInit() {
     window.sessionStorage.removeItem('tempParamForSelect');
-    sessionStorage.removeItem('sub_field_coor');
+    // sessionStorage.removeItem('sub_field_coor');
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
@@ -511,7 +512,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
 
       sessionStorage.removeItem('importFile');
-      sessionStorage.removeItem('sub_field_coor');
 
     // Not import File
     } else {
@@ -1388,6 +1388,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         height: height
       };
     } else if (id === 'subField') {
+      this.isShowSubField = true;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.subFieldList.push(this.svgId);
       this.subFieldStyle[this.svgId] = {
@@ -1536,6 +1537,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.setTimeout(() => {
       this.live = true;
     }, 0);
+    console.log(id);
     this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
@@ -1552,6 +1554,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
+    console.log(this.frame);
     // console.log(this.target);
     // console.log(this.spanStyle);
     // console.log(this.frame);
@@ -1570,17 +1573,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // 只開4個拖拉點
         this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
       } else {
+        console.log('Resizeeeee!');
         this.moveable.rotatable = true;
         // 拖拉點全開
         this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
       }
-      
       this.moveable.resizable = true;
     } else {
       this.moveable.rotatable = false;
       this.moveable.resizable = false;
     }
-
     this.moveable.ngOnInit();
     window.setTimeout(() => {
       this.setDragData();
@@ -1727,6 +1729,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 紀錄移動前位置
     this.moveError = false;
     this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
+    console.log('?????????????????????????????');
+
   }
 
   /**
@@ -1734,6 +1738,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onDrag({ target, clientX, clientY, top, left, isPinch }: OnDrag) {
+    console.log('?????????????????????????????');
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
@@ -1770,6 +1775,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onRotate({ target, clientX, clientY, beforeDelta, isPinch }: OnRotate) {
+    console.log('?????????????????????????????');
+
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
@@ -1800,6 +1807,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onResize({ target, clientX, clientY, width, height, drag }: OnResize) {
+    console.log('????????????????????????');
     if (this.svgId !== this.realId) {
       // 物件太接近，id有時會錯亂，還原id
       this.svgId = _.cloneDeep(this.realId);
@@ -1865,6 +1873,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.trapezoidStyle[this.svgId].width = width;
       this.trapezoidStyle[this.svgId].height = height;
     } else if (Number(shape) === 4) {
+      console.log('subFieldddddd');
       this.subFieldStyle[this.svgId].width = width;
       this.subFieldStyle[this.svgId].height = height;
     }
@@ -1877,6 +1886,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onEnd() {
+    console.log('?????????????????????????????');
+
     this.live = false;
     for (const item of this.obstacleList) {
       if (item !== this.svgId) {
@@ -1904,6 +1915,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** resize end */
   resizeEnd() {
+    console.log('?????????????????????????????');
+
     // resize後bound會跑掉，重設frame
     const left = `${this.pixelXLinear(this.dragObject[this.svgId].x)}px`;
     const top = `${this.chartHeight - this.pixelYLinear(this.dragObject[this.svgId].height) - this.pixelYLinear(this.dragObject[this.svgId].y)}px`;
@@ -5257,6 +5270,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.setUeSize(el);
       });
     } else {
+      
       // obstacleInfo
       this.obstacleList.length = 0;
       this.subFieldList.length = 0;
@@ -5274,6 +5288,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.svgStyle = {};
       this.pathStyle = {};
       // this.circleStyle
+      //子場域
+      if (sessionStorage.getItem('sub_field_coor') != undefined) {
+        let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+        console.log(sub_field_arr.length);
+        const subFieldLen = sub_field_arr.length;
+        for (let i = 0; i < subFieldLen; i++) {
+          const id = `subField_${this.generateString(10)}`;
+          const item = sub_field_arr[i];
+          this.dragObject[id] = {
+            x: item['x'],
+            y: item['y'],
+            // z: 0,
+            width: item['width'],
+            height: item['height'],
+            // altitude: item[4],
+            // rotate: item[5],
+            // title: this.translateService.instant('obstacleInfo'),
+            type: 'subField',
+            color: this.OBSTACLE_COLOR,
+            // material: item[6].toString(),
+            element: '4'
+          };
+          this.subFieldList.push(id);
+        }
+      }
       if (!this.authService.isEmpty(this.calculateForm.obstacleInfo)) {
         const obstacle = this.calculateForm.obstacleInfo.split('|');
         const obstacleLen = obstacle.length;
@@ -5865,6 +5904,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               for (const id of this.ueList) {
                 this.setUeSize(id);
               }
+              for (const id of this.subFieldList) {
+                this.setSubFieldSize(id);
+              }
 
               // scrollbar event
               gd2.addEventListener('scroll', (event) => {
@@ -5973,7 +6015,42 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
     }
   }
+  /**
+   * set 新增子場域位置
+   * @param id 
+   */
+  setSubFieldSize(id) {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.pixelXLinear(this.dragObject[id].width)}px`,
+      height: `${this.pixelYLinear(this.dragObject[id].height)}px`,
+      // transform: `rotate(${this.dragObject[id].rotate}deg)`,
+      opacity: 0
+    };
+    // 延遲轉角度，讓位置正確
+    window.setTimeout(() => {
+      this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
+      this.spanStyle[id].opacity = 1;
+    }, 0);
 
+    const width = this.pixelXLinear(this.dragObject[id].width);
+    const height = this.pixelYLinear(this.dragObject[id].height);
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: width,
+      height: height
+    };
+    this.subFieldStyle[id] = {
+      width: width,
+      height: height,
+      fill: 'pink',
+      fillOpacity:0.2,
+      stroke:'pink',
+      strokeWidth: 3,
+    };
+    
+  }
   /**
    * set 新增基站位置
    * @param id 

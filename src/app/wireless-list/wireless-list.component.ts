@@ -76,6 +76,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
     this.msgDialogConfig.autoFocus = false;
     this.confirmDialogConfig = new MatDialogConfig();
     this.confirmDialogConfig.autoFocus = false;
+    sessionStorage.removeItem('sub_field_coor');
 
     this.getList();
     // Query歷史紀錄

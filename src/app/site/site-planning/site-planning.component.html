@@ -157,12 +157,37 @@
         <mat-button-toggle *ngIf="taskid !== ''" value="result" (click)="result()">{{ 'planning.result' | translate }}</mat-button-toggle>
         <!-- <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle> -->
       </mat-button-toggle-group>
+      
+      <mat-checkbox [(ngModel)]="isShowSubField" style="margin-left: 5px;">
+        {{ 'isShowSubField' | translate }}
+      </mat-checkbox>
     </div>
     <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
       
     </div> -->
     <div #chart id="chart" style="position: relative; overflow-x: auto">
       <div #dragArea [ngStyle]="dragStyle">
+        <span *ngIf="isShowSubField">
+          <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+            <ng-container *ngIf="svgStyle[item]">
+              <svg *ngIf="dragObject[item].element === 'subField' || dragObject[item].element == '4'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
+                <!-- <g> -->
+                <!-- <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/> -->
+                <g id="canvasGrid" display="none">
+                  <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+                </g>
+                <!-- </g> -->
+                <g>
+                <!-- <rect fill="#ffffff" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#fff"/> -->
+                  <rect class="drag_rect" [ngStyle]="subFieldStyle[item]" stroke-width="1.5" x="0" y="0" />
+                </g>
+              </svg>
+            </ng-container>
+          </span>
+          <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        </span>
+        </span>
+        <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
         <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <ng-container *ngIf="svgStyle[item]">
             <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
@@ -266,29 +291,9 @@
             </g>
           </svg>
         </span>
-        <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
-          <ng-container *ngIf="svgStyle[item]">
-            <svg *ngIf="dragObject[item].element === 'subField' || dragObject[item].element == '4'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
-              <!-- <g>
-              <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/> -->
-              <g id="canvasGrid" display="none">
-                <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
-              </g>
-              <!-- </g> -->
-              <g>
-              <!-- <rect fill="#ffffff" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#fff"/> -->
-              <rect class="drag_rect" [ngStyle]="subFieldStyle[item]" stroke-width="1.5" x="0" y="0" />
-              </g>
-            </svg>
-          </ng-container>
-        </span>
-        <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
-        </span>
-        <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
+        
       </div>
     </div>
-    
-
   </div>
 
   <ngx-moveable

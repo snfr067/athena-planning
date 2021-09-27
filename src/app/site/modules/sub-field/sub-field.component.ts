@@ -104,7 +104,7 @@ export class SubFieldComponent implements OnInit {
    * 上行傳輸速率
    * 下行傳輸速率
    */
-  calSubFieldSignalValue(type, x, y, width, height) {
+  calSubFieldSignalValue(type, x, y, width, height, z) {
     // console.log(this.calculateForm);
     // console.log(this.result);
     let x_start = Math.ceil(x);
@@ -115,42 +115,45 @@ export class SubFieldComponent implements OnInit {
     let y_range = y_end - y_start;
     let area = x_range*y_range;
     console.log(`${x_start} ${x_end} ${y_start} ${y_end} ${area}`);
-    let zValue = JSON.parse(this.calculateForm.zValue);
+    // let zValue = JSON.parse(this.calculateForm.zValue);
     let zResult = [];
     let valueArr;
-    let totalValue = 0;
+    let totalValue, tempSinrValue = 0;
     if (type === 'quality') {
       valueArr = this.result['sinrMap'];
     } else if (type === 'coverage') {
       valueArr = this.result['connectionMap'];
+      tempSinrValue = this.result['sinrMap'];
+    } else if (type === 'rsrp') {
+      valueArr = this.result['rsrpMap'];
     } else if (type === 'dltpt') {
       valueArr = this.result['throughputMap'];
     } else {
       valueArr = this.result['ulThroughputMap'];
     }
-    for(let z = 0;z < zValue.length;z++) {
-      totalValue = 0;
-      for (let i = x_start;i < x_end;i++) {
-        for (let j = y_start;j < y_end;j++) {
-          // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
-          if (type === 'coverage') {
-            if (valueArr[i][j][z] != null) {
-              totalValue+=1;
-            }
-          } else {
-            totalValue += Number(valueArr[i][j][z]);
+    // for(let z = 0;z < zValue.length;z++) {
+    totalValue = 0;
+    for (let i = x_start;i < x_end;i++) {
+      for (let j = y_start;j < y_end;j++) {
+        // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
+        if (type === 'coverage') {
+          if (tempSinrValue[i][j][z] > -7) {
+            totalValue+=1;
           }
+        } else {
+          totalValue += Number(valueArr[i][j][z]);
         }
       }
-      console.log(totalValue);
-      if (type === 'coverage') {
-        zResult.push(100*Number(this.financial(totalValue/area)));
-      } else {
-        zResult.push(this.financial(totalValue/area));
-      }
     }
+    // console.log(totalValue);
+    if (type === 'coverage') {
+      zResult.push(100*Number(this.financial(totalValue/area)));
+    } else {
+      zResult.push(this.financial(totalValue/area));
+    }
+    // }
     
-    return JSON.stringify(zResult);
+    return zResult;
   }
 
   financial(x) {
@@ -255,20 +258,25 @@ export class SubFieldComponent implements OnInit {
     const chosenNum = [];
     // 子場域
     let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+    let zValue = JSON.parse(this.calculateForm.zValue);
     console.log(sub_field_arr);
     if (sub_field_arr != null) {
       sub_field_arr.forEach(el => {
-        this.subFieldList.push({
-          x: el.x,
-          y: el.y,
-          width: el.width,
-          height: el.height,
-          area: Math.round(Number(el.width)*Number(el.height)),
-          coverage: this.calSubFieldSignalValue('coverage',Number(el.x),Number(el.y),Number(el.width),Number(el.height)),
-          quality: this.calSubFieldSignalValue('quality',Number(el.x),Number(el.y),Number(el.width),Number(el.height)),
-          dltpt: this.calSubFieldSignalValue('dltpt',Number(el.x),Number(el.y),Number(el.width),Number(el.height)),
-          ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height))
-        });
+        for(let z = 0;z < zValue.length;z++) {
+          this.subFieldList.push({
+            x: el.x,
+            y: el.y,
+            z: z,
+            width: el.width,
+            height: el.height,
+            // area: Math.round(Number(el.width)*Number(el.height)),
+            coverage: this.calSubFieldSignalValue('coverage',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            quality: this.calSubFieldSignalValue('quality',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            rsrp: this.calSubFieldSignalValue('rsrp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            dltpt: this.calSubFieldSignalValue('dltpt',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z)
+          });
+        }
       })
     }
     // 障礙物

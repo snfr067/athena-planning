@@ -32,6 +32,7 @@
 	"isAverageSinr.tooltip": "訊號品質提升，有助於提升平均傳輸速度",
 	"isAverageThroughput": "強化整體場域內整體Throughput",
 	"isAverageThroughput.tooltip": "訊號品質提升，有助於提升平均Throughput",
+	"isShowSubField": "顯示子場域",
 	"isCoverage": "強化整體場域內訊號覆蓋",
 	"isCoverage.tooltip": "提升訊號覆蓋率，可以避免場域邊緣或遮蔽物附近的位置沒有訊號可供連網，但有可能造成AP間訊號干擾上升",
 	"isUeAvgSinr": "強化行動終端整體訊號品質",
@@ -368,9 +369,10 @@
 	"pdf.total": "總數",
 
 	"subfield": "子場域",
-	"subfield.width.height": "長/寬",
+	"subfield.width.height": "長/寬/高",
 	"subfield.area": "面積",
 	"subfield.coverage": "覆蓋率",
+	"subfield.strength": "平均訊號強度",
 	"subfield.quality": "平均訊號品質",
 	"subfield.dltpt": "下行傳輸速率",
 	"subfield.ultpt": "上行傳輸速率"
