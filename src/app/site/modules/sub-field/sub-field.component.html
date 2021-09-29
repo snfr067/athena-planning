@@ -1,16 +1,19 @@
 <table #subFieldTbody id="subField" style="table-layout: fixed">
   <tbody>
 		<tr>
-				<th class="panel center" colspan="7"><label class="bold">{{ 'subfield' | translate }}</label></th>
+				<th class="panel center" colspan="8"><label class="bold">{{ 'subfield' | translate }}</label></th>
 		</tr>
 		<tr>
-				<td id="layout_td" colspan="7" class="mapType">
+				<td id="layout_td" colspan="8" class="mapType">
 					<div id="layout_chart2" #layoutChart style="z-index:1;position: relative;">
-						<span *ngFor="let item of rectList" [ngStyle]="item.style">
+						<span *ngFor="let item of rectList; let i = index" [attr.data-index]="i" [ngStyle]="item.style">
 							<!-- <span *ngFor="let item of rectList" [ngStyle]="item.style"> -->
 							<svg [attr.width]="item.style.width" [attr.height]="item.style.height" class="drag_obj">
 								<!-- <g><rect width="300" height="50" style="fill:rgb(0,0,255)" x="0" y="0" /></g> -->
-								<g><rect [ngStyle]="item.svgStyle" stroke-width="1.5" x="0" y="0" /></g>
+								<g>
+									<rect [ngStyle]="item.svgStyle" stroke-width="1.5" x="0" y="0" />
+								</g>
+								<text x="50%" y="50%" fill="red" font-size="96" style="font-weight:800;" dominant-baseline="middle" text-anchor="middle">{{i+1}}</text>
 							</svg>
 							<!-- <svg width="400" height="110" class="drag_obj">
 								<rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
@@ -26,6 +29,7 @@
 				</td>
 		</tr>
 		<tr>
+				<th>{{ 'subfield.num' | translate }}</th>
 				<th>X/Y</th>
 				<th>{{ 'subfield.width.height' | translate }}</th>
 				<!-- <th>{{ 'subfield.area' | translate }}</th> -->
@@ -35,8 +39,9 @@
 				<th>{{ 'subfield.dltpt' | translate }}</th>
 				<th>{{ 'subfield.ultpt' | translate }}</th>
 		</tr>
-		<tr *ngFor="let item of subFieldList">
-			<td class="choose">{{ item.x }}/{{ item.y }}</td>
+		<tr *ngFor="let item of subFieldList; let i = index" [attr.data-index]="i">
+			<td class="choose" rowspan="2" *ngIf="i%2 == 0">{{ i/2+1 }}</td>
+			<td class="choose" rowspan="2" *ngIf="i%2 == 0">{{ item.x }}/{{ item.y }}</td>
 			<td class="choose">{{ item.width }}/{{item.height}}/{{ item.z }} {{ 'meter' | translate }}</td>
 			<!-- <td class="choose">{{ item.area }}</td> -->
 			<td class="choose">{{ item.coverage }}%</td>

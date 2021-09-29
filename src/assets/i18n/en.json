@@ -370,7 +370,8 @@
 	"pdf.total.item": "Item",
 	"pdf.total": "Number",
 
-	"subfield.width.height": "Width/Height/Altitude",
+	"subfield.num": "SubField Number",
+	"subfield.width.height": "Width/Height/Section Altitude",
 	"subfield.area": "Area",
 	"subfield.coverage": "Coverage",
 	"subfield.strength": "Strength",

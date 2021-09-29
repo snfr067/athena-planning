@@ -188,6 +188,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     subField: {
       id: 'svg_8',
       title: this.translateService.instant('subfield'),
+      // title: '子場域',
       type: 'subField',
       element: '4'
     }
@@ -1622,6 +1623,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
     } else if (this.dragObject[id].type === 'defaultBS' || this.dragObject[id].type === 'candidate') {
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+    } else if (this.dragObject[id].type === 'subField') {
     } else {
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
     }
@@ -5291,6 +5293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       //子場域
       if (sessionStorage.getItem('sub_field_coor') != undefined) {
         let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+        let sub_field_arr2 = []
         console.log(sub_field_arr.length);
         const subFieldLen = sub_field_arr.length;
         for (let i = 0; i < subFieldLen; i++) {
@@ -5304,14 +5307,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             height: item['height'],
             // altitude: item[4],
             // rotate: item[5],
-            // title: this.translateService.instant('obstacleInfo'),
+            title: this.translateService.instant('subfield'),
             type: 'subField',
             color: this.OBSTACLE_COLOR,
             // material: item[6].toString(),
             element: '4'
           };
+          sub_field_arr2.push({
+            id: id,
+            x: item['x'],
+            y: item['y'],
+            width: item['width'],
+            height: item['height']
+          });
           this.subFieldList.push(id);
         }
+        sessionStorage.setItem('sub_field_coor',JSON.stringify(sub_field_arr2));
       }
       if (!this.authService.isEmpty(this.calculateForm.obstacleInfo)) {
         const obstacle = this.calculateForm.obstacleInfo.split('|');

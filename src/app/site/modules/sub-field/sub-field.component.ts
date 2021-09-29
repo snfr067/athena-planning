@@ -33,9 +33,12 @@ export class SubFieldComponent implements OnInit {
   /** 建議方案 list */
   candidateList = [];
   /** 既有基站 list */
-  // defaultBsList = [];
+  defaultBsList = [];
   /** 是否PDF頁面 */
   isPDF = false;
+
+  shapes = [];
+  annotations = [];
 
   /** 圖element */
   @ViewChild('layoutChart') layoutChart: ElementRef;
@@ -69,6 +72,7 @@ export class SubFieldComponent implements OnInit {
    */
   drawLayout(isPDF) {
     this.rectList.length = 0;
+    this.defaultBsList.length = 0;
     this.layoutChart.nativeElement.style.opacity = 0;
     const images = [];
     if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
@@ -114,7 +118,7 @@ export class SubFieldComponent implements OnInit {
     let x_range = x_end - x_start;
     let y_range = y_end - y_start;
     let area = x_range*y_range;
-    console.log(`${x_start} ${x_end} ${y_start} ${y_end} ${area}`);
+    // console.log(`${x_start} ${x_end} ${y_start} ${y_end} ${area}`);
     // let zValue = JSON.parse(this.calculateForm.zValue);
     let zResult = [];
     let valueArr;
@@ -227,6 +231,7 @@ export class SubFieldComponent implements OnInit {
       });
     }
     
+    
 
     // candidateBs
     let index = 1;
@@ -262,6 +267,16 @@ export class SubFieldComponent implements OnInit {
     console.log(sub_field_arr);
     if (sub_field_arr != null) {
       sub_field_arr.forEach(el => {
+        let ueList = this.calculateForm.ueCoordinate.split('|');
+        let defaultBsList = this.calculateForm.defaultBs.split('|');
+        let candidateList = this.result['chosenCandidate'];
+        // ueList.filter(ue => (JSON.parse(ue)[0] < (el.x + el.width) && JSON.parse(ue)[1] < (el.y + el.height)));
+        // defaultBsList.filter(bs => (JSON.parse(bs)[0] < (el.x + el.width) && JSON.parse(bs)[1] < (el.y + el.height)));
+        // candidateList.filter(bs => (JSON.parse(bs)[0] < (el.x + el.width) && JSON.parse(bs)[1] < (el.y + el.height)));
+
+        // console.log(ueList);
+        // console.log(defaultBsList);
+        // console.log(candidateList);
         for(let z = 0;z < zValue.length;z++) {
           this.subFieldList.push({
             x: el.x,
@@ -274,63 +289,80 @@ export class SubFieldComponent implements OnInit {
             quality: this.calSubFieldSignalValue('quality',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
             rsrp: this.calSubFieldSignalValue('rsrp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
             dltpt: this.calSubFieldSignalValue('dltpt',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
-            ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z)
+            ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            ueNum: 0,
+            defaultBsNum: 0,
+            candidateBsNum: 0
           });
         }
       })
     }
-    // 障礙物
-    // if (this.calculateForm.obstacleInfo !== '') {
-    //   const obstacle = this.calculateForm.obstacleInfo.split('|');
-    //   for (const item of obstacle) {
-    //     const oData = JSON.parse(item);
-    //     const xdata = oData[0];
-    //     const ydata = oData[1];
-    //     const oColor = '#000000';
-    //     // 0~3分別是矩型、三角形、圓形、梯形
-    //     let shape = oData[7];
-    //     let text = `${this.translateService.instant('planning.obstacleInfo')}
-    //     X: ${xdata}
-    //     Y: ${ydata}
-    //     ${this.translateService.instant('width')}: ${oData[2]}
-    //     ${this.translateService.instant('height')}: ${oData[3]}
-    //     ${this.translateService.instant('altitude')}: ${oData[4]}
-    //     `;
 
-    //     if (typeof oData[6] !== 'undefined') {
-    //       text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(oData[6])}`;
-    //     }
-    //     if (typeof oData[7] === 'undefined') {
-    //       shape = '0';
-    //     }
+    if (this.calculateForm.ueCoordinate !== '') {
+      const list = this.calculateForm.ueCoordinate.split('|');
+      const cx = [];
+      const cy = [];
+      const text = [];
 
-    //     this.rectList.push({
-    //       x: xdata,
-    //       y: ydata,
-    //       width: oData[2],
-    //       height: oData[3],
-    //       rotate: oData[5],
-    //       shape: shape,
-    //       style: {
-    //         left: 0,
-    //         top: 0,
-    //         width: oData[2],
-    //         height: oData[3],
-    //         position: 'absolute',
-    //         opacity: 1
-    //       },
-    //       svgStyle: {
-    //         width: oData[2],
-    //         height: oData[3],
-    //         fill: 'pink',
-    //         fillOpacity:0.2,
-    //         stroke:'pink',
-    //         strokeWidth: 3,
-    //       },
-    //       hover: text
-    //     });
-    //   }
-    // }
+      for (const item of list) {
+        const oData = JSON.parse(item);
+        cx.push(oData[0]);
+        cy.push(oData[1]);
+        text.push(`${this.translateService.instant('ue')}<br>X: ${oData[0]}<br>Y: ${oData[1]}<br>${this.translateService.instant('altitude')}: ${oData[2]}`);
+      }
+
+      traces.push({
+        x: cx,
+        y: cy,
+        text: text,
+        marker: {
+          color: '#140101',
+        },
+        type: 'scatter',
+        mode: 'markers',
+        hoverinfo: 'none',
+        showlegend: false,
+        visible: true
+      });
+    }
+
+    if (this.calculateForm.defaultBs !== '') {
+      const list = this.calculateForm.defaultBs.split('|');
+      const cx = [];
+      const cy = [];
+      const ctext = [];
+      let num = 1;
+
+      for (const item of list) {
+        const oData = JSON.parse(item);
+        const xdata = oData[0];
+        const ydata = oData[1];
+        const zdata = oData[2];
+        cx.push(xdata);
+        cy.push(ydata);
+        const text = `${this.translateService.instant('defaultBs')}
+        X: ${xdata}
+        Y: ${ydata}
+        ${this.translateService.instant('altitude')}: ${zdata}`;
+        ctext.push(text);
+        this.defaultBsList.push({
+          x: xdata,
+          y: ydata,
+          color: '#000000',
+          ap: `${this.translateService.instant('default')}${num}`,
+          hover: text,
+          style: {
+            visibility: 'hidden',
+            opacity: 0
+          },
+          circleStyle: {
+            visibility: 'hidden',
+          }
+        });
+        num++;
+      }
+    }
+    
     // 建議方案 list
     this.candidateList.length = 0;
     for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
@@ -397,13 +429,58 @@ export class SubFieldComponent implements OnInit {
         config: defaultPlotlyConfiguration
       }).then((gd) => {
 
+        this.shapes.length = 0;
+        this.annotations.length = 0;
+        const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
+        const rect = xy.getBoundingClientRect();
+        const xLinear = Plotly.d3.scale.linear()
+          .domain([0, rect.width])
+          .range([0, this.calculateForm.width]);
+
+          const yLinear = Plotly.d3.scale.linear()
+          .domain([0, rect.height])
+          .range([0, this.calculateForm.height]);
+
+          for (const item of this.defaultBsList) {
+            this.shapes.push({
+              type: 'circle',
+              xref: 'x',
+              yref: 'y',
+              x0: item.x,
+              y0: item.y,
+              x1: item.x + Number(xLinear(50)),
+              y1: item.y + Number(yLinear(18)),
+              fillcolor: '#005959',
+              bordercolor: '#005959',
+              visible: true
+            });
+  
+            this.annotations.push({
+              x: item.x + Number(xLinear(25)),
+              y: item.y + Number(yLinear(9)),
+              xref: 'x',
+              yref: 'y',
+              text: item.ap,
+              showarrow: false,
+              font: {
+                color: '#fff',
+                size: 10
+              },
+              visible: true
+            });
+          }
+
         // 場域尺寸計算
         const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
         this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
           const layoutOption = {
             width: res[0],
-            height: res[1]
+            height: res[1],
+            shapes: this.shapes,
+            annotations: this.annotations
           };
+
+          
           // resize layout
           Plotly.relayout(id, layoutOption).then((gd2) => {
             this.layoutChart.nativeElement.style.opacity = 1;

@@ -369,7 +369,8 @@
 	"pdf.total": "總數",
 
 	"subfield": "子場域",
-	"subfield.width.height": "長/寬/高",
+	"subfield.num": "子場域編號",
+	"subfield.width.height": "長/寬/切面高度",
 	"subfield.area": "面積",
 	"subfield.coverage": "覆蓋率",
 	"subfield.strength": "平均訊號強度",
