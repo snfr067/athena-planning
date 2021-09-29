@@ -1981,7 +1981,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else if (this.dragObject[this.svgId].type === 'UE') {
         this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'subField') {
-        this.subFieldList.splice(this.ueList.indexOf(this.svgId), 1);
+        this.subFieldList.splice(this.subFieldList.indexOf(this.svgId), 1);
         let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
         for (let i = 0;i < sub_field_arr.length;i++) {
           if (sub_field_arr[i].id == this.svgId) {
