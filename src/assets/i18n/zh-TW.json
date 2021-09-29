@@ -370,6 +370,7 @@
 
 	"subfield": "子場域",
 	"subfield.num": "子場域編號",
+	"subfield.xy": "子場域左下角座標",
 	"subfield.width.height": "長/寬/切面高度",
 	"subfield.area": "面積",
 	"subfield.coverage": "覆蓋率",

@@ -13,7 +13,7 @@
 								<g>
 									<rect [ngStyle]="item.svgStyle" stroke-width="1.5" x="0" y="0" />
 								</g>
-								<text x="50%" y="50%" fill="red" font-size="96" style="font-weight:800;" dominant-baseline="middle" text-anchor="middle">{{i+1}}</text>
+								<text x="50%" y="50%" fill="red" [attr.font-size]="item.style.fs" style="font-weight:800;" dominant-baseline="middle" text-anchor="middle">{{i+1}}</text>
 							</svg>
 							<!-- <svg width="400" height="110" class="drag_obj">
 								<rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
@@ -30,7 +30,7 @@
 		</tr>
 		<tr>
 				<th>{{ 'subfield.num' | translate }}</th>
-				<th>X/Y</th>
+				<th>{{ 'subfield.xy' | translate }}</th>
 				<th>{{ 'subfield.width.height' | translate }}</th>
 				<!-- <th>{{ 'subfield.area' | translate }}</th> -->
 				<th>{{ 'subfield.coverage' | translate }}</th>

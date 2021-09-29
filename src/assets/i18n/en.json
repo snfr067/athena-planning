@@ -372,6 +372,7 @@
 
 	"subfield.num": "SubField Number",
 	"subfield.width.height": "Width/Height/Section Altitude",
+	"subfield.xy": "Coordinates of the lower left corner",
 	"subfield.area": "Area",
 	"subfield.coverage": "Coverage",
 	"subfield.strength": "Strength",

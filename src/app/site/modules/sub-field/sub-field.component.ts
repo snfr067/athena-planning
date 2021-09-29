@@ -115,10 +115,11 @@ export class SubFieldComponent implements OnInit {
     let x_end = Math.floor(x+width);
     let y_start = Math.ceil(y);
     let y_end = Math.floor(y+height);
-    let x_range = x_end - x_start;
-    let y_range = y_end - y_start;
-    let area = x_range*y_range;
-    // console.log(`${x_start} ${x_end} ${y_start} ${y_end} ${area}`);
+    let points = 0;
+    // let x_range = x_end - x_start;
+    // let y_range = y_end - y_start;
+    // let area = x_range*y_range;
+    console.log(`${x_start} ${x_end} ${y_start} ${y_end} `);
     // let zValue = JSON.parse(this.calculateForm.zValue);
     let zResult = [];
     let valueArr;
@@ -137,23 +138,60 @@ export class SubFieldComponent implements OnInit {
     }
     // for(let z = 0;z < zValue.length;z++) {
     totalValue = 0;
-    for (let i = x_start;i < x_end;i++) {
-      for (let j = y_start;j < y_end;j++) {
-        // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
+    if (x_start == x_end || y_start == y_end) {
+      if (x_start == x_end) {
+        for (let j = y_start;j < y_end;j++) {
+          if (type === 'coverage') {
+            if (Number(tempSinrValue[x_start][j][z]) > -7) {
+              totalValue+=1;
+            }
+          } else {
+            totalValue = Number(valueArr[x_start][j][z]);
+          }
+          points++;
+        }
+      } else if (y_start == y_end){
+        for (let i = x_start;i < x_end;i++) {
+          if (type === 'coverage') {
+            if (Number(tempSinrValue[i][y_start][z]) > -7) {
+              totalValue+=1;
+            }
+          } else {
+            totalValue = Number(valueArr[i][y_start][z]);
+          }
+          points++;
+        }
+      } else {
+        points = 1;
         if (type === 'coverage') {
-          if (tempSinrValue[i][j][z] > -7) {
-            totalValue+=1;
+          if (Number(tempSinrValue[x_start][y_start][z]) > -7) {
+            totalValue=1;
           }
         } else {
-          totalValue += Number(valueArr[i][j][z]);
+          totalValue = Number(valueArr[x_start][y_start][z]);
+        }
+      }
+    } else {
+      for (let i = x_start;i < x_end;i++) {
+        for (let j = y_start;j < y_end;j++) {
+          console.log(`${i} ${j}`);
+          // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
+          if (type === 'coverage') {
+            if (Number(tempSinrValue[i][j][z]) > -7) {
+              totalValue+=1;
+            }
+          } else {
+            totalValue += Number(valueArr[i][j][z]);
+          }
+          points++;
         }
       }
     }
     // console.log(totalValue);
     if (type === 'coverage') {
-      zResult.push(100*Number(this.financial(totalValue/area)));
+      zResult.push(100*Number(this.financial(totalValue/points)));
     } else {
-      zResult.push(this.financial(totalValue/area));
+      zResult.push(this.financial(totalValue/points));
     }
     // }
     
@@ -215,6 +253,7 @@ export class SubFieldComponent implements OnInit {
         el.style = {
           left: 0,
           top: 0,
+          fs: `${((Number(el.width) <= Number(el.height)) ? Number(el.width): Number(el.height))*20}px`,
           width: el.width,
           height: el.height,
           position: 'absolute',
@@ -531,7 +570,6 @@ export class SubFieldComponent implements OnInit {
         .domain([0, this.calculateForm.height])
         .range([0, rect2.height]);
       for (const item of this.rectList) {
-        console.log('sdgsd5g56wr6565re4wh68e468r68her8h7er98798');
         let width = pixelXLinear(item.width);
         let height = pixelYLinear(item.height);
         const leftPosition = pixelXLinear(item.x);
