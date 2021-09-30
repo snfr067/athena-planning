@@ -202,6 +202,15 @@ export class SubFieldComponent implements OnInit {
     return Number.parseFloat(x).toFixed(2);
   }
 
+  findSubFieldFontSize (width, height) {
+    let lower = (Number(width) <= Number(height)) ? Number(width): Number(height);
+    if (lower == Number(width)) {
+      return `${lower / this.calculateForm.width * 300}px`;
+    } else {
+      return `${lower / this.calculateForm.height * 300}px`;
+    }
+  }
+
   /**
    * 畫圖
    * @param isPDF 
@@ -253,7 +262,7 @@ export class SubFieldComponent implements OnInit {
         el.style = {
           left: 0,
           top: 0,
-          fs: `${((Number(el.width) <= Number(el.height)) ? Number(el.width): Number(el.height))*20}px`,
+          fs: this.findSubFieldFontSize(el.width, el.height),
           width: el.width,
           height: el.height,
           position: 'absolute',
