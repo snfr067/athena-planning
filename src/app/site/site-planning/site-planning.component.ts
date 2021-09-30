@@ -1731,7 +1731,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 紀錄移動前位置
     this.moveError = false;
     this.ognDragObject[this.svgId] = _.cloneDeep(this.dragObject[this.svgId]);
-    console.log('?????????????????????????????');
 
   }
 
@@ -1740,7 +1739,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onDrag({ target, clientX, clientY, top, left, isPinch }: OnDrag) {
-    console.log('?????????????????????????????');
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
@@ -1777,7 +1775,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onRotate({ target, clientX, clientY, beforeDelta, isPinch }: OnRotate) {
-    console.log('?????????????????????????????');
 
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
@@ -1809,7 +1806,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onResize({ target, clientX, clientY, width, height, drag }: OnResize) {
-    console.log('????????????????????????');
     if (this.svgId !== this.realId) {
       // 物件太接近，id有時會錯亂，還原id
       this.svgId = _.cloneDeep(this.realId);
@@ -1888,7 +1884,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onEnd() {
-    console.log('?????????????????????????????');
 
     this.live = false;
     for (const item of this.obstacleList) {
@@ -1917,7 +1912,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** resize end */
   resizeEnd() {
-    console.log('?????????????????????????????');
 
     // resize後bound會跑掉，重設frame
     const left = `${this.pixelXLinear(this.dragObject[this.svgId].x)}px`;

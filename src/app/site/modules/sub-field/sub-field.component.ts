@@ -36,6 +36,7 @@ export class SubFieldComponent implements OnInit {
   defaultBsList = [];
   /** 是否PDF頁面 */
   isPDF = false;
+  zNumber = 1;
 
   shapes = [];
   annotations = [];
@@ -138,42 +139,22 @@ export class SubFieldComponent implements OnInit {
     }
     // for(let z = 0;z < zValue.length;z++) {
     totalValue = 0;
-    if (x_start == x_end || y_start == y_end) {
-      if (x_start == x_end) {
-        for (let j = y_start;j < y_end;j++) {
-          if (type === 'coverage') {
-            if (Number(tempSinrValue[x_start][j][z]) > -7) {
-              totalValue+=1;
-            }
-          } else {
-            totalValue = Number(valueArr[x_start][j][z]);
-          }
-          points++;
-        }
-      } else if (y_start == y_end){
-        for (let i = x_start;i < x_end;i++) {
-          if (type === 'coverage') {
-            if (Number(tempSinrValue[i][y_start][z]) > -7) {
-              totalValue+=1;
-            }
-          } else {
-            totalValue = Number(valueArr[i][y_start][z]);
-          }
-          points++;
-        }
+    if ((Math.ceil(x_start) == this.calculateForm.width || Math.ceil(y_start) == this.calculateForm.height )){
+    // && (x_end == this.calculateForm.width || y_end == this.calculateForm.height)) {
+      if (type === 'coverage') {
+        zResult.push(0/0);
       } else {
-        points = 1;
-        if (type === 'coverage') {
-          if (Number(tempSinrValue[x_start][y_start][z]) > -7) {
-            totalValue=1;
-          }
-        } else {
-          totalValue = Number(valueArr[x_start][y_start][z]);
-        }
+        zResult.push(0/0);
       }
     } else {
-      for (let i = x_start;i < x_end;i++) {
-        for (let j = y_start;j < y_end;j++) {
+      if (x_end == this.calculateForm.width) {
+        x_end = x_end - 1;
+      }
+      if (y_end == this.calculateForm.height) {
+        y_end = y_end - 1;
+      }
+      for (let i = x_start;i <= x_end;i++) {
+        for (let j = y_start;j <= y_end;j++) {
           console.log(`${i} ${j}`);
           // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
           if (type === 'coverage') {
@@ -186,20 +167,22 @@ export class SubFieldComponent implements OnInit {
           points++;
         }
       }
-    }
-    // console.log(totalValue);
-    if (type === 'coverage') {
-      zResult.push(100*Number(this.financial(totalValue/points)));
-    } else {
-      zResult.push(this.financial(totalValue/points));
+      if (type === 'coverage') {
+        zResult.push(100*Number(this.financial(totalValue/points, 2)));
+      } else {
+        zResult.push(this.financial(totalValue/points, 2));
+      }
     }
     // }
-    
     return zResult;
   }
 
-  financial(x) {
-    return Number.parseFloat(x).toFixed(2);
+  financial(x,point) {
+    if (point == 1) {
+      return Number.parseFloat(x).toFixed(1);
+    } else {
+      return Number.parseFloat(x).toFixed(2);
+    }
   }
 
   findSubFieldFontSize (width, height) {
@@ -312,6 +295,7 @@ export class SubFieldComponent implements OnInit {
     // 子場域
     let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
     let zValue = JSON.parse(this.calculateForm.zValue);
+    this.zNumber = zValue.length;
     console.log(sub_field_arr);
     if (sub_field_arr != null) {
       sub_field_arr.forEach(el => {
@@ -327,9 +311,9 @@ export class SubFieldComponent implements OnInit {
         // console.log(candidateList);
         for(let z = 0;z < zValue.length;z++) {
           this.subFieldList.push({
-            x: el.x,
-            y: el.y,
-            z: z,
+            x: this.financial(el.x,1),
+            y: this.financial(el.y,1),
+            z: zValue[z],
             width: el.width,
             height: el.height,
             // area: Math.round(Number(el.width)*Number(el.height)),
