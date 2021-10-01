@@ -139,18 +139,18 @@ export class SubFieldComponent implements OnInit {
     }
     // for(let z = 0;z < zValue.length;z++) {
     totalValue = 0;
-    if ((Math.ceil(x_start) == this.calculateForm.width || Math.ceil(y_start) == this.calculateForm.height )){
-    // && (x_end == this.calculateForm.width || y_end == this.calculateForm.height)) {
+    // 我只是想放N/A: (當x_start < x_end) ,y亦然
+    if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
       if (type === 'coverage') {
-        zResult.push(0/0);
+        zResult.push(0/0); // N/A
       } else {
-        zResult.push(0/0);
+        zResult.push(0/0); // N/A
       }
     } else {
-      if (x_end == this.calculateForm.width) {
+      if (x_end == Math.floor(this.calculateForm.width)) {
         x_end = x_end - 1;
       }
-      if (y_end == this.calculateForm.height) {
+      if (y_end == Math.floor(this.calculateForm.height)) {
         y_end = y_end - 1;
       }
       for (let i = x_start;i <= x_end;i++) {
