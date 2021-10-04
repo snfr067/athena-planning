@@ -112,6 +112,14 @@ export class SubFieldComponent implements OnInit {
   calSubFieldSignalValue(type, x, y, width, height, z) {
     // console.log(this.calculateForm);
     // console.log(this.result);
+    let covTh = 0;
+    if (this.calculateForm.mapProtocol == '5g') {
+      covTh = -1.889;
+    } else if (this.calculateForm.mapProtocol == '4g') {
+      covTh = -7;
+    } else {
+      covTh = 1;
+    }
     let x_start = Math.ceil(x);
     let x_end = Math.floor(x+width);
     let y_start = Math.ceil(y);
@@ -120,7 +128,7 @@ export class SubFieldComponent implements OnInit {
     // let x_range = x_end - x_start;
     // let y_range = y_end - y_start;
     // let area = x_range*y_range;
-    console.log(`${x_start} ${x_end} ${y_start} ${y_end} `);
+    // console.log(`${x_start} ${x_end} ${y_start} ${y_end} `);
     // let zValue = JSON.parse(this.calculateForm.zValue);
     let zResult = [];
     let valueArr;
@@ -155,10 +163,10 @@ export class SubFieldComponent implements OnInit {
       }
       for (let i = x_start;i <= x_end;i++) {
         for (let j = y_start;j <= y_end;j++) {
-          console.log(`${i} ${j}`);
+          // console.log(`${i} ${j}`);
           // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
           if (type === 'coverage') {
-            if (Number(tempSinrValue[i][j][z]) > -7) {
+            if (Number(tempSinrValue[i][j][z]) > covTh) {
               totalValue+=1;
             }
           } else {
