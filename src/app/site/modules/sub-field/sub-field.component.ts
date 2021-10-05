@@ -168,6 +168,8 @@ export class SubFieldComponent implements OnInit {
           if (type === 'coverage') {
             if (Number(tempSinrValue[i][j][z]) > covTh) {
               totalValue+=1;
+            } else {
+              console.log(Number(tempSinrValue[i][j][z])+" "+covTh);
             }
           } else {
             totalValue += Number(valueArr[i][j][z]);
@@ -176,7 +178,7 @@ export class SubFieldComponent implements OnInit {
         }
       }
       if (type === 'coverage') {
-        zResult.push(100*Number(this.financial(totalValue/points, 2)));
+        zResult.push(this.financial(Number(totalValue/points)*100, 2));
       } else {
         zResult.push(this.financial(totalValue/points, 2));
       }
