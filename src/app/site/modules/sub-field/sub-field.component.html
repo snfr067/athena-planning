@@ -1,10 +1,10 @@
 <table #subFieldTbody id="subField" style="table-layout: fixed">
   <tbody>
 		<tr>
-				<th class="panel center" colspan="8"><label class="bold">{{ 'subfield' | translate }}</label></th>
+				<th class="panel center" colspan="6"><label class="bold">{{ 'subfield' | translate }}</label></th>
 		</tr>
 		<tr>
-				<td id="layout_td" colspan="8" class="mapType">
+				<td id="layout_td" colspan="6" class="mapType">
 					<div id="layout_chart2" #layoutChart style="z-index:1;position: relative;">
 						<span *ngFor="let item of rectList; let i = index" [attr.data-index]="i" [ngStyle]="item.style">
 							<!-- <span *ngFor="let item of rectList" [ngStyle]="item.style"> -->
@@ -36,8 +36,8 @@
 				<th>{{ 'subfield.coverage' | translate }}</th>
 				<th>{{ 'subfield.quality' | translate }}</th>
 				<th>{{ 'subfield.strength' | translate }}</th>
-				<th>{{ 'subfield.dltpt' | translate }}</th>
-				<th>{{ 'subfield.ultpt' | translate }}</th>
+				<!-- <th>{{ 'subfield.dltpt' | translate }}</th> -->
+				<!-- <th>{{ 'subfield.ultpt' | translate }}</th> -->
 		</tr>
 		<tr *ngFor="let item of subFieldList; let i = index" [attr.data-index]="i">
 			<td class="choose"  *ngIf="zNumber == 1">{{ i/2+1 }}</td>
@@ -51,8 +51,8 @@
 			<td class="choose">{{ item.coverage }}%</td>
 			<td class="choose">{{ item.quality }}dB</td>
 			<td class="choose">{{ item.rsrp }}dBm</td>
-			<td class="choose">{{ item.dltpt }}Mbps</td>
-			<td class="choose">{{ item.ultpt }}Mbps</td>
+			<!-- <td class="choose">{{ item.dltpt }}Mbps</td>0 -->
+			<!-- <td class="choose">{{ item.ultpt }}Mbps</td> -->
 				<!-- <td class="choose"><label>{{ item[0] }}</label></td>
 				<td class="choose">{{ item[1] }}</td>
 				<td class="choose">{{ item[2] }}</td>
