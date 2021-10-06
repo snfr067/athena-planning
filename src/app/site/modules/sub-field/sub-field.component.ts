@@ -29,6 +29,7 @@ export class SubFieldComponent implements OnInit {
   /** 障礙物list */
   rectList = [];
   /** 子場域list */
+  // subFieldList = {};
   subFieldList = [];
   /** 建議方案 list */
   candidateList = [];
@@ -40,7 +41,7 @@ export class SubFieldComponent implements OnInit {
 
   shapes = [];
   annotations = [];
-
+  chartId;
   /** 圖element */
   @ViewChild('layoutChart') layoutChart: ElementRef;
   /** table element */
@@ -52,15 +53,17 @@ export class SubFieldComponent implements OnInit {
   @HostListener('window:resize') windowResize() {
     const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
     const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
-    Plotly.relayout('layout_chart2', {
+    Plotly.relayout(this.chartId, {
       width: maxWidth
     }).then(gd => {
-      const sizes = this.chartService.calResultSize(this.calculateForm, gd, maxWidth);
-      const layoutOption = {
-        width: sizes[0],
-        height: sizes[1]
-      };
-      Plotly.relayout('layout_chart2', layoutOption);
+      this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res => {
+        const layoutOption = {
+          width: res[0],
+          height: res[1]
+        };
+        this.reLayout(this.chartId, layoutOption);
+      });
+      // this.reLayout(this.chartId, layoutOption);
     });
   }
 
@@ -109,9 +112,11 @@ export class SubFieldComponent implements OnInit {
    * 上行傳輸速率
    * 下行傳輸速率
    */
-  calSubFieldSignalValue(type, x, y, width, height, z) {
+  calSubFieldSignalValue(type,z) {
+    // calSubFieldSignalValue(type, x, y, width, height, z) {
     // console.log(this.calculateForm);
     // console.log(this.result);
+    let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
     let covTh = 0;
     if (this.calculateForm.mapProtocol == '5g') {
       covTh = -1.889;
@@ -120,19 +125,11 @@ export class SubFieldComponent implements OnInit {
     } else {
       covTh = 1;
     }
-    let x_start = Math.ceil(x);
-    let x_end = Math.floor(x+width);
-    let y_start = Math.ceil(y);
-    let y_end = Math.floor(y+height);
-    let points = 0;
-    // let x_range = x_end - x_start;
-    // let y_range = y_end - y_start;
-    // let area = x_range*y_range;
-    // console.log(`${x_start} ${x_end} ${y_start} ${y_end} `);
-    // let zValue = JSON.parse(this.calculateForm.zValue);
-    let zResult = [];
+    let zResult;
     let valueArr;
-    let totalValue, tempSinrValue = 0;
+    let totalValue = 0, tempSinrValue = 0;
+    let points = 0;
+
     if (type === 'quality') {
       valueArr = this.result['sinrMap'];
     } else if (type === 'coverage') {
@@ -145,45 +142,49 @@ export class SubFieldComponent implements OnInit {
     } else {
       valueArr = this.result['ulThroughputMap'];
     }
-    // for(let z = 0;z < zValue.length;z++) {
-    totalValue = 0;
-    // 我只是想放N/A: (當x_start < x_end) ,y亦然
-    if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
-      if (type === 'coverage') {
-        zResult.push(0/0); // N/A
-      } else {
-        zResult.push(0/0); // N/A
-      }
-    } else {
-      if (x_end == Math.floor(this.calculateForm.width)) {
-        x_end = x_end - 1;
-      }
-      if (y_end == Math.floor(this.calculateForm.height)) {
-        y_end = y_end - 1;
-      }
-      for (let i = x_start;i <= x_end;i++) {
-        for (let j = y_start;j <= y_end;j++) {
-          // console.log(`${i} ${j}`);
-          // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
-          if (type === 'coverage') {
-            if (Number(tempSinrValue[i][j][z]) > covTh) {
-              totalValue+=1;
-            } else {
-              console.log(Number(tempSinrValue[i][j][z])+" "+covTh);
-            }
-          } else {
-            totalValue += Number(valueArr[i][j][z]);
-          }
-          points++;
+    for (let i = 0;i < sub_field_arr.length;i++) {
+      let x_start = Math.ceil(Number(sub_field_arr[i].x));
+      let x_end = Math.floor(Number(sub_field_arr[i].x)+Number(sub_field_arr[i].width));
+      let y_start = Math.ceil(Number(sub_field_arr[i].y));
+      let y_end = Math.floor(Number(sub_field_arr[i].y)+Number(sub_field_arr[i].height));
+      // 我只是想放N/A: (當x_start < x_end) ,y亦然
+      if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
+        if (type === 'coverage') {
+          zResult = 0/0; // N/A
+        } else {
+          zResult = 0/0; // N/A
         }
-      }
-      if (type === 'coverage') {
-        zResult.push(this.financial(Number(totalValue/points)*100, 2));
       } else {
-        zResult.push(this.financial(totalValue/points, 2));
+        if (x_end == Math.floor(this.calculateForm.width)) {
+          x_end = x_end - 1;
+        }
+        if (y_end == Math.floor(this.calculateForm.height)) {
+          y_end = y_end - 1;
+        }
+        for (let i = x_start;i <= x_end;i++) {
+          for (let j = y_start;j <= y_end;j++) {
+            // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
+            if (type === 'coverage') {
+              if (Number(tempSinrValue[i][j][z]) > covTh) {
+                totalValue+=1;
+              } else {
+                // console.log(Number(tempSinrValue[i][j][z])+" "+covTh);
+              }
+            } else {
+              totalValue += Number(valueArr[i][j][z]);
+            }
+            points++;
+          }
+        }
+        
       }
     }
-    // }
+    if (type === 'coverage') {
+      zResult = this.financial(Number(totalValue/points)*100, 2);
+    } else {
+      zResult = this.financial(totalValue/points, 2);
+    }
+    
     return zResult;
   }
 
@@ -247,6 +248,7 @@ export class SubFieldComponent implements OnInit {
     } else {
       id = document.querySelector('#layout_chart2');
     }
+    this.chartId = id;
 
     // 子場域
     if (sessionStorage.getItem('sub_field_coor') != null) {
@@ -308,10 +310,10 @@ export class SubFieldComponent implements OnInit {
     this.zNumber = zValue.length;
     console.log(sub_field_arr);
     if (sub_field_arr != null) {
-      sub_field_arr.forEach(el => {
-        let ueList = this.calculateForm.ueCoordinate.split('|');
-        let defaultBsList = this.calculateForm.defaultBs.split('|');
-        let candidateList = this.result['chosenCandidate'];
+      // sub_field_arr.forEach(el => {
+        // let ueList = this.calculateForm.ueCoordinate.split('|');
+        // let defaultBsList = this.calculateForm.defaultBs.split('|');
+        // let candidateList = this.result['chosenCandidate'];
         // ueList.filter(ue => (JSON.parse(ue)[0] < (el.x + el.width) && JSON.parse(ue)[1] < (el.y + el.height)));
         // defaultBsList.filter(bs => (JSON.parse(bs)[0] < (el.x + el.width) && JSON.parse(bs)[1] < (el.y + el.height)));
         // candidateList.filter(bs => (JSON.parse(bs)[0] < (el.x + el.width) && JSON.parse(bs)[1] < (el.y + el.height)));
@@ -321,23 +323,28 @@ export class SubFieldComponent implements OnInit {
         // console.log(candidateList);
         for(let z = 0;z < zValue.length;z++) {
           this.subFieldList.push({
-            x: this.financial(el.x,1),
-            y: this.financial(el.y,1),
+            // x: this.financial(el.x,1),
+            // y: this.financial(el.y,1),
             z: zValue[z],
-            width: el.width,
-            height: el.height,
+            // width: el.width,
+            // height: el.height,
             // area: Math.round(Number(el.width)*Number(el.height)),
-            coverage: this.calSubFieldSignalValue('coverage',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
-            quality: this.calSubFieldSignalValue('quality',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
-            rsrp: this.calSubFieldSignalValue('rsrp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
-            dltpt: this.calSubFieldSignalValue('dltpt',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
-            ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            coverage: this.calSubFieldSignalValue('coverage',z),
+            quality: this.calSubFieldSignalValue('quality',z),
+            rsrp: this.calSubFieldSignalValue('rsrp',z),
+            dltpt: this.calSubFieldSignalValue('dltpt',z),
+            ultpt: this.calSubFieldSignalValue('ulptp',z),
+            // coverage: this.calSubFieldSignalValue('coverage',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            // quality: this.calSubFieldSignalValue('quality',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            // rsrp: this.calSubFieldSignalValue('rsrp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            // dltpt: this.calSubFieldSignalValue('dltpt',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
+            // ultpt: this.calSubFieldSignalValue('ulptp',Number(el.x),Number(el.y),Number(el.width),Number(el.height),z),
             ueNum: 0,
             defaultBsNum: 0,
             candidateBsNum: 0
           });
-        }
-      })
+        // }
+      }
     }
 
     if (this.calculateForm.ueCoordinate !== '') {
@@ -582,52 +589,16 @@ export class SubFieldComponent implements OnInit {
         item['style'].height = `${height}px`;
         item['svgStyle'].width = `${width}px`;
         item['svgStyle'].height = `${height}px`;
-        if (item.shape === 1) {
-          const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
-          item['points'] = points;
-          console.log(item, points);
-        }
-        window.setTimeout(() => {
-          item['style']['transform'] = `rotate(${item.rotate}deg)`;
-          item['style'].opacity = 1;
-        }, 0);
+        // if (item.shape === 1) {
+        //   const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
+        //   item['points'] = points;
+        //   console.log(item, points);
+        // }
+        // window.setTimeout(() => {
+        //   item['style']['transform'] = `rotate(${item.rotate}deg)`;
+        //   item['style'].opacity = 1;
+        // }, 0);
       }
-      // for (const item of this.defaultBsList) {
-      //   item['style'] = {
-      //     left: `${pixelXLinear(item.x)}px`,
-      //     bottom: `${pixelYLinear(item.y)}px`,
-      //     position: 'absolute'
-      //   };
-      //   item['circleStyle'] = {
-      //     left: `${pixelXLinear(item.x) + 15}px`,
-      //     bottom: `${pixelYLinear(item.y) + 25}px`,
-      //     position: 'absolute'
-      //   };
-      // }
-      // 新增基站
-      // const xy3: SVGRectElement = gd2.querySelector('.xy');
-      // const rect3 = xy3.getBoundingClientRect();
-      // const candisateXLinear = Plotly.d3.scale.linear()
-      //   .domain([0, this.calculateForm.width])
-      //   .range([0, rect3.width]);
-
-      // const candisateYLinear = Plotly.d3.scale.linear()
-      //   .domain([0, this.calculateForm.height])
-      //   .range([0, rect3.height]);
-      // for (const item of this.candidateList) {
-      //   item['style'] = {
-      //     left: `${candisateXLinear(item.x)}px`,
-      //     bottom: `${candisateYLinear(item.y)}px`,
-      //     position: 'absolute',
-      //     // visibility: this.showCandidate
-      //   };
-      //   item['circleStyle'] = {
-      //     left: `${candisateXLinear(item.x) + 15}px`,
-      //     bottom: `${candisateYLinear(item.y) + 25}px`,
-      //     position: 'absolute',
-      //     // visibility: this.showCandidate
-      //   };
-      // }
 
     });
   }

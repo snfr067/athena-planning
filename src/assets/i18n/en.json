@@ -350,7 +350,9 @@
 	"and": "and",
 	"overlap": "overlap",
 	"de": "s'",
-	"subfield": "subField Signal Coverage Analysis ",
+	"subfield": "subField",
+	"subfield.coverage.analysis": "subField Signal Coverage Analysis ",
+	
 	"pdf.fieldInfo": "Field Information",
 	"pdf.fieldParam": "Field Related Parameter",
 	"pdf.content": "Content",
@@ -371,6 +373,8 @@
 	"pdf.total": "Number",
 
 	"subfield.num": "SubField Number",
+	"subfield.z": "Map height",
+	"subfield.overlap":"SubFields overlaped",
 	"subfield.width.height": "Width/Height/Section Altitude",
 	"subfield.xy": "Coordinates of the lower left corner",
 	"subfield.area": "Area",

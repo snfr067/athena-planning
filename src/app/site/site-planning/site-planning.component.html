@@ -337,7 +337,7 @@
         (click)="$event.stopPropagation()" 
         [(colorPicker)]="color" 
         (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button>
-      <button class="rightClickBtnGroup" (click)="openHeightSetting()">
+      <button class="rightClickBtnGroup" (click)="openHeightSetting()" *ngIf="dragObject[svgId].type !== 'subField'">
         <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
           {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
         </ng-container>

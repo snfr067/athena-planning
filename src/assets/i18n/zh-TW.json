@@ -368,7 +368,10 @@
 	"pdf.total.item": "項目",
 	"pdf.total": "總數",
 
-	"subfield": "子場域訊號覆蓋分析",
+	"subfield": "子場域",
+	"subfield.z": "地圖切面(高度)",
+	"subfield.coverage.analysis": "子場域訊號覆蓋分析",
+	"subfield.overlap":"子場域重疊了",
 	"subfield.num": "子場域編號",
 	"subfield.xy": "子場域左下角座標",
 	"subfield.width.height": "長/寬/切面高度",

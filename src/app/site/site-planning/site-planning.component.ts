@@ -1861,7 +1861,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ellipseStyle[this.svgId].ry = x;
       this.ellipseStyle[this.svgId].cx = x;
       this.ellipseStyle[this.svgId].cy = x;
-
     } else if (Number(shape) === 1) {
       // 三角形
       const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
@@ -2301,6 +2300,50 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  checkSubFieldOverlaped() {
+    if (sessionStorage.getItem('sub_field_coor') == null) {
+      return false;
+    }
+    let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+    for (let i = 0;i < sub_field_arr.length;i++) {
+      let subfield = sub_field_arr[i];
+      let x2 = Number(subfield.x) + Number(subfield.width);
+      let x1 = Number(subfield.x);
+      let y1 = Number(subfield.y);
+      let y2 = Number(subfield.y) + Number(subfield.height);
+      console.log(`${x1} ${x2} ${y1} ${y2}`);
+      for (let j = i+1;j < sub_field_arr.length;j++) {
+        let subfield2 = sub_field_arr[j];
+        let flag1, flag2;
+        let xx2 = Number(subfield2.x) + Number(subfield2.width);
+        let xx1 = Number(subfield2.x);
+        let yy1 = Number(subfield2.y);
+        let yy2 = Number(subfield2.y) + Number(subfield2.height);
+        console.log(`${xx1} ${xx2} ${yy1} ${yy2}`);
+        if (x1 >= xx2 || x2 <= xx1) {
+          flag1 = false;
+        } else {
+          flag1 = true;
+        }
+        if (y1 >= yy2 || y2 <= yy1) {
+          flag2 = false;
+        } else {
+          flag2 = true;
+        }
+        if (flag1 && flag2) {
+          let warnmsg = this.translateService.instant('subfield.overlap');
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: warnmsg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          return true; // overlaped
+        }
+      }
+    }
+    return false;
+  }
+
   // 檢查是否有基地台的參數重疊
   checkRFParamIsOverlaped() {
     let warnmsg = "";
@@ -2705,21 +2748,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } catch (error) {}
 
     // 檢查既有基地台是否有參數未被填入
-    if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
-      return;
-    }
-
+    if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return; }
     // 檢查待選基地台參數 Todo
-    if (this.checkCandidateRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) {
-      return;
-    }
-
+    if (this.checkCandidateRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return;}
     //檢查是否有基地台頻寬重疊
-    if (this.checkRFParamIsOverlaped()) {
-      return;
-    } else {
-      // return;
-    }
+    if (this.checkRFParamIsOverlaped()) {return;}
+    //檢查子場域是否重疊
+    if (this.checkSubFieldOverlaped()) {return;} 
 
     if (this.planningIndex != '3' && this.duplexMode == 'fdd' && this.checkDlUlDiff()) {
       let msg = this.translateService.instant('dl_ul_freq_same')
@@ -5265,8 +5300,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ueList.forEach(el => {
         this.setUeSize(el);
       });
+      this.subFieldList.forEach(el => {
+        this.setSubFieldSize(el);
+      })
     } else {
-      
       // obstacleInfo
       this.obstacleList.length = 0;
       this.subFieldList.length = 0;
@@ -5300,7 +5337,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             width: item['width'],
             height: item['height'],
             // altitude: item[4],
-            // rotate: item[5],
+            rotate: 0,
             title: this.translateService.instant('subfield'),
             type: 'subField',
             color: this.OBSTACLE_COLOR,
@@ -5567,6 +5604,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** 運算結果 */
   result() {
+    //檢查子場域是否重疊
+    if (this.checkSubFieldOverlaped()) {return;} 
     // 規劃目標
     this.setPlanningObj();
     
