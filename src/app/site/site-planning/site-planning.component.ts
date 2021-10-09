@@ -2320,12 +2320,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         let yy1 = Number(subfield2.y);
         let yy2 = Number(subfield2.y) + Number(subfield2.height);
         console.log(`${xx1} ${xx2} ${yy1} ${yy2}`);
-        if (x1 >= xx2 || x2 <= xx1) {
+        if (x1 > xx2 || x2 < xx1) {
           flag1 = false;
         } else {
           flag1 = true;
         }
-        if (y1 >= yy2 || y2 <= yy1) {
+        if (y1 > yy2 || y2 < yy1) {
           flag2 = false;
         } else {
           flag2 = true;
