@@ -209,6 +209,10 @@ export class StatisticsComponent implements OnInit {
     });
   }
 
+  financial(x) {
+    return Number.parseFloat(x).toFixed(1);
+  }
+
   /**
    * 場域Modulation CDF圖
    * @param isPDF 
@@ -314,11 +318,11 @@ export class StatisticsComponent implements OnInit {
     const textposition = [];
     for (let i = 0; i < x.length; i++) {
       if (i === 0) {
-        textposition.push('top right');
+        textposition.push('top center','bottom center','middle center');
       } else if (i === x.length - 1) {
-        textposition.push('top left');
+        textposition.push('top left','bottom left','middle left');
       } else {
-        textposition.push('top');
+        textposition.push('top','bottom','middle');
       }
     }
 
@@ -335,11 +339,11 @@ export class StatisticsComponent implements OnInit {
         x: x,
         y: y[i],
         text: text[i],
-        textposition: textposition,
+        textposition: textposition[i],
         name: this.zValues[i] + 'm',
         hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
         textfont: {
-          size: 14,
+          size: 10,
           color: this.textColor
         },
         line: {
@@ -666,11 +670,11 @@ export class StatisticsComponent implements OnInit {
     const textposition = [];
     for (let i = 0; i < x.length; i++) {
       if (i === 0) {
-        textposition.push('top right');
+        textposition.push('top center','bottom center','middle center');
       } else if (i === x.length - 1) {
-        textposition.push('top left');
+        textposition.push('top left','bottom left','middle left');
       } else {
-        textposition.push('top');
+        textposition.push('top','bottom','middle');
       }
     }
 
@@ -687,11 +691,11 @@ export class StatisticsComponent implements OnInit {
         x: x,
         y: y[i],
         text: text[i],
-        textposition: textposition,
+        textposition: textposition[i],
         name: this.zValues[i] + 'm',
         hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
         textfont: {
-          size: 14,
+          size: 10,
           color: this.textColor
         },
         line: {
@@ -802,11 +806,11 @@ export class StatisticsComponent implements OnInit {
     const textposition = [];
     for (let i = 0; i < x.length; i++) {
       if (i === 0) {
-        textposition.push('top right');
+        textposition.push('top center','bottom center','middle center');
       } else if (i === x.length - 1) {
-        textposition.push('top left');
+        textposition.push('top left','bottom left','middle left');
       } else {
-        textposition.push('top');
+        textposition.push('top','bottom','middle');
       }
     }
 
@@ -816,9 +820,9 @@ export class StatisticsComponent implements OnInit {
       x: x,
       y: y,
       text: text,
-      textposition: textposition,
+      textposition: textposition[0],
       textfont: {
-        size: 14,
+        size: 10,
         color: this.textColor
       },
       line: {
@@ -1008,11 +1012,11 @@ export class StatisticsComponent implements OnInit {
     const textposition = [];
     for (let i = 0; i < x.length; i++) {
       if (i === 0) {
-        textposition.push('top right');
+        textposition.push('top center','bottom center','middle center');
       } else if (i === x.length - 1) {
-        textposition.push('top left');
+        textposition.push('top left','bottom left','middle left');
       } else {
-        textposition.push('top');
+        textposition.push('top','bottom','middle');
       }
     }
 
@@ -1022,9 +1026,9 @@ export class StatisticsComponent implements OnInit {
       x: x,
       y: y,
       text: text,
-      textposition: textposition,
+      textposition: textposition[0],
       textfont: {
-        size: 14,
+        size: 10,
         color: this.textColor
       },
       line: {
