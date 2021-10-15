@@ -778,7 +778,10 @@ export class PdfComponent implements OnInit {
         ]);
       }
     } else {
-      const defaultBs = this.calculateForm.defaultBs.split('|');
+      let defaultBs = this.calculateForm.defaultBs.split('|');
+      if (defaultBs.length == 1 && defaultBs[0] == '') {
+        defaultBs = [];
+      }
       let ulmsc = this.calculateForm.ulMcsTable;
       let dlmsc = this.calculateForm.dlMcsTable;
       let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
@@ -829,6 +832,7 @@ export class PdfComponent implements OnInit {
         }
       }
       
+      console.log(defaultBs);
       let defaultLen = defaultBs.length;
       for (let i=0;i < defaultLen;i++) {
         specData.push([

@@ -210,7 +210,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   financial(x) {
-    return Number.parseFloat(x).toFixed(1);
+    return Number.parseFloat(x).toFixed(2);
   }
 
   /**
@@ -258,6 +258,7 @@ export class StatisticsComponent implements OnInit {
           }
         },
         tickformat: ',.0%',
+        // dtick: '0.01',
         range: [0, 1.05]
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
@@ -330,9 +331,10 @@ export class StatisticsComponent implements OnInit {
       const sum = Plotly.d3.sum(yData[i]);
       for (const item of yData[i]) {
         percentage[i] = item / sum + percentage[i];
-        y[i].push(percentage[i]);
+        y[i].push(this.financial(Number(percentage[i])));
         text[i].push(`${this.fmt(percentage[i])}`);
       }
+      console.log(y[i]);
       traces.push({
         type: 'scatter',
         mode: 'lines+text',
@@ -341,14 +343,15 @@ export class StatisticsComponent implements OnInit {
         text: text[i],
         textposition: textposition[i],
         name: this.zValues[i] + 'm',
-        hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
+        hovertemplate: `%{x}<br>${this.zValues[i]}m: %{text}<extra></extra>`,
         textfont: {
           size: 10,
           color: this.textColor
         },
         line: {
           width: 3
-        }
+        },
+        
       });
     }
 
@@ -693,7 +696,7 @@ export class StatisticsComponent implements OnInit {
         text: text[i],
         textposition: textposition[i],
         name: this.zValues[i] + 'm',
-        hovertemplate: `%{x}<br>${this.zValues[i]}m: %{y}<extra></extra>`,
+        hovertemplate: `%{x}<br>${this.zValues[i]}m: %{text}<extra></extra>`,
         textfont: {
           size: 10,
           color: this.textColor
