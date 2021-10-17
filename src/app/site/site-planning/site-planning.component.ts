@@ -2742,7 +2742,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * 開始運算
    */
-  calculate() {
+  async calculate() {
     try {
       this.moveable.destroy();
     } catch (error) {}
@@ -2820,15 +2820,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.progressNum = 0;
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
-
-      // 障礙物計算時若莫名移動，還原位置
-      // for (const item of this.obstacleList) {
-      //   if (this.dragObject[item].x !== this.ognDragObject[item].x
-      //     || this.dragObject[item].y !== this.ognDragObject[item].y) {
-      //       this.spanStyle[item] = _.cloneDeep(this.ognSpanStyle[item]);
-      //       this.dragObject[item] = _.cloneDeep(this.ognDragObject[item]);
-      //     }
-      // }
       this.setForm();
       // 規劃目標
       this.setPlanningObj();
@@ -2850,6 +2841,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
+
+      // 紀錄左下角.moveable-sw位置，3d旋轉用
+      const ary = [];
+      for (const item of this.obstacleList) {
+        this.target = document.getElementById(item);
+        this.svgId = item;
+        this.moveClick(item);
+        await this.sleep(0);
+        this.moveable.ngOnInit();
+        await this.sleep(0);
+        const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
+        const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
+        const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
+        console.log(mOrigin);
+        ary.push({
+          x: Number(this.xLinear(x)),
+          y: Number(this.yLinear(y))
+        });
+        document.querySelector('.moveable-control-box').remove();
+      }
+      try {
+        document.querySelector('.moveable-control-box').remove();
+      } catch (error) {}
+      window.sessionStorage.setItem('for3d', JSON.stringify(ary));
       
       window.setTimeout(() => {
         this.http.post(url, JSON.stringify(apiBody)).subscribe(
@@ -6178,5 +6193,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   //     this.chartResize();
   //   }, 00);
   // }
+
+  sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
 
 }

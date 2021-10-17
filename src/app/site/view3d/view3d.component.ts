@@ -168,8 +168,11 @@ export class View3dComponent implements OnInit {
     floorMat.diffuseColor = new BABYLON.Color3(248 / 255, 248 / 255, 248 / 255);
     floor.material = floorMat;
 
+    const xy = JSON.parse(sessionStorage.getItem('xy'));
+
     const obstacleMat = new BABYLON.StandardMaterial('obstacleMaterial', scene);
     obstacleMat.diffuseColor = new BABYLON.Color3(121 / 255, 221 / 255, 242 / 255);
+    let i = 0;
     for (const item of this.obstacle) {
       // const item = this.obstacle[id];
       // const item = this.dragObject[id];
@@ -231,28 +234,13 @@ export class View3dComponent implements OnInit {
       } else {
         obstacle.position.y = depth + offsetY;
       }
-      obstacle.position.z = item.y + offsetZ;
 
-      if (item.element === 1 || item.element === 3) {
-        // 三角形與梯形
-        if (item.rotate > 134 || item.rotate < -134) {
-          obstacle.position.z = item.y + offsetZ + item.height;
-          obstacle.position.x = item.x + offsetX + item.width;
-        } else if (item.rotate > 44 || item.rotate < -44) {
-          obstacle.position.z = item.y + offsetZ + (item.width * 2);
-          obstacle.position.x = item.x + offsetX - (item.height / 2);
+      const ary = JSON.parse(window.sessionStorage.getItem('for3d'));
+      console.log(ary);
+      obstacle.position.x = Number(ary[i].x) + offsetX;
+      obstacle.position.z = Number(ary[i].y) + offsetZ;
 
-          
-
-        } else if (item.rotate !== 0) {
-          obstacle.position.x = item.x + offsetX - (item.width / 2);
-          const xxx = item.y + offsetZ + ((item.height - depth) / 2);
-          console.log(xxx, item.y+offsetZ, ((item.height - depth) / 2))
-          console.log((item.width) * Math.cos(obstacle.rotation.y))
-          obstacle.position.z = item.y + offsetZ + (item.width * Math.cos(item.rotate));
-        }
-        obstacle.computeWorldMatrix(true);
-      } else if (item.element === 2) {
+      if (item.element === 2) {
         // 圓形
         obstacle.position.x = item.x + offsetX + (item.height / 2);
         obstacle.position.z = item.y + offsetZ + (item.height / 2);
@@ -261,13 +249,10 @@ export class View3dComponent implements OnInit {
       if (item.element === 0) {
         obstacle.rotation.z = Math.PI / 2;
       }
-      
-      if (item.rotate !== 0 && item.element !== 2) {
-        obstacle.rotation.y = item.rotate * (Math.PI / 180);
-      }
+      obstacle.rotation.y = BABYLON.Tools.ToRadians(item.rotate);
       
       obstacle.material = obstacleMat;
-
+      i++;
       this.obstacleGroup.push(obstacle);
     }
 
@@ -360,10 +345,10 @@ export class View3dComponent implements OnInit {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
             heatmapMat.diffuseTexture = texture;
-            /**
-             * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
-             * 跟2d底圖相同，讓顏色相近於2d圖
-             */
+            // /**
+            //  * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
+            //  * 跟2d底圖相同，讓顏色相近於2d圖
+            //  */
             heatmapMat.alpha = 0.85;
             pciMapPlane.material = heatmapMat;
         }
