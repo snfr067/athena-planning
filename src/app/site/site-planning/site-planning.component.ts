@@ -1539,7 +1539,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.setTimeout(() => {
       this.live = true;
     }, 0);
-    console.log(id);
+    // console.log(id);
     this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
@@ -1556,7 +1556,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
-    console.log(this.frame);
+    // console.log(this.frame);
     // console.log(this.target);
     // console.log(this.spanStyle);
     // console.log(this.frame);
@@ -1575,7 +1575,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // 只開4個拖拉點
         this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
       } else {
-        console.log('Resizeeeee!');
+        // console.log('Resizeeeee!');
         this.moveable.rotatable = true;
         // 拖拉點全開
         this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
@@ -6188,14 +6188,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (const item of this.obstacleList) {
       this.target = document.getElementById(item);
       this.svgId = item;
-      this.moveClick(item);
+      // this.moveClick(item);
       await this.sleep(0);
       this.moveable.ngOnInit();
       await this.sleep(0);
       const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
       const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
       const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
-      console.log(mOrigin);
+      // console.log(mOrigin);
       ary.push({
         x: Number(this.xLinear(x)),
         y: Number(this.yLinear(y))
