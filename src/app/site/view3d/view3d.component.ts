@@ -168,8 +168,6 @@ export class View3dComponent implements OnInit {
     floorMat.diffuseColor = new BABYLON.Color3(248 / 255, 248 / 255, 248 / 255);
     floor.material = floorMat;
 
-    const xy = JSON.parse(sessionStorage.getItem('xy'));
-
     const obstacleMat = new BABYLON.StandardMaterial('obstacleMaterial', scene);
     obstacleMat.diffuseColor = new BABYLON.Color3(121 / 255, 221 / 255, 242 / 255);
     let i = 0;
@@ -199,15 +197,15 @@ export class View3dComponent implements OnInit {
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
 
       } else if (item.element === 2) {
-        // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景 似乎item.height - depth 物件才不會過大
-        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height - depth, item.height - depth, 99, 1, scene);
+        // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
+        obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height, item.height, 99, 1, scene);
       } else if (item.element === 3) {
-        // 梯形 似乎item.height - depth 物件才不會過大
+        // 梯形
         obstacleData = [
           new BABYLON.Vector3(0, 0, 0),
           new BABYLON.Vector3(item.width, 0, 0),
-          new BABYLON.Vector3(item.width * 0.75, 0, item.height - depth),
-          new BABYLON.Vector3(item.width * 0.25, 0, item.height - depth)
+          new BABYLON.Vector3(item.width * 0.75, 0, item.height),
+          new BABYLON.Vector3(item.width * 0.25, 0, item.height)
         ];
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
 
