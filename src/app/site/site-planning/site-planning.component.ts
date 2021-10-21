@@ -390,6 +390,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   duplexMode = "fdd";
   dlRatio = 70;
   scalingFactor = 1;
+  rsrpThreshold = 0;
+
   tempCalParamSet = {
     txpower: 0,
     beampattern: '0',
@@ -482,6 +484,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   ngOnInit() {
     window.sessionStorage.removeItem('tempParamForSelect');
+    if (!sessionStorage.getItem('rsrpThreshold')) {
+      sessionStorage.setItem('rsrpThreshold', JSON.stringify(0));
+    }
     // sessionStorage.removeItem('sub_field_coor');
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
@@ -6188,7 +6193,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (const item of this.obstacleList) {
       this.target = document.getElementById(item);
       this.svgId = item;
-      // this.moveClick(item);
+      this.moveClick(item);
       await this.sleep(0);
       this.moveable.ngOnInit();
       await this.sleep(0);
@@ -6206,6 +6211,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
     window.sessionStorage.setItem('for3d', JSON.stringify(ary));
+  }
+
+  changeRsrpThreshold() {
+    sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
   }
 
 }

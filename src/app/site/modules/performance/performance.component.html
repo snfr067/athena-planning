@@ -1,23 +1,26 @@
 <table id="performace" class="thCenter">
     <tbody>
         <tr>
-            <th class="panel" colspan="4"><label class="bold">{{ 'result.performance.field' | translate }}</label></th>
+            <th class="panel" colspan="5"><label class="bold">{{ 'result.performance.field' | translate }}</label></th>
         </tr>
         <tr>
-            <th>{{ 'result.img.section' | translate }}</th>
-            <th>{{ 'result.coverage' | translate }}</th>
-            <th>{{ 'result.averageSinr' | translate }}</th>
+            <th style="width:20%">{{ 'result.img.section' | translate }}</th>
+            <th style="width:20%">{{ 'result.coverage' | translate }}</th>
+            <th style="width:20%">{{ 'result.coverage.rsrp' | translate }}: {{rsrpTh}} dBm</th>
+            <th style="width:20%">{{ 'result.averageSinr' | translate }}</th>
             <th>{{ 'result.averageRsrp' | translate }}</th>
         </tr>
         <tr *ngFor="let item of zValueList">
             <td>{{ item[0] }} {{ 'meter' | translate }}</td>
             <td>{{ item[1] }}%</td>
+            <td>{{ item[4] }}%</td>
             <td>{{ item[2] | number }}dB</td>
             <td>{{ item[3] | number }}dBm</td> 
         </tr>
         <tr>
             <td>{{ 'result.average' | translate }}</td>
             <td>{{ result['coverage'] }}%</td>
+            <td>{{ avgCoverageRsrp }}%</td>
             <td>{{ result['averageSinr'] | number }}dB</td>
             <td>{{ result['averageRsrp'] | number }}dBm</td>
         </tr>

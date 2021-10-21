@@ -22,25 +22,49 @@ export class PerformanceComponent implements OnInit {
   zValueList = [];
   bsTptList = [];
   isHst = false;
+  rsrpTh = 0;
+  zCoverageRsrp;
+  avgCoverageRsrp = 0;
+
 
   ngOnInit(): void {
   }
 
   /** set data */
   setData() {
+    this.rsrpTh = Number(sessionStorage.getItem('rsrpThreshold'));
     // 地圖切面 list
+    console.log(this.result);
+    this.zCoverageRsrp = [0,0,0];
+    this.avgCoverageRsrp = 0;
     const zValues = this.calculateForm.zValue.replace('[', '').replace(']', '').split(',');
+    console.log(zValues.length);
+    for (let i = 0;i < zValues.length; i++) {
+      // this.zCoverageRsrp.push(0);
+      for (let j = 0;j < Math.floor(this.calculateForm.width);j++) {
+        for (let k = 0;k < Math.floor(this.calculateForm.height);k++) {
+          if (this.result['rsrpMap'][j][k][i] > this.rsrpTh) {
+            this.zCoverageRsrp[i]++;
+          }
+        }
+      }
+    }
+    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el/(this.calculateForm.width*this.calculateForm.height)*100));
+    console.log(this.zCoverageRsrp);
     for (let i = 0; i < zValues.length; i++) {
       this.zValueList.push([
         zValues[i],
         this.result['layeredCoverage'][i],
         Number(this.result['layeredAverageSinr'][i]),
-        Number(this.result['layeredAverageRsrp'][i])
+        Number(this.result['layeredAverageRsrp'][i]),
+        Number(this.financial(this.zCoverageRsrp[i]))
       ]);
+      this.avgCoverageRsrp += Number(this.zCoverageRsrp[i]);
     }
+    this.avgCoverageRsrp = Number(this.financial(this.avgCoverageRsrp/zValues.length));
+    
     // console.log(totalServingUe);
     if (this.isHst) {
-      // let totalServingCandBs = this.calculateForm.availableNewBsNumber - this.result['defaultidx'].length;
       let candidateNum = 0;
       if (this.calculateForm.candidateBs.includes('|')) {
         candidateNum = this.calculateForm.candidateBs.split('|').length;

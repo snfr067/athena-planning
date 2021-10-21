@@ -1025,6 +1025,11 @@
                   <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="scalingFactor">
                 </li>
 
+                <li>
+                  <p>{{ 'rsrp_coverage_th' | translate }}	</p>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="rsrpThreshold" (change)="changeRsrpThreshold()">dbm
+                </li>
+
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
                   <p>{{ 'uplink.frequency' | translate }}</p>
                   <span>
