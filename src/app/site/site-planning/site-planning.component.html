@@ -424,7 +424,7 @@
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
           <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
-            <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
+            <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber" (change)="changeAvailableNewBsNumber()">
           </div>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>

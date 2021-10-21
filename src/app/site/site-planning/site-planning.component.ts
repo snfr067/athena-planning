@@ -1288,6 +1288,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         fill: this.OBSTACLE_COLOR
       };
     } else if (id === 'defaultBS') {
+      if (this.defaultBSList.length >= 5) {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('liteon.defaultbs.error')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
       color = this.DEFAULT_BS_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       console.log(this.defaultBSList);
@@ -1333,6 +1341,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[this.svgId].wifiBandwidth = '20'
       }
     } else if (id === 'candidate') {
+      if (this.candidateList.length >= 10) {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('liteon.candidate.error')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.candidateList.push(this.svgId);
@@ -6215,6 +6231,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   changeRsrpThreshold() {
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
+  }
+
+  changeAvailableNewBsNumber() {
+    if (this.calculateForm.availableNewBsNumber >= 6) {
+      this.calculateForm.availableNewBsNumber = 5;
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('liteon.available.error')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
   }
 
 }
