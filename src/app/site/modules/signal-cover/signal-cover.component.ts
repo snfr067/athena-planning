@@ -246,13 +246,16 @@ export class SignalCoverComponent implements OnInit {
       }
       xIndex++;
     }
+
     // 取z的最大值
     const zMax = [];
     const zMin = [];
     for (const item of allZ) {
+      item.sort();
       zMax.push(Plotly.d3.max(item));
       zMin.push(Plotly.d3.min(item));
     }
+    console.log(zMax, zMin)
 
     console.log(`distinct connectionMap data`, allZ[zValues.indexOf(Number(this.zValue))]);
 
@@ -411,7 +414,7 @@ export class SignalCoverComponent implements OnInit {
           legendNum++;
         }
       }
-      
+
       if (defaultBs.length > 0) {
         let k = 1;
         // const candidateidx = this.result['candidateIdx'];
@@ -425,8 +428,9 @@ export class SignalCoverComponent implements OnInit {
           const min = zMin[zValues.indexOf(Number(this.zValue))];
           // Xean: 07/10 add legend color改用計算的
           let color;
-          if (allZero && defaultBs.length === 1) {
-            // 只有一個都是0的基站指定為藍色
+          console.log(`${this.translateService.instant('defaultBs')}${k} 座標 ${Math.floor(oData[0])},${Math.floor(oData[1])} connectionMap值 = ${z}`);
+          if (allZero) {
+            // 都是0的基站指定為藍色
             color = 'rgb(12,51,131)';
           } else {
             const zDomain = [];
