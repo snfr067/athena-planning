@@ -486,6 +486,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.sessionStorage.removeItem('tempParamForSelect');
     if (!sessionStorage.getItem('rsrpThreshold')) {
       sessionStorage.setItem('rsrpThreshold', JSON.stringify(0));
+    } else {
+      this.rsrpThreshold = Number(sessionStorage.getItem('rsrpThreshold'));
     }
     // sessionStorage.removeItem('sub_field_coor');
     this.view3dDialogConfig.autoFocus = false;
