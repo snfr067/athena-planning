@@ -3,6 +3,7 @@ import { CalculateForm } from '../../form/CalculateForm';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as BABYLON from 'babylonjs';
 import * as Earcut from 'earcut';
+import { AuthService } from '../../service/auth.service';
 
 declare var Plotly: any;
 
@@ -18,6 +19,7 @@ export class View3dComponent implements OnInit {
 
   constructor(
     private matDialog: MatDialog,
+    private authService: AuthService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data) {
 
       if (data != null) {
@@ -233,7 +235,7 @@ export class View3dComponent implements OnInit {
         obstacle.position.y = depth + offsetY;
       }
 
-      const ary = JSON.parse(window.localStorage.getItem('for3d'));
+      const ary = JSON.parse(window.localStorage.getItem(`${this.authService.userToken}for3d`));
       console.log(ary);
       obstacle.position.x = Number(ary[i].x) + offsetX;
       obstacle.position.z = Number(ary[i].y) + offsetZ;

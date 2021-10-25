@@ -2887,7 +2887,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
       isUeCoverage: this.calculateForm.isUeCoverage
     };
-    localStorage.setItem('planningObj', JSON.stringify(planningObj));
+    localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify(planningObj));
   }
 
   /** 組form */
@@ -6213,7 +6213,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
-    window.localStorage.setItem('for3d', JSON.stringify(ary));
+    window.localStorage.setItem(`${this.authService.userToken}for3d`, JSON.stringify(ary));
   }
 
   changeRsrpThreshold() {

@@ -163,8 +163,8 @@ export class AuthService {
 
   /** clear Storage */
   clearStorage() {
-    localStorage.removeItem('planningObj');
-    localStorage.removeItem('for3d');
+    localStorage.removeItem(`${this.userToken}planningObj`);
+    localStorage.removeItem(`${this.userToken}for3d`);
     sessionStorage.removeItem('rsrpThreshold');
     sessionStorage.removeItem('tempParamForSelect');
     sessionStorage.removeItem('calculateForm');

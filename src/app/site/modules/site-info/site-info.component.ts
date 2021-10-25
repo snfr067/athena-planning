@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CalculateForm } from '../../../form/CalculateForm';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../service/auth.service';
 
 /**
  * 結果頁場域設定資訊
@@ -12,7 +13,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SiteInfoComponent implements OnInit {
 
-  constructor(private translateService: TranslateService) { }
+  constructor(
+    private translateService: TranslateService,
+    private authService: AuthService
+  ) { }
 
   /** 結果data */
   result = {};
@@ -33,8 +37,8 @@ export class SiteInfoComponent implements OnInit {
 
   ngOnInit(): void {
     // console.log(sessionStorage.getItem('planningObj'));
-    if (localStorage.getItem('planningObj') != null) {
-      this.planningObj = JSON.parse(localStorage.getItem('planningObj'));
+    if (localStorage.getItem(`${this.authService.userToken}planningObj`) != null) {
+      this.planningObj = JSON.parse(localStorage.getItem(`${this.authService.userToken}planningObj`));
       console.log(this.planningObj);
     }
     // console.log(this.result);
