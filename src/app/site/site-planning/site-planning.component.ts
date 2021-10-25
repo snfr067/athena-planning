@@ -495,8 +495,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
     this.msgDialogConfig.autoFocus = false;
-    sessionStorage.removeItem('planningObj');
-    sessionStorage.removeItem('for3d');
+    // clear Storage
+    this.authService.clearStorage();
     document.querySelector('body').style.overflow = 'hidden';
 
     for (let i = 0; i < 9; i++) {
@@ -2887,7 +2887,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
       isUeCoverage: this.calculateForm.isUeCoverage
     };
-    sessionStorage.setItem('planningObj', JSON.stringify(planningObj));
+    localStorage.setItem('planningObj', JSON.stringify(planningObj));
   }
 
   /** 組form */
@@ -6213,7 +6213,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
-    window.sessionStorage.setItem('for3d', JSON.stringify(ary));
+    window.localStorage.setItem('for3d', JSON.stringify(ary));
   }
 
   changeRsrpThreshold() {

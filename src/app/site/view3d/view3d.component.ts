@@ -233,7 +233,7 @@ export class View3dComponent implements OnInit {
         obstacle.position.y = depth + offsetY;
       }
 
-      const ary = JSON.parse(window.sessionStorage.getItem('for3d'));
+      const ary = JSON.parse(window.localStorage.getItem('for3d'));
       console.log(ary);
       obstacle.position.x = Number(ary[i].x) + offsetX;
       obstacle.position.z = Number(ary[i].y) + offsetZ;
