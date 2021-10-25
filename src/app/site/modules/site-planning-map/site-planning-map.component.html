@@ -1,6 +1,6 @@
 <div [ngStyle]="divStyle" id="sitePlanningMap">
   <div class="site_map_chart">
-    <input type="hidden" id="is_site_map" value="true">
+    <input type="hidden" id="is_site_map" value="true" style="z-index: 999">
     <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
 
     <div class="site_map_img" [ngStyle]="style" style="z-index: -1" >
@@ -10,20 +10,20 @@
           <g><rect [ngStyle]="item.svgStyle" stroke-width="1.5" x="0" y="0" /></g>
         </svg>
 
-        <svg *ngIf="item.shape == '1'" [ngStyle]="item.svgStyle" xmlns="http://www.w3.org/2000/svg">
-          <g>
+        <svg *ngIf="item.shape == '1'" class="drag_obj"  xmlns="http://www.w3.org/2000/svg" [ngStyle]="item.svgStyle">
+          <!-- <g>
             <rect x="-1" y="-1" width="32" height="32" fill="none"/>
             <g id="canvasGrid" display="none">
               <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="none"/>
             </g>
-          </g>
+          </g> -->
           <g>
-            <rect fill="#000000" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/>
-            <polygon fill="#000000" [attr.points]="item.points" />
+            <!-- <rect stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/> -->
+            <polygon [attr.points]="item.points" />
           </g>
         </svg>
 
-        <svg *ngIf="item.shape == '2'" [attr.width]="item.style.width" [attr.height]="item.style.height" xmlns="http://www.w3.org/2000/svg">
+        <svg *ngIf="item.shape == '2'" class="drag_obj" [attr.width]="item.style.width" [attr.height]="item.style.height" xmlns="http://www.w3.org/2000/svg">
           <g>
             <rect fill="none" id="canvas_background" height="32" width="20" y="-1" x="-1"/>
             <g display="none" id="canvasGrid">
@@ -36,7 +36,7 @@
           </g>
         </svg>
 
-        <svg *ngIf="item.shape == '3'" viewBox="0 0 30 30" preserveAspectRatio="none" [attr.width]="item.style.width" [attr.height]="item.style.height" xmlns="http://www.w3.org/2000/svg">
+        <svg *ngIf="item.shape == '3'" class="drag_obj" viewBox="0 0 30 30" preserveAspectRatio="none" [attr.width]="item.style.width" [attr.height]="item.style.height" xmlns="http://www.w3.org/2000/svg">
           <g>
             <rect x="-1" y="-1" height="20" width="25" fill="none" id="canvas_background2"></rect>
             <g id="canvasGrid" display="none">

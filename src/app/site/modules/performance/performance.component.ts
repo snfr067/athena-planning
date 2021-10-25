@@ -57,11 +57,11 @@ export class PerformanceComponent implements OnInit {
         this.result['layeredCoverage'][i],
         Number(this.result['layeredAverageSinr'][i]),
         Number(this.result['layeredAverageRsrp'][i]),
-        Number(this.financial(this.zCoverageRsrp[i]))
+        Number(this.floatToString(this.zCoverageRsrp[i]))
       ]);
       this.avgCoverageRsrp += Number(this.zCoverageRsrp[i]);
     }
-    this.avgCoverageRsrp = Number(this.financial(this.avgCoverageRsrp/zValues.length));
+    this.avgCoverageRsrp = Number(this.floatToString(this.avgCoverageRsrp/zValues.length));
     
     // console.log(totalServingUe);
     if (this.isHst) {
@@ -205,7 +205,11 @@ export class PerformanceComponent implements OnInit {
   }
 
   financial(x) {
-    return Number.parseFloat(x).toFixed(1);
+    return Number.parseFloat(x).toFixed(2);
+  }
+
+  floatToString(x) {
+    return Number.parseFloat(x).toString().slice(0,5);
   }
 
   /** parse無資料為 - */

@@ -246,13 +246,16 @@ export class SignalCoverComponent implements OnInit {
       }
       xIndex++;
     }
+
     // 取z的最大值
     const zMax = [];
     const zMin = [];
     for (const item of allZ) {
+      item.sort();
       zMax.push(Plotly.d3.max(item));
       zMin.push(Plotly.d3.min(item));
     }
+    console.log(zMax, zMin)
 
     console.log(`distinct connectionMap data`, allZ[zValues.indexOf(Number(this.zValue))]);
 
@@ -411,22 +414,17 @@ export class SignalCoverComponent implements OnInit {
           legendNum++;
         }
       }
-      
+
       if (defaultBs.length > 0) {
-        let k = 1;
-        // const candidateidx = this.result['candidateIdx'];
-        for (let i = 0; i < defaultBs.length; i++) {
-          const oData = defaultBs[i];
-          if (typeof zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])] === 'undefined') {
-            continue;
-          }
-          const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
+        const mapData = allZ[zValues.indexOf(Number(this.zValue))];
+        for (let i = 0; i < mapData.length; i++) {
+          legendNum = mapData[i] + 1;
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           const min = zMin[zValues.indexOf(Number(this.zValue))];
           // Xean: 07/10 add legend color改用計算的
           let color;
-          if (allZero && defaultBs.length === 1) {
-            // 只有一個都是0的基站指定為藍色
+          if (allZero) {
+            // 都是0的基站指定為藍色
             color = 'rgb(12,51,131)';
           } else {
             const zDomain = [];
@@ -437,30 +435,23 @@ export class SignalCoverComponent implements OnInit {
             }
             // 套件提供用range計算的方法
             const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-            color = colorFN(z);
+            color = colorFN(mapData[i]);
           }
 
-          // legend編號有在connectionMap裡的才呈現
-          if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
-            this.traces.push({
-              x: [0],
-              y: [0],
-              name: `${this.translateService.instant('defaultBs')} ${k}`,
-              marker: {
-                color: color,
-              },
-              type: 'bar',
-              hoverinfo: 'none',
-              showlegend: true
-            });
-  
-            apMap[z] = `${this.translateService.instant('defaultBs')} ${k}`;
-          } else {
-            console.log(`miss ${this.translateService.instant('default')} legend num ${legendNum}`);
-          }
-          
-          legendNum++;
-          k++;
+          // legend編號
+          this.traces.push({
+            x: [0],
+            y: [0],
+            name: `${this.translateService.instant('defaultBs')} ${legendNum}`,
+            marker: {
+              color: color,
+            },
+            type: 'bar',
+            hoverinfo: 'none',
+            showlegend: true
+          });
+
+          apMap[mapData[i]] = `${this.translateService.instant('defaultBs')} ${legendNum}`;
         }
       }
       

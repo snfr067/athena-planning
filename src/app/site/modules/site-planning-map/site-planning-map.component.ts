@@ -344,17 +344,18 @@ export class SitePlanningMapComponent implements OnInit {
             top: 0,
             width: oData[2],
             height: oData[3],
+            zIndex: -1,
             // transform: `rotate(${oData[5]}deg)`,
             position: 'absolute',
             visibility: this.showObstacle,
-            fill: oColor,
-            opacity: 1
+            // fill: oColor,
+            opacity: 0.3
           },
           svgStyle: {
             width: oData[2],
             height: oData[3],
-            fill: oColor,
-            opacity: 1
+            // fill: oColor,
+            // opacity: 0.3
           },
           hover: text
         });
@@ -598,7 +599,8 @@ export class SitePlanningMapComponent implements OnInit {
             y1: item.y + Number(yLinear(18)),
             fillcolor: '#005959',
             bordercolor: '#005959',
-            visible: this.showBs
+            visible: this.showBs,
+            layer: "above"
           });
 
           this.annotations.push({
@@ -612,7 +614,8 @@ export class SitePlanningMapComponent implements OnInit {
               color: '#fff',
               size: 10
             },
-            visible: this.showBs
+            visible: this.showBs,
+            layer: "above"
           });
         }
       }

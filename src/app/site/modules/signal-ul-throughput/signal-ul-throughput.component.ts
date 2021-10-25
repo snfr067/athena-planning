@@ -487,7 +487,7 @@ export class SignalUlThroughputComponent implements OnInit {
           svgStyle: {
             width: oData[2],
             height: oData[3],
-            fill: oColor,
+            // fill: oColor,
           },
           hover: text
         });
