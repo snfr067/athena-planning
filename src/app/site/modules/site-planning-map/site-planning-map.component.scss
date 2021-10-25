@@ -19,10 +19,11 @@
     font-size: 13px;
 }
 .drag_obj {
-  z-index: 9999!important;
+  z-index: -1!important;
   position: absolute;
   left: 0px;
   bottom: 0px;
+  opacity: 0.3;
 }
 .color_bar {
   position: absolute;

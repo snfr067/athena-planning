@@ -390,7 +390,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   duplexMode = "fdd";
   dlRatio = 70;
   scalingFactor = 1;
-  rsrpThreshold = 0;
+  rsrpThreshold = -90;
 
   tempCalParamSet = {
     txpower: 0,
@@ -485,7 +485,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   ngOnInit() {
     window.sessionStorage.removeItem('tempParamForSelect');
     if (!sessionStorage.getItem('rsrpThreshold')) {
-      sessionStorage.setItem('rsrpThreshold', JSON.stringify(0));
+      sessionStorage.setItem('rsrpThreshold', JSON.stringify(-90));
+      this.rsrpThreshold = -90;
     } else {
       this.rsrpThreshold = Number(sessionStorage.getItem('rsrpThreshold'));
     }

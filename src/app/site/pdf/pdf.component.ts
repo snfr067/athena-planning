@@ -123,6 +123,7 @@ export class PdfComponent implements OnInit {
       }
       this.http.get(url).subscribe(
         res => {
+          console.log(res);
           if (document.getElementById('pdf_area') != null) {
             document.getElementById('pdf_area').style.display = 'block';
           }
@@ -132,7 +133,7 @@ export class PdfComponent implements OnInit {
             this.result = this.formService.setHstOutputToResultOutput(res['output']);
             this.result['createTime'] = res['createtime'];
             const form = res;
-            delete form['output'];
+            // delete form['output'];
             this.calculateForm = this.formService.setHstToForm(form);
             this.result['inputWidth'] = this.calculateForm.width;
             this.result['inputHeight'] = this.calculateForm.height;
@@ -461,7 +462,7 @@ export class PdfComponent implements OnInit {
             console.log(this.result);
             window.setTimeout(() => {
               this.genericPDF(this.calculateForm.taskName);
-            }, 2000);
+            }, 3000);
           }, 0);
         }
       );
