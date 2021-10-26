@@ -5615,13 +5615,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 紀錄左下角.moveable-sw位置，3d旋轉用
     await this.set3dPosition();
     this.authService.spinnerHide();
-    
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }});
     } else {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
     }
-    
   }
 
   /**
@@ -6196,7 +6194,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (const item of this.obstacleList) {
       this.target = document.getElementById(item);
       this.svgId = item;
-      this.moveClick(item);
+      // this.moveClick(item);
       await this.sleep(0);
       this.moveable.ngOnInit();
       await this.sleep(0);
@@ -6204,12 +6202,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
       const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
       // console.log(mOrigin);
-      ary.push({
-        x: Number(this.xLinear(x)),
-        y: Number(this.yLinear(y))
-      });
+      ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
       document.querySelector('.moveable-control-box').remove();
     }
+    console.log(ary)
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}

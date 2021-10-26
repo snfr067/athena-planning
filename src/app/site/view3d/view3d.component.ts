@@ -170,6 +170,9 @@ export class View3dComponent implements OnInit {
     floorMat.diffuseColor = new BABYLON.Color3(248 / 255, 248 / 255, 248 / 255);
     floor.material = floorMat;
 
+    const ary = JSON.parse(window.localStorage.getItem(`${this.authService.userToken}for3d`));
+    console.log(ary);
+
     const obstacleMat = new BABYLON.StandardMaterial('obstacleMaterial', scene);
     obstacleMat.diffuseColor = new BABYLON.Color3(121 / 255, 221 / 255, 242 / 255);
     let i = 0;
@@ -235,10 +238,8 @@ export class View3dComponent implements OnInit {
         obstacle.position.y = depth + offsetY;
       }
 
-      const ary = JSON.parse(window.localStorage.getItem(`${this.authService.userToken}for3d`));
-      console.log(ary);
-      obstacle.position.x = Number(ary[i].x) + offsetX;
-      obstacle.position.z = Number(ary[i].y) + offsetZ;
+      obstacle.position.x = Number(ary[i][0]) + offsetX;
+      obstacle.position.z = Number(ary[i][1]) + offsetZ;
 
       if (item.element === 2) {
         // 圓形

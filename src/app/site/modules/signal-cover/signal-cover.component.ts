@@ -415,10 +415,35 @@ export class SignalCoverComponent implements OnInit {
         }
       }
 
-      if (defaultBs.length > 0) {
+      const defaultBsLen = defaultBs.length;
+      if (defaultBsLen > 0) {
+        const defaultBsAry = [];
+        for (let i = 0; i < defaultBsLen; i++) {
+          defaultBsAry.push(i);
+        }
+
         const mapData = allZ[zValues.indexOf(Number(this.zValue))];
         for (let i = 0; i < mapData.length; i++) {
-          legendNum = mapData[i] + 1;
+          let useNum = 0;
+          let showNum = 0;
+          if (this.calculateForm.candidateBs !== '') {
+            useNum += legendNum;
+          } else {
+            useNum = mapData[i];
+          }
+
+          if (defaultBsLen > 1) {
+            showNum += useNum;
+          } else {
+            // 只有一個基站時為0
+            showNum = 0;
+          }
+          
+          if (!defaultBsAry.includes(i)) {
+            legendNum++;
+            continue;
+          }
+
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           const min = zMin[zValues.indexOf(Number(this.zValue))];
           // Xean: 07/10 add legend color改用計算的
@@ -435,14 +460,14 @@ export class SignalCoverComponent implements OnInit {
             }
             // 套件提供用range計算的方法
             const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-            color = colorFN(mapData[i]);
+            color = colorFN(useNum);
           }
 
           // legend編號
           this.traces.push({
             x: [0],
             y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${legendNum}`,
+            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`,
             marker: {
               color: color,
             },
@@ -451,7 +476,8 @@ export class SignalCoverComponent implements OnInit {
             showlegend: true
           });
 
-          apMap[mapData[i]] = `${this.translateService.instant('defaultBs')} ${legendNum}`;
+          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`;
+          legendNum++;
         }
       }
       
