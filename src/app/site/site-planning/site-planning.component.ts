@@ -2868,7 +2868,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.authService.spinnerShowAsHome();
 
       // 紀錄左下角.moveable-sw位置，3d旋轉後位置用
-      this.set3dPosition();
+      // this.set3dPosition();
       
       window.setTimeout(() => {
         this.http.post(url, JSON.stringify(apiBody)).subscribe(
@@ -5629,7 +5629,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.setPlanningObj();
     this.authService.spinnerShow();
     // 紀錄左下角.moveable-sw位置，3d旋轉用
-    await this.set3dPosition();
+    // await this.set3dPosition();
     this.authService.spinnerHide();
     
     if (this.isHst) {
