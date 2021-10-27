@@ -361,7 +361,7 @@ export class SignalCoverComponent implements OnInit {
             cx.push(oData[0]);
             cy.push(oData[1]);
 
-            const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
+            // const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
             const max = zMax[zValues.indexOf(Number(this.zValue))];
             const min = zMin[zValues.indexOf(Number(this.zValue))];
             // legend
@@ -378,7 +378,7 @@ export class SignalCoverComponent implements OnInit {
               }
               // 套件提供用range計算的方法
               const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-              color = colorFN(z);
+              color = colorFN(j);
             }
 
             // legend編號有在connectionMap裡的才呈現
@@ -397,7 +397,7 @@ export class SignalCoverComponent implements OnInit {
               });
 
               // tooltip對應用
-              apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
+              apMap[j] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
 
               this.candidateList.push({
                 x: oData[0],
