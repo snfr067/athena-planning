@@ -17,7 +17,7 @@
             <td>{{ item[2] | number }}dB</td>
             <td>{{ item[3] | number }}dBm</td> 
         </tr>
-        <tr>
+        <tr class="avg">
             <td>{{ 'result.average' | translate }}</td>
             <td>{{ result['coverage'] }}%</td>
             <td>{{ avgCoverageRsrp }}%</td>
@@ -47,6 +47,14 @@
             <td>{{ financial(item[3]) }}Mbps</td>
             <td>{{ item[4] }}</td>
             <td>{{ item[5] }}</td>
+        </tr>
+        <tr class="avg">
+            <td>{{ bsTptAvg[0] }}</td>
+            <td>{{ (bsTptAvg[1]) | number }}</td>
+            <td>{{ financial(bsTptAvg[2]) }}Mbps</td>
+            <td>{{ financial(bsTptAvg[3]) }}Mbps</td>
+            <td>{{ bsTptAvg[4] }}</td>
+            <td>{{ bsTptAvg[5] }}</td>
         </tr>
     </tbody>
 </table>

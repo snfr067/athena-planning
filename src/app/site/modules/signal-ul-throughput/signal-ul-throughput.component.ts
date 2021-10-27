@@ -297,6 +297,7 @@ export class SignalUlThroughputComponent implements OnInit {
     let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
     let unit = (scalemax-scalemin)/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    sessionStorage.setItem('ulTpt_scale',JSON.stringify(scaleunit));
     let scaleunitText = [`${scalemax}Mbps`, `${scalemax-unit}Mbps`, `${scalemax-2*unit}Mbps`, `${scalemax-3*unit}Mbps`, `${scalemin}Mbps`];
 
     const trace = {

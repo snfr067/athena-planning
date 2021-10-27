@@ -103,12 +103,19 @@ export class View3dComponent implements OnInit {
   /** 訊號覆蓋圖是否為藍色 */
   isCoverBlue = true;
   /** 跟2d圖相同的colorscale */
+  // colorscale: any = [
+  //   [0, 'rgb(12,51,131)'],
+  //   [0.25, 'rgb(10,136,186)'],
+  //   [0.5, 'rgb(242,211,56)'],
+  //   [0.75, 'rgb(242,143,56)'],
+  //   [1, 'rgb(217,30,30)']
+  // ];
   colorscale: any = [
-    [0, 'rgb(12,51,131)'],
-    [0.25, 'rgb(10,136,186)'],
-    [0.5, 'rgb(242,211,56)'],
-    [0.75, 'rgb(242,143,56)'],
-    [1, 'rgb(217,30,30)']
+    [0, 'rgb(11,49,132)'],
+    [0.25, 'rgb(11,131,182)'],
+    [0.5, 'rgb(239,207,60)'],
+    [0.75, 'rgb(238,144,55)'],
+    [1, 'rgb(212,31,36)']
   ];
 
   /** canvas element */
@@ -563,12 +570,18 @@ export class View3dComponent implements OnInit {
 
     const min = -8;
     const max = 24;
-    const zDomain = [];
+    let zDomain = [];
     const colorRange = [];
-    for (let k = 0; k < sinrColorscale.length; k++) {
-      zDomain.push((max - min) * sinrColorscale[k][0] + min);
-      colorRange.push(sinrColorscale[k][1]);
+    // for (let k = 0; k < sinrColorscale.length; k++) {
+    //   zDomain.push((max - min) * sinrColorscale[k][0] + min);
+    //   colorRange.push(sinrColorscale[k][1]);
+    // }
+    for (let k = 0; k < this.colorscale.length; k++) {
+      // zDomain.push((max - min) * this.colorscale[k][0] + min);
+      zDomain = JSON.parse(sessionStorage.getItem('quality_scale')).reverse();
+      colorRange.push(this.colorscale[k][1]);
     }
+    // alert(zDomain);
 
     for (let j = 0; j < this.height; j++) {
         for (let i = 0; i < this.width; i++) {
@@ -641,11 +654,12 @@ export class View3dComponent implements OnInit {
     const max = -44;
     const min = -140;
     // 計算顏色區間公式的domain
-    const zDomain = [];
+    let zDomain = [];
     // 計算顏色區間公式的range
     const colorRange = [];
     for (let k = 0; k < this.colorscale.length; k++) {
-      zDomain.push((max - min) * this.colorscale[k][0] + min);
+      // zDomain.push((max - min) * this.colorscale[k][0] + min);
+      zDomain = JSON.parse(sessionStorage.getItem('strength_scale')).reverse();
       colorRange.push(this.colorscale[k][1]);
     }
 
@@ -713,10 +727,11 @@ export class View3dComponent implements OnInit {
     if (this.result['gaResult'].ulThroughputMap != null && this.result['gaResult'].ulThroughputMap.length > 0) {
       const max = 1200;
       const min = 100;
-      const zDomain = [];
+      let zDomain = [];
       const colorRange = [];
       for (let k = 0; k < this.colorscale.length; k++) {
-        zDomain.push((max - min) * this.colorscale[k][0] + min);
+        // zDomain.push((max - min) * this.colorscale[k][0] + min);
+        zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
         colorRange.push(this.colorscale[k][1]);
       }
       for (let j = 0; j < this.height; j++) {
@@ -799,10 +814,11 @@ export class View3dComponent implements OnInit {
                 colorMap[n + 1] = 255;
                 colorMap[n + 2] = 255;
               } else {
-                const zDomain = [];
+                let zDomain = [];
                 const colorRange = [];
                 for (let k = 0; k < this.colorscale.length; k++) {
-                  zDomain.push((max - min) * this.colorscale[k][0] + min);
+                  // zDomain.push((max - min) * this.colorscale[k][0] + min);
+                  zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
                   colorRange.push(this.colorscale[k][1]);
                 }
                 // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
