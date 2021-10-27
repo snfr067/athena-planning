@@ -418,29 +418,12 @@ export class SignalCoverComponent implements OnInit {
       const defaultBsLen = defaultBs.length;
       if (defaultBsLen > 0) {
         const defaultBsAry = [];
-        for (let i = 0; i < defaultBsLen; i++) {
-          defaultBsAry.push(i);
-        }
-
         const mapData = allZ[zValues.indexOf(Number(this.zValue))];
-        for (let i = 0; i < mapData.length; i++) {
-          let useNum = 0;
-          let showNum = 0;
-          if (this.calculateForm.candidateBs !== '') {
-            useNum += legendNum;
-          } else {
-            useNum = mapData[i];
-          }
 
-          if (defaultBsLen > 1) {
-            showNum += useNum;
-          } else {
-            // 只有一個基站時為0
-            showNum = 0;
-          }
+        for (let i = 0; i < defaultBsLen; i++) {
+          const useNum = legendNum + i;
           
-          if (!defaultBsAry.includes(i)) {
-            legendNum++;
+          if (!mapData.includes(useNum)) {
             continue;
           }
 
@@ -467,7 +450,7 @@ export class SignalCoverComponent implements OnInit {
           this.traces.push({
             x: [0],
             y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`,
+            name: `${this.translateService.instant('defaultBs')} ${(i + 1)}`,
             marker: {
               color: color,
             },
@@ -476,8 +459,13 @@ export class SignalCoverComponent implements OnInit {
             showlegend: true
           });
 
-          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`;
-          legendNum++;
+          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(i + 1)}`;
+          // legendNum++;
+        }
+
+        
+        for (let i = 0; i < mapData.length; i++) {
+          
         }
       }
       

@@ -3219,7 +3219,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           sessionStorage.removeItem('calculateForm');
           sessionStorage.removeItem('importFile');
           sessionStorage.removeItem('taskName');
-          this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
+          this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
+            location.reload();
+          });;
           
         } else {
           // query again
@@ -3243,7 +3245,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           const resultUrl = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
           this.http.get(resultUrl).subscribe(
             res => {
-              this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
+              this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
+                location.reload();
+              });;
             }
           );
         }
@@ -5616,9 +5620,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     await this.set3dPosition();
     this.authService.spinnerHide();
     if (this.isHst) {
-      this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }});
+      this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }}).then(() => {
+        location.reload();
+      });
     } else {
-      this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
+      this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
+        location.reload();
+      });
     }
   }
 
