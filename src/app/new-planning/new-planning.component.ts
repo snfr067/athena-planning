@@ -114,6 +114,7 @@ export class NewPlanningComponent implements OnInit {
     // clear表單頁timeInterval
     window.clearInterval(this.timeInterval);
     sessionStorage.setItem('calculateForm', JSON.stringify(this.calculateForm));
+    console.log(this.calculateForm);
     this.matDialog.closeAll();
     // location to 場域頁
     this.router.navigate(['/site/site-planning']);
