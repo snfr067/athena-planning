@@ -127,7 +127,11 @@ export class StatisticsComponent implements OnInit {
           font: {
             color: this.textColor
           }
-        }
+        },
+        tickformat: ',.0%',
+        // dtick: '0.01',
+        range: [0, 1.05]
+
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
       hovermode: 'closest',
@@ -169,9 +173,9 @@ export class StatisticsComponent implements OnInit {
     const y = [];
     const text = [];
     let k = 0;
-    for (const item of this.result['layeredModulationCount']) {
-      const len = item.length;
-      for (let i = 0; i < len; i++) {
+    for (const item of this.result['layeredModulationCount']) { //4個
+      const len = item.length; // 看有幾個zvalue
+      for (let i = 0; i < len; i++) { // 看有幾個zvalue
         if (k === 0) {
           y.push([]);
           text.push([]);
@@ -183,9 +187,11 @@ export class StatisticsComponent implements OnInit {
 
     for (let i = 0; i < y.length; i++) {
       const sum = Plotly.d3.sum(y[i]);
+      y[i] = y[i].map(el => el/sum);
       for (let n = 0; n < layeredLen; n++) {
-        text[i].push((y[i][n] === 0 ? 0 : this.fmt(y[i][n] / sum)));
+        text[i].push((this.financial(y[i][n]*100)+'%'));
       }
+
 
       traces.push({
         type: 'bar',
@@ -258,7 +264,6 @@ export class StatisticsComponent implements OnInit {
           }
         },
         tickformat: ',.0%',
-        // dtick: '0.01',
         range: [0, 1.05]
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
@@ -407,7 +412,9 @@ export class StatisticsComponent implements OnInit {
           font: {
             color: this.textColor
           }
-        }
+        },
+        tickformat: ',.0%',
+        range: [0, 1.05]
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
       hovermode: 'closest',
@@ -440,15 +447,16 @@ export class StatisticsComponent implements OnInit {
         x = ['QPSK', '16-QAM', '64-QAM', '256-QAM'];
       }
     }
-    const y = this.result['ueModulationCount'];
+    let y = this.result['ueModulationCount'];
+    const sum = Plotly.d3.sum(y);
     const text = [];
     if (this.calculateForm.ueCoordinate !== '') {
-      const sum = Plotly.d3.sum(y);
       const fmt = Plotly.d3.format('.0%');
       for (let i = 0; i < layeredLen; i++) {
         text.push(fmt(y[i] / sum));
       }
     }
+    y = y.map(el => this.financial(el/sum));
 
     traces.push({
       type: 'bar',
@@ -515,7 +523,10 @@ export class StatisticsComponent implements OnInit {
           font: {
             color: this.textColor
           }
-        }
+        },
+        tickformat: ',.0%',
+        // dtick: '0.01',
+        range: [0, 1.05]
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
       hovermode: 'closest',
@@ -556,8 +567,10 @@ export class StatisticsComponent implements OnInit {
 
     for (let i = 0; i < y.length; i++) {
       const sum = Plotly.d3.sum(y[i]);
+      y[i] = y[i].map(el => el/sum);
       for (const item of y[i]) {
-        text[i].push((item === 0 ? 0 : this.fmt(item / sum)));
+        text[i].push(this.financial(item*100)+'%');
+        // text[i].push((item === 0 ? 0 : this.fmt(item / sum)));
       }
       traces.push({
         type: 'bar',
@@ -886,7 +899,9 @@ export class StatisticsComponent implements OnInit {
           font: {
             color: this.textColor
           }
-        }
+        },
+        tickformat: ',.0%',
+        range: [0, 1.05]
       },
       margin: { t: 30, b: 40, l: 50, r: 10},
       hovermode: 'closest',
@@ -903,15 +918,16 @@ export class StatisticsComponent implements OnInit {
 
     const traces = [];
     const x = ['0', '1', '2', '3', '4', '5'];
-    const y = this.result['ueSignalLevelCount'];
+    let y = this.result['ueSignalLevelCount'];
     const text = [];
+    const sum = Plotly.d3.sum(y);
     if (this.calculateForm.ueCoordinate !== '') {
-      const sum = Plotly.d3.sum(y);
       const fmt = Plotly.d3.format('.0%');
       for (let i = 0; i < y.length; i++) {
         text.push(fmt(y[i] / sum));
       }
     }
+    y = y.map(el => el/sum);
 
     traces.push({
       type: 'bar',

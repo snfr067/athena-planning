@@ -46,6 +46,8 @@ export class AuthService {
    * logout
    */
   public logout() {
+    this.clearStorage();
+
     const form = {
       session: this.userToken
     };
@@ -66,6 +68,7 @@ export class AuthService {
    * @param treq TokenRequest
    */
   public logon(loginForm): Observable<any> {
+    this.clearStorage();
     return this.http.post(`${this.API_URL}/login`, loginForm);
   }
 
@@ -156,6 +159,18 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+
+  /** clear Storage */
+  clearStorage() {
+    localStorage.removeItem(`${this.userToken}planningObj`);
+    localStorage.removeItem(`${this.userToken}for3d`);
+    sessionStorage.removeItem('rsrpThreshold');
+    sessionStorage.removeItem('tempParamForSelect');
+    sessionStorage.removeItem('calculateForm');
+    sessionStorage.removeItem('tempParamForSelect');
+    sessionStorage.removeItem('tempParam');
+    sessionStorage.removeItem('sub_field_coor');
   }
 
 }

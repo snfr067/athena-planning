@@ -495,8 +495,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
     this.msgDialogConfig.autoFocus = false;
-    sessionStorage.removeItem('planningObj');
-    sessionStorage.removeItem('for3d');
+    // clear Storage
+    this.authService.clearStorage();
     document.querySelector('body').style.overflow = 'hidden';
 
     for (let i = 0; i < 9; i++) {
@@ -2903,7 +2903,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
       isUeCoverage: this.calculateForm.isUeCoverage
     };
-    sessionStorage.setItem('planningObj', JSON.stringify(planningObj));
+    localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify(planningObj));
   }
 
   /** 組form */
@@ -5631,13 +5631,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 紀錄左下角.moveable-sw位置，3d旋轉用
     // await this.set3dPosition();
     this.authService.spinnerHide();
-    
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }});
     } else {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }});
     }
-    
   }
 
   /**
@@ -6212,24 +6210,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (const item of this.obstacleList) {
       this.target = document.getElementById(item);
       this.svgId = item;
-      this.moveClick(item);
+      // this.moveClick(item);
       await this.sleep(0);
-      this.moveable.ngOnInit();
+      // this.moveable.ngOnInit();
       await this.sleep(0);
       const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
       const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
       const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
       // console.log(mOrigin);
-      ary.push({
-        x: Number(this.xLinear(x)),
-        y: Number(this.yLinear(y))
-      });
+      ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
       document.querySelector('.moveable-control-box').remove();
     }
+    console.log(ary)
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
-    window.sessionStorage.setItem('for3d', JSON.stringify(ary));
+    window.localStorage.setItem(`${this.authService.userToken}for3d`, JSON.stringify(ary));
   }
 
   changeRsrpThreshold() {

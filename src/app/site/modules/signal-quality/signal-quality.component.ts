@@ -211,7 +211,6 @@ export class SignalQualityComponent implements OnInit {
           zData[i][yIndex][xIndex] = yData[i];
           if (Number(zData[i][yIndex][xIndex]) > this.maxZ[i]) {
             this.maxZ[i] = Number(zData[i][yIndex][xIndex]);
-            // console.log('歐拉歐拉歐拉歐拉歐拉歐拉歐拉'+this.maxZ[i]);
           }
           if (Number(zData[i][yIndex][xIndex]) < this.minZ[i]) {
             this.minZ[i] = Number(zData[i][yIndex][xIndex]);
@@ -377,6 +376,7 @@ export class SignalQualityComponent implements OnInit {
     let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
     let unit = (scalemax-scalemin)/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    sessionStorage.setItem('quality_scale',JSON.stringify(scaleunit));
     let scaleunitText = [`${scalemax}dB`, `${scalemax-unit}dB`, `${scalemax-2*unit}dB`, `${scalemax-3*unit}dB`, `${scalemin}dB`];
 
     const trace = {

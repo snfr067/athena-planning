@@ -21,6 +21,7 @@ export class PerformanceComponent implements OnInit {
   /** 地圖切面 list */
   zValueList = [];
   bsTptList = [];
+  bsTptAvg = [];
   isHst = false;
   rsrpTh = 0;
   zCoverageRsrp;
@@ -194,14 +195,14 @@ export class PerformanceComponent implements OnInit {
       fieldTotalDlTpt += this.bsTptList[i][2];
       fieldTotalUlTpt += this.bsTptList[i][3];
     }
-    this.bsTptList.push([
+    this.bsTptAvg = [
       this.translateService.instant('result.total'),
       ueNum,
       fieldTotalDlTpt,
       fieldTotalUlTpt,
       '-',
       '-',
-    ]);
+    ];
   }
 
   financial(x) {

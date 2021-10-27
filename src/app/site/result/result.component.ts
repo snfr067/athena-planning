@@ -160,6 +160,7 @@ export class ResultComponent implements OnInit {
   @ViewChild('sitePlanningMap') sitePlanningMap: SitePlanningMapComponent;
 
   ngOnInit() {
+    sessionStorage.removeItem('form_blank_task');
     this.view3dDialogConfig.autoFocus = false;
     this.view3dDialogConfig.width = '80%';
     this.view3dDialogConfig.hasBackdrop = false;
@@ -191,7 +192,6 @@ export class ResultComponent implements OnInit {
       url += `${this.authService.userToken}/${this.taskId}`;
     } else {
       url = `${this.authService.API_URL}/completeCalcResult/${this.taskId}/${this.authService.userToken}`;
-      window.sessionStorage.removeItem('form_blank_task');
     }
     this.http.get(url).subscribe(
       res => {
@@ -855,7 +855,12 @@ export class ResultComponent implements OnInit {
 
   /** 回上頁 */
   back() {
-    this.save(true);
+    this.authService.clearStorage();
+    if (this.isHst) {
+      this.router.navigate(['/site/site-planning'], { queryParams: { taskId: this.taskId, isHst: true }});
+    } else {
+      this.save(true);
+    }
   }
 
   /**
