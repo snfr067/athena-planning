@@ -394,5 +394,7 @@
 
 	"liteon.defaultbs.error": "Trial version: Default BS can't more than 5",
 	"liteon.candidate.error": "Trial version: Candidate BS can't more than 10",
-	"liteon.available.error": "Trial version: Available BS can't more than 5"
+	"liteon.available.error": "Trial version: Available BS can't more than 5",
+	"trial.version": "Trial Version"
+
 }

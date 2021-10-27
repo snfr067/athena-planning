@@ -393,7 +393,8 @@
 
 	"liteon.defaultbs.error": "試用版: 既有基站不可超過5台",
 	"liteon.candidate.error": "試用版: 待選基站不可超過10台",
-	"liteon.available.error": "試用版: 欲布建基站不可超過5台"
+	"liteon.available.error": "試用版: 欲布建基站不可超過5台",
+	"trial.version": "試用版"
 
 
 }
