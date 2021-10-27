@@ -347,9 +347,9 @@ export class SignalCoverComponent implements OnInit {
       const apMap = {};
       // 對應connectionMap的編號
       let legendNum = 0;
+      let list;
 
       if (this.calculateForm.candidateBs != "") {
-        let list;
         list = this.calculateForm.candidateBs.split('|');
         const cx = [];
         const cy = [];
@@ -361,7 +361,7 @@ export class SignalCoverComponent implements OnInit {
             cx.push(oData[0]);
             cy.push(oData[1]);
 
-            const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
+            // const z = zData[zValues.indexOf(Number(this.zValue))][Math.floor(oData[1])][Math.floor(oData[0])];
             const max = zMax[zValues.indexOf(Number(this.zValue))];
             const min = zMin[zValues.indexOf(Number(this.zValue))];
             // legend
@@ -378,11 +378,13 @@ export class SignalCoverComponent implements OnInit {
               }
               // 套件提供用range計算的方法
               const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-              color = colorFN(z);
+              color = colorFN(j);
             }
 
             // legend編號有在connectionMap裡的才呈現
+            // console.log('hahaha');
             if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
+            // console.log('hehehe');
               // legend
               this.traces.push({
                 x: [0],
@@ -397,7 +399,8 @@ export class SignalCoverComponent implements OnInit {
               });
 
               // tooltip對應用
-              apMap[z] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
+              apMap[j] = `${this.translateService.instant('result.propose.candidateBs')} ${(j + 1)}`;
+              // console.log(JSON.stringify(apMap));
 
               this.candidateList.push({
                 x: oData[0],
@@ -414,6 +417,7 @@ export class SignalCoverComponent implements OnInit {
           legendNum++;
         }
       }
+      console.log(JSON.stringify(apMap));
 
       const defaultBsLen = defaultBs.length;
       if (defaultBsLen > 0) {
@@ -428,11 +432,12 @@ export class SignalCoverComponent implements OnInit {
           let showNum = 0;
           if (this.calculateForm.candidateBs !== '') {
             useNum += legendNum;
+            console.log('legendNum:'+legendNum);
           } else {
             useNum = mapData[i];
           }
 
-          if (defaultBsLen > 1) {
+          if (defaultBsLen >= 1) {
             showNum += useNum;
           } else {
             // 只有一個基站時為0
@@ -460,6 +465,7 @@ export class SignalCoverComponent implements OnInit {
             }
             // 套件提供用range計算的方法
             const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+            console.log(useNum);
             color = colorFN(useNum);
           }
 
@@ -467,7 +473,7 @@ export class SignalCoverComponent implements OnInit {
           this.traces.push({
             x: [0],
             y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`,
+            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1 - list.length)}`,
             marker: {
               color: color,
             },
@@ -475,8 +481,8 @@ export class SignalCoverComponent implements OnInit {
             hoverinfo: 'none',
             showlegend: true
           });
-
-          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1)}`;
+          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1 - list.length)}`;
+          console.log(JSON.stringify(apMap));
           legendNum++;
         }
       }
