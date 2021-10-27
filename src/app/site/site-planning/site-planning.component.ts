@@ -496,7 +496,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.view3dDialogConfig.hasBackdrop = false;
     this.msgDialogConfig.autoFocus = false;
     // clear Storage
-    this.authService.clearStorage();
+    // this.authService.clearStorage();
     document.querySelector('body').style.overflow = 'hidden';
 
     for (let i = 0; i < 9; i++) {
