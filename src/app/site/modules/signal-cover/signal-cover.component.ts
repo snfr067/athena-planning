@@ -348,9 +348,11 @@ export class SignalCoverComponent implements OnInit {
       // 對應connectionMap的編號
       let legendNum = 0;
       let list;
+      let listLen = 0;
 
       if (this.calculateForm.candidateBs != "") {
         list = this.calculateForm.candidateBs.split('|');
+        listLen = list.length;
         const cx = [];
         const cy = [];
 
@@ -473,7 +475,7 @@ export class SignalCoverComponent implements OnInit {
           this.traces.push({
             x: [0],
             y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1 - list.length)}`,
+            name: `${this.translateService.instant('defaultBs')} ${(showNum + 1 - listLen)}`,
             marker: {
               color: color,
             },
@@ -481,7 +483,7 @@ export class SignalCoverComponent implements OnInit {
             hoverinfo: 'none',
             showlegend: true
           });
-          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1 - list.length)}`;
+          apMap[useNum] = `${this.translateService.instant('defaultBs')} ${(showNum + 1 - listLen)}`;
           console.log(JSON.stringify(apMap));
           legendNum++;
         }

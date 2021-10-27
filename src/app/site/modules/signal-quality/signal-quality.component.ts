@@ -372,6 +372,9 @@ export class SignalQualityComponent implements OnInit {
     //   hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('signalStrength')}: %{text}<extra></extra>`,
     // };
     // traces.push(trace);
+    
+    // ucwork
+
     let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
     let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
     let unit = (scalemax-scalemin)/4;
