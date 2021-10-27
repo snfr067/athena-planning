@@ -392,7 +392,7 @@
 	"subfield.dltpt": "DL throughput",
 	"subfield.ultpt": "UL throughput",
 
-	"liteon.defaultbs.error": "Default BS can't more than 5",
-	"liteon.candidate.error": "Candidate BS can't more than 10",
-	"liteon.available.error": "Available BS can't more than 5"
+	"liteon.defaultbs.error": "Trial version: Default BS can't more than 5",
+	"liteon.candidate.error": "Trial version: Candidate BS can't more than 10",
+	"liteon.available.error": "Trial version: Available BS can't more than 5"
 }

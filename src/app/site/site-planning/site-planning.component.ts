@@ -6221,7 +6221,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
       document.querySelector('.moveable-control-box').remove();
     }
-    console.log(ary)
+    // console.log(ary)
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
