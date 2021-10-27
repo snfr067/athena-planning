@@ -6212,7 +6212,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.svgId = item;
       // this.moveClick(item);
       await this.sleep(0);
-      // this.moveable.ngOnInit();
+      this.moveable.ngOnInit();
       await this.sleep(0);
       const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
       const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
