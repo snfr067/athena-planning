@@ -87,9 +87,9 @@
 	"statistics.ue_signal": "行動終端訊號強度統計",
 	"statistics.ue_signal_cdf": "行動終端訊號強度CDF圖",
 	"statistics.modulation.type": "調變類型",
-	"statistics.ref.points": "參考點總數",
-	"statistics.cumulative.ratio": "累計比率",
-	"statistics.ue.count": "行動終端總數",
+	"statistics.ref.points": "參考點總數百分比",
+	"statistics.cumulative.ratio": "累計百分比",
+	"statistics.ue.count": "行動終端總數百分比",
 	"statistics.sinr": "訊號強度(格數)",
 
 	"simulation": "進行現有場域訊號模擬",
