@@ -1291,6 +1291,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         fill: this.OBSTACLE_COLOR
       };
     } else if (id === 'defaultBS') {
+      if (this.defaultBSList.length >= 5) {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('liteon.defaultbs.error')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
       color = this.DEFAULT_BS_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       console.log(this.defaultBSList);
@@ -1336,6 +1344,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[this.svgId].wifiBandwidth = '20'
       }
     } else if (id === 'candidate') {
+      if (this.candidateList.length >= 10) {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('liteon.candidate.error')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.candidateList.push(this.svgId);
@@ -2852,7 +2868,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.authService.spinnerShowAsHome();
 
       // 紀錄左下角.moveable-sw位置，3d旋轉後位置用
-      this.set3dPosition();
+      // this.set3dPosition();
       
       window.setTimeout(() => {
         this.http.post(url, JSON.stringify(apiBody)).subscribe(
@@ -5617,7 +5633,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.setPlanningObj();
     this.authService.spinnerShow();
     // 紀錄左下角.moveable-sw位置，3d旋轉用
-    await this.set3dPosition();
+    // await this.set3dPosition();
     this.authService.spinnerHide();
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }}).then(() => {
@@ -6213,7 +6229,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
       document.querySelector('.moveable-control-box').remove();
     }
-    console.log(ary)
+    // console.log(ary)
     try {
       document.querySelector('.moveable-control-box').remove();
     } catch (error) {}
@@ -6222,6 +6238,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   changeRsrpThreshold() {
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
+  }
+
+  changeAvailableNewBsNumber() {
+    if (this.calculateForm.availableNewBsNumber >= 6) {
+      this.calculateForm.availableNewBsNumber = 5;
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('liteon.available.error')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
   }
 
 }

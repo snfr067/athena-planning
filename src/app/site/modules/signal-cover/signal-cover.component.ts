@@ -347,10 +347,12 @@ export class SignalCoverComponent implements OnInit {
       const apMap = {};
       // 對應connectionMap的編號
       let legendNum = 0;
+      let list;
+      let listLen = 0;
 
       if (this.calculateForm.candidateBs != "") {
-        let list;
         list = this.calculateForm.candidateBs.split('|');
+        listLen = list.length;
         const cx = [];
         const cy = [];
 
@@ -382,7 +384,9 @@ export class SignalCoverComponent implements OnInit {
             }
 
             // legend編號有在connectionMap裡的才呈現
+            // console.log('hahaha');
             if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
+            // console.log('hehehe');
               // legend
               this.traces.push({
                 x: [0],
@@ -414,6 +418,7 @@ export class SignalCoverComponent implements OnInit {
           legendNum++;
         }
       }
+      console.log(JSON.stringify(apMap));
 
       const defaultBsLen = defaultBs.length;
       if (defaultBsLen > 0) {
@@ -443,6 +448,7 @@ export class SignalCoverComponent implements OnInit {
             }
             // 套件提供用range計算的方法
             const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+            console.log(useNum);
             color = colorFN(useNum);
           }
 

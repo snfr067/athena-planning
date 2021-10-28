@@ -59,6 +59,8 @@
 	"show.obstacle": "顯示障礙物",
 	"show.candidate": "顯示待選基站",
 	"show.defaultbs": "顯示既有基站",
+	"show.candidate.ap": "顯示待選AP",
+	"show.defaultbs.ap": "顯示既有AP",
 	"obstacleInfo": "障礙物",
 	"defaultBs": "既有基站",
 	"import": "匯入專案檔",
@@ -85,9 +87,9 @@
 	"statistics.ue_signal": "行動終端訊號強度統計",
 	"statistics.ue_signal_cdf": "行動終端訊號強度CDF圖",
 	"statistics.modulation.type": "調變類型",
-	"statistics.ref.points": "參考點總數",
-	"statistics.cumulative.ratio": "累計比率",
-	"statistics.ue.count": "行動終端總數",
+	"statistics.ref.points": "參考點總數百分比",
+	"statistics.cumulative.ratio": "累計百分比",
+	"statistics.ue.count": "行動終端總數百分比",
 	"statistics.sinr": "訊號強度(格數)",
 
 	"simulation": "進行現有場域訊號模擬",
@@ -202,7 +204,10 @@
 	"result.propose.wait_select_2": "(共{0}處)",
 	"result.propose.defaultBs": "既有基站",
 	"result.propose.candidateBs": "待選基站",
+	"result.propose.defaultAp": "既有AP",
+	"result.propose.candidateAp": "待選AP",
 	"result.propose.candidateBs.num": "基站編號",
+	"result.propose.candidateAp.num": "AP編號",
 	"result.propose.candidateBs.x": "X座標",
 	"result.propose.candidateBs.y": "Y座標",
 	"result.propose.candidateBs.xy": "X/Y",
@@ -211,6 +216,7 @@
 	"result.propose.candidateBs.beamId": "波束形",
 	"result.layered.info": "場域設定資訊",
 	"result.bs.info": "基站資訊",
+	"result.ap.info": "AP資訊",
 	"result.bs.count": "(共{0}台)",
 	"result.dbm.range": "發射功率範圍",
 	"result.beam.range": "可分配波束編號範圍",
@@ -383,9 +389,12 @@
 	"subfield.strength": "平均訊號強度",
 	"subfield.quality": "平均訊號品質",
 	"subfield.dltpt": "下行傳輸速率",
-	"subfield.ultpt": "上行傳輸速率"
+	"subfield.ultpt": "上行傳輸速率",
 
-
+	"liteon.defaultbs.error": "試用版: 既有基站不可超過5台",
+	"liteon.candidate.error": "試用版: 待選基站不可超過10台",
+	"liteon.available.error": "試用版: 欲布建基站不可超過5台",
+	"trial.version": "試用版"
 
 
 }

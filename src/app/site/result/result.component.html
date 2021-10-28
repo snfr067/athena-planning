@@ -2,7 +2,7 @@
 
 <mat-button-toggle-group >
   <mat-button-toggle (click)="back()" value="back">{{ 'result.back' | translate }}</mat-button-toggle>
-	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
+	<!-- <mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle> -->
 	<!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
 	<mat-button-toggle value="export" style="border-radius: 0px 2px 2px 0px;" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
 	<mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
@@ -61,8 +61,11 @@
 						<ng-container *ngIf="showBsArea">
 							<label class="mL_1 displayType">
 								<!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->
-								<mat-checkbox [(ngModel)]="showBs" [color]="'primary'" (ngModelChange)="switchShowBs()">
+								<mat-checkbox *ngIf="calculateForm.mapProtocol != 'wifi'" [(ngModel)]="showBs" [color]="'primary'" (ngModelChange)="switchShowBs()">
 									{{ 'show.defaultbs' | translate }}
+								</mat-checkbox>
+								<mat-checkbox *ngIf="calculateForm.mapProtocol == 'wifi'" [(ngModel)]="showBs" [color]="'primary'" (ngModelChange)="switchShowBs()">
+									{{ 'show.defaultbs.ap' | translate }}
 								</mat-checkbox>
 							</label>
 						</ng-container>
@@ -70,8 +73,11 @@
 						<ng-container *ngIf="showCandidateArea">
 							<label class="mL_1 displayType">
 								<!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->
-								<mat-checkbox [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
+								<mat-checkbox *ngIf="calculateForm.mapProtocol != 'wifi'" [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
 									{{ 'show.candidate' | translate }}
+								</mat-checkbox>
+								<mat-checkbox *ngIf="calculateForm.mapProtocol == 'wifi'" [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
+									{{ 'show.candidate.ap' | translate }}
 								</mat-checkbox>
 							</label>
 						</ng-container>
@@ -94,7 +100,8 @@
 							<ngx-slider [(value)]="opacityValue" [options]="opacityOptions" (userChange)="changeOpacity()"></ngx-slider>
 						</div>
 						<div>
-							<label class="m-0">{{ 'result.bs.info' | translate }}</label>
+							<label *ngIf="calculateForm.mapProtocol != 'wifi'" class="m-0">{{ 'result.bs.info' | translate }}</label>
+							<label *ngIf="calculateForm.mapProtocol == 'wifi'" class="m-0">{{ 'result.ap.info' | translate }}</label>
 							<table class="defaultBsTable" style="table-layout: fixed">
 								<tbody *ngIf="calculateForm.objectiveIndex == '0'">
 									<tr *ngIf="calculateForm.duplex == 'tdd'">
@@ -252,7 +259,7 @@
 								</tbody>
 								<tbody *ngIf="calculateForm.objectiveIndex == '2' || calculateForm.mapProtocol == 'wifi'">
 									<tr>
-										<th>{{ 'result.propose.candidateBs.num' | translate }}</th>
+										<th>{{ 'result.propose.candidateAp.num' | translate }}</th>
 										<th>{{ 'result.propose.candidateBs.xy' | translate }}</th>
 										<th>{{ 'result.propose.candidateBs.dbm' | translate }}</th>
 										<th>{{ 'result.propose.candidateBs.beamId' | translate }}</th>
@@ -263,7 +270,7 @@
 										<th>{{ 'wifiMimo' | translate }}</th>
 									</tr>
 									<tr *ngFor="let item of defaultBSListWifi let i = index" [attr.data-index]="i">
-										<td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
+										<td class="choose">{{'result.propose.defaultAp' | translate}}{{ i+1 }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['beamid'] }}</td>
@@ -274,7 +281,7 @@
 										<td class="choose">{{ item['wifiMimo'] }}</td>
 									</tr>
 									<tr *ngFor="let item of candidateTableWifi; let i = index" [attr.data-index]="i">
-										<td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
+										<td class="choose">{{'result.propose.candidateAp' | translate}}{{ item['num'] }}</td>
 										<td class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
 										<td class="choose">{{ item['txpower'] }}</td>
 										<td class="choose">{{ item['beamid'] }}</td>

@@ -761,8 +761,12 @@ export class PdfComponent implements OnInit {
           }
         }
       }
-      
-      let defaultLen = defaultBs.length;
+      let defaultLen;
+      if (defaultBs[0] == '') {
+        defaultLen = 0;
+      } else {
+        defaultLen = defaultBs.length;
+      }
       for (let i=0;i < defaultLen;i++) {
         specData.push([
           `${this.translateService.instant('default')}${i+1}`,
