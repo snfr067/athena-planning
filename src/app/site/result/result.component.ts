@@ -1016,6 +1016,9 @@ export class ResultComponent implements OnInit {
   set3dPosition() {
     const ary = [];
     let obstacleList = this.calculateForm.obstacleInfo.split('|');
+    if (obstacleList[0] == '') {
+      obstacleList = [];
+    }
     for (const el of obstacleList) {
       let item = JSON.parse(el);
       let angle = Number(item[5]%360);
