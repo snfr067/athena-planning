@@ -87,6 +87,7 @@ export class ResultComponent implements OnInit {
   candidateTable5gTdd = [];
   candidateTable5gFdd = [];
   candidateTableWifi = [];
+  ary = [];
   /** 障礙物 list */
   obstacleList = [];
   /** 行動終端 list */
@@ -453,6 +454,8 @@ export class ResultComponent implements OnInit {
             });
           }
         }
+        //3D
+        this.ary = this.set3dPosition();
 
         // 建議方案
         this.propose.calculateForm = this.calculateForm;
@@ -467,7 +470,8 @@ export class ResultComponent implements OnInit {
         // 訊號品質圖
         this.zValues = JSON.parse(this.calculateForm.zValue);
         this.zValue = this.zValues[0];
-        this.drawQuality();
+        this.drawQuality(false);
+        // this.drawStrength(true);
         // 預估效能
         this.performance.calculateForm = this.calculateForm;
         this.performance.result = this.result;
@@ -747,14 +751,14 @@ export class ResultComponent implements OnInit {
   }
 
   /** 訊號品質圖 */
-  drawQuality() {
-    console.log(this.calculateForm);
-    console.log(this.result);
-    this.showCover = false;
-    this.showStrength = false;
-    this.showDlThroughputMap = false;
-    this.showUlThroughputMap = false;
-    this.showQuality = true;
+  drawQuality(getColorScale) {
+    if (!getColorScale) {
+      this.showCover = false;
+      this.showStrength = false;
+      this.showDlThroughputMap = false;
+      this.showUlThroughputMap = false;
+      this.showQuality = true;
+    }
     window.setTimeout(() => {
       this.quality.showUE = this.showUE;
       this.quality.calculateForm = this.calculateForm;
@@ -785,12 +789,14 @@ export class ResultComponent implements OnInit {
   }
 
   /** 訊號強度圖 */
-  drawStrength() {
-    this.showQuality = false;
-    this.showCover = false;
-    this.showStrength = true;
-    this.showDlThroughputMap = false;
-    this.showUlThroughputMap = false;
+  drawStrength(getColorScale) {
+    if (!getColorScale) {
+      this.showQuality = false;
+      this.showCover = false;
+      this.showStrength = true;
+      this.showDlThroughputMap = false;
+      this.showUlThroughputMap = false;
+    }
     window.setTimeout(() => {
       this.strength.showUE = this.showUE;
       this.strength.calculateForm = this.calculateForm;
@@ -803,12 +809,14 @@ export class ResultComponent implements OnInit {
   }
 
   /** 上行傳輸速率圖 */
-  drawUlThroughputMap() {
-    this.showQuality = false;
-    this.showCover = false;
-    this.showStrength = false;
-    this.showDlThroughputMap = false;
-    this.showUlThroughputMap = true;
+  drawUlThroughputMap(getColorScale) {
+    if (!getColorScale) {
+      this.showQuality = false;
+      this.showCover = false;
+      this.showStrength = false;
+      this.showDlThroughputMap = false;
+      this.showUlThroughputMap = true;
+    }
     window.setTimeout(() => {
       this.ulThroughputMap.showUE = this.showUE;
       this.ulThroughputMap.calculateForm = this.calculateForm;
@@ -821,12 +829,14 @@ export class ResultComponent implements OnInit {
   }
 
   /** 下行傳輸速率圖 */
-  drawDlThroughputMap() {
-    this.showQuality = false;
-    this.showCover = false;
-    this.showStrength = false;
-    this.showDlThroughputMap = true;
-    this.showUlThroughputMap = false;
+  drawDlThroughputMap(getColorScale) {
+    if (!getColorScale) {
+      this.showQuality = false;
+      this.showCover = false;
+      this.showStrength = false;
+      this.showDlThroughputMap = true;
+      this.showUlThroughputMap = false;
+    }
     window.setTimeout(() => {
       this.dlThroughputMap.showUE = this.showUE;
       this.dlThroughputMap.calculateForm = this.calculateForm;
@@ -841,15 +851,15 @@ export class ResultComponent implements OnInit {
   /** change 高度 */
   changeZvalue() {
     if (this.chartType === 'SINR') {
-      this.drawQuality();
+      this.drawQuality(false);
     } else if (this.chartType === 'PCI') {
       this.drawCover();
     } else if (this.chartType === 'RSRP') {
-      this.drawStrength();
+      this.drawStrength(false);
     } else if (this.chartType === 'UL_THROUGHPUT') {
-      this.drawUlThroughputMap();
+      this.drawUlThroughputMap(false);
     } else if (this.chartType === 'DL_THROUGHPUT') {
-      this.drawDlThroughputMap();
+      this.drawDlThroughputMap(false);
     }
   }
 
@@ -910,7 +920,8 @@ export class ResultComponent implements OnInit {
       candidateList: this.candidateList,
       ueList: this.ueList,
       zValue: this.zValues,
-      result: this.hstOutput
+      result: this.hstOutput,
+      ary: this.ary
     };
     this.matDialog.open(View3dComponent, this.view3dDialogConfig);
     // 不知為何，只開一次dialog位置會偏移
@@ -1000,6 +1011,55 @@ export class ResultComponent implements OnInit {
       this.dlThroughputMap.opacityValue = this.opacityValue;
       this.dlThroughputMap.changeOpacity();
     }
+  }
+
+  set3dPosition() {
+    const ary = [];
+    let obstacleList = this.calculateForm.obstacleInfo.split('|');
+    for (const el of obstacleList) {
+      let item = JSON.parse(el);
+      let angle = Number(item[5]%360);
+      let obWid = Number(item[2]);
+      let obHei = Number(item[3]);
+      let deg = 2*Math.PI/360;
+      let x = Number(item[0]);
+      let y = Number(item[1]);
+      let xy = [];
+      if (angle != 0) { //有旋轉
+        if (item[7] == 0) { // 矩形
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2]; //中心
+          let leftbot = [x,y];
+          xy = [
+            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else if (item[7] == 1) { //三角形
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2];
+          let left = [x,y];
+          xy = [
+            (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else if (item[7] == 3) { //梯形
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2];
+          let leftbot = [x,y];
+            xy = [
+            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else {
+          // 圓形沒有差
+          xy = [Number(x+obWid/2),Number(y+obWid/2)];
+        }
+        ary.push(xy);
+      } else { //沒有旋轉
+        ary.push([Number(x),Number(y)]);
+      }
+    }
+    return ary;
   }
 
 }

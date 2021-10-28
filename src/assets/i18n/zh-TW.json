@@ -389,12 +389,6 @@
 	"subfield.strength": "平均訊號強度",
 	"subfield.quality": "平均訊號品質",
 	"subfield.dltpt": "下行傳輸速率",
-	"subfield.ultpt": "上行傳輸速率",
-
-	"liteon.defaultbs.error": "試用版: 既有基站不可超過5台",
-	"liteon.candidate.error": "試用版: 待選基站不可超過10台",
-	"liteon.available.error": "試用版: 欲布建基站不可超過5台",
-	"trial.version": "試用版"
-
+	"subfield.ultpt": "上行傳輸速率"
 
 }

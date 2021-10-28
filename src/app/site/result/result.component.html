@@ -2,7 +2,7 @@
 
 <mat-button-toggle-group >
   <mat-button-toggle (click)="back()" value="back">{{ 'result.back' | translate }}</mat-button-toggle>
-	<!-- <mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle> -->
+	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
 	<!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
 	<mat-button-toggle value="export" style="border-radius: 0px 2px 2px 0px;" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
 	<mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
@@ -33,11 +33,11 @@
 			
 						<label class="mL_1">{{ 'result.img.change' | translate }}</label>
 						<mat-button-toggle-group [(ngModel)]="chartType">
-							<mat-button-toggle  value="SINR" (click)="drawQuality()" selected>{{ 'sinrMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="SINR" (click)="drawQuality(false)" selected>{{ 'sinrMap' | translate }}</mat-button-toggle>
 							<mat-button-toggle  value="PCI" (click)="drawCover()">{{ 'connectionMap' | translate }}</mat-button-toggle>
-							<mat-button-toggle  value="RSRP" (click)="drawStrength()">{{ 'rsrpMap' | translate }}</mat-button-toggle>
-							<mat-button-toggle  value="UL_THROUGHPUT" (click)="drawUlThroughputMap()">{{ 'ulThroughputMap' | translate }}</mat-button-toggle>
-							<mat-button-toggle  value="DL_THROUGHPUT" (click)="drawDlThroughputMap()">{{ 'dlThroughputMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="RSRP" (click)="drawStrength(false)">{{ 'rsrpMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="UL_THROUGHPUT" (click)="drawUlThroughputMap(false)">{{ 'ulThroughputMap' | translate }}</mat-button-toggle>
+							<mat-button-toggle  value="DL_THROUGHPUT" (click)="drawDlThroughputMap(false)">{{ 'dlThroughputMap' | translate }}</mat-button-toggle>
 						</mat-button-toggle-group>
 
 						<ng-container *ngIf="showUEArea">

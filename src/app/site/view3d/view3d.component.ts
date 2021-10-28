@@ -21,7 +21,6 @@ export class View3dComponent implements OnInit {
     private matDialog: MatDialog,
     private authService: AuthService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data) {
-
       if (data != null) {
         // this.isSimulation = data.isSimulation;
         this.calculateForm = data.calculateForm;
@@ -35,6 +34,7 @@ export class View3dComponent implements OnInit {
         this.planeHeight = this.zValue[0].toString();
         this.result = data.result;
         this.isPDF = false;
+        this.ary = data.ary;
         window.setTimeout(() => {
           this.mounted();
         }, 100);
@@ -102,6 +102,8 @@ export class View3dComponent implements OnInit {
   heatmapConfig = [[12, 51, 131], [10, 136, 186], [242, 211, 56], [242, 143, 56], [217, 30, 30]];
   /** 訊號覆蓋圖是否為藍色 */
   isCoverBlue = true;
+
+  ary = [];
   /** 跟2d圖相同的colorscale */
   // colorscale: any = [
   //   [0, 'rgb(12,51,131)'],
@@ -177,8 +179,7 @@ export class View3dComponent implements OnInit {
     floorMat.diffuseColor = new BABYLON.Color3(248 / 255, 248 / 255, 248 / 255);
     floor.material = floorMat;
 
-    const ary = JSON.parse(window.localStorage.getItem(`${this.authService.userToken}for3d`));
-    console.log(ary);
+    // const ary = JSON.parse(window.localStorage.getItem(`${this.authService.userToken}for3d`));
 
     const obstacleMat = new BABYLON.StandardMaterial('obstacleMaterial', scene);
     obstacleMat.diffuseColor = new BABYLON.Color3(121 / 255, 221 / 255, 242 / 255);
@@ -244,9 +245,9 @@ export class View3dComponent implements OnInit {
       } else {
         obstacle.position.y = depth + offsetY;
       }
-
-      obstacle.position.x = Number(ary[i][0]) + offsetX;
-      obstacle.position.z = Number(ary[i][1]) + offsetZ;
+      console.log(this.ary);
+      obstacle.position.x = Number(this.ary[i][0]) + offsetX;
+      obstacle.position.z = Number(this.ary[i][1]) + offsetZ;
 
       if (item.element === 2) {
         // 圓形

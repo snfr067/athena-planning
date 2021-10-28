@@ -1291,14 +1291,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         fill: this.OBSTACLE_COLOR
       };
     } else if (id === 'defaultBS') {
-      if (this.defaultBSList.length >= 5) {
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: this.translateService.instant('liteon.defaultbs.error')
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        return;
-      }
       color = this.DEFAULT_BS_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       console.log(this.defaultBSList);
@@ -1344,14 +1336,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[this.svgId].wifiBandwidth = '20'
       }
     } else if (id === 'candidate') {
-      if (this.candidateList.length >= 10) {
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: this.translateService.instant('liteon.candidate.error')
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        return;
-      }
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.candidateList.push(this.svgId);
@@ -3236,7 +3220,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           sessionStorage.removeItem('importFile');
           sessionStorage.removeItem('taskName');
           this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
-            location.reload();
+            // location.reload();
           });;
           
         } else {
@@ -3262,7 +3246,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.http.get(resultUrl).subscribe(
             res => {
               this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
-                location.reload();
+                // location.reload();
               });;
             }
           );
@@ -5637,11 +5621,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.authService.spinnerHide();
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }}).then(() => {
-        location.reload();
+        // location.reload();
       });
     } else {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
-        location.reload();
+        // location.reload();
       });
     }
   }
@@ -6216,39 +6200,68 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   async set3dPosition() {
     const ary = [];
     for (const item of this.obstacleList) {
-      this.target = document.getElementById(item);
-      this.svgId = item;
-      // this.moveClick(item);
-      await this.sleep(0);
-      this.moveable.ngOnInit();
-      await this.sleep(0);
-      const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
-      const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
-      const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
-      // console.log(mOrigin);
-      ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
-      document.querySelector('.moveable-control-box').remove();
+      let angle = Number(this.dragObject[item].rotate%360);
+      let obWid = Number(this.dragObject[item].width);
+      let obHei = Number(this.dragObject[item].height);
+      let deg = 2*Math.PI/360;
+      let x = Number(this.dragObject[item].x);
+      let y = Number(this.dragObject[item].y);
+      let xy = [];
+      if (angle != 0) { //有旋轉
+        if (item.split('_')[0] == 'rect') {
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2]; //中心
+          let leftbot = [x,y];
+          xy = [
+            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else if (item.split('_')[0] == 'polygon') {
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2];
+          let left = [x,y];
+          xy = [
+            (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else if (item.split('_')[0] == 'trapezoid') {
+          let tempAngle = 360 - angle; 
+          let rcc = [x+obWid/2,y+obHei/2];
+          let leftbot = [x,y];
+            xy = [
+            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+          ];
+        } else {
+          // 圓形沒有差
+          xy = [Number(x+obWid/2),Number(y+obWid/2)];
+        }
+        ary.push(xy);
+      } else { //沒有旋轉
+        
+        ary.push([Number(x),Number(y)]);
+      }
+      // this.target = document.getElementById(item);
+      // this.svgId = item;
+      // await this.sleep(0);
+      // this.moveable.ngOnInit();
+      // await this.sleep(0);
+      // const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
+      // const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
+      // const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
+      // ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
+      // document.querySelector('.moveable-control-box').remove();
+      // console.log(item);
     }
     // console.log(ary)
-    try {
-      document.querySelector('.moveable-control-box').remove();
-    } catch (error) {}
+    // try {
+    //   document.querySelector('.moveable-control-box').remove();
+    // } catch (error) {}
     window.localStorage.setItem(`${this.authService.userToken}for3d`, JSON.stringify(ary));
   }
 
   changeRsrpThreshold() {
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
-  }
-
-  changeAvailableNewBsNumber() {
-    if (this.calculateForm.availableNewBsNumber >= 6) {
-      this.calculateForm.availableNewBsNumber = 5;
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: this.translateService.instant('liteon.available.error')
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    }
   }
 
 }
