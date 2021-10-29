@@ -295,12 +295,25 @@ export class SignalDlThroughputComponent implements OnInit {
       });
     }
 
-    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
-    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
-    let unit = (scalemax-scalemin)/4;
+    const dlThroughputAry = [];
+    try {
+      this.result['throughputMap'].map(v => {
+        v.map(m => {
+          m.map(d => {
+            dlThroughputAry.push(d);
+          });
+        });
+      });
+    } catch(e){
+      console.log('No dlThorughput data, it may be an old record');
+    }
+
+    let scalemax = Number(this.financial(Plotly.d3.max(dlThroughputAry)));
+    let scalemin = Number(this.financial(Plotly.d3.min(dlThroughputAry)));
+    let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
-    sessionStorage.setItem('dlTpt_scale',JSON.stringify(scaleunit));
-    let scaleunitText = [`${scalemax}Mbps`, `${scalemax-unit}Mbps`, `${scalemax-2*unit}Mbps`, `${scalemax-3*unit}Mbps`, `${scalemin}Mbps`];
+    scaleunit = scaleunit.map(el => Number(this.financial(el)));
+    let scaleunitText = scaleunit.map(el => `${el}Mbps`);
 
     const trace = {
       x: x,

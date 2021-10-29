@@ -271,12 +271,21 @@ export class SignalStrengthComponent implements OnInit {
       });
     }
 
-    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
-    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
-    let unit = (scalemax-scalemin)/4;
+    const rsrpAry = [];
+    this.result['rsrpMap'].map(v => {
+      v.map(m => {
+        m.map(d => {
+          rsrpAry.push(d);
+        });
+      });
+    });
+
+    let scalemax = Number(this.financial(Plotly.d3.max(rsrpAry)));
+    let scalemin = Number(this.financial(Plotly.d3.min(rsrpAry)));
+    let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
-    sessionStorage.setItem('strength_scale',JSON.stringify(scaleunit));
-    let scaleunitText = [`${scalemax}dBm`, `${scalemax-unit}dBm`, `${scalemax-2*unit}dBm`, `${scalemax-3*unit}dBm`, `${scalemin}dBm`];
+    scaleunit = scaleunit.map(el => Number(this.financial(el)));
+    let scaleunitText = scaleunit.map(el => `${el}dBm`);
 
     const trace = {
       x: x,
@@ -573,6 +582,10 @@ export class SignalStrengthComponent implements OnInit {
         }
       });
     });
+  }
+
+  financial(x) {
+    return Number.parseFloat(x).toFixed(2);
   }
 
   /**

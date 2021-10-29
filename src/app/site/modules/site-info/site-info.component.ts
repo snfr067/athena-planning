@@ -37,10 +37,10 @@ export class SiteInfoComponent implements OnInit {
 
   ngOnInit(): void {
     // console.log(sessionStorage.getItem('planningObj'));
-    if (localStorage.getItem(`${this.authService.userToken}planningObj`) != null) {
-      this.planningObj = JSON.parse(localStorage.getItem(`${this.authService.userToken}planningObj`));
-      console.log(this.planningObj);
-    }
+    // if (localStorage.getItem(`${this.authService.userToken}planningObj`) != null) {
+    //   this.planningObj = JSON.parse(localStorage.getItem(`${this.authService.userToken}planningObj`));
+    //   console.log(this.planningObj);
+    // }
     // console.log(this.result);
     // setInterval(()=> {console.log(this.calculateForm);},10000);
   }

@@ -373,14 +373,21 @@ export class SignalQualityComponent implements OnInit {
     // };
     // traces.push(trace);
     
-    // ucwork
-
-    let scalemax = Math.round(this.maxZ[zValues.indexOf(this.zValue)]);
-    let scalemin = Math.round(this.minZ[zValues.indexOf(this.zValue)]);
-    let unit = (scalemax-scalemin)/4;
+    // ucwor
+    const sinrAry = [];
+    this.result['sinrMap'].map(v => {
+      v.map(m => {
+        m.map(d => {
+          sinrAry.push(d);
+        });
+      });
+    });
+    let scalemax = Number(this.financial(Plotly.d3.max(sinrAry)));
+    let scalemin = Number(this.financial(Plotly.d3.min(sinrAry)));
+    let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
-    sessionStorage.setItem('quality_scale',JSON.stringify(scaleunit));
-    let scaleunitText = [`${scalemax}dB`, `${scalemax-unit}dB`, `${scalemax-2*unit}dB`, `${scalemax-3*unit}dB`, `${scalemin}dB`];
+    scaleunit = scaleunit.map(el => Number(this.financial(el)));
+    let scaleunitText = scaleunit.map(el => `${el}dB`);
 
     const trace = {
       x: x,
@@ -654,6 +661,10 @@ export class SignalQualityComponent implements OnInit {
     //     console.log(zData);
     //   }
     // });
+  }
+
+  financial(x) {
+    return Number.parseFloat(x).toFixed(2);
   }
 
   /**

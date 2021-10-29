@@ -245,7 +245,7 @@ export class View3dComponent implements OnInit {
       } else {
         obstacle.position.y = depth + offsetY;
       }
-      console.log(this.ary);
+      // console.log(this.ary);
       obstacle.position.x = Number(this.ary[i][0]) + offsetX;
       obstacle.position.z = Number(this.ary[i][1]) + offsetZ;
 
@@ -561,26 +561,21 @@ export class View3dComponent implements OnInit {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['sinrMax'] - this.result['sinrMin'];
 
-    const sinrColorscale: any = [
-      [0, 'rgb(12,51,131)'],
-      [0.2, 'rgb(10,136,186)'],
-      [0.3, 'rgb(136, 224, 53)'],
-      [0.4, 'rgb(242,211,56)'],
-      [0.75, 'rgb(242,143,56)'],
-      [1, 'rgb(217,30,30)'],
-    ];
+    // const sinrColorscale: any = [
+    //   [0, 'rgb(12,51,131)'],
+    //   [0.2, 'rgb(10,136,186)'],
+    //   [0.3, 'rgb(136, 224, 53)'],
+    //   [0.4, 'rgb(242,211,56)'],
+    //   [0.75, 'rgb(242,143,56)'],
+    //   [1, 'rgb(217,30,30)'],
+    // ];
 
-    const min = -8;
-    const max = 24;
+    // const min = -8;
+    // const max = 24;
     let zDomain = [];
     const colorRange = [];
-    // for (let k = 0; k < sinrColorscale.length; k++) {
-    //   zDomain.push((max - min) * sinrColorscale[k][0] + min);
-    //   colorRange.push(sinrColorscale[k][1]);
-    // }
     for (let k = 0; k < this.colorscale.length; k++) {
-      // zDomain.push((max - min) * this.colorscale[k][0] + min);
-      zDomain = JSON.parse(sessionStorage.getItem('quality_scale')).reverse();
+      zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['sinrMin']);
       colorRange.push(this.colorscale[k][1]);
     }
     // alert(zDomain);
@@ -652,16 +647,14 @@ export class View3dComponent implements OnInit {
   genRsrpMapData(zIndex) {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['rsrpMax'] - this.result['rsrpMin'];
-
-    const max = -44;
-    const min = -140;
+    // const max = -44;
+    // const min = -140;
     // 計算顏色區間公式的domain
     let zDomain = [];
     // 計算顏色區間公式的range
     const colorRange = [];
     for (let k = 0; k < this.colorscale.length; k++) {
-      // zDomain.push((max - min) * this.colorscale[k][0] + min);
-      zDomain = JSON.parse(sessionStorage.getItem('strength_scale')).reverse();
+      zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['rsrpMin']);
       colorRange.push(this.colorscale[k][1]);
     }
 
@@ -727,13 +720,13 @@ export class View3dComponent implements OnInit {
     const colorMap = new Uint8Array(this.width * this.height * 3);
     const totalDelta = this.result['ulThroughputMax'] - this.result['ulThroughputMin'];
     if (this.result['gaResult'].ulThroughputMap != null && this.result['gaResult'].ulThroughputMap.length > 0) {
-      const max = 1200;
-      const min = 100;
+      // const max = 1200;
+      // const min = 100;
       let zDomain = [];
       const colorRange = [];
       for (let k = 0; k < this.colorscale.length; k++) {
-        // zDomain.push((max - min) * this.colorscale[k][0] + min);
-        zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
+        zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['ulThroughputMin']);
+        // zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
         colorRange.push(this.colorscale[k][1]);
       }
       for (let j = 0; j < this.height; j++) {
@@ -819,8 +812,7 @@ export class View3dComponent implements OnInit {
                 let zDomain = [];
                 const colorRange = [];
                 for (let k = 0; k < this.colorscale.length; k++) {
-                  // zDomain.push((max - min) * this.colorscale[k][0] + min);
-                  zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
+                  zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['dlThroughputMin']);
                   colorRange.push(this.colorscale[k][1]);
                 }
                 // 跟2D圖一樣用plotly套件提供用range計算顏色的方法

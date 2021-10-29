@@ -471,7 +471,6 @@ export class ResultComponent implements OnInit {
         this.zValues = JSON.parse(this.calculateForm.zValue);
         this.zValue = this.zValues[0];
         this.drawQuality(false);
-        this.drawStrength(true);
         // 預估效能
         this.performance.calculateForm = this.calculateForm;
         this.performance.result = this.result;
@@ -490,6 +489,12 @@ export class ResultComponent implements OnInit {
         
 
         this.siteInfo.calculateForm = this.calculateForm;
+        this.siteInfo.planningObj.isAverageSinr = this.calculateForm.isAverageSinr;
+        this.siteInfo.planningObj.isCoverage = this.calculateForm.isCoverage;
+        this.siteInfo.planningObj.isUeAvgSinr = this.calculateForm.isUeAvgSinr;
+        this.siteInfo.planningObj.isUeAvgThroughput = this.calculateForm.isUeAvgThroughput;
+        this.siteInfo.planningObj.isUeCoverage = this.calculateForm.isUeCoverage;
+        console.log(this.siteInfo.calculateForm);
         this.siteInfo.result = this.result;
         window.setTimeout(() => {
           this.siteInfo.inputBsListCount = candidateBs.length;

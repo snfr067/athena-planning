@@ -576,6 +576,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   this.planningIndex = '2';
                 }
               }
+              // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
+              //   isAverageSinr: this.calculateForm.isAverageSinr,
+              //   isCoverage: this.calculateForm.isCoverage,
+              //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
+              //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
+              //   isUeCoverage: this.calculateForm.isUeCoverage
+              // }));
 
               const sinrAry = [];
               output['sinrMap'].map(v => {
@@ -2851,9 +2858,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
 
-      // 紀錄左下角.moveable-sw位置，3d旋轉後位置用
-      // this.set3dPosition();
-      
       window.setTimeout(() => {
         this.http.post(url, JSON.stringify(apiBody)).subscribe(
           res => {
@@ -2880,14 +2884,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;
     }
-    const planningObj = {
-      isAverageSinr: this.calculateForm.isAverageSinr,
-      isCoverage: this.calculateForm.isCoverage,
-      isUeAvgSinr: this.calculateForm.isUeAvgSinr,
-      isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
-      isUeCoverage: this.calculateForm.isUeCoverage
-    };
-    localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify(planningObj));
+    // const planningObj = {
+    //   isAverageSinr: this.calculateForm.isAverageSinr,
+    //   isCoverage: this.calculateForm.isCoverage,
+    //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
+    //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
+    //   isUeCoverage: this.calculateForm.isUeCoverage
+    // };
+    // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify(planningObj));
   }
 
   /** 組form */
@@ -5614,10 +5618,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     //檢查子場域是否重疊
     if (this.checkSubFieldOverlaped()) {return;} 
     // 規劃目標
-    this.setPlanningObj();
+    // this.setPlanningObj();
+
     this.authService.spinnerShow();
-    // 紀錄左下角.moveable-sw位置，3d旋轉用
-    // await this.set3dPosition();
     this.authService.spinnerHide();
     if (this.isHst) {
       this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid, isHst: true }}).then(() => {
@@ -6184,80 +6187,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.leftWidth = contentWidth - (contentWidth * 0.3) - 50;
     // document.getElementById('chart').style.width = `${this.leftWidth}px`;
     // document.getElementById('chart').style.overflowY = 'hidden';
-  }
-
-  // lazyResize() {
-  //   window.setTimeout(() => {
-  //     this.chartResize();
-  //   }, 00);
-  // }
-
-  sleep (time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-  }
-
-  /** 紀錄左下角.moveable-sw位置，3d旋轉用 */
-  async set3dPosition() {
-    const ary = [];
-    for (const item of this.obstacleList) {
-      let angle = Number(this.dragObject[item].rotate%360);
-      let obWid = Number(this.dragObject[item].width);
-      let obHei = Number(this.dragObject[item].height);
-      let deg = 2*Math.PI/360;
-      let x = Number(this.dragObject[item].x);
-      let y = Number(this.dragObject[item].y);
-      let xy = [];
-      if (angle != 0) { //有旋轉
-        if (item.split('_')[0] == 'rect') {
-          let tempAngle = 360 - angle; 
-          let rcc = [x+obWid/2,y+obHei/2]; //中心
-          let leftbot = [x,y];
-          xy = [
-            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
-            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
-          ];
-        } else if (item.split('_')[0] == 'polygon') {
-          let tempAngle = 360 - angle; 
-          let rcc = [x+obWid/2,y+obHei/2];
-          let left = [x,y];
-          xy = [
-            (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
-            (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
-          ];
-        } else if (item.split('_')[0] == 'trapezoid') {
-          let tempAngle = 360 - angle; 
-          let rcc = [x+obWid/2,y+obHei/2];
-          let leftbot = [x,y];
-            xy = [
-            (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
-            (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
-          ];
-        } else {
-          // 圓形沒有差
-          xy = [Number(x+obWid/2),Number(y+obWid/2)];
-        }
-        ary.push(xy);
-      } else { //沒有旋轉
-        
-        ary.push([Number(x),Number(y)]);
-      }
-      // this.target = document.getElementById(item);
-      // this.svgId = item;
-      // await this.sleep(0);
-      // this.moveable.ngOnInit();
-      // await this.sleep(0);
-      // const mOrigin = document.querySelector('.moveable-sw').getBoundingClientRect();
-      // const x = mOrigin.left - this.chartLeft + (mOrigin.width / 2) + this.scrollLeft;
-      // const y = this.chartBottom - mOrigin.top - (mOrigin.height / 2) - this.scrollTop;
-      // ary.push([Number(this.xLinear(x)), Number(this.yLinear(y))]);
-      // document.querySelector('.moveable-control-box').remove();
-      // console.log(item);
-    }
-    // console.log(ary)
-    // try {
-    //   document.querySelector('.moveable-control-box').remove();
-    // } catch (error) {}
-    window.localStorage.setItem(`${this.authService.userToken}for3d`, JSON.stringify(ary));
   }
 
   changeRsrpThreshold() {
