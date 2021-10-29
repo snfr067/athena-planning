@@ -870,7 +870,7 @@ export class ResultComponent implements OnInit {
 
   /** 回上頁 */
   back() {
-    this.authService.clearStorage();
+    // this.authService.clearStorage();
     if (this.isHst) {
       this.router.navigate(['/site/site-planning'], { queryParams: { taskId: this.taskId, isHst: true }});
     } else {
