@@ -490,16 +490,14 @@
                 <td>Frequency</td>
                 <td *ngIf="tempCalParamSet.wifiProtocol != 'wifi5'">
                   <select type="number" class="inputNum"
-                  [(ngModel)]="tempCalParamSet.wifiFrequency"
-                  style="width: 100px;">
+                  [(ngModel)]="tempCalParamSet.wifiFrequency">
                     <option *ngFor="let band of wifiFreqList2_4g" [ngValue]="band">{{band}}</option>
                     <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
                   </select>
                 </td>
                 <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi5'">
                   <select type="number" class="inputNum"
-                  [(ngModel)]="tempCalParamSet.wifiFrequency"
-                  style="width: 100px;">
+                  [(ngModel)]="tempCalParamSet.wifiFrequency">
                     <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
                   </select>
                 </td>
@@ -508,8 +506,7 @@
                 <td>{{ 'wifiProtocol' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.wifiProtocol" 
-                  (change)="changeWifiProtocol(tempCalParamSet.wifiProtocol,true)"  
-                  style="width: 100px;">
+                  (change)="changeWifiProtocol(tempCalParamSet.wifiProtocol,true)">
                     <option value="wifi4">WiFi4</option>
                     <option value="wifi5">WiFi5</option>
                     <option value="wifi6">WiFi6</option>
@@ -521,8 +518,7 @@
                 <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi4'">
                   <select type="number" class="inputNum" step="5"
                   [(ngModel)]="tempCalParamSet.wifiBandwidth"
-                  (change)="changeBandwidth('', true)"
-                  style="width: 100px;">
+                  (change)="changeBandwidth('', true)">
                     <option value="20">20</option>
                     <option value="40">40</option>
                   </select>MHz
@@ -530,8 +526,7 @@
                 <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi5'">
                   <select type="number" class="inputNum" step="5"
                   [(ngModel)]="tempCalParamSet.wifiBandwidth"
-                  (change)="changeBandwidth('', true)"
-                  style="width: 100px;">
+                  (change)="changeBandwidth('', true)">
                   <option value="40">40</option>
                   <option value="80">80</option>
                   <option value="160">160</option>
@@ -540,8 +535,7 @@
                 <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'">
                   <select type="number" class="inputNum" step="5"
                   [(ngModel)]="tempCalParamSet.wifiBandwidth"
-                  (change)="changeBandwidth('', true)"
-                  style="width: 100px;">
+                  (change)="changeBandwidth('', true)">
                   <option value="20">20</option>
                   <option value="40">40</option>
                   <option value="80">80</option>
@@ -552,7 +546,7 @@
               <tr *ngIf="calculateForm.objectiveIndex == '2'">
                 <td>{{ 'guardInterval' | translate }}</td>
                 <td>
-                  <select [(ngModel)]="tempCalParamSet.guardInterval" style="width: 100px;">
+                  <select [(ngModel)]="tempCalParamSet.guardInterval">
                     <option *ngIf="tempCalParamSet.wifiProtocol != 'wifi6'" value="400ns">400ns</option>
                     <option value="800ns">800ns</option>
                     <option *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'" value="1600ns">1600ns</option>
@@ -563,7 +557,7 @@
               <tr *ngIf="calculateForm.objectiveIndex == '2'">
                 <td>{{ 'wifiMimo' | translate }}</td>
                 <td>
-                  <select [(ngModel)]="tempCalParamSet.wifiMimo" style="width: 100px;">
+                  <select [(ngModel)]="tempCalParamSet.wifiMimo">
                     <!-- <option value="1x1">1x1</option> -->
                     <option value="2x2">2x2</option>
                     <option value="3x3">3x3</option>
@@ -612,7 +606,6 @@
                 <td>{{ 'ulBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth" 
-                  style="width: 100px;"
                   (change)="changeBandwidth('ul', true)"
                   >
                     <option value="1.4">1.4</option>
@@ -628,7 +621,6 @@
                 <td>{{ 'dlBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
-                  style="width: 100px;"
                   (change)="changeBandwidth('dl', true)"
                   >
                     <option value="1.4">1.4</option>
@@ -643,7 +635,7 @@
               <tr *ngIf="calculateForm.objectiveIndex == '0'">
                 <td>{{ 'mimoNum' | translate }}</td>
                 <td>
-                  <select [(ngModel)]="tempCalParamSet.mimoNumber4G" style="width: 100px;">
+                  <select [(ngModel)]="tempCalParamSet.mimoNumber4G">
                     <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
                       <option value=1>1</option>
                       <option value=2>2</option>
@@ -663,8 +655,7 @@
                 <td>{{ 'subcarrier' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.tddscs" 
-                  (change) = "changeScs(tempCalParamSet.tddscs, 'tdd', true)"
-                  style="width: 100px;" >
+                  (change) = "changeScs(tempCalParamSet.tddscs, 'tdd', true)" >
                     <option value=15>15</option>
                     <option value=30>30</option>
                     <option value=60>60</option>
@@ -675,8 +666,7 @@
                 <td>{{ 'scsBandwidth' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '15'">
+                  (change)="changeBandwidth('', true)" *ngIf="tempCalParamSet.tddscs == '15'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -687,8 +677,7 @@
                     <option value="50">50</option>
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
-                  (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '30'">
+                  (change)="changeBandwidth('', true)" *ngIf="tempCalParamSet.tddscs == '30'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -705,7 +694,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.tddbandwidth"
                   (change)="changeBandwidth('', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.tddscs == '60'">
+                  *ngIf="tempCalParamSet.tddscs == '60'">
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
@@ -725,7 +714,7 @@
               <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'ulMimolayer' | translate }}</td>
                 <td>
-                  <select [(ngModel)]="tempCalParamSet.ulMimoLayer" style="width: 100px;" >
+                  <select [(ngModel)]="tempCalParamSet.ulMimoLayer">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="4">4</option>
@@ -736,7 +725,7 @@
               <tr *ngIf="calculateForm.objectiveIndex == '1'">
                 <td>{{ 'dlMimolayer' | translate }}</td>
                 <td>
-                  <select [(ngModel)]="tempCalParamSet.dlMimoLayer" style="width: 100px;" >
+                  <select [(ngModel)]="tempCalParamSet.dlMimoLayer">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="4">4</option>
@@ -782,8 +771,7 @@
                 <td>{{ 'ulSubcarrier' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulScs" 
-                  (change) = "changeScs(tempCalParamSet.ulScs, 'ul', true)"
-                  style="width: 100px;" >
+                  (change) = "changeScs(tempCalParamSet.ulScs, 'ul', true)" >
                     <option value=15>15</option>
                     <option value=30>30</option>
                     <option value=60>60</option>
@@ -796,7 +784,7 @@
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
                   (change)="changeBandwidth('ul', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '15'">
+                  *ngIf="tempCalParamSet.ulScs == '15'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -808,7 +796,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
                   (change)="changeBandwidth('ul', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '30'">
+                  *ngIf="tempCalParamSet.ulScs == '30'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -825,7 +813,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.ulBandwidth"
                   (change)="changeBandwidth('ul', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.ulScs == '60'">
+                  *ngIf="tempCalParamSet.ulScs == '60'">
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
@@ -846,8 +834,7 @@
                 <td>{{ 'dlSubcarrier' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlScs" 
-                  (change) = "changeScs(tempCalParamSet.dlScs, 'dl', true)"
-                  style="width: 100px;" >
+                  (change) = "changeScs(tempCalParamSet.dlScs, 'dl', true)">
                     <option value=15>15</option>
                     <option value=30>30</option>
                     <option value=60>60</option>
@@ -860,7 +847,7 @@
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
                   (change)="changeBandwidth('dl', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '15'">
+                  *ngIf="tempCalParamSet.dlScs == '15'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -872,7 +859,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
                   (change)="changeBandwidth('dl', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '30'">
+                  *ngIf="tempCalParamSet.dlScs == '30'">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -889,7 +876,7 @@
                   </select>
                   <select [(ngModel)]="tempCalParamSet.dlBandwidth"
                   (change)="changeBandwidth('dl', true)"
-                  style="width: 100px;" *ngIf="tempCalParamSet.dlScs == '60'">
+                  *ngIf="tempCalParamSet.dlScs == '60'">
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
@@ -974,7 +961,7 @@
                 <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
                   <li>
                     <p>{{ 'subcarrier' | translate }}	</p>
-                    <select [(ngModel)]="subcarrier" style="width: 100px;" >
+                    <select [(ngModel)]="subcarrier">
                       <option value="15">15</option>
                       <option value="30">30</option>
                       <option value="60">60</option>
@@ -1046,7 +1033,7 @@
                 
                 <li *ngIf="calculateForm.objectiveIndex == '2'">
                   <p>{{ 'wifiFrequency' | translate }}</p>
-                  <select [(ngModel)]="wifiFrequency" (change)="changeWifiFrequency()" style="width: 100px;" >
+                  <select [(ngModel)]="wifiFrequency" (change)="changeWifiFrequency()">
                     <option value="0">sub-1GHz</option>
                     <option value="1">2.4GHz</option>
                     <option value="2">5GHz</option>
@@ -1495,7 +1482,7 @@
       <tr>
         <td>{{ 'mimoNum' | translate }}</td>
         <td>
-          <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;">
+          <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G">
             <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
               <option value=1>1</option>
               <option value=2>2</option>
