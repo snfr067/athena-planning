@@ -24,7 +24,7 @@
     <h5 *ngIf="calculateForm.mapProtocol == 'wifi'"><i class="fas fa-info-circle"></i>{{ 'result.ap.info' | translate }}</h5>
     <li>
       <span><label>{{ 'planning.net' | translate }}</label>{{ parseOB(calculateForm.objectiveIndex) }}</span>
-      <span *ngIf="calculateForm.mapProtocol != 'wifi'"><label>{{ 'duplex' | translate }}</label>{{ calculateForm.duplex }}</span>
+      <span *ngIf="calculateForm.mapProtocol != 'wifi'"><label>{{ 'duplex' | translate }}</label>{{ toUpper(calculateForm.duplex) }}</span>
       <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.propose.wait_select_1' | translate }}</label>{{ getWaitSelect() }}</span>
       <span *ngIf="this.defaultBsCount !== 0 && calculateForm.mapProtocol != 'wifi'"><label>{{ 'defaultBs' | translate }}</label>{{ getBsCount() }}</span>
       <span *ngIf="this.defaultBsCount !== 0 && calculateForm.mapProtocol == 'wifi'"><label>{{ 'result.propose.defaultAp' | translate }}</label>{{ getBsCount() }}</span>

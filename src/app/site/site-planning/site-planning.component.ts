@@ -572,12 +572,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                 // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
                   this.planningIndex = '1';
+                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                   if (this.calculateForm.isAverageSinr == true) {
                     this.calculateForm.isCoverage = true;
                     this.calculateForm.isAverageSinr = false;
                   }
                 } else {
                   this.planningIndex = '2';
+                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                   if (this.calculateForm.isUeAvgSinr) {
                     this.calculateForm.isUeAvgThroughput = true;
                     this.calculateForm.isUeAvgSinr = false;

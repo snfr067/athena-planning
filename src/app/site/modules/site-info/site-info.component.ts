@@ -68,4 +68,12 @@ export class SiteInfoComponent implements OnInit {
     .replace('{0}', this.defaultBsCount);
   }
 
+  toUpper(str) {
+    if (str == 'tdd') {
+      return "TDD";
+    } else {
+      return "FDD";
+    }
+  }
+
 }
