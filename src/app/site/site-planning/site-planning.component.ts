@@ -480,6 +480,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 物件就位後再顯示
     this.chart.nativeElement.style.opacity = 0;
     this.resetChartWidth();
+    // 隱藏規劃目標及場域設定的button位置跑掉
+    const matSidenav: HTMLElement = <HTMLElement> document.querySelector('.mat-sidenav');
+    const matSidenavContent: HTMLElement = document.querySelector('.mat-sidenav-content');
+    matSidenav.style.width = matSidenavContent.style.marginRight;
   }
 
   ngOnInit() {

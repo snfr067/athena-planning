@@ -158,9 +158,12 @@
         <!-- <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle> -->
       </mat-button-toggle-group>
       
-      <mat-checkbox [(ngModel)]="isShowSubField" style="margin-left: 5px;">
-        {{ 'isShowSubField' | translate }}
-      </mat-checkbox>
+      <span style="margin-left: 5px; position: relative; bottom: 10px; line-height: 2.2">
+        <mat-checkbox [(ngModel)]="isShowSubField" >
+          {{ 'isShowSubField' | translate }}
+        </mat-checkbox>
+      </span>
+      
     </div>
     <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
       
