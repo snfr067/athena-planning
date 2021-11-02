@@ -7,7 +7,7 @@
 	"login.fail": "Invalid account or password",
 	"field.required": "This input field could not be empty",
 	"image.required": "Please choose a floor map image",
-	"numeric.enter": "Numerical only 1-200",
+	"numeric.enter": "Numerical only 10-200",
 	"delete": "Delete",
 	"altitude": "Altitude",
 	"altitude.setting": "Altitude settings",
