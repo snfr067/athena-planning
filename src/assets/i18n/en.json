@@ -279,6 +279,8 @@
 	"applyAllSameFrequency": "We will change the bandwidth of this BS to that of other BS with the same frequency. Do you agree??",
 	"modifedBandOverlapDLUL": "After the bandwidth is modified, the uplink and downlink bandwidth ranges will overlap and will be changed back to the original value for you",
 	"applyTitle": "Bandwidth warning",
+	"changeToSimulationTitle": "提醒",
+	"changeToSimulationText": "<br>這個目標設定的改變，會刪除掉場域上所有的待選位置!<br>是否繼續執行?",
 
 	"bs": "BS",
 	"parameterSetting": "BS parameter config",

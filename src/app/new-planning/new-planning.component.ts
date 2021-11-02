@@ -36,6 +36,8 @@ export class NewPlanningComponent implements OnInit {
   showImgMsg = false;
   /** 列表頁的timeInterval，離開時清除 */
   timeInterval;
+  /** 長寬限制 */
+  isExceed = false;
 
   /** 表單-taskName */
   get taskName() { return this.formGroup.get('taskName'); }
@@ -65,7 +67,11 @@ export class NewPlanningComponent implements OnInit {
       const width = control.get('width');
       const height = control.get('height');
       const altitude = control.get('altitude');
-
+      if (Number(width.value) > 200 || Number(height.value) > 200) {
+        // return { sizeRevealed: true };
+        return { sizeExceeded: true };
+      }
+      else 
       if (width.valid && height.valid && altitude.valid) {
         return null;
       } else {
@@ -104,6 +110,13 @@ export class NewPlanningComponent implements OnInit {
       input[i].focus();
       input[i].blur();
     }
+    // if ((this.calculateForm.width > 200 || this.calculateForm.width < 10) ||
+    //   (this.calculateForm.height > 200 || this.calculateForm.height < 10)) { 
+    //     this.isExceed = true;
+    //     return;
+    // } else {
+    //   this.isExceed = false;
+    // }
     if (this.calculateForm.mapName == null) {
       this.showImgMsg = true;
       return;

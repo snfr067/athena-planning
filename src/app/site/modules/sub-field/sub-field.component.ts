@@ -38,6 +38,7 @@ export class SubFieldComponent implements OnInit {
   /** 是否PDF頁面 */
   isPDF = false;
   zNumber = 1;
+  rsrpTh;
 
   shapes = [];
   annotations = [];
@@ -135,6 +136,9 @@ export class SubFieldComponent implements OnInit {
     } else if (type === 'coverage') {
       valueArr = this.result['connectionMap'];
       tempSinrValue = this.result['sinrMap'];
+    } else if (type === 'coverageRsrp') {
+      valueArr = this.result['connectionMap'];
+      tempSinrValue = this.result['rsrpMap'];
     } else if (type === 'rsrp') {
       valueArr = this.result['rsrpMap'];
     } else if (type === 'dltpt') {
@@ -149,7 +153,7 @@ export class SubFieldComponent implements OnInit {
       let y_end = Math.floor(Number(sub_field_arr[i].y)+Number(sub_field_arr[i].height));
       // 我只是想放N/A: (當x_start < x_end) ,y亦然
       if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
-        if (type === 'coverage') {
+        if (type === 'coverage' || type === 'coverageRsrp') {
           zResult = 0/0; // N/A
         } else {
           zResult = 0/0; // N/A
@@ -170,6 +174,11 @@ export class SubFieldComponent implements OnInit {
               } else {
                 // console.log(Number(tempSinrValue[i][j][z])+" "+covTh);
               }
+            } else if (type === 'coverageRsrp') {
+              this.rsrpTh = Number(sessionStorage.getItem('rsrpThreshold'));
+              if (Number(tempSinrValue[i][j][z]) > Number(sessionStorage.getItem('rsrpThreshold'))) {
+                totalValue+=1;
+              }
             } else {
               totalValue += Number(valueArr[i][j][z]);
             }
@@ -180,6 +189,8 @@ export class SubFieldComponent implements OnInit {
       }
     }
     if (type === 'coverage') {
+      zResult = this.financial(Number(totalValue/points)*100, 2);
+    } else if (type === 'coverageRsrp') {
       zResult = this.financial(Number(totalValue/points)*100, 2);
     } else {
       zResult = this.financial(totalValue/points, 2);
@@ -331,6 +342,7 @@ export class SubFieldComponent implements OnInit {
             // area: Math.round(Number(el.width)*Number(el.height)),
             coverage: this.calSubFieldSignalValue('coverage',z),
             quality: this.calSubFieldSignalValue('quality',z),
+            coverageRsrp: this.calSubFieldSignalValue('coverageRsrp',z),
             rsrp: this.calSubFieldSignalValue('rsrp',z),
             dltpt: this.calSubFieldSignalValue('dltpt',z),
             ultpt: this.calSubFieldSignalValue('ulptp',z),

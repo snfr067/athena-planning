@@ -2110,6 +2110,17 @@
   </div>
 </ng-template>
 
+<ng-template #changeToSimulationModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'changeToSimulationText' | translate }}?</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="changeToSimulation(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="changeToSimulation(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
 <!-- <ng-template #deleteModal3>
   <h5 mat-dialog-title>{{ 'applyTitle' | translate }}</h5>
   <div mat-dialog-content>

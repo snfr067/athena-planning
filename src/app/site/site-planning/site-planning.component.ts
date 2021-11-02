@@ -334,6 +334,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
+  @ViewChild('changeToSimulationModal') changeToSimulationModal: TemplateRef<any>;
   // @ViewChild('deleteModal3') deleteModal3: TemplateRef<any>;
   // @ViewChild('deleteModal4') deleteModal4: TemplateRef<any>;
   // @ViewChild('deleteModal5') deleteModal5: TemplateRef<any>;
@@ -5788,6 +5789,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeAvgThroughput = true;
       this.calculateForm.isCoverage = false;
     } else {
+      if (this.candidateList.length != 0) {
+        // this.msgDialogConfig.data = {
+        //   type: 'error',
+        //   infoMessage: '<br>這個目標設定的改變，會刪除掉場域上所有的待選位置! <br>是否繼續執行?'
+        // };
+        // this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        this.matDialog.open(this.changeToSimulationModal);
+      } else {
+        this.calculateForm.isSimulation = true;
+        // this.clearAll('candidate');
+        this.calculateForm.isAverageSinr = false;
+        this.calculateForm.isCoverage = false;
+        this.calculateForm.isUeCoverage = false;
+        this.calculateForm.isUeAvgSinr = false;
+        this.calculateForm.isUeAvgThroughput = false;
+      }
+      
+    }
+  }
+
+  changeToSimulation(flag) {
+    if (flag) {
+      this.matDialog.open(this.changeToSimulationModal);
       this.calculateForm.isSimulation = true;
       this.clearAll('candidate');
       this.calculateForm.isAverageSinr = false;
@@ -5795,7 +5819,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
+      this.matDialog.closeAll();
+    } else {
+      if (this.calculateForm.isCoverage) {
+        this.planningIndex = '1';
+      } else {
+        this.planningIndex = '2';
+      }
+      this.matDialog.closeAll();
     }
+    
   }
 
   /**

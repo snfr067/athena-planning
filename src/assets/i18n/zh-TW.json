@@ -255,7 +255,7 @@
 	"signal.quality": "訊號品質",
 	"file": "選擇檔案",
 	"nofile": "未選擇檔案",
-	"result.performance.field": "場域訊號覆蓋分析",
+	"result.performance.field": "整體場域範圍分析",
 	"result.performance.bs": "基站效能分析",
 	"result.performance.ue": "行動終端效能分析",
 	"result.performance.height": "切面高度分析",
@@ -278,6 +278,8 @@
 	"applyAllSameFrequency": "我們將會把該基站的頻寬改成其他相同頻率基站的頻寬，您同意嗎?",
 	"modifedBandOverlapDLUL": "頻寬修改後上下行頻寬範圍會重疊，將為您改回原值",
 	"applyTitle": "Bandwidth提醒",
+	"changeToSimulationTitle": "提醒",
+	"changeToSimulationText": "這個目標設定的改變，會刪除掉場域上所有的待選位置!是否繼續執行?",
 	
 
 	"bs": "基地台",
@@ -379,7 +381,7 @@
 
 	"subfield": "子場域",
 	"subfield.z": "地圖切面(高度)",
-	"subfield.coverage.analysis": "子場域訊號覆蓋分析",
+	"subfield.coverage.analysis": "自訂場域範圍分析",
 	"subfield.overlap":"子場域重疊了",
 	"subfield.num": "子場域編號",
 	"subfield.xy": "子場域左下角座標",
