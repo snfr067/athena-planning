@@ -279,7 +279,7 @@
 	"modifedBandOverlapDLUL": "頻寬修改後上下行頻寬範圍會重疊，將為您改回原值",
 	"applyTitle": "Bandwidth提醒",
 	"changeToSimulationTitle": "提醒",
-	"changeToSimulationText": "這個目標設定的改變，會刪除掉場域上所有的待選位置!是否繼續執行?",
+	"changeToSimulationText": "這個目標設定的改變，會刪除掉場域上所有的待選基站!是否繼續執行?",
 	
 
 	"bs": "基地台",
