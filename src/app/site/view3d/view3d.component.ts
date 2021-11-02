@@ -146,9 +146,9 @@ export class View3dComponent implements OnInit {
 
     const camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 2, Math.PI * 0.37, this.width / 1.5, new BABYLON.Vector3(10, 0, 0), scene);
     camera.position = new BABYLON.Vector3(this.width * 0.4, 35, -60);
-    camera.lowerRadiusLimit = 30;
-    camera.upperRadiusLimit = 100;
-    camera.lowerBetaLimit = 0.00 * (Math.PI / 180);
+    // camera.lowerRadiusLimit = 30;
+    // camera.upperRadiusLimit = 100;
+    // camera.lowerBetaLimit = 0.00 * (Math.PI / 180);
     camera.upperBetaLimit = 90.00 * (Math.PI / 180);
     camera.panningInertia = 0.5;
     camera.inertia = 0.5;
@@ -333,7 +333,7 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z] = [];
 
         const sinrMapPlane = BABYLON.MeshBuilder.CreateGround('sinrmap_' + z, {width: this.width, height: this.height}, scene);
-        sinrMapPlane.position.y = z + offsetY;
+        sinrMapPlane.position.y = z*0.1 + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), this.width, this.height, scene, false, false);
@@ -349,7 +349,7 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(sinrMapPlane);
 
         const pciMapPlane = BABYLON.MeshBuilder.CreateGround('pcimap_' + z, {width: this.width, height: this.height}, scene);
-        pciMapPlane.position.y = z + offsetY;
+        pciMapPlane.position.y = z*0.1 + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
@@ -365,7 +365,7 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(pciMapPlane);
 
         const rsrpMapPlane = BABYLON.MeshBuilder.CreateGround('rsrpmap_' + z, {width: this.width, height: this.height}, scene);
-        rsrpMapPlane.position.y = z + offsetY;
+        rsrpMapPlane.position.y = z*0.1 + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), this.width, this.height, scene, false, false);
@@ -381,7 +381,7 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(rsrpMapPlane);
 
         const ulThroughputMapPlane = BABYLON.MeshBuilder.CreateGround('ulThroughput_' + z, {width: this.width, height: this.height}, scene);
-        ulThroughputMapPlane.position.y = z + offsetY;
+        ulThroughputMapPlane.position.y = z*0.1 + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), this.width, this.height, scene, false, false);
@@ -397,7 +397,7 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(ulThroughputMapPlane);
 
         const dlThroughputMapPlane = BABYLON.MeshBuilder.CreateGround('dlThroughput_' + z, {width: this.width, height: this.height}, scene);
-        dlThroughputMapPlane.position.y = z + offsetY;
+        dlThroughputMapPlane.position.y = z*0.1 + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
             const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), this.width, this.height, scene, false, false);

@@ -67,11 +67,11 @@ export class NewPlanningComponent implements OnInit {
       const width = control.get('width');
       const height = control.get('height');
       const altitude = control.get('altitude');
-      if (Number(width.value) > 200 || Number(height.value) > 200) {
+      // if (Number(width.value) > 200 || Number(height.value) > 200) {
         // return { sizeRevealed: true };
-        return { sizeExceeded: true };
-      }
-      else 
+        // return { sizeExceeded: true };
+      // }
+      // else 
       if (width.valid && height.valid && altitude.valid) {
         return null;
       } else {
