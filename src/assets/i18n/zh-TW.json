@@ -227,7 +227,7 @@
 	"result.pdf.width": "水平寬度",
 	"result.pdf.height": "垂直長度",
 	"result.pdf.altitude": "高",
-	"result.pdf.altitude.range": "高[1-200]",
+	"result.pdf.altitude.range": "高[1-30]",
 	"result.pdf.ue": "行動終端效能分析",
 
 	"tasklist.title": "無線網路規劃",

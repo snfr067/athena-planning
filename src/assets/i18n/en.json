@@ -227,7 +227,7 @@
 	"result.pdf.width": "Width",
 	"result.pdf.height": "Length",
 	"result.pdf.altitude": "Height",
-	"result.pdf.altitude.range": "Height[1-200]",
+	"result.pdf.altitude.range": "Height[1-30]",
 	"result.pdf.ue": "UE performance analysis",
 
 	"tasklist.title": "Network planning",
