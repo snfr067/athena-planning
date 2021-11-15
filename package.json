@@ -43,7 +43,7 @@
     "scenejs": "^1.4.3",
     "tslib": "^1.10.0",
     "web-animations-js": "^2.3.2",
-    "xlsx": "^0.16.9",
+    "xlsx": "^0.17.3",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -51,7 +51,7 @@
     "@angular/cli": "~9.1.1",
     "@angular/compiler-cli": "~9.1.1",
     "@angular/language-service": "~9.1.1",
-    "@compodoc/compodoc": "^1.1.11",
+    "@compodoc/compodoc": "^1.1.15",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",

@@ -555,6 +555,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               this.calculateForm = this.formService.setHstToForm(result);
               // this.calculateForm.defaultBs = output['defaultBs'];
               // this.calculateForm.bsList = output['defaultBs'];
+              //  2021-11-11 ping add for test
+              // this.calculateForm.maxConnectionNum = 15;
               let tempBsNum = 0;
               if (this.calculateForm.defaultBs == "") {
                 tempBsNum = 0;

@@ -9,6 +9,10 @@
       <span><label>{{ 'planning.size' | translate }}({{ 'meter' | translate }})</label>{{ 'width' | translate }} {{ calculateForm.width }} / {{ 'height' | translate }} {{ calculateForm.height }} ／{{ 'result.pdf.altitude' | translate }} {{ calculateForm['altitude'] }} </span>
       <span><label>{{ 'zValue' | translate }}</label>{{ calculateForm.zValue }} {{ 'meter' | translate }}</span>
     </li>
+    <!--  2021-11-11 ping add -->
+    <li>
+      <span><label>{{ 'maxConnectionNum' | translate }}</label>{{ calculateForm['maxConnectionNum'] }}</span>
+    </li>
     <li>
       <span *ngIf="this.inputBsListCount !== 0">
         <label>{{ 'planning.target' | translate }}</label>
@@ -19,6 +23,8 @@
         <div *ngIf="planningObj.isUeCoverage">{{ 'isUeCoverage' | translate }}</div>
       </span>
     </li>
+    
+    
     <hr>
     <h5 *ngIf="calculateForm.mapProtocol != 'wifi'"><i class="fas fa-info-circle"></i>{{ 'result.bs.info' | translate }}</h5>
     <h5 *ngIf="calculateForm.mapProtocol == 'wifi'"><i class="fas fa-info-circle"></i>{{ 'result.ap.info' | translate }}</h5>

@@ -169,6 +169,7 @@
 	"wifi5": "WiFi5以上",
 	"availableNewBsNumber.wifi": "欲佈建的AP數量",
 	"availableNewBsNumber.gen": "欲佈建的基站數量",
+	"maxConnectionNum": "基站服務行動終端數量上限",
 	"ue.Mandatory": "以行動終端為規劃目標，行動終端數量不可為0",
 	"must_greater_then": "必須大於",
 	"bs_must_greater_then_zero": "模擬模式既有基站數量不可小於0",

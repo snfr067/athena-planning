@@ -99,6 +99,9 @@ export class CalculateForm {
   wifiMimo: string = null;
   mimoNumber: string = null;
 
+  // 2021-11-09 ping add
+  maxConnectionNum: number = 32;
+
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,
