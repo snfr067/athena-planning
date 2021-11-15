@@ -91,6 +91,14 @@ export class FormService {
     calculateForm.isAverageSinr = JSON.parse(result['isaveragesinr']);
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
+    // 2021-11-15 add by ping
+    try {
+      calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
+    } catch (error) {
+      console.log("**error**",error);
+      calculateForm.maxConnectionNum = result['ueCon_maxConnectionNum'];
+    }
+
     return calculateForm;
   }
 

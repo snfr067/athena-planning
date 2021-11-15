@@ -422,13 +422,22 @@
             </mat-checkbox> -->
           </div>
 
-          <p class="sub_title inline-block" *ngIf="planningIndex !== '3'">
+          <p class="sub_title inline-block mt-2" *ngIf="planningIndex !== '3'">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
-          <div class="sub_content inline-block mt-2" *ngIf="planningIndex !== '3'">
+          <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
             <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
+          <!--  2021-11-11 ping add -->
+          <p class="sub_title inline-block">
+            <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
+            <ng-template #oTemp>{{ 'maxConnectionNum' | translate }}</ng-template>
+          </p>
+          <div class="sub_content inline-block">
+            <input type="number" class="inputNum" [(ngModel)]="calculateForm.maxConnectionNum">
+          </div>
+
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
           <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</p>
