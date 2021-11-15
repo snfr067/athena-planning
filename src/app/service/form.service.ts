@@ -92,6 +92,7 @@ export class FormService {
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     // 2021-11-15 add by ping
+<<<<<<< HEAD
     calculateForm.maxConnectionNum = result['maxConnectionNum'];
     // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
     // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
@@ -102,6 +103,14 @@ export class FormService {
     //   console.log("**error**",error);
     //   calculateForm.maxConnectionNum = result['maxConnectionNum'];
     // }
+=======
+    try {
+      calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
+    } catch (error) {
+      console.log("**error**",error);
+      calculateForm.maxConnectionNum = result['ueCon_maxConnectionNum'];
+    }
+>>>>>>> 481483b104d00c261359cb29e3603e927b51097a
 
     return calculateForm;
   }
