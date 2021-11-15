@@ -92,12 +92,16 @@ export class FormService {
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     // 2021-11-15 add by ping
-    try {
-      calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
-    } catch (error) {
-      console.log("**error**",error);
-      calculateForm.maxConnectionNum = result['ueCon_maxConnectionNum'];
-    }
+    calculateForm.maxConnectionNum = result['maxConnectionNum'];
+    // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
+    // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
+    
+    // try {
+    //   calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
+    // } catch (error) {
+    //   console.log("**error**",error);
+    //   calculateForm.maxConnectionNum = result['maxConnectionNum'];
+    // }
 
     return calculateForm;
   }
