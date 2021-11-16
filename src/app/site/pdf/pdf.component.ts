@@ -634,6 +634,9 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('taskName'),this.calculateForm['taskName']],
       [this.translateService.instant('createTime'),this.result['createTime']],
       [this.translateService.instant('result.layered.info'),target],
+      // 2021-11-16 add by ping
+      [this.translateService.instant('maxConnectionNum'),this.calculateForm['maxConnectionNum']],
+      // end
       [this.translateService.instant('result.pdf.width'),this.result['inputWidth']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('result.pdf.height'),this.result['inputHeight']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+' '+this.translateService.instant('meter')],
