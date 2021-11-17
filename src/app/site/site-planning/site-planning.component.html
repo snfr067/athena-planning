@@ -431,8 +431,8 @@
           </div>
           <!--  2021-11-11 ping add -->
           <p class="sub_title inline-block">
-            <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
-            <ng-template #oTemp>{{ 'maxConnectionNum' | translate }}</ng-template>
+            <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp2">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
+            <ng-template #oTemp2>{{ 'maxConnectionNum' | translate }}</ng-template>
           </p>
           <div class="sub_content inline-block">
             <input type="number" class="inputNum" [(ngModel)]="calculateForm.maxConnectionNum">

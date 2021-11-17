@@ -2835,6 +2835,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    // 2021-11-17 add by ping
+    } else if (Number(this.calculateForm.maxConnectionNum) < 1) {
+      let msg = this.translateService.instant('maxConnectionNum') + this.translateService.instant('must_greater_then') + '0';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
+    // end
     } else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
       let msg = this.translateService.instant('bs_must_greater_then_zero')
       this.msgDialogConfig.data = {
