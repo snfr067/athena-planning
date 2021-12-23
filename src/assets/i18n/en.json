@@ -125,7 +125,7 @@
 	"planning.itri.51": "ITRI Bldg.51",
 	"planning.taichung": "Taichung smart machinary factory",
 	"planning.user_define": "User customized model",
-	"planning.4.7G.Office": "4.7GHz Office model",
+	"planning.4.7G.Office": "ITU office 4.7GHz",
 	"planning.algorithm": "Algorithm settings",
 	"planning.limit": "File restrictions",
 	"planning.protocolSwitchWarning": "After switching the protocol, please remember to check whether the base station RF parameters are filled in",
