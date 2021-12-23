@@ -1647,7 +1647,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** tooltip 文字 */
   getTooltip() {
     const id = this.hoverObj.id;
-    let title = `${this.dragObject[id].title}<br>`;
+    let title = `${this.dragObject[id].title}`;
+    // console.log('this.svgNum',this.svgNum);
+    // 2021-12-10 add by ping //
+    title +=` : ${this.svgNum}<br>`;
+    // end //
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
@@ -1984,6 +1988,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   onRightClick(event: MouseEvent, svgId, i) {
     this.svgId = svgId;
     this.svgNum = i+1;
+    // console.log('this.svgNum',this.svgNum);
     // preventDefault avoids to show the visualization of the right-click menu of the browser
     event.preventDefault();
     // we record the mouse position in our object
@@ -2099,11 +2104,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * mouseover info
    * @param event 
    * @param svgId 
+   * @param i
    */
-  hover(event, svgId) {
+  hover(event, svgId, i) {
     this.live = true;
     this.svgId = svgId;
+    this.svgNum = i+1;
     this.hoverObj = event.target.closest('span');
+    const id = this.hoverObj.id;
+    // console.log('this.svgNum',this.svgNum);
     this.setLabel();
   }
 
@@ -5923,7 +5932,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 右側清單刪除互動物件
    * @param id 
    */
-  removeObj(id) {
+  removeObj(id) {  
     this.svgId = id;
     this.delete(false);
   }

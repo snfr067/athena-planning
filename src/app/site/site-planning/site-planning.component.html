@@ -171,7 +171,8 @@
     <div #chart id="chart" style="position: relative; overflow-x: auto">
       <div #dragArea [ngStyle]="dragStyle">
         <span *ngIf="isShowSubField">
-          <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+          <!-- 2021-12-10 add by ping, pass index to hover function to display -->
+          <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
             <ng-container *ngIf="svgStyle[item]">
               <svg *ngIf="dragObject[item].element === 'subField' || dragObject[item].element == '4'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
                 <!-- <g> -->
@@ -191,7 +192,7 @@
         </span> -->
         </span>
         <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
-        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <ng-container *ngIf="svgStyle[item]">
             <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
               <g>
@@ -247,7 +248,7 @@
           </ng-container>
         </span>
         
-        <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="defaultBS" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="defaultBS" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1"/>
@@ -259,7 +260,7 @@
           </svg>
         </span>
         <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle blue_circle" >{{ (i + 1) }}</span>
-        <span *ngFor="let item of candidateList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="candidate" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of candidateList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="candidate" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" id="canvas_background" height="3" width="25" y="-1" x="-1"/>
@@ -281,7 +282,7 @@
           </svg>
         </span>
         <span *ngFor="let item of candidateList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle pink_circle" >{{ (i + 1) }}</span>
-        <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
           <svg class="s_ue" xmlns="http://www.w3.org/2000/svg">
             <g>
               <rect fill="none" height="10" width="29" y="-1" x="-1"/>
@@ -334,6 +335,7 @@
   <!-- standard material menu -->
   <mat-menu #rightMenu="matMenu" id="rightMenu">
     <ng-template matMenuContent>
+      <button class="rightClickBtnGroup" >No. {{ this.svgNum }}</button>
       <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
       <button class="rightClickBtnGroup" 
         *ngIf="dragObject[svgId].type === 'obstacle';"
