@@ -2111,7 +2111,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.svgId = svgId;
     this.svgNum = i+1;
     this.hoverObj = event.target.closest('span');
-    const id = this.hoverObj.id;
     // console.log('this.svgNum',this.svgNum);
     this.setLabel();
   }
@@ -2846,7 +2845,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     // 2021-11-17 add by ping
     } else if (Number(this.calculateForm.maxConnectionNum) < 1) {
-      let msg = this.translateService.instant('maxConnectionNum') + this.translateService.instant('must_greater_then') + '0';
+      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_then') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
