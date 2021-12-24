@@ -93,7 +93,7 @@ export class FormService {
 
     // 2021-11-15 add by ping
 
-    calculateForm.maxConnectionNum = result['maxConnectionNum'];
+    calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
     // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
     // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
     
