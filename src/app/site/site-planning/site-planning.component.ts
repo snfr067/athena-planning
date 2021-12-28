@@ -553,9 +553,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               // console.log(output);
               this.dlRatio = result['tddframeratio'];
               this.calculateForm = this.formService.setHstToForm(result);
+              // console.log("***this.calculateForm",this.calculateForm);
+              if (this.calculateForm['maxConnectionNum']===null || isNaN(this['calculateForm.maxConnectionNum']) || typeof this['calculateForm.maxConnectionNum'] == 'undefined'){
+                this.calculateForm['maxConnectionNum'] = 32;
+              }
               // this.calculateForm.defaultBs = output['defaultBs'];
               // this.calculateForm.bsList = output['defaultBs'];
-              // this.calculateForm.maxConnectionNum = 15;
               let tempBsNum = 0;
               if (this.calculateForm.defaultBs == "") {
                 tempBsNum = 0;
@@ -4829,6 +4832,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const bsWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(bsData);
     XLSX.utils.book_append_sheet(wb, bsWS, 'bs parameters');
     // algorithm parameters
+    if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || typeof this.calculateForm.maxConnectionNum == 'undefined'){
+      this.calculateForm.maxConnectionNum = 32;
+    }
     const algorithmData = [
       ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
       [
@@ -5288,6 +5294,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+      if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || typeof this.calculateForm.maxConnectionNum == 'undefined'){
+        this.calculateForm.maxConnectionNum = 32;
+      }
     }
     /* objective parameters sheet */
     const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];
