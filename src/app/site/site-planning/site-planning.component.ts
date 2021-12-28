@@ -1648,8 +1648,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const id = this.hoverObj.id;
     let title = `${this.dragObject[id].title}`;
     // console.log('this.svgNum',this.svgNum);
-    title +=` : ${this.svgNum}<br>`;
-    // end //
+    title +=` : ${this.svgNum}<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
@@ -2841,14 +2840,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    } else if (Number(this.calculateForm.maxConnectionNum) < 1) {
+    } else if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || !(Number(this.calculateForm.maxConnectionNum)>0)) {
       let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_then') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
-    // end
+    } else if (Number(this.calculateForm.maxConnectionNum)>=1000) {
+      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_less_than') + ' 1000';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
     } else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
       let msg = this.translateService.instant('bs_must_greater_then_zero')
       this.msgDialogConfig.data = {
@@ -4825,11 +4830,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     XLSX.utils.book_append_sheet(wb, bsWS, 'bs parameters');
     // algorithm parameters
     const algorithmData = [
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
       [
+        
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
+        this.calculateForm.maxConnectionNum
       ]
     ];
     const algorithmWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(algorithmData);
@@ -5280,6 +5287,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // this.calculateForm.computeRound = Number(algorithmParametersData[1][4]);
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
+      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
     }
     /* objective parameters sheet */
     const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];

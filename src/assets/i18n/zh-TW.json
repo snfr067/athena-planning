@@ -177,6 +177,7 @@
 	"dl_ul_freq_same": "上行頻率跟下行頻率重複了，請修改",
 	"max_min_txpower_same": "最大功率與最小功率值相同，請修改",
 	"min_txpower_greater_than_max": "最大功率不可小於最小功率，請修改",
+	"must_less_than": "必須小於",
 	"must_less_then": "必須小於待選位置數量",
 	"x_greater_then_field_width": "修改後因為超出場域長度，故恢復原值",
 	"y_greater_then_field_height": "修改後因為超出場域寬度，故恢復原值",

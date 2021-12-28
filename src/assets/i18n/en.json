@@ -178,6 +178,7 @@
 	"max_min_txpower_same": "Max power range can't be same with min power range",
 	"min_txpower_greater_than_max": "Min power range can't greater than max power",
 	"must_less_then": "must less than",
+	"must_less_than": "must less than",
 	"x_greater_then_field_width": "X coordinate can't greater than field width or less than zero",
 	"y_greater_then_field_height": "Y coordinate can't greater than field height or less than zero",
 	"freq_overlaped": "After modification, it overlaps with the BS frequency in the field",
