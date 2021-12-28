@@ -171,7 +171,6 @@
     <div #chart id="chart" style="position: relative; overflow-x: auto">
       <div #dragArea [ngStyle]="dragStyle">
         <span *ngIf="isShowSubField">
-          <!-- 2021-12-10 add by ping, pass index to hover function to display -->
           <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
             <ng-container *ngIf="svgStyle[item]">
               <svg *ngIf="dragObject[item].element === 'subField' || dragObject[item].element == '4'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
@@ -431,7 +430,6 @@
           <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
             <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
           </div>
-          <!--  2021-11-11 ping add -->
           <p class="sub_title inline-block">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp2">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
             <ng-template #oTemp2>{{ 'maxConnectionNum' | translate }}</ng-template>
@@ -1303,7 +1301,6 @@
                           <option value="3">ITU office 1.2~1.3GHz</option>
                           <option value="4">ITU office 1.8~2, 2.4GHz</option>
                           <option value="5">ITU office 3.5GHz</option>
-                          <!-- 2021-12-23 add by wen-ping: value 12 4.7G office model, change order by Hz -->
                           <option value="12">{{ 'planning.4.7G.Office' | translate }}</option>
                           <option value="11">ITU office 5.2GHz</option>
                           <option value="7">ITU commercial 900MHz</option>
