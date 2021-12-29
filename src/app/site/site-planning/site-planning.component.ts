@@ -553,8 +553,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               // console.log(output);
               this.dlRatio = result['tddframeratio'];
               this.calculateForm = this.formService.setHstToForm(result);
-              // console.log("***this.calculateForm",this.calculateForm);
-              if (this.calculateForm['maxConnectionNum']===null || isNaN(this['calculateForm.maxConnectionNum']) || typeof this['calculateForm.maxConnectionNum'] == 'undefined'){
+              if (!(Number(this.calculateForm.maxConnectionNum)>0)){
                 this.calculateForm['maxConnectionNum'] = 32;
               }
               // this.calculateForm.defaultBs = output['defaultBs'];
@@ -2843,7 +2842,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    } else if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || !(Number(this.calculateForm.maxConnectionNum)>0)) {
+    } else if (!(Number(this.calculateForm.maxConnectionNum)>0)) {
       let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_then') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
@@ -4832,7 +4831,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const bsWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(bsData);
     XLSX.utils.book_append_sheet(wb, bsWS, 'bs parameters');
     // algorithm parameters
-    if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || typeof this.calculateForm.maxConnectionNum == 'undefined'){
+    if (!(Number(this.calculateForm.maxConnectionNum)>0)){
       this.calculateForm.maxConnectionNum = 32;
     }
     const algorithmData = [
@@ -5294,7 +5293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      if (this.calculateForm.maxConnectionNum===null || isNaN(this.calculateForm.maxConnectionNum) || typeof this.calculateForm.maxConnectionNum == 'undefined'){
+      if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
     }
