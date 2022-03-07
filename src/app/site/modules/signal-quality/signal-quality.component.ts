@@ -382,8 +382,10 @@ export class SignalQualityComponent implements OnInit {
         });
       });
     });
-    let scalemax = Number(this.financial(Plotly.d3.max(sinrAry)));
-    let scalemin = Number(this.financial(Plotly.d3.min(sinrAry)));
+    // let scalemax = Number(this.financial(Plotly.d3.max(sinrAry)));
+    // let scalemin = Number(this.financial(Plotly.d3.min(sinrAry)));
+    let scalemax = 29.32;
+    let scalemin = -1.889;
     let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));

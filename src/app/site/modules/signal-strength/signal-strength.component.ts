@@ -280,8 +280,10 @@ export class SignalStrengthComponent implements OnInit {
       });
     });
 
-    let scalemax = Number(this.financial(Plotly.d3.max(rsrpAry)));
-    let scalemin = Number(this.financial(Plotly.d3.min(rsrpAry)));
+    // let scalemax = Number(this.financial(Plotly.d3.max(rsrpAry)));
+    // let scalemin = Number(this.financial(Plotly.d3.min(rsrpAry)));
+    let scalemax = -60;
+    let scalemin = -120;
     let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));
