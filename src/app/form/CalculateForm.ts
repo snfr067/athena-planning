@@ -18,6 +18,10 @@ export class CalculateForm {
   width: number = null;
   height: number = null;
   altitude: number = null;
+
+  altitudeStart: number = null;
+  altitudeEnd: number = null;
+
   zValue: string = null;
   pathLossModelId: number = 0;
   ueCoordinate: string = null;
@@ -101,6 +105,8 @@ export class CalculateForm {
 
   maxConnectionNum: number = 32;
 
+  materialName: string = null;
+  materialLossCoefficient: number = 0.1;
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

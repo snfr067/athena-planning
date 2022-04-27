@@ -29,7 +29,8 @@ declare var Plotly: any;
 @Component({
   selector: 'app-site-planning',
   templateUrl: './site-planning.component.html',
-  styleUrls: ['./site-planning.component.scss']
+  styleUrls: ['./site-planning.component.scss',
+  ]
 })
 export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
@@ -100,6 +101,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   live = false;
   /** calculate form */
   calculateForm: CalculateForm = new CalculateForm();
+  /** material list */
+  materialList = [];
+  /** model list */
+  modelList = [];
+  /** new material & new model */
+  materialName: string = null;
+  materialLossCoefficient: number = 0.1;
+  modelName: string = null;
+  modelDissCoefficient: number = 0.1;
+  modelFloorLossFactor: number = 0.1;
   /** upload image src */
   imageSrc;
   /** subitem class */
@@ -331,6 +342,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+  /** 新增自訂材質 */
+  @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
+  @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
@@ -697,6 +711,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               infoMessage: this.translateService.instant('cant_get_result')
             };
             this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          }
+        );
+        this.http.get("http://192.168.1.115:4444/").subscribe(
+          res => {
+            // console.log("----get http://192.168.1.115:4444/----");
+            if (this.isHst) {
+              const result = res;
+              this.materialList = Object.values(result);
+              console.log("----test for API get data:",result);
+              // this.materialList = JSON.parse(result);
+              console.log(this.materialList);
+            }
+          }
+        );
+        this.http.get("http://192.168.1.115:4444/model").subscribe(
+          res => {
+            // console.log("----get http://192.168.1.115:4444/model----");
+            if (this.isHst) {
+              const result = res;
+              this.modelList = Object.values(result);
+              console.log("----test for API get data:",result);
+              console.log(this.modelList);
+            }
           }
         );
       } else {
@@ -1573,6 +1610,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.live = true;
     }, 0);
     // console.log(id);
+    console.log("**mC id**",id);
     this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
@@ -4668,6 +4706,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     /* generate worksheet */
     // map
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    var maxLength = 32767;
+    console.log("export mapImage.length,",this.calculateForm.mapImage.length);
+    // console.log("calculateForm.mapImage,",this.calculateForm.mapImage);
     const mapData = [
       ['image', 'imageName', 'width', 'height', 'altitude', 'protocol', 'mapLayer'],
       [
@@ -4687,6 +4728,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ]);
       }
     }
+
+    if (this.calculateForm.mapImage.length >= maxLength){
+      let splitTimes = parseInt((this.calculateForm.mapImage.length / maxLength)+"") + 1;
+      console.log("exceed",maxLength,", splitTimes:",splitTimes);
+      for (let i = 1; i < splitTimes; i++) {
+        if (i < mapData.length){
+          console.log("i:",i,"maxLength*(i-1)",maxLength*(i-1),"maxLength*i",maxLength*i);
+          mapData[i][0] = this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i);
+        }
+        else{
+          mapData.push([
+            this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i), '', '', '', '', '', ''
+          ]);
+        }
+      }
+      // 切割完剩下的最後一塊
+      mapData.push([
+        this.calculateForm.mapImage.substring(maxLength*(splitTimes-1),this.calculateForm.mapImage.length), '', '', '', '', '', ''
+      ]);
+      console.log("mapData.length",mapData.length);
+    }
+
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
@@ -4901,15 +4964,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.wb = XLSX.read(result, {type: 'binary'});
 
     /* map sheet */
-    const map: string = this.wb.SheetNames[0];
-    const mapWS: XLSX.WorkSheet = this.wb.Sheets[map];
-    const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1}));
-
+    const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
+    const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
+    const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
+    /*
+      mapData = [
+        ['image', 'imageName', ...]
+        ['data:image/...', 'EGATRON3F.png', ...]
+        ['','', ,,, , 2.1]
+      ]
+      0對應column name, 1+對應data
+    */
     try {
       this.calculateForm.mapImage = '';
       const keyMap = {};
       Object.keys(mapData[0]).forEach((key) => {
-        keyMap[mapData[0][key]] = key;
+        keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
       });
       this.zValues.length = 0;
       for (let i = 1; i < mapData.length; i++) {
@@ -6272,4 +6342,118 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
   }
 
+  checkIfCustomize(inputValue){
+    // console.log("******value:",inputValue);
+    if (inputValue == 999){
+      console.log("now value:",inputValue, "show add Materail Modal.");
+      this.matDialog.open(this.materialCustomizeModal);
+    }
+    else if (inputValue == 9999){
+      console.log("now value:",inputValue, "show add Model Modal.");
+      this.matDialog.open(this.modelCustomizeModal);
+    }
+  }
+  createNewMaterial(){
+    console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
+    console.log("this.materialName.length",String(this.materialName).length);
+    let duplicate = false;
+    // 檢查現有材質名稱是否已存在
+    for (let i = 0; i < this.materialList.length; i++) {
+      if(this.materialName == this.materialList[i][0]){
+        console.log("duplicate by",this.materialName)
+        duplicate = true;
+        break;
+      }
+    }
+    if(!this.materialName || this.materialLossCoefficient<0 || duplicate){
+      let msg = "";
+      if (!this.materialName) {
+        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+      } else if(this.materialLossCoefficient<0) { 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_then') + '0';
+      } else{
+        msg += this.translateService.instant('material.name') +':'+ this.materialName + this.translateService.instant('alreadyexist') + '!'
+      }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }else{
+      // 新增材質到後端
+      window.setTimeout(() => {
+        console.log("----post http://192.168.1.115:4444/----");
+        console.log([this.materialName,this.materialLossCoefficient]);
+        console.log(JSON.stringify([this.materialName,this.materialLossCoefficient]));
+        this.http.post("http://192.168.1.115:4444/", JSON.stringify([this.materialName,this.materialLossCoefficient])).subscribe(
+          res => {
+            console.log(res);
+            this.materialName = "";
+            this.materialLossCoefficient = 0.1;
+            this.matDialog.closeAll();
+            this.ngOnInit();
+          },
+          err => {
+            this.authService.spinnerHide();
+            console.log(err);
+          }
+        );
+      }, 100);
+    }
+  }
+  optionSelected(index){
+    if(index==0) 
+      return true;
+    else
+      return false;
+  }
+  createNewModel(){
+    let duplicate = false;
+    // 檢查現有材質名稱是否已存在
+    for (let i = 0; i < this.modelList.length; i++) {
+      if(this.modelName == this.modelList[i][0]){
+        console.log("duplicate by",this.modelName)
+        duplicate = true;
+        break;
+      }
+    }
+    if(!this.modelName || this.modelDissCoefficient<0 || this.modelFloorLossFactor<0 || duplicate){
+      let msg = "";
+      if (!this.modelName) {
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+      } else if(this.modelDissCoefficient<0) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_then') + '0';
+      } else if(this.modelFloorLossFactor<0) { 
+        msg += this.translateService.instant('planning.model.floorlossfactor') + this.translateService.instant('must_greater_then') + '0';
+      } else{
+        msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
+      }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }else{
+      // 新增材質到後端
+      window.setTimeout(() => {
+        console.log("----post http://192.168.1.115:4444/model----");
+        console.log([this.materialName,this.materialLossCoefficient]);
+        console.log(JSON.stringify([this.materialName,this.materialLossCoefficient]));
+        this.http.post("http://192.168.1.115:4444/model", JSON.stringify([this.modelName,this.modelDissCoefficient,this.modelFloorLossFactor])).subscribe(
+          res => {
+            console.log(res);
+            this.modelName = "";
+            this.modelDissCoefficient = 0.1;
+            this.modelFloorLossFactor = 0.1;
+            this.matDialog.closeAll();
+            this.ngOnInit();
+          },
+          err => {
+            this.authService.spinnerHide();
+            console.log(err);
+          }
+        );
+      }, 100);
+    }
+  }
 }

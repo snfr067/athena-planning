@@ -1,3 +1,9 @@
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 <div class="tool">
   <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('rect')">
     <svg id="svg_01" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
@@ -1067,6 +1073,27 @@
                     <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
                   </ol>
                 </li>
+
+                <li>
+                  <p>  <!-- 右方場域基本資訊新增材質列表 -->
+                    <label>{{ 'materialList' | translate }}</label>
+                    <span>
+                      <select style="min-width: 16em;" (change)="checkIfCustomize($event.target.value)">
+                          <option value={{i}} [selected]=optionSelected(i) *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
+                          <!-- <option value="1">{{ 'material.wood' | translate }}</option>
+                          <option value="2">{{ 'material.cement' | translate }}</option>
+                          <option value="3">{{ 'material.light_steel_frame' | translate }}</option>
+                          <option value="4">{{ 'material.glass' | translate }}</option>
+                          <option value="5">{{ 'material.stainless' | translate }}</option>
+                          <option value="6">{{ 'material.fireproof' | translate }}</option>
+                          <option value="7">{{ 'material.fireSoundproof' | translate }}</option>
+                          <option value="8">{{ 'material.whiteBrick' | translate }}</option>
+                           -->
+                           <option value="999">{{ 'material.customize' | translate }}</option>
+                        </select>
+                    </span>
+                  </p>
+                </li>
               </ul>
             </mat-expansion-panel>
 
@@ -1085,7 +1112,7 @@
                     <label>X</label>
                     <input type="text" [(ngModel)]="dragObject[item].x" 
                     (select)="tempParamStorage(dragObject[item].x)"
-                    (click)="tempParamStorage(dragObject[item].x)"
+                    (click)="moveClick(item);tempParamStorage(dragObject[item].x);"
                     (change)="changePosition('x',item)">
                   </span>
                   <span>
@@ -1095,6 +1122,8 @@
                     (click)="tempParamStorage(dragObject[item].y)"
                     (change)="changePosition('y',item)">
                   </span>
+                  <br>
+
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].rotate"
@@ -1103,7 +1132,7 @@
                     (change)="changeRotate(item)"
                     [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
-                  <br>
+                  
                   <span>
                     <label>{{ 'width' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].width"
@@ -1111,6 +1140,7 @@
                     (click)="tempParamStorage(dragObject[item].width)"
                     (change)="changeSize(item, 'width', true)">
                   </span>
+                  
                   <span>
                     <label>{{ 'height' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].height"
@@ -1118,8 +1148,9 @@
                     (click)="tempParamStorage(dragObject[item].height)"
                     (change)="changeSize(item, 'height',true)">
                   </span>
+                  
                   <span>
-                    <label>{{ 'altitude' | translate }}</label>
+                    <label>{{ 'altitudeStart' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].altitude"
                     (select)="tempParamStorage(dragObject[item].altitude)"
                     (click)="tempParamStorage(dragObject[item].altitude)"
@@ -1127,16 +1158,25 @@
                     <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
                   </span>
                   <span>
+                    <label>{{ 'altitudeEnd' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].altitude"
+                    (select)="tempParamStorage(dragObject[item].altitude)"
+                    (click)="tempParamStorage(dragObject[item].altitude)"
+                    (change)="changeSize(item, 'altitude',true)">
+                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                  </span>
+                  <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
                     <select class="w7em" [(ngModel)]="dragObject[item].material">
-                      <option value="0">{{ 'material.wood' | translate }}</option>
+                      <option value={{i}} *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
+                      <!-- <option value="0">{{ 'material.wood' | translate }}</option>
                       <option value="1">{{ 'material.cement' | translate }}</option>
                       <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
                       <option value="3">{{ 'material.glass' | translate }}</option>
                       <option value="4">{{ 'material.stainless' | translate }}</option>
                       <option value="5">{{ 'material.fireproof' | translate }}</option>
                       <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
-                      <option value="7">{{ 'material.whiteBrick' | translate }}</option>
+                      <option value="7">{{ 'material.whiteBrick' | translate }}</option> -->
                     </select>
                   </span>
                   <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
@@ -1290,12 +1330,13 @@
                   <p>
                     <label>{{ 'pathLossModelId' | translate }}</label>
                     <span>
-                      <select style="min-width: 16em;" [(ngModel)]="calculateForm.pathLossModelId">
+                      <select style="min-width: 16em;" (change)="checkIfCustomize($event.target.value)" [(ngModel)]="calculateForm.pathLossModelId">
                         <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else pathLossModelIdTemp">
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
                         </ng-container>
                         <ng-template #pathLossModelIdTemp>
-                          <option value="0">{{ 'planning.itri.51' | translate }}</option>
+                          <option value={{i}} *ngFor="let item of modelList; let i = index">{{item[0]}}</option>
+                          <!-- <option value="0">{{ 'planning.itri.51' | translate }}</option>
                           <option value="1">{{ 'planning.taichung' | translate }}</option>
                           <option value="2">ITU office 900MHz</option>
                           <option value="3">ITU office 1.2~1.3GHz</option>
@@ -1304,11 +1345,11 @@
                           <option value="12">{{ 'planning.4.7G.Office' | translate }}</option>
                           <option value="11">ITU office 5.2GHz</option>
                           <option value="7">ITU commercial 900MHz</option>
-                          <option value="8">ITU commercial 1.2~1.3, 1.8~2, 4GHz</option>
+                          <option value="8">ITU commercial 1.2~1.3, 1.8~2.4GHz</option>
                           <option value="6">ITU residential 1.8~2, 2.4GHz</option>                     
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
-                          <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option>
-                          <!-- <option value="1000">{{ 'planning.user_define' | translate }}</option> -->
+                          <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option> -->
+                          <option value="9999">{{ 'planning.user_define' | translate }}</option>
                         </ng-template>
                       </select>
                     </span>
@@ -1429,21 +1470,102 @@
       </tr>
       <tr *ngIf="dragObject[svgId].type === 'obstacle'">
         <td>{{ 'material.setting' | translate }}</td>
-        <td>
+        <td> <!-- 右鍵高度/材質設定 -->
           <select [(ngModel)]="dragObject[svgId].material">
-            <option value="0">{{ 'material.wood' | translate }}</option>
+            <option value={{i}} *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
+            <!-- <option value="0">{{ 'material.wood' | translate }}</option>
             <option value="1">{{ 'material.cement' | translate }}</option>
             <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
             <option value="3">{{ 'material.glass' | translate }}</option>
             <option value="4">{{ 'material.stainless' | translate }}</option>
             <option value="5">{{ 'material.fireproof' | translate }}</option>
             <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
-            <option value="7">{{ 'material.whiteBrick' | translate }}</option>
+            <option value="7">{{ 'material.whiteBrick' | translate }}</option> -->
           </select>
         </td>
       </tr>
     </tbody>
   </table>
+</ng-template>
+
+<ng-template #materialCustomizeModal>
+  <h5>{{ 'material.customize' | translate }}</h5>
+  <table class="altParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'material.name' | translate }}</td>
+        <td>
+          <input type="text" [(ngModel)]="materialName">
+       </td>
+      </tr>
+      <tr>
+       <td>{{ 'material.loss.coefficient' | translate }}</td>
+       <td>
+          <input type="number" step="0.1" min="0" [(ngModel)]="materialLossCoefficient" >
+       </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="modalFooter" style="padding-top:0.8em;"> <!-- 0.8em -->
+      <a href="javascript:void(0)" (click)="createNewMaterial()">{{ 'planning.ok' | translate }}</a>
+  </div>
+</ng-template>
+
+<ng-template #modelCustomizeModal>
+  <h5>{{ 'planning.user_define' | translate }}</h5>
+  <div style="text-align:center; margin-bottom:1em;">
+    <span style="font-style: italic;">L<sub>total</sub> =</span>
+    <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
+    <span>20 log<sub>10</sub>&#402; + </span>
+    <span style="font-style: italic;">N</span>
+    <span> log<sub>10</sub></span>
+    <span style="font-style: italic;"> d</span>
+    <span> + </span>
+    <span style="font-style: italic;">L<sub>&#402;</sub></span>
+    <span>(</span>
+    <span style="font-style: italic;">n</span>
+    <span>) - 28</span>
+  </div>
+  <div style="text-align:right; margin-bottom:1em; font-size:85%">
+    <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
+    <br>
+    <span style="font-style: italic;">d</span>
+    <span>: {{ 'planning.model.distenceBsUe' | translate }} ({{ 'meter' | translate }})</span>
+    <br>
+    <span>{{ 'note' | translate }}: {{ 'assume' | translate }}{{ 'planning.model.freeSpaceProp' | translate }} = </span>
+    <span>20 log<sub>10</sub>&#402; -28 </span>
+  </div>
+  <table class="altParamTable">
+    <tbody>
+      <tr style="border-top: 1px solid #ddd;">
+        <td>{{ 'planning.model.name' | translate }}</td>
+        <td>
+          <input type="text" [(ngModel)]="modelName">
+       </td>
+      </tr>
+      <tr>
+       <td>{{ 'planning.model.disscoefficient' | translate }}(<span style="font-style: italic;">N</span>)</td>
+       <td>
+          <input type="number" step="0.1" min="0" [(ngModel)]="modelDissCoefficient" >
+       </td>
+      </tr>
+      <tr>
+        <td>{{ 'planning.model.floorlossfactor' | translate }}
+          <span style="font-style: italic;">L<sub>f</sub></span>
+          <span>(</span>
+          <span style="font-style: italic;">n</span>
+          <span>)</span>
+        </td>
+        <td>
+           <input type="number" step="0.1" min="0" [(ngModel)]="modelFloorLossFactor" >
+        </td>
+       </tr>
+    </tbody>
+  </table>
+  <div class="modalFooter" style="padding-top:0.8em;">
+    <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.ok' | translate }}</a>
+  </div>
 </ng-template>
 
 <ng-template #RfModalTable>
