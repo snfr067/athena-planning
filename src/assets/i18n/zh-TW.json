@@ -258,6 +258,7 @@
 	"delete.fail": "刪除失敗!",
 	"planning.algorithm.model": "秀傳醫院模型",
 	"planning.algorithm.model.pegatron": "和碩工廠",
+	"planning.algorithm.model.pegatron.7FDemo": "和碩7F Demo Room",
 	"signal.quality": "訊號品質",
 	"file": "選擇檔案",
 	"nofile": "未選擇檔案",
