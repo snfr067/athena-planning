@@ -147,7 +147,14 @@ export class AuthService {
       return this.translateService.instant('material.fireSoundproof');
     } else if (val === '7' || val === 7) {
       return this.translateService.instant('material.whiteBrick');
+    } else if (val === '8' || val === 8) {
+      return this.translateService.instant('material.flameproof');
+    } else if (val === '9' || val === 9) {
+      return this.translateService.instant('material.flameSoundproof');
+    } else if (val === '10' || val === 10) {
+      return this.translateService.instant('material.cabinet');
     }
+    
   }
 
   /**
