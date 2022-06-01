@@ -74,6 +74,7 @@ export class FormService {
     calculateForm.objectiveIndex = result['objectiveindex'];
     calculateForm.obstacleInfo = result['obstacleinfo'];
     calculateForm.pathLossModelId = result['pathlossmodelid'];
+    calculateForm.pathLossModel = result['pathLossModel'];
     calculateForm.powerMaxRange = result['powermaxrange'];
     calculateForm.powerMinRange = result['powerminrange'];
     calculateForm.seed = result['seed'];
@@ -94,6 +95,7 @@ export class FormService {
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
     // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
     // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
+
     
     // try {
     //   calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
@@ -101,6 +103,16 @@ export class FormService {
     //   console.log("**error**",error);
     //   calculateForm.maxConnectionNum = result['maxConnectionNum'];
     // }
+
+   
+    calculateForm.pathLossModel = {
+      "TxGain": 1,
+      "RxGain": 1,
+      "noiseFigure": 1
+    }
+    // calculateForm.pathLossModel['TxGain'] = 3;
+    console.log("calculateForm",calculateForm);
+
 
     return calculateForm;
   }

@@ -1,9 +1,3 @@
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-</script>
-<script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
 <div class="tool">
   <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('rect')">
     <svg id="svg_01" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
@@ -1078,8 +1072,11 @@
                   <p>  <!-- 右方場域基本資訊新增材質列表 -->
                     <label>{{ 'materialList' | translate }}</label>
                     <span>
-                      <select style="min-width: 16em;" (change)="checkIfCustomize($event.target.value)">
-                          <option value={{i}} [selected]=optionSelected(i) *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
+                      <select style="min-width: 16em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
+                          <option value={{item.id}} *ngFor="let item of materialList">   
+                            <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                            <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                          </option>
                           <!-- <option value="1">{{ 'material.wood' | translate }}</option>
                           <option value="2">{{ 'material.cement' | translate }}</option>
                           <option value="3">{{ 'material.light_steel_frame' | translate }}</option>
@@ -1089,7 +1086,7 @@
                           <option value="7">{{ 'material.fireSoundproof' | translate }}</option>
                           <option value="8">{{ 'material.whiteBrick' | translate }}</option>
                            -->
-                           <option value="999">{{ 'material.customize' | translate }}</option>
+                           <option value=999>【{{ 'material.customize' | translate }}】</option>
                         </select>
                     </span>
                   </p>
@@ -1150,7 +1147,7 @@
                   </span>
                   
                   <span>
-                    <label>{{ 'altitudeStart' | translate }}</label>
+                    <label>{{ 'altitude.start.end' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].altitude"
                     (select)="tempParamStorage(dragObject[item].altitude)"
                     (click)="tempParamStorage(dragObject[item].altitude)"
@@ -1158,25 +1155,28 @@
                     <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
                   </span>
                   <span>
-                    <label>{{ 'altitudeEnd' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].altitude"
-                    (select)="tempParamStorage(dragObject[item].altitude)"
-                    (click)="tempParamStorage(dragObject[item].altitude)"
-                    (change)="changeSize(item, 'altitude',true)">
+                    ~
+                    <input type="text" [(ngModel)]="dragObject[item].altitudeEnd"
+                    (select)="tempParamStorage(dragObject[item].altitudeEnd)"
+                    (click)="tempParamStorage(dragObject[item].altitudeEnd)"
+                    (change)="changeSize(item, 'altitudeEnd',true)">
                     <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
                   </span>
                   <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
                     <select class="w7em" [(ngModel)]="dragObject[item].material">
-                      <option value={{i}} *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
-                      <!-- <option value="0">{{ 'material.wood' | translate }}</option>
+                      <option value={{item.id}} *ngFor="let item of materialList">
+                        <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                        <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
+                      </option> 
+                     <!-- <option value="0">{{ 'material.wood' | translate }}</option>
                       <option value="1">{{ 'material.cement' | translate }}</option>
                       <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
                       <option value="3">{{ 'material.glass' | translate }}</option>
                       <option value="4">{{ 'material.stainless' | translate }}</option>
                       <option value="5">{{ 'material.fireproof' | translate }}</option>
                       <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
-                      <option value="7">{{ 'material.whiteBrick' | translate }}</option> -->
+                      <option value="7">{{ 'material.whiteBrick' | translate }}</option>-->
                     </select>
                   </span>
                   <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
@@ -1330,12 +1330,15 @@
                   <p>
                     <label>{{ 'pathLossModelId' | translate }}</label>
                     <span>
-                      <select style="min-width: 16em;" (change)="checkIfCustomize($event.target.value)" [(ngModel)]="calculateForm.pathLossModelId">
+                      <select style="min-width: 16em;" (change)="pathLossCustomizeDialog($event.target.value)" [(ngModel)]="calculateForm.pathLossModelId">
                         <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else pathLossModelIdTemp">
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
                         </ng-container>
                         <ng-template #pathLossModelIdTemp>
-                          <option value={{i}} *ngFor="let item of modelList; let i = index">{{item[0]}}</option>
+                          <option value={{item.id}} *ngFor="let item of modelList;">
+                            <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                            <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                          </option>
                           <!-- <option value="0">{{ 'planning.itri.51' | translate }}</option>
                           <option value="1">{{ 'planning.taichung' | translate }}</option>
                           <option value="2">ITU office 900MHz</option>
@@ -1349,11 +1352,23 @@
                           <option value="6">ITU residential 1.8~2, 2.4GHz</option>                     
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
                           <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option> -->
-                          <option value="9999">{{ 'planning.user_define' | translate }}</option>
+                          <option value="999">【{{ 'planning.user_define' | translate }}】</option>
                         </ng-template>
                       </select>
                     </span>
                   </p>
+                </li>
+                <li>
+                  <p>{{ 'TxGain' | translate }}</p> 
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['TxGain']"><span style="color: #516c8c">dB</span>
+                </li>
+                <li>
+                  <p>{{ 'RxGain' | translate }}</p> 
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['RxGain']"><span style="color: #516c8c">dB</span>
+                </li>
+                <li>
+                  <p>{{ 'noise' | translate }}</p>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['noiseFigure']"><span style="color: #516c8c">dB</span>
                 </li>
                 <!-- <li>
                   <label>自訂無線模型(@jane要再給)</label>
@@ -1472,7 +1487,10 @@
         <td>{{ 'material.setting' | translate }}</td>
         <td> <!-- 右鍵高度/材質設定 -->
           <select [(ngModel)]="dragObject[svgId].material">
-            <option value={{i}} *ngFor="let item of materialList; let i = index">{{item[0]}}</option>
+            <option value={{item.id}} *ngFor="let item of materialList">
+              <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+              <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
+            </option>
             <!-- <option value="0">{{ 'material.wood' | translate }}</option>
             <option value="1">{{ 'material.cement' | translate }}</option>
             <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
@@ -1489,32 +1507,75 @@
 </ng-template>
 
 <ng-template #materialCustomizeModal>
-  <h5>{{ 'material.customize' | translate }}</h5>
+  <h5 *ngIf="materialId == 999 ; else editMaterialTemp">{{ 'material.customize' | translate }} </h5>
+  <ng-template #editMaterialTemp>
+    <h5>{{ 'material.edit' | translate }}</h5>
+  </ng-template>
   <table class="altParamTable">
     <tbody>
       <tr>
         <td>{{ 'material.name' | translate }}</td>
         <td>
-          <input type="text" [(ngModel)]="materialName">
+          <ng-container *ngIf="materialProperty == 'default'">
+            <span>{{materialName}}</span>
+          </ng-container>
+          <ng-container *ngIf="materialProperty == 'customized'">
+            <input type="text" [(ngModel)]="materialName">
+          </ng-container>
        </td>
       </tr>
       <tr>
+      <tr>
        <td>{{ 'material.loss.coefficient' | translate }}</td>
        <td>
-          <input type="number" step="0.1" min="0" [(ngModel)]="materialLossCoefficient" >
+          <input type="number" step="0.1" min="-1000" [(ngModel)]="materialLossCoefficient" >
        </td>
       </tr>
     </tbody>
   </table>
   
   <div class="modalFooter" style="padding-top:0.8em;"> <!-- 0.8em -->
-      <a href="javascript:void(0)" (click)="createNewMaterial()">{{ 'planning.ok' | translate }}</a>
+    <ng-container *ngIf="materialId == 999">
+      <a href="javascript:void(0)" (click)="createNewMaterial()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999">
+      <a href="javascript:void(0)" (click)="materialCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999 && materialProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteMaterialDialog()">{{ 'planning.delete.material' | translate }}</a>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMaterial>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteMaterial' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteMaterial(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteMaterial(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteModel>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteModel' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteModel(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteModel(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
   </div>
 </ng-template>
 
 <ng-template #modelCustomizeModal>
-  <h5>{{ 'planning.user_define' | translate }}</h5>
-  <div style="text-align:center; margin-bottom:1em;">
+  <h5 *ngIf="calculateForm.pathLossModelId == 999 ; else editModelTemp">{{ 'planning.user_define' | translate }} </h5>
+  <ng-template #editModelTemp>
+    <h5>{{ 'planning.edit' | translate }}</h5>
+  </ng-template>
+  <div style="text-align:center; margin-bottom:1em;; font-size:110%">
     <span style="font-style: italic;">L<sub>total</sub> =</span>
     <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
     <span>20 log<sub>10</sub>&#402; + </span>
@@ -1523,11 +1584,9 @@
     <span style="font-style: italic;"> d</span>
     <span> + </span>
     <span style="font-style: italic;">L<sub>&#402;</sub></span>
-    <span>(</span>
-    <span style="font-style: italic;">n</span>
-    <span>) - 28</span>
+    <span> - 28</span>
   </div>
-  <div style="text-align:right; margin-bottom:1em; font-size:85%">
+  <div style="text-align:right; margin-bottom:1em; font-size:70%">
     <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
     <br>
     <span style="font-style: italic;">d</span>
@@ -1541,7 +1600,12 @@
       <tr style="border-top: 1px solid #ddd;">
         <td>{{ 'planning.model.name' | translate }}</td>
         <td>
-          <input type="text" [(ngModel)]="modelName">
+          <ng-container *ngIf="modelProperty == 'default'">
+            <span>{{modelName}}</span>
+          </ng-container>
+          <ng-container *ngIf="modelProperty == 'customized'">
+            <input  type="text" [(ngModel)]="modelName">
+          </ng-container>
        </td>
       </tr>
       <tr>
@@ -1551,20 +1615,29 @@
        </td>
       </tr>
       <tr>
-        <td>{{ 'planning.model.floorlossfactor' | translate }}
+        <td>{{ 'planning.model.fieldLoss' | translate }}
           <span style="font-style: italic;">L<sub>f</sub></span>
-          <span>(</span>
-          <span style="font-style: italic;">n</span>
-          <span>)</span>
         </td>
         <td>
-           <input type="number" step="0.1" min="0" [(ngModel)]="modelFloorLossFactor" >
+           <input type="number" step="0.1" min="0" [(ngModel)]="modelfieldLoss" >
         </td>
        </tr>
     </tbody>
   </table>
   <div class="modalFooter" style="padding-top:0.8em;">
-    <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.ok' | translate }}</a>
+    
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999">
+      <a href="javascript:void(0)" (click)="selectAndClose()">{{ 'planning.select.model' | translate }}</a>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="pathLossCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999">
+      <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999 && modelProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteModelDialog()">{{ 'planning.delete.model' | translate }}</a>
+    </ng-container>
   </div>
 </ng-template>
 

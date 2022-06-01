@@ -18,12 +18,16 @@ export class CalculateForm {
   width: number = null;
   height: number = null;
   altitude: number = null;
-
-  altitudeStart: number = null;
   altitudeEnd: number = null;
 
   zValue: string = null;
   pathLossModelId: number = 0;
+  pathLossModel: object = {
+    "TxGain": 0,
+    "RxGain": 0,
+    "noiseFigure": 0
+  }
+
   ueCoordinate: string = null;
   ueRsrp: number = null;
   ueSinr: number = null;
@@ -107,6 +111,11 @@ export class CalculateForm {
 
   materialName: string = null;
   materialLossCoefficient: number = 0.1;
+
+  pathLossModelName: string = null;
+  distanceCoefficient: number = 0.1;
+  floorPenetrationLoss: number = 0.1;
+
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

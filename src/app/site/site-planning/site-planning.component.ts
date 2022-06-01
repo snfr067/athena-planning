@@ -106,11 +106,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** model list */
   modelList = [];
   /** new material & new model */
+  materialId: number = 1;
   materialName: string = null;
   materialLossCoefficient: number = 0.1;
+  materialProperty: string = null;
+  materialIdToIndex = {};
   modelName: string = null;
   modelDissCoefficient: number = 0.1;
-  modelFloorLossFactor: number = 0.1;
+  modelfieldLoss: number = 0.1;
+  modelProperty: string = null;
+  modelIdToIndex = {};
   /** upload image src */
   imageSrc;
   /** subitem class */
@@ -345,6 +350,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
+  @ViewChild('confirmDeleteMaterial') confirmDeleteMaterial: TemplateRef<any>;
+  @ViewChild('confirmDeleteModel') confirmDeleteModel: TemplateRef<any>;
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
@@ -531,9 +538,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
 
+    //取得材質與模型列表
+    let url_model = `${this.authService.API_URL}/mysql/pathLossModel/${this.authService.userId}`;
+    let url_obs = `${this.authService.API_URL}/mysql/obstacle/${this.authService.userId}`;
+    this.http.get("http://192.168.1.106:4444/").subscribe(
+      res => {
+        // console.log("----get http://192.168.1.106:4444/----");
+        let result = res;
+        this.materialList = Object.values(result['obstacle']);
+        let sorted = this.materialList.sort((a,b) => a.id - b.id);
+        // console.log('sorted',sorted);
+        // console.log("----test for API get data:",result);
+        console.log(this.materialList);
+        for (let i = 0;i < this.materialList.length;i++) {
+          let id = this.materialList[i]['id'];
+          this.materialIdToIndex[id]=i;
+        }
+        // console.log('idToIndex',this.materialIdToIndex);
+      }
+    );
+    this.http.get("http://192.168.1.106:4444/model").subscribe(
+      res => {
+        // console.log("----get http://192.168.1.106:4444/model----");
+        let result = res;
+        this.modelList = Object.values(result['pathLossModel']);
+        let sorted = this.modelList.sort((a,b) => a.id - b.id);
+        // console.log('sorted',sorted);
+        // console.log("----test for API get data:",result);
+        // console.log(this.modelList);
+        for (let i = 0;i < this.modelList.length;i++) {
+          let id = this.modelList[i]['id'];
+          this.modelIdToIndex[id]=i;
+        }
+        // console.log('idToIndex',this.modelIdToIndex);
+      }
+    );
+    
     if (sessionStorage.getItem('importFile') != null) {
       // from new-planning import file
       this.calculateForm = new CalculateForm();
+
       const reader = new FileReader();
       reader.onload = (e) => {
         this.readXls(e.target.result);
@@ -544,8 +588,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     // Not import File
     } else {
-      
-      if (this.taskid !== '') {
+      if (this.taskid !== '' ) {
         // 編輯場域
         let url;
         if (this.isHst) {
@@ -557,6 +600,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         this.http.get(url).subscribe(
           res => {
+            console.log("----request url:",url);
             if (this.isHst) {
               const result = res;
               console.log(result);
@@ -579,8 +623,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 tempBsNum = this.calculateForm.defaultBs.split('|').length;
               }
               this.calculateForm.availableNewBsNumber -= tempBsNum;
-              
-              
               this.hstOutput['gaResult'] = {};
               this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
               this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
@@ -713,29 +755,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
           }
         );
-        this.http.get("http://192.168.1.115:4444/").subscribe(
-          res => {
-            // console.log("----get http://192.168.1.115:4444/----");
-            if (this.isHst) {
-              const result = res;
-              this.materialList = Object.values(result);
-              console.log("----test for API get data:",result);
-              // this.materialList = JSON.parse(result);
-              console.log(this.materialList);
-            }
-          }
-        );
-        this.http.get("http://192.168.1.115:4444/model").subscribe(
-          res => {
-            // console.log("----get http://192.168.1.115:4444/model----");
-            if (this.isHst) {
-              const result = res;
-              this.modelList = Object.values(result);
-              console.log("----test for API get data:",result);
-              console.log(this.modelList);
-            }
-          }
-        );
       } else {
         // 新增場域 upload image
         this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
@@ -748,6 +767,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         } else if (this.calculateForm.objectiveIndex === '2') {
           // this.calculateForm.bandwidth = '[1]';
         }
+
         this.initData(false, false, '');
       }
       // setTimeout(()=> {
@@ -1610,7 +1630,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.live = true;
     }, 0);
     // console.log(id);
-    console.log("**mC id**",id);
     this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
@@ -1686,9 +1705,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** tooltip 文字 */
   getTooltip() {
     const id = this.hoverObj.id;
-    let title = `${this.dragObject[id].title}`;
+    let title = `${this.dragObject[id].title}: ${this.svgNum}`;
+    console.log('this.dragObject[id].title',this.dragObject[id].title);
     // console.log('this.svgNum',this.svgNum);
-    title +=` : ${this.svgNum}<br><strong>—————</strong><br>`;
+    console.log('this.dragObject',this.dragObject);
+    for(let obj in this.dragObject){
+      console.log('obj:',obj);
+      console.log('Dragobj[obj]:',this.dragObject[obj]);
+    }
+    if(this.svgNum == 1){
+      title +=` <br>重疊: 2, 3`;
+    }else if(this.svgNum == 2){
+      title +=` <br>重疊: 1`;
+    }else if(this.svgNum == 3){
+      title +=` <br>重疊: 1`;
+    }
+    title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
@@ -1821,7 +1853,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = target;
       this.frame.set('left', `${left}px`);
       this.frame.set('top', `${top}px`);
-      this.frame.set('z-index', 9999999);
+      this.frame.set('z-index', 999999);
+      /*
+      if(this.svgNum == 1){
+        console.log("set frame 999999");
+        this.frame.set('z-index', 999999);
+      }
+      if(this.svgNum == 3){
+        console.log("set frame 9");
+        this.frame.set('z-index', 9);
+      }
+      */
       this.setTransform(target);
 
       this.spanStyle[this.svgId].left = `${left}px`;
@@ -1912,7 +1954,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     
     this.spanStyle[this.svgId].transform = `rotate(${this.dragObject[this.svgId].rotate}deg)`;   
-    this.frame.set('z-index', 9999999);
+    this.frame.set('z-index', 100);
     this.frame.set('transform', 'rotate', `${this.dragObject[this.svgId].rotate}deg`);
     this.setTransform(target);
     
@@ -2246,6 +2288,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    checkRFParamIsEmpty(protocol, duplex) {
     let error = false;
     let msg = '<br>';
+    if (this.calculateForm.pathLossModelId == 999){
+      error = true;
+      msg += `${this.translateService.instant('plz_fill_pathLossModel')}<br/>`;
+      msg+= '</p>';
+    }
+
      if (protocol == '1') { //5G
       if (duplex == 'tdd') {
         for (let i = 0; i < this.defaultBSList.length; i++) {
@@ -2421,6 +2469,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     return false;
   }
+  /* ToDo
+  checkDragobjectOverlaped(ObjId){
+    let overlapedIDList = [];
+    let obj = this.dragObject[ObjId];
+    let x2 = Number(obj.x) + Number(obj.width);
+    let x1 = Number(obj.x);
+    let y2 = Number(obj.y) + Number(obj.height);
+    let y2 = Number(obj.y);
+    let angle = Number(obj.rotate);
+
+    for (let id in this.dragObject){
+      let obj2 = this.dragObject[id];
+      let xx2 = Number(obj2.x) + Number(obj2.width);
+      let xx1 = Number(obj2.x);
+      let yy2 = Number(obj2.y) + Number(obj2.height);
+      let yy2 = Number(obj2.y);
+      let angle2 = Number(obj2.rotate);
+    }
+
+    return overlapedIDList;
+  }
+  */
 
   // 檢查是否有基地台的參數重疊
   checkRFParamIsOverlaped() {
@@ -3262,6 +3332,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
 
+    Object.keys(this.calculateForm.pathLossModel).forEach((key) => {
+      this.calculateForm.pathLossModel[key] = Number(this.calculateForm.pathLossModel[key]);
+      
+    });
+
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // Wifi強制指定為wifi模型
       this.calculateForm.pathLossModelId = 9;
@@ -3355,7 +3430,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   changeSize(svgId, type, first) {
     if (type == 'altitude') {
-      if (this.dragObject[svgId].altitude <= 0) {
+      if (this.dragObject[svgId].altitude < 0) {
         this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
         let msg = this.translateService.instant('wha_cant_less_than_0');
         this.msgDialogConfig.data = {
@@ -4899,11 +4974,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     const algorithmData = [
       ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
+      // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'TxGain', 'RxGain', 'noiseFigure', 'maxConnectionNum'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
         1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
+        // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.pathLossModel['TxGain'],
         this.calculateForm.maxConnectionNum
       ]
     ];
@@ -5363,6 +5440,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+      /*
+      this.calculateForm.pathLossModel = {
+        "TxGain": Number(algorithmParametersData[1][7]),
+        "RxGain": Number(algorithmParametersData[1][8]),
+        "noiseFigure": Number(algorithmParametersData[1][9])
+      }
+      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][10]);
+      */
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
@@ -5775,6 +5860,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.objectiveIndex = result['objectiveindex'];
     this.calculateForm.obstacleInfo = result['obstacleinfo'];
     this.calculateForm.pathLossModelId = result['pathlossmodelid'];
+    // this.calculateForm.pathLossModel = result['pathLossModel'];
     this.calculateForm.powerMaxRange = result['powermaxrange'];
     this.calculateForm.powerMinRange = result['powerminrange'];
     this.calculateForm.seed = result['seed'];
@@ -6342,50 +6428,127 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
   }
 
-  checkIfCustomize(inputValue){
-    // console.log("******value:",inputValue);
-    if (inputValue == 999){
-      console.log("now value:",inputValue, "show add Materail Modal.");
-      this.matDialog.open(this.materialCustomizeModal);
+  materialCustomizeDialog(inputValue){
+    if (inputValue != 999){
+      let index = this.materialIdToIndex[inputValue];
+      this.materialName = this.materialList[index]['name'];
+      this.materialLossCoefficient = this.materialList[index]['decayCoefficient'];
+      this.materialProperty = this.materialList[index]['property'];
+    } else {
+      this.materialName = "";
+      this.materialLossCoefficient = 0.1;
+      this.materialProperty = "customized";
     }
-    else if (inputValue == 9999){
-      console.log("now value:",inputValue, "show add Model Modal.");
-      this.matDialog.open(this.modelCustomizeModal);
+    this.matDialog.open(this.materialCustomizeModal);
+  }
+  pathLossCustomizeDialog(inputValue){
+    if (inputValue != 999){
+      let index = this.modelIdToIndex[inputValue];
+      console.log('**this.modelList',this.modelList);
+      console.log('**this.modelList[index]',this.modelList[index]);
+      console.log('**this.modelList[index][name]',this.modelList[index]['name']);
+      this.modelName = this.modelList[index]['name'];
+      this.modelDissCoefficient = this.modelList[index]['distancePowerLoss'];
+      this.modelfieldLoss = this.modelList[index]['fieldLoss'];
+      this.modelProperty = this.modelList[index]['property'];
+    } else {
+      this.modelName = "";
+      this.modelDissCoefficient = 0.1;
+      this.modelfieldLoss = 0.1;
+      this.modelProperty = "customized";
     }
+    this.matDialog.open(this.modelCustomizeModal);
+  }
+  materialCustomize(){
+    window.setTimeout(() => {
+      console.log("----update http://192.168.1.106:4444/----");
+      let data = {
+        'obstacle':{
+            'id': Number(this.materialId),
+            'name': this.materialName,
+            'decayCoefficient': this.materialLossCoefficient,
+            'property': this.materialProperty
+          }
+      }
+      console.log(JSON.stringify(data));
+      if(this.checkMaterialForm(false)){
+        this.http.put("http://192.168.1.106:4444/", JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.matDialog.closeAll();
+            this.ngOnInit();
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }
+    }, 100);
+  }
+  pathLossCustomize(){
+    window.setTimeout(() => {
+      console.log("----update http://192.168.1.106:4444/model----");
+      let data = {
+        'pathLossModel':{
+            'id': Number(this.calculateForm.pathLossModelId),
+            'name': this.modelName,
+            'distancePowerLoss': this.modelDissCoefficient,
+            'fieldLoss': this.modelfieldLoss,
+            'property': this.modelProperty
+          }
+      }
+      console.log(JSON.stringify(data));
+      if(this.checkModelForm(false)){
+        this.http.put("http://192.168.1.106:4444/model", JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.matDialog.closeAll();
+
+            this.http.get("http://192.168.1.106:4444/model").subscribe(
+              res => {
+                console.log("----get http://192.168.1.106:4444/model----");
+                let result = res;
+                let index = 0;
+                for(let i = 0; i < (result['pathLossModel']).length; i++){
+                  if(result['pathLossModel'][i]['id'] == this.calculateForm.pathLossModelId){
+                    index = i;
+                    console.log('i',i,'result',result['pathLossModel'][i]);
+                    break;
+                  } 
+                }
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result['pathLossModel'][index]['distancePowerLoss'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result['pathLossModel'][index]['fieldLoss'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }
+    }, 100);
+    
   }
   createNewMaterial(){
-    console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
-    console.log("this.materialName.length",String(this.materialName).length);
-    let duplicate = false;
-    // 檢查現有材質名稱是否已存在
-    for (let i = 0; i < this.materialList.length; i++) {
-      if(this.materialName == this.materialList[i][0]){
-        console.log("duplicate by",this.materialName)
-        duplicate = true;
-        break;
-      }
-    }
-    if(!this.materialName || this.materialLossCoefficient<0 || duplicate){
-      let msg = "";
-      if (!this.materialName) {
-        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
-      } else if(this.materialLossCoefficient<0) { 
-        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_then') + '0';
-      } else{
-        msg += this.translateService.instant('material.name') +':'+ this.materialName + this.translateService.instant('alreadyexist') + '!'
-      }
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: msg
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    }else{
+    // console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
+    // console.log("this.materialName.length",String(this.materialName).length);
+    if(this.checkMaterialForm(true)){
       // 新增材質到後端
       window.setTimeout(() => {
-        console.log("----post http://192.168.1.115:4444/----");
-        console.log([this.materialName,this.materialLossCoefficient]);
-        console.log(JSON.stringify([this.materialName,this.materialLossCoefficient]));
-        this.http.post("http://192.168.1.115:4444/", JSON.stringify([this.materialName,this.materialLossCoefficient])).subscribe(
+        // console.log("----post http://192.168.1.106:4444/----");
+        let data = {
+          'obstacle':{
+              'name': this.materialName,
+              'decayCoefficient': this.materialLossCoefficient,
+              'property': "customized"
+            }
+        }
+        console.log(JSON.stringify(data));
+        this.http.post("http://192.168.1.106:4444/", JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.materialName = "";
@@ -6394,38 +6557,146 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             this.ngOnInit();
           },
           err => {
-            this.authService.spinnerHide();
             console.log(err);
           }
         );
       }, 100);
     }
   }
-  optionSelected(index){
-    if(index==0) 
-      return true;
-    else
-      return false;
-  }
-  createNewModel(){
+  checkMaterialForm(create){
+    let pass = true; 
     let duplicate = false;
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    // format checking 包含特殊字元 || 不是英文中文數字
+    let illegal = ((reg_spc.test(this.materialName) || reg_tch.test(this.materialName)) || (!(reg_ch.test(this.materialName)) && !(reg_en.test(this.materialName)) && !(reg_num.test(this.materialName))));
     // 檢查現有材質名稱是否已存在
-    for (let i = 0; i < this.modelList.length; i++) {
-      if(this.modelName == this.modelList[i][0]){
-        console.log("duplicate by",this.modelName)
-        duplicate = true;
-        break;
+    if(create){
+      for (let i = 0; i < this.materialList.length; i++) {
+        if(this.materialName == this.materialList[i]['name']){
+          console.log("duplicate by",this.materialName);
+          duplicate = true;
+          break;
+        }
       }
     }
-    if(!this.modelName || this.modelDissCoefficient<0 || this.modelFloorLossFactor<0 || duplicate){
+    // 錯誤訊息
+    if( !this.materialName || !(Number(this.materialLossCoefficient)>-1000) || this.materialLossCoefficient == null || Number(this.materialLossCoefficient>1000) || duplicate || illegal ){
+      pass = false;
       let msg = "";
+      if (!this.materialName) {
+        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+      } else if(!(Number(this.materialLossCoefficient)>-1000)) { 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(Number(this.materialLossCoefficient)>1000) { 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_less_than') + '1000';
+      } else if(this.materialLossCoefficient == null){ 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('contain_special_character') + '!';
+      } else if(illegal){
+        msg += this.translateService.instant('material.name') + this.translateService.instant('contain_special_character') + '!';
+      } else {
+        msg += this.translateService.instant('material.name') +':'+ this.materialName + this.translateService.instant('alreadyexist') + '!'
+      } 
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+    return pass
+  }
+  createNewModel(){
+    if(this.checkModelForm(true)){
+      // 新增無線模型到後端
+      window.setTimeout(() => {
+        console.log("----post http://192.168.1.106:4444/model----");
+        let data = {
+          'pathLossModel':{
+              'name': this.modelName,
+              'distancePowerLoss': this.modelDissCoefficient,
+              'fieldLoss': this.modelfieldLoss,
+              'property': "customized"
+            }
+        }
+        console.log(JSON.stringify(data));
+        this.http.post("http://192.168.1.106:4444/model", JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.http.get("http://192.168.1.106:4444/model").subscribe(
+              res => {
+                console.log("----get http://192.168.1.106:4444/model----");
+                let result = res;
+                this.modelList.push(result['pathLossModel'][(result['pathLossModel'].length-1)]);
+                for (let i = 0;i < this.modelList.length;i++) {
+                  let id = this.modelList[i]['id'];
+                  this.modelIdToIndex[id]=i;
+                }
+                this.calculateForm.pathLossModelId = result['pathLossModel'][(result['pathLossModel'].length-1)]['id'];
+                console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
+                console.log('this.modelList.push',this.modelList);
+              },
+              err => {
+                console.log(err);
+              }
+            );
+
+
+            this.modelName = "";
+            this.modelDissCoefficient = 0.1;
+            this.modelfieldLoss = 0.1;
+            this.matDialog.closeAll();
+            // this.ngOnInit();
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }, 100);
+    }
+  }
+  checkModelForm(create){
+    let pass = true; 
+    let duplicate = false;
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    // format checking 包含特殊字元 || 不是英文中文數字
+    let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
+    // 檢查現有模型名稱是否已存在
+    if (create){
+      for (let i = 0; i < this.modelList.length; i++) {
+        if(this.modelName == this.modelList[i]['name']){
+          console.log("duplicate by",this.modelName);
+          duplicate = true;
+          break;
+        }
+      }
+    }
+    if(!this.modelName || !(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000) || duplicate || illegal ){
+      let msg = "";
+      pass = false;
       if (!this.modelName) {
         msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
-      } else if(this.modelDissCoefficient<0) { 
-        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_then') + '0';
-      } else if(this.modelFloorLossFactor<0) { 
-        msg += this.translateService.instant('planning.model.floorlossfactor') + this.translateService.instant('must_greater_then') + '0';
-      } else{
+      } else if(!(Number(this.modelDissCoefficient)>-1000)) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(this.modelDissCoefficient == null) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('contain_special_character') + '!';
+      } else if(Number(this.modelDissCoefficient>1000)) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_less_than') + '1000';
+      } else if(!(Number(this.modelfieldLoss)>-1000)) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(this.modelfieldLoss == null) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('contain_special_character') + '!';
+      } else if(Number(this.modelfieldLoss>1000)) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_less_than') + '1000';
+      } else if(illegal) {
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('contain_special_character') + '!';
+      } else {
         msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
       }
       this.msgDialogConfig.data = {
@@ -6433,27 +6704,81 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    }else{
-      // 新增材質到後端
+    }
+    return pass
+  }
+  selectAndClose(){
+    this.matDialog.closeAll();
+    
+  }
+  deleteMaterialDialog(){
+    this.matDialog.open(this.confirmDeleteMaterial);
+  }
+  deleteModelDialog(){
+    this.matDialog.open(this.confirmDeleteModel);
+  }
+  deleteMaterial(flag){
+    this.matDialog.closeAll();
+    if(flag) {
       window.setTimeout(() => {
-        console.log("----post http://192.168.1.115:4444/model----");
-        console.log([this.materialName,this.materialLossCoefficient]);
-        console.log(JSON.stringify([this.materialName,this.materialLossCoefficient]));
-        this.http.post("http://192.168.1.115:4444/model", JSON.stringify([this.modelName,this.modelDissCoefficient,this.modelFloorLossFactor])).subscribe(
+        console.log("----delete http://192.168.1.106:4444/----");
+        let data = {
+          'obstacle':{
+              'id': Number(this.materialId),
+              'name': this.materialName,
+            }
+        }
+        console.log(JSON.stringify(data));
+        let httpOptions = {
+          headers: {},
+          body: JSON.stringify(data)
+        }
+        this.http.delete("http://192.168.1.106:4444/",httpOptions).subscribe(
           res => {
             console.log(res);
-            this.modelName = "";
-            this.modelDissCoefficient = 0.1;
-            this.modelFloorLossFactor = 0.1;
-            this.matDialog.closeAll();
             this.ngOnInit();
           },
           err => {
-            this.authService.spinnerHide();
-            console.log(err);
+            console.log('err:',err);
+            // this.ngOnInit();
           }
         );
       }, 100);
+
+    } else {
+      this.matDialog.open(this.materialCustomizeModal);
+    }
+  }
+  deleteModel(flag){
+    this.matDialog.closeAll();
+    if(flag) {
+      // DELETE API
+      window.setTimeout(() => {
+        console.log("----delete http://192.168.1.106:4444/model----");
+        let data = {
+          'pathLossModel':{
+              'id': Number(this.calculateForm.pathLossModelId),
+              'name': this.modelName,
+            }
+        }
+        console.log(JSON.stringify(data));
+        let httpOptions = {
+          headers: {},
+          body: JSON.stringify(data)
+        }
+        this.http.delete("http://192.168.1.106:4444/model",httpOptions).subscribe(
+          res => {
+            console.log(res);
+            this.ngOnInit();
+          },
+          err => {
+            console.log('err:',err);
+            // this.ngOnInit();
+          }
+        );
+      }, 100);
+    } else {
+      this.matDialog.open(this.modelCustomizeModal);
     }
   }
 }

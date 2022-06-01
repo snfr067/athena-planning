@@ -318,6 +318,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       };
       this.http.post(url, JSON.stringify(form)).subscribe(
         res => {
+          console.log(res);
           if (type === 'hst') {
             this.hstList.splice(this.hstList.indexOf(item), 1);
           } else {
