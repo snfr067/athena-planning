@@ -105,6 +105,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialList = [];
   /** model list */
   modelList = [];
+  url_model = `${this.authService.API_URL}/mysql/pathLossModel/${this.authService.userId}`;
+  url_obs = `${this.authService.API_URL}/mysql/obstacle/${this.authService.userId}`;
   /** new material & new model */
   materialId: number = 1;
   materialName: string = null;
@@ -539,11 +541,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     });
 
     //取得材質與模型列表
-    let url_model = `${this.authService.API_URL}/mysql/pathLossModel/${this.authService.userId}`;
-    let url_obs = `${this.authService.API_URL}/mysql/obstacle/${this.authService.userId}`;
-    this.http.get("http://192.168.1.106:4444/").subscribe(
+    this.http.get(this.url_obs).subscribe(
       res => {
-        // console.log("----get http://192.168.1.106:4444/----");
+        console.log("----get",this.url_obs);
         let result = res;
         this.materialList = Object.values(result['obstacle']);
         let sorted = this.materialList.sort((a,b) => a.id - b.id);
@@ -557,9 +557,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // console.log('idToIndex',this.materialIdToIndex);
       }
     );
-    this.http.get("http://192.168.1.106:4444/model").subscribe(
+    this.http.get(this.url_model).subscribe(
       res => {
-        // console.log("----get http://192.168.1.106:4444/model----");
+        console.log("----get",this.url_model);
         let result = res;
         this.modelList = Object.values(result['pathLossModel']);
         let sorted = this.modelList.sort((a,b) => a.id - b.id);
@@ -6461,7 +6461,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   materialCustomize(){
     window.setTimeout(() => {
-      console.log("----update http://192.168.1.106:4444/----");
+      console.log("----update",this.url_obs);
       let data = {
         'obstacle':{
             'id': Number(this.materialId),
@@ -6472,7 +6472,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       console.log(JSON.stringify(data));
       if(this.checkMaterialForm(false)){
-        this.http.put("http://192.168.1.106:4444/", JSON.stringify(data)).subscribe(
+        this.http.put(this.url_obs, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
@@ -6487,7 +6487,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   pathLossCustomize(){
     window.setTimeout(() => {
-      console.log("----update http://192.168.1.106:4444/model----");
+      console.log("----update,"this.url_model);
       let data = {
         'pathLossModel':{
             'id': Number(this.calculateForm.pathLossModelId),
@@ -6499,14 +6499,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       console.log(JSON.stringify(data));
       if(this.checkModelForm(false)){
-        this.http.put("http://192.168.1.106:4444/model", JSON.stringify(data)).subscribe(
+        this.http.put(this.url_model, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
 
-            this.http.get("http://192.168.1.106:4444/model").subscribe(
+            this.http.get(this.url_model).subscribe(
               res => {
-                console.log("----get http://192.168.1.106:4444/model----");
+                console.log("----get",this.url_model);
                 let result = res;
                 let index = 0;
                 for(let i = 0; i < (result['pathLossModel']).length; i++){
@@ -6539,7 +6539,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.checkMaterialForm(true)){
       // 新增材質到後端
       window.setTimeout(() => {
-        // console.log("----post http://192.168.1.106:4444/----");
+        console.log("----post----",this.url_obs);
         let data = {
           'obstacle':{
               'name': this.materialName,
@@ -6548,7 +6548,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
         }
         console.log(JSON.stringify(data));
-        this.http.post("http://192.168.1.106:4444/", JSON.stringify(data)).subscribe(
+        this.http.post(this.url_obs, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.materialName = "";
@@ -6612,7 +6612,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.checkModelForm(true)){
       // 新增無線模型到後端
       window.setTimeout(() => {
-        console.log("----post http://192.168.1.106:4444/model----");
+        console.log("----post",this.url_model);
         let data = {
           'pathLossModel':{
               'name': this.modelName,
@@ -6622,12 +6622,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
         }
         console.log(JSON.stringify(data));
-        this.http.post("http://192.168.1.106:4444/model", JSON.stringify(data)).subscribe(
+        this.http.post(this.url_model, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            this.http.get("http://192.168.1.106:4444/model").subscribe(
+            this.http.get(this.url_model).subscribe(
               res => {
-                console.log("----get http://192.168.1.106:4444/model----");
+                console.log("----get",this.url_model);
                 let result = res;
                 this.modelList.push(result['pathLossModel'][(result['pathLossModel'].length-1)]);
                 for (let i = 0;i < this.modelList.length;i++) {
@@ -6721,7 +6721,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.matDialog.closeAll();
     if(flag) {
       window.setTimeout(() => {
-        console.log("----delete http://192.168.1.106:4444/----");
+        console.log("----delete",this.url_obs);
         let data = {
           'obstacle':{
               'id': Number(this.materialId),
@@ -6733,7 +6733,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete("http://192.168.1.106:4444/",httpOptions).subscribe(
+        this.http.delete(this.url_obs,httpOptions).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
@@ -6754,7 +6754,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(flag) {
       // DELETE API
       window.setTimeout(() => {
-        console.log("----delete http://192.168.1.106:4444/model----");
+        console.log("----delete",this.url_model);
         let data = {
           'pathLossModel':{
               'id': Number(this.calculateForm.pathLossModelId),
@@ -6766,7 +6766,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete("http://192.168.1.106:4444/model",httpOptions).subscribe(
+        this.http.delete(this.url_model,httpOptions).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
