@@ -167,7 +167,7 @@
 	"material.customize":"Add custom material",
 	"material.name":"Material name",
 	"alreadyexist":"already exists",
-	"material.loss.coefficient":"材質衰減係數",
+	"material.loss.coefficient":"Material decay coefficient",
 	"subcarrier": "Subcarrier space",
 	"duplex": "Duplex techonology",
 	"upDownRatio": "UL-DL Ratio",

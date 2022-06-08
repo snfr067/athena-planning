@@ -105,8 +105,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialList = [];
   /** model list */
   modelList = [];
-  url_model = `${this.authService.API_URL}/mysql/pathLossModel/${this.authService.userId}`;
-  url_obs = `${this.authService.API_URL}/mysql/obstacle/${this.authService.userId}`;
   /** new material & new model */
   materialId: number = 1;
   materialName: string = null;
@@ -541,12 +539,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     });
 
     //取得材質與模型列表
-    this.http.get(this.url_obs).subscribe(
+    let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+    this.http.get(url_obs).subscribe(
       res => {
-        console.log("----get",this.url_obs);
+        console.log("----get",url_obs);
         let result = res;
-        this.materialList = Object.values(result['obstacle']);
-        let sorted = this.materialList.sort((a,b) => a.id - b.id);
+        console.log('res',res);
+        this.materialList = Object.values(result);
+        console.log('this.materialList',this.materialList);
+        // let sorted = this.materialList.sort((a,b) => a.id - b.id);
         // console.log('sorted',sorted);
         // console.log("----test for API get data:",result);
         console.log(this.materialList);
@@ -557,12 +558,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // console.log('idToIndex',this.materialIdToIndex);
       }
     );
-    this.http.get(this.url_model).subscribe(
+    let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+    this.http.get(url_model).subscribe(
       res => {
-        console.log("----get",this.url_model);
+        console.log("----get",url_model);
         let result = res;
-        this.modelList = Object.values(result['pathLossModel']);
-        let sorted = this.modelList.sort((a,b) => a.id - b.id);
+        this.modelList = Object.values(result);
+        // let sorted = this.modelList.sort((a,b) => a.id - b.id);
         // console.log('sorted',sorted);
         // console.log("----test for API get data:",result);
         // console.log(this.modelList);
@@ -1706,20 +1708,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   getTooltip() {
     const id = this.hoverObj.id;
     let title = `${this.dragObject[id].title}: ${this.svgNum}`;
-    console.log('this.dragObject[id].title',this.dragObject[id].title);
-    // console.log('this.svgNum',this.svgNum);
-    console.log('this.dragObject',this.dragObject);
-    for(let obj in this.dragObject){
-      console.log('obj:',obj);
-      console.log('Dragobj[obj]:',this.dragObject[obj]);
-    }
-    if(this.svgNum == 1){
-      title +=` <br>重疊: 2, 3`;
-    }else if(this.svgNum == 2){
-      title +=` <br>重疊: 1`;
-    }else if(this.svgNum == 3){
-      title +=` <br>重疊: 1`;
-    }
     title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
@@ -5860,7 +5848,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.objectiveIndex = result['objectiveindex'];
     this.calculateForm.obstacleInfo = result['obstacleinfo'];
     this.calculateForm.pathLossModelId = result['pathlossmodelid'];
-    // this.calculateForm.pathLossModel = result['pathLossModel'];
     this.calculateForm.powerMaxRange = result['powermaxrange'];
     this.calculateForm.powerMinRange = result['powerminrange'];
     this.calculateForm.seed = result['seed'];
@@ -6461,18 +6448,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   materialCustomize(){
     window.setTimeout(() => {
-      console.log("----update",this.url_obs);
+      let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
+      console.log("----update",url);
       let data = {
-        'obstacle':{
-            'id': Number(this.materialId),
-            'name': this.materialName,
-            'decayCoefficient': this.materialLossCoefficient,
-            'property': this.materialProperty
-          }
+          'id': Number(this.materialId),
+          'name': this.materialName,
+          'decayCoefficient': this.materialLossCoefficient,
+          'property': this.materialProperty
       }
       console.log(JSON.stringify(data));
       if(this.checkMaterialForm(false)){
-        this.http.put(this.url_obs, JSON.stringify(data)).subscribe(
+        this.http.post(url, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
@@ -6487,37 +6473,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   pathLossCustomize(){
     window.setTimeout(() => {
-      console.log("----update,"this.url_model);
+      let url_update = `${this.authService.API_URL}/updatePathLossModel/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      console.log("----update",url_update);
       let data = {
-        'pathLossModel':{
-            'id': Number(this.calculateForm.pathLossModelId),
-            'name': this.modelName,
-            'distancePowerLoss': this.modelDissCoefficient,
-            'fieldLoss': this.modelfieldLoss,
-            'property': this.modelProperty
-          }
+          'id': Number(this.calculateForm.pathLossModelId),
+          'name': this.modelName,
+          'distancePowerLoss': this.modelDissCoefficient,
+          'fieldLoss': this.modelfieldLoss,
+          'property': this.modelProperty
       }
       console.log(JSON.stringify(data));
       if(this.checkModelForm(false)){
-        this.http.put(this.url_model, JSON.stringify(data)).subscribe(
+        this.http.post(url_update, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
 
-            this.http.get(this.url_model).subscribe(
-              res => {
-                console.log("----get",this.url_model);
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                console.log("----get",url_get);
                 let result = res;
                 let index = 0;
-                for(let i = 0; i < (result['pathLossModel']).length; i++){
-                  if(result['pathLossModel'][i]['id'] == this.calculateForm.pathLossModelId){
+                for(let i = 0; i < (result).length; i++){
+                  if(result[i]['id'] == this.calculateForm.pathLossModelId){
                     index = i;
-                    console.log('i',i,'result',result['pathLossModel'][i]);
+                    console.log('i',i,'result',result[i]);
                     break;
                   } 
                 }
-                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result['pathLossModel'][index]['distancePowerLoss'];
-                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result['pathLossModel'][index]['fieldLoss'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result[index]['distancePowerLoss'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result[index]['fieldLoss'];
               },
               err => {
                 console.log(err);
@@ -6538,17 +6524,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // console.log("this.materialName.length",String(this.materialName).length);
     if(this.checkMaterialForm(true)){
       // 新增材質到後端
+      let url = `${this.authService.API_URL}/addObstacle/${this.authService.userToken}`;
       window.setTimeout(() => {
-        console.log("----post----",this.url_obs);
+        console.log("----post----",url);
         let data = {
-          'obstacle':{
-              'name': this.materialName,
-              'decayCoefficient': this.materialLossCoefficient,
-              'property': "customized"
-            }
+          'name': this.materialName,
+          'decayCoefficient': this.materialLossCoefficient,
+          'property': "customized"
         }
         console.log(JSON.stringify(data));
-        this.http.post(this.url_obs, JSON.stringify(data)).subscribe(
+        this.http.post(url, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.materialName = "";
@@ -6611,30 +6596,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   createNewModel(){
     if(this.checkModelForm(true)){
       // 新增無線模型到後端
+      let url_add = `${this.authService.API_URL}/addPathLossModel/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
       window.setTimeout(() => {
-        console.log("----post",this.url_model);
+        console.log("----post",url_add);
         let data = {
-          'pathLossModel':{
-              'name': this.modelName,
-              'distancePowerLoss': this.modelDissCoefficient,
-              'fieldLoss': this.modelfieldLoss,
-              'property': "customized"
-            }
+            'name': this.modelName,
+            'distancePowerLoss': this.modelDissCoefficient,
+            'fieldLoss': this.modelfieldLoss,
+            'property': "customized"
         }
         console.log(JSON.stringify(data));
-        this.http.post(this.url_model, JSON.stringify(data)).subscribe(
+        this.http.post(url_add, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            this.http.get(this.url_model).subscribe(
-              res => {
-                console.log("----get",this.url_model);
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                console.log("----get",url_get);
                 let result = res;
-                this.modelList.push(result['pathLossModel'][(result['pathLossModel'].length-1)]);
+                this.modelList.push(result[(result.length-1)]);
                 for (let i = 0;i < this.modelList.length;i++) {
                   let id = this.modelList[i]['id'];
                   this.modelIdToIndex[id]=i;
                 }
-                this.calculateForm.pathLossModelId = result['pathLossModel'][(result['pathLossModel'].length-1)]['id'];
+                this.calculateForm.pathLossModelId = result[(result.length-1)]['id'];
                 console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
                 console.log('this.modelList.push',this.modelList);
               },
@@ -6721,19 +6706,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.matDialog.closeAll();
     if(flag) {
       window.setTimeout(() => {
-        console.log("----delete",this.url_obs);
+        let url = `${this.authService.API_URL}/deleteObstacle/${this.authService.userToken}`;;
+        console.log("----(post) delete",url);
         let data = {
-          'obstacle':{
-              'id': Number(this.materialId),
-              'name': this.materialName,
-            }
+          'id': Number(this.materialId),
+          'name': this.materialName
         }
         console.log(JSON.stringify(data));
         let httpOptions = {
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete(this.url_obs,httpOptions).subscribe(
+        this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
@@ -6754,19 +6738,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(flag) {
       // DELETE API
       window.setTimeout(() => {
-        console.log("----delete",this.url_model);
+        let url = `${this.authService.API_URL}/deletePathLossModel/${this.authService.userToken}`
+        console.log("----(post) delete",url);
         let data = {
-          'pathLossModel':{
-              'id': Number(this.calculateForm.pathLossModelId),
-              'name': this.modelName,
-            }
+          'id': Number(this.calculateForm.pathLossModelId),
+          'name': this.modelName
         }
         console.log(JSON.stringify(data));
         let httpOptions = {
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete(this.url_model,httpOptions).subscribe(
+        this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
