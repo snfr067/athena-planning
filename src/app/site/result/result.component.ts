@@ -426,18 +426,21 @@ export class ResultComponent implements OnInit {
         if (this.calculateForm.obstacleInfo !== '') {
           this.showObstacleArea = true;
           const obstacleInfo = this.calculateForm.obstacleInfo.split('|');
+          
           for (const item of obstacleInfo) {
             const obj = JSON.parse(item);
+            console.log('-- result obj',obj);
             this.obstacleList.push({
               x: obj[0],
               y: obj[1],
-              width: obj[2],
-              height: obj[3],
-              altitude: obj[4],
+              z: obj[2],
+              width: obj[3],
+              height: obj[4],
+              altitude: obj[5],
               color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
-              rotate: obj[5],
-              material: obj[6],
-              element: obj[7],
+              rotate: obj[6],
+              material: obj[7],
+              element: obj[8],
             });
           }
         }
@@ -1026,15 +1029,16 @@ export class ResultComponent implements OnInit {
     }
     for (const el of obstacleList) {
       let item = JSON.parse(el);
-      let angle = Number(item[5]%360);
-      let obWid = Number(item[2]);
-      let obHei = Number(item[3]);
+      let angle = Number(item[6]%360);
+      let obWid = Number(item[3]);
+      let obHei = Number(item[4]);
       let deg = 2*Math.PI/360;
       let x = Number(item[0]);
       let y = Number(item[1]);
+      let z = Number(item[2]);
       let xy = [];
       if (angle != 0) { //有旋轉
-        if (item[7] == 0) { // 矩形
+        if (item[8] == 0) { // 矩形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2]; //中心
           let leftbot = [x,y];
@@ -1042,7 +1046,7 @@ export class ResultComponent implements OnInit {
             (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
             (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
           ];
-        } else if (item[7] == 1) { //三角形
+        } else if (item[8] == 1) { //三角形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2];
           let left = [x,y];
@@ -1050,7 +1054,7 @@ export class ResultComponent implements OnInit {
             (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
             (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
           ];
-        } else if (item[7] == 3) { //梯形
+        } else if (item[8] == 3) { //梯形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2];
           let leftbot = [x,y];

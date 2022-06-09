@@ -944,6 +944,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   tempParamStorage (temp) {
     window.sessionStorage.setItem('tempParam',temp);
+    console.log("--this.dragObject",this.dragObject);
   }
 
   checkFieldWidHei(isHWChange) {
@@ -3085,7 +3086,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       for (let i = 0; i < this.obstacleList.length; i++) {
         const obj = this.dragObject[this.obstacleList[i]];
         const shape = this.parseElement(obj.element);
-        obstacleInfo += `[${obj.x},${obj.y},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
+        obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
+        console.log("---obstacleInfo",obstacleInfo);
         if (i < this.obstacleList.length - 1) {
           obstacleInfo += '|';
         }
@@ -5565,23 +5567,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
           const item = JSON.parse(obstacle[i]);
           let shape = '0';
-          if (typeof item[7] !== 'undefined') {
-            shape = this.parseElement(item[7]);
+          if (typeof item[8] !== 'undefined') {
+            shape = this.parseElement(item[8]);
           }
           const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
           
           this.dragObject[id] = {
             x: item[0],
             y: item[1],
-            z: 0,
-            width: item[2],
-            height: item[3],
-            altitude: item[4],
-            rotate: item[5],
+            z: item[2],
+            width: item[3],
+            height: item[4],
+            altitude: item[5],
+            rotate: item[6],
             title: this.translateService.instant('obstacleInfo'),
             type: this.svgElmMap(shape).type,
             color: this.OBSTACLE_COLOR,
-            material: item[6].toString(),
+            material: item[7].toString(),
             element: shape
           };
           // set 障礙物尺寸與位置

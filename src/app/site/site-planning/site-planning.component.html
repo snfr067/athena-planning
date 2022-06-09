@@ -1119,17 +1119,13 @@
                     (click)="tempParamStorage(dragObject[item].y)"
                     (change)="changePosition('y',item)">
                   </span>
-                  <br>
-
                   <span>
-                    <label>{{ 'rotate' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].rotate"
-                    (select)="tempParamStorage(dragObject[item].rotate)"
-                    (click)="tempParamStorage(dragObject[item].rotate)"
-                    (change)="changeRotate(item)"
-                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
+                    <label>Z</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" 
+                    (select)="tempParamStorage(dragObject[item].z)"
+                    (click)="tempParamStorage(dragObject[item].z)">
                   </span>
-                  
+                  <br>              
                   <span>
                     <label>{{ 'width' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].width"
@@ -1137,7 +1133,6 @@
                     (click)="tempParamStorage(dragObject[item].width)"
                     (change)="changeSize(item, 'width', true)">
                   </span>
-                  
                   <span>
                     <label>{{ 'height' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].height"
@@ -1145,9 +1140,9 @@
                     (click)="tempParamStorage(dragObject[item].height)"
                     (change)="changeSize(item, 'height',true)">
                   </span>
-                  
+                  <br>
                   <span>
-                    <label>{{ 'altitude.start.end' | translate }}</label>
+                    <label>{{ 'altitude' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].altitude"
                     (select)="tempParamStorage(dragObject[item].altitude)"
                     (click)="tempParamStorage(dragObject[item].altitude)"
@@ -1155,12 +1150,12 @@
                     <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
                   </span>
                   <span>
-                    ~
-                    <input type="text" [(ngModel)]="dragObject[item].altitudeEnd"
-                    (select)="tempParamStorage(dragObject[item].altitudeEnd)"
-                    (click)="tempParamStorage(dragObject[item].altitudeEnd)"
-                    (change)="changeSize(item, 'altitudeEnd',true)">
-                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                    <label>{{ 'rotate' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].rotate"
+                    (select)="tempParamStorage(dragObject[item].rotate)"
+                    (click)="tempParamStorage(dragObject[item].rotate)"
+                    (change)="changeRotate(item)"
+                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
                   <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
