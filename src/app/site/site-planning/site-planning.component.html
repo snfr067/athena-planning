@@ -1159,7 +1159,7 @@
                   </span>
                   <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
-                    <select class="w7em" [(ngModel)]="dragObject[item].material">
+                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material)">
                       <option value={{item.id}} *ngFor="let item of materialList">
                         <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
                         <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
@@ -1481,7 +1481,7 @@
       <tr *ngIf="dragObject[svgId].type === 'obstacle'">
         <td>{{ 'material.setting' | translate }}</td>
         <td> <!-- 右鍵高度/材質設定 -->
-          <select [(ngModel)]="dragObject[svgId].material">
+          <select [(ngModel)]="dragObject[svgId].material" (change)="setMaterialName(svgId,dragObject[svgId].material)">
             <option value={{item.id}} *ngFor="let item of materialList">
               <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
               <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 

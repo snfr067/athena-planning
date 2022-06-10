@@ -125,7 +125,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   };
   /** 平面高度 */
   zValues = [1];
-  /** 障礙物 */
+  /** 障礙物 IDList */
   obstacleList = [];
   /** 互動物件 */
   dragObject = {};
@@ -537,251 +537,259 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     });
-
-    //取得材質與模型列表
-    let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
-    this.http.get(url_obs).subscribe(
-      res => {
-        console.log("----get",url_obs);
-        let result = res;
-        console.log('res',res);
-        this.materialList = Object.values(result);
-        console.log('this.materialList',this.materialList);
-        // let sorted = this.materialList.sort((a,b) => a.id - b.id);
-        // console.log('sorted',sorted);
-        // console.log("----test for API get data:",result);
-        console.log(this.materialList);
-        for (let i = 0;i < this.materialList.length;i++) {
-          let id = this.materialList[i]['id'];
-          this.materialIdToIndex[id]=i;
-        }
-        // console.log('idToIndex',this.materialIdToIndex);
-      }
-    );
-    let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
-    this.http.get(url_model).subscribe(
-      res => {
-        console.log("----get",url_model);
-        let result = res;
-        this.modelList = Object.values(result);
-        // let sorted = this.modelList.sort((a,b) => a.id - b.id);
-        // console.log('sorted',sorted);
-        // console.log("----test for API get data:",result);
-        // console.log(this.modelList);
-        for (let i = 0;i < this.modelList.length;i++) {
-          let id = this.modelList[i]['id'];
-          this.modelIdToIndex[id]=i;
-        }
-        // console.log('idToIndex',this.modelIdToIndex);
-      }
-    );
-    
-    if (sessionStorage.getItem('importFile') != null) {
-      // from new-planning import file
-      this.calculateForm = new CalculateForm();
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.readXls(e.target.result);
-      };
-      reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
-
-      sessionStorage.removeItem('importFile');
-
-    // Not import File
-    } else {
-      if (this.taskid !== '' ) {
-        // 編輯場域
-        let url;
-        if (this.isHst) {
-          // 歷史紀錄
-          url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
-          url += `${this.authService.userToken}/${this.taskid}`;
-        } else {
-          url = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
-        }
-        this.http.get(url).subscribe(
-          res => {
-            console.log("----request url:",url);
-            if (this.isHst) {
-              const result = res;
-              console.log(result);
-              const output = this.formService.setHstOutputToResultOutput(result['output']);
-              // delete result['output'];
-              // 大小寫不同，各自塞回form
-              // console.log(result);
-              // console.log(output);
-              this.dlRatio = result['tddframeratio'];
-              this.calculateForm = this.formService.setHstToForm(result);
-              if (!(Number(this.calculateForm.maxConnectionNum)>0)){
-                this.calculateForm['maxConnectionNum'] = 32;
-              }
-              // this.calculateForm.defaultBs = output['defaultBs'];
-              // this.calculateForm.bsList = output['defaultBs'];
-              let tempBsNum = 0;
-              if (this.calculateForm.defaultBs == "") {
-                tempBsNum = 0;
-              } else {
-                tempBsNum = this.calculateForm.defaultBs.split('|').length;
-              }
-              this.calculateForm.availableNewBsNumber -= tempBsNum;
-              this.hstOutput['gaResult'] = {};
-              this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
-              this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
-              // this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
-              this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
-              this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
-              this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
-              if (this.calculateForm.isSimulation) {
-                this.planningIndex = '3';
-              } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                  this.planningIndex = '1';
-                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                  if (this.calculateForm.isAverageSinr == true) {
-                    this.calculateForm.isCoverage = true;
-                    this.calculateForm.isAverageSinr = false;
-                  }
-                } else {
-                  this.planningIndex = '2';
-                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                  if (this.calculateForm.isUeAvgSinr) {
-                    this.calculateForm.isUeAvgThroughput = true;
-                    this.calculateForm.isUeAvgSinr = false;
-                  }
-                }
-              }
-              // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
-              //   isAverageSinr: this.calculateForm.isAverageSinr,
-              //   isCoverage: this.calculateForm.isCoverage,
-              //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
-              //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
-              //   isUeCoverage: this.calculateForm.isUeCoverage
-              // }));
-
-              const sinrAry = [];
-              output['sinrMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    sinrAry.push(d);
-                  });
-                });
-              });
-
-              const rsrpAry = [];
-              output['rsrpMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    rsrpAry.push(d);
-                  });
-                });
-              });
-
-              const ulThroughputAry = [];
-              try {
-                this.result['ulThroughputMap'].map(v => {
-                  v.map(m => {
-                    m.map(d => {
-                      ulThroughputAry.push(d);
-                    });
-                  });
-                });
-              } catch(e) {
-                // console.log('No ulThorughput data, it may be an old record');
-              }
-      
-              const dlThroughputAry = [];
-              try {
-                this.result['throughputMap'].map(v => {
-                  v.map(m => {
-                    m.map(d => {
-                      dlThroughputAry.push(d);
-                    });
-                  });
-                });
-              } catch(e){
-                // console.log('No dlThorughput data, it may be an old record');
-              }
-
-              this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
-              this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
-              this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
-              this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
-              this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
-              this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
-              this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
-              this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
-
-            } else {
-              console.log(res)
-              this.calculateForm = res['input'];
-
-              if (this.calculateForm.isSimulation) {
-                this.planningIndex = '3';
-              } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                  this.planningIndex = '1';
-                } else {
-                  this.planningIndex = '2';
-                }
-              }
-
-              let tempBsNum = 0;
-              if (this.calculateForm.defaultBs == "") {
-                tempBsNum = 0;
-              } else {
-                tempBsNum = this.calculateForm.defaultBs.split('|').length;
-              }
-              this.calculateForm.availableNewBsNumber -= tempBsNum;
-              // this.calculateForm = res['input'];
-              console.log(this.calculateForm);
-              this.calculateForm.defaultBs = this.calculateForm.bsList;
-            }
-            this.zValues = JSON.parse(this.calculateForm.zValue);
-
-            // console.log(this.calculateForm);
-            if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
-              // 從暫存取出
-              // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
-            }
-            // console.log(this.calculateForm);
-            this.initData(false, false, '');
-          },
-          err => {
-            this.msgDialogConfig.data = {
-              type: 'error',
-              infoMessage: this.translateService.instant('cant_get_result')
-            };
-            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    const promise = new Promise((resolve, reject) => {
+      let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      this.http.get(url_obs).subscribe(
+        res => {
+          // console.log("----get",url_obs);
+          let result = res;
+          this.materialList = Object.values(result);
+          // console.log('this.materialList',this.materialList);
+          // let sorted = this.materialList.sort((a,b) => a.id - b.id);
+          for (let i = 0;i < this.materialList.length;i++) {
+            let id = this.materialList[i]['id'];
+            this.materialIdToIndex[id]=i;
           }
-        );
-      } else {
-        // 新增場域 upload image
-        this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
-        // 頻寬初始值
-        this.changeWifiFrequency();
-        if (this.calculateForm.objectiveIndex === '0') {
-          // this.calculateForm.bandwidth = '[3]';
-        } else if (this.calculateForm.objectiveIndex === '1') {
-          // this.calculateForm.bandwidth = '[5]';
-        } else if (this.calculateForm.objectiveIndex === '2') {
-          // this.calculateForm.bandwidth = '[1]';
+          resolve(res);
+        },
+        err => {
+          console.log(err);
+          return reject(err);
         }
+      );
+    });
+    //取得材質與模型列表
+    promise.then((promiseResult) => new Promise((resolve, reject) => {
+      console.log("promise resolve",promiseResult);
+      let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      this.http.get(url_model).subscribe(
+        res => {
+          // console.log("----get",url_model);
+          let result = res;
+          this.modelList = Object.values(result);
+          // let sorted = this.modelList.sort((a,b) => a.id - b.id);
+          for (let i = 0;i < this.modelList.length;i++) {
+            let id = this.modelList[i]['id'];
+            this.modelIdToIndex[id]=i;
+          }
+          resolve(res);
+        },err => {
+          console.log(err);
+          return reject(err);
+        }
+      );
+    }).then((resolve) => {
+      console.log("promise slove",resolve);
+      if (sessionStorage.getItem('importFile') != null) {
+        // from new-planning import file
+        this.calculateForm = new CalculateForm();
 
-        this.initData(false, false, '');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.readXls(e.target.result);
+        };
+        reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
+
+        sessionStorage.removeItem('importFile');
+
+      // Not import File
+      } else {
+        if (this.taskid !== '' ) {
+          // 編輯場域
+          let url;
+          if (this.isHst) {
+            // 歷史紀錄
+            url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
+            url += `${this.authService.userToken}/${this.taskid}`;
+          } else {
+            url = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
+          }
+          this.http.get(url).subscribe(
+            res => {
+              // console.log("----request url:",url);
+              if (this.isHst) {
+                const result = res;
+                console.log(result);
+                const output = this.formService.setHstOutputToResultOutput(result['output']);
+                // delete result['output'];
+                // 大小寫不同，各自塞回form
+                // console.log(result);
+                // console.log(output);
+                this.dlRatio = result['tddframeratio'];
+                this.calculateForm = this.formService.setHstToForm(result);
+                if (!(Number(this.calculateForm.maxConnectionNum)>0)){
+                  this.calculateForm['maxConnectionNum'] = 32;
+                }
+                // this.calculateForm.defaultBs = output['defaultBs'];
+                // this.calculateForm.bsList = output['defaultBs'];
+                let tempBsNum = 0;
+                if (this.calculateForm.defaultBs == "") {
+                  tempBsNum = 0;
+                } else {
+                  tempBsNum = this.calculateForm.defaultBs.split('|').length;
+                }
+                this.calculateForm.availableNewBsNumber -= tempBsNum;
+                this.hstOutput['gaResult'] = {};
+                this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
+                this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
+                // this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
+                this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
+                this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
+                this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
+                if (this.calculateForm.isSimulation) {
+                  this.planningIndex = '3';
+                } else {
+                  if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                    this.planningIndex = '1';
+                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                    if (this.calculateForm.isAverageSinr == true) {
+                      this.calculateForm.isCoverage = true;
+                      this.calculateForm.isAverageSinr = false;
+                    }
+                  } else {
+                    this.planningIndex = '2';
+                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                    if (this.calculateForm.isUeAvgSinr) {
+                      this.calculateForm.isUeAvgThroughput = true;
+                      this.calculateForm.isUeAvgSinr = false;
+                    }
+                  }
+                }
+                // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
+                //   isAverageSinr: this.calculateForm.isAverageSinr,
+                //   isCoverage: this.calculateForm.isCoverage,
+                //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
+                //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
+                //   isUeCoverage: this.calculateForm.isUeCoverage
+                // }));
+
+                const sinrAry = [];
+                output['sinrMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      sinrAry.push(d);
+                    });
+                  });
+                });
+
+                const rsrpAry = [];
+                output['rsrpMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      rsrpAry.push(d);
+                    });
+                  });
+                });
+
+                const ulThroughputAry = [];
+                try {
+                  this.result['ulThroughputMap'].map(v => {
+                    v.map(m => {
+                      m.map(d => {
+                        ulThroughputAry.push(d);
+                      });
+                    });
+                  });
+                } catch(e) {
+                  // console.log('No ulThorughput data, it may be an old record');
+                }
+        
+                const dlThroughputAry = [];
+                try {
+                  this.result['throughputMap'].map(v => {
+                    v.map(m => {
+                      m.map(d => {
+                        dlThroughputAry.push(d);
+                      });
+                    });
+                  });
+                } catch(e){
+                  // console.log('No dlThorughput data, it may be an old record');
+                }
+
+                this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
+                this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
+                this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
+                this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
+                this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+                this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+                this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+                this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
+
+              } else {
+                console.log(res);
+                this.calculateForm = res['input'];
+
+                if (this.calculateForm.isSimulation) {
+                  this.planningIndex = '3';
+                } else {
+                  if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                    this.planningIndex = '1';
+                  } else {
+                    this.planningIndex = '2';
+                  }
+                }
+
+                let tempBsNum = 0;
+                if (this.calculateForm.defaultBs == "") {
+                  tempBsNum = 0;
+                } else {
+                  tempBsNum = this.calculateForm.defaultBs.split('|').length;
+                }
+                this.calculateForm.availableNewBsNumber -= tempBsNum;
+                // this.calculateForm = res['input'];
+                console.log(this.calculateForm);
+                this.calculateForm.defaultBs = this.calculateForm.bsList;
+              }
+              this.zValues = JSON.parse(this.calculateForm.zValue);
+
+              // console.log(this.calculateForm);
+              if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
+                // 從暫存取出
+                // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
+              }
+              // console.log(this.calculateForm);
+              this.initData(false, false, '');
+            },
+            err => {
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: this.translateService.instant('cant_get_result')
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            }
+          );
+        } else {
+          // 新增場域 upload image
+          this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
+          // 頻寬初始值
+          this.changeWifiFrequency();
+          if (this.calculateForm.objectiveIndex === '0') {
+            // this.calculateForm.bandwidth = '[3]';
+          } else if (this.calculateForm.objectiveIndex === '1') {
+            // this.calculateForm.bandwidth = '[5]';
+          } else if (this.calculateForm.objectiveIndex === '2') {
+            // this.calculateForm.bandwidth = '[1]';
+          }
+
+          this.initData(false, false, '');
+        }
+        // setTimeout(()=> {
+        //   if (this.calculateForm.defaultBs !== "") {
+        //     this.planningIndex = '3';
+        //     console.log('Simulation')
+        //   } else {
+        //     this.planningIndex = '1';
+        //     console.log('Calculation')
+        //   }
+        // }, 1000);
+
       }
-      // setTimeout(()=> {
-      //   if (this.calculateForm.defaultBs !== "") {
-      //     this.planningIndex = '3';
-      //     console.log('Simulation')
-      //   } else {
-      //     this.planningIndex = '1';
-      //     console.log('Calculation')
-      //   }
-      // }, 1000);
-    }
+    })
+    .catch(err => console.log(err))
+    )
   }
 
   checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
@@ -944,7 +952,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   tempParamStorage (temp) {
     window.sessionStorage.setItem('tempParam',temp);
-    console.log("--this.dragObject",this.dragObject);
+    // console.log("--this.dragObject",this.dragObject);
   }
 
   checkFieldWidHei(isHWChange) {
@@ -1023,7 +1031,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param isImportImg 是否import image
    */
   initData(isImportXls, isImportImg, isHWAChange) {
-
+    // console.log('--initData.');
     console.log(this.defaultBSList);
     //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
@@ -1548,10 +1556,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title: this.svgMap[id].title,
       type: this.svgMap[id].type,
       color: color,
-      material: '0',
-      element: this.parseElement(id)
+      material: this.materialList[0]['id'],
+      element: this.parseElement(id),
+      materialName: this.materialList[0]['name']
     };
-
     this.realId = _.cloneDeep(this.svgId);
     // 預設互動外框設定值
     this.frame = new Frame({
@@ -1723,11 +1731,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
     }
     if (this.dragObject[id].type === 'obstacle') {
-      title += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(this.dragObject[id].material)}`;
+      title += `${this.translateService.instant('material')}: ${this.dragObject[id].materialName}`;
     }
     return title;
   }
-
+  setMaterialName(id,material){
+    let index = this.materialIdToIndex[Number(material)];
+    if(this.materialList[index]['property'] == "default"){
+      this.dragObject[id].materialName = this.materialList[index]['name'];
+    } else {
+      this.dragObject[id].materialName = this.translateService.instant('customize') + "_" + this.materialList[index]['name'];
+    }
+    console.log(this.dragObject[id]);
+  }
   /** set drag object data */
   setDragData() {
     const rect = this.target.getBoundingClientRect();
@@ -3087,7 +3103,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         const obj = this.dragObject[this.obstacleList[i]];
         const shape = this.parseElement(obj.element);
         obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
-        console.log("---obstacleInfo",obstacleInfo);
         if (i < this.obstacleList.length - 1) {
           obstacleInfo += '|';
         }
@@ -5566,26 +5581,53 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             continue;
           }
           const item = JSON.parse(obstacle[i]);
+          let diff = item.length - 9;
           let shape = '0';
           if (typeof item[8] !== 'undefined') {
-            shape = this.parseElement(item[8]);
+            shape = this.parseElement(item[8+diff]);
           }
           const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
-          
+          let index = this.materialIdToIndex[Number(item[7])];
+          let material = item[7+diff].toString();
+          // 對舊專案的處理
+          if(!(item[7] in this.materialIdToIndex)){ 
+            index = 0;
+            material = this.materialList[index]['id'];
+            // console.log('__maybe old project, replace material');
+          }
+          let materialName = "";
+          if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
+            console.log('*DEBUG:this.materialList',this.materialList);
+            console.log('index',index);
+            console.log('this.materialIdToIndex',this.materialIdToIndex);
+            console.log('item[7]',item[7+diff]);
+            console.log('do not init!');
+            materialName = "need init";
+            this.ngOnInit();
+          } 
+          materialName = this.materialList[index]['name'];
+          let zValue = item[2+diff];
+          if (diff == -1){
+            zValue = 0;
+          }
+          // console.log("diff",diff);
           this.dragObject[id] = {
             x: item[0],
             y: item[1],
-            z: item[2],
-            width: item[3],
-            height: item[4],
-            altitude: item[5],
-            rotate: item[6],
+            z: zValue,
+            width: item[3+diff],
+            height: item[4+diff],
+            altitude: item[5+diff],
+            rotate: item[6+diff],
             title: this.translateService.instant('obstacleInfo'),
             type: this.svgElmMap(shape).type,
             color: this.OBSTACLE_COLOR,
-            material: item[7].toString(),
+            material: material,
+            materialName: materialName,
             element: shape
           };
+          // console.log("this.dragObject[id]",this.dragObject[id]);
+    
           // set 障礙物尺寸與位置
           // this.setObstacleSize(id);
           
@@ -6451,7 +6493,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialCustomize(){
     window.setTimeout(() => {
       let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
-      console.log("----update",url);
+      // console.log("----update",url);
       let data = {
           'id': Number(this.materialId),
           'name': this.materialName,
@@ -6477,7 +6519,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.setTimeout(() => {
       let url_update = `${this.authService.API_URL}/updatePathLossModel/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
-      console.log("----update",url_update);
+      // console.log("----update",url_update);
       let data = {
           'id': Number(this.calculateForm.pathLossModelId),
           'name': this.modelName,
@@ -6494,7 +6536,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
             this.http.get(url_get).subscribe(
               (res: any[]) => {
-                console.log("----get",url_get);
+                // console.log("----get",url_get);
                 let result = res;
                 let index = 0;
                 for(let i = 0; i < (result).length; i++){
@@ -6528,7 +6570,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // 新增材質到後端
       let url = `${this.authService.API_URL}/addObstacle/${this.authService.userToken}`;
       window.setTimeout(() => {
-        console.log("----post----",url);
+        // console.log("----post----",url);
         let data = {
           'name': this.materialName,
           'decayCoefficient': this.materialLossCoefficient,
@@ -6601,7 +6643,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let url_add = `${this.authService.API_URL}/addPathLossModel/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
       window.setTimeout(() => {
-        console.log("----post",url_add);
+        // console.log("----post",url_add);
         let data = {
             'name': this.modelName,
             'distancePowerLoss': this.modelDissCoefficient,
@@ -6614,7 +6656,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             console.log(res);
             this.http.get(url_get).subscribe(
               (res: any[]) => {
-                console.log("----get",url_get);
+                // console.log("----get",url_get);
                 let result = res;
                 this.modelList.push(result[(result.length-1)]);
                 for (let i = 0;i < this.modelList.length;i++) {
@@ -6709,7 +6751,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(flag) {
       window.setTimeout(() => {
         let url = `${this.authService.API_URL}/deleteObstacle/${this.authService.userToken}`;;
-        console.log("----(post) delete",url);
+        // console.log("----(post) delete",url);
         let data = {
           'id': Number(this.materialId),
           'name': this.materialName
@@ -6741,7 +6783,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // DELETE API
       window.setTimeout(() => {
         let url = `${this.authService.API_URL}/deletePathLossModel/${this.authService.userToken}`
-        console.log("----(post) delete",url);
+        // console.log("----(post) delete",url);
         let data = {
           'id': Number(this.calculateForm.pathLossModelId),
           'name': this.modelName
