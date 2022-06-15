@@ -263,6 +263,7 @@
 	"planning.algorithm.model": "Show Chwan Hospital model",
 	"planning.algorithm.model.pegatron": "Pegatron",
 	"planning.algorithm.model.pegatron.7FDemo": "Pegatron 7F Demo Room",
+	"planning.algorithm.model.pegatron.3F.Xindian": "Pegatron Xindian Factory 3F",
 	"signal.quality": "Signal quality",
 	"file": "Select map file",
 	"nofile": "File name",
