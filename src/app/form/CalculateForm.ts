@@ -112,7 +112,6 @@ export class CalculateForm {
   materialName: string = null;
   materialLossCoefficient: number = 0.1;
 
-  pathLossModelName: string = null;
   distanceCoefficient: number = 0.1;
   floorPenetrationLoss: number = 0.1;
 

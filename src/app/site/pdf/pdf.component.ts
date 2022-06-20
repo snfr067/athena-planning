@@ -171,13 +171,14 @@ export class PdfComponent implements OnInit {
               this.obstacleList.push({
                 x: obj[0],
                 y: obj[1],
-                width: obj[2],
-                height: obj[3],
-                altitude: obj[4],
+                z: obj[2],
+                width: obj[3],
+                height: obj[4],
+                altitude: obj[5],
                 color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
-                rotate: obj[5],
-                material: obj[6],
-                element: obj[7],
+                rotate: obj[6],
+                material: obj[7],
+                element: obj[8],
               });
             }
             obstacle = this.obstacleList;

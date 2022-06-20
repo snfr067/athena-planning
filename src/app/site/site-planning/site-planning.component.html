@@ -1119,8 +1119,36 @@
                     (click)="tempParamStorage(dragObject[item].y)"
                     (change)="changePosition('y',item)">
                   </span>
+                  <span>
+                    <label>Z</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" 
+                    (select)="tempParamStorage(dragObject[item].z)"
+                    (click)="tempParamStorage(dragObject[item].z)">
+                  </span>
+                  <br>              
+                  <span>
+                    <label>{{ 'width' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].width"
+                    (select)="tempParamStorage(dragObject[item].width)"
+                    (click)="tempParamStorage(dragObject[item].width)"
+                    (change)="changeSize(item, 'width', true)">
+                  </span>
+                  <span>
+                    <label>{{ 'height' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].height"
+                    (select)="tempParamStorage(dragObject[item].height)"
+                    (click)="tempParamStorage(dragObject[item].height)"
+                    (change)="changeSize(item, 'height',true)">
+                  </span>
                   <br>
-
+                  <span>
+                    <label>{{ 'altitude' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].altitude"
+                    (select)="tempParamStorage(dragObject[item].altitude)"
+                    (click)="tempParamStorage(dragObject[item].altitude)"
+                    (change)="changeSize(item, 'altitude',true)">
+                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                  </span>
                   <span>
                     <label>{{ 'rotate' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].rotate"
@@ -1129,42 +1157,9 @@
                     (change)="changeRotate(item)"
                     [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
-                  
-                  <span>
-                    <label>{{ 'width' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].width"
-                    (select)="tempParamStorage(dragObject[item].width)"
-                    (click)="tempParamStorage(dragObject[item].width)"
-                    (change)="changeSize(item, 'width', true)">
-                  </span>
-                  
-                  <span>
-                    <label>{{ 'height' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].height"
-                    (select)="tempParamStorage(dragObject[item].height)"
-                    (click)="tempParamStorage(dragObject[item].height)"
-                    (change)="changeSize(item, 'height',true)">
-                  </span>
-                  
-                  <span>
-                    <label>{{ 'altitude.start.end' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].altitude"
-                    (select)="tempParamStorage(dragObject[item].altitude)"
-                    (click)="tempParamStorage(dragObject[item].altitude)"
-                    (change)="changeSize(item, 'altitude',true)">
-                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
-                  </span>
-                  <span>
-                    ~
-                    <input type="text" [(ngModel)]="dragObject[item].altitudeEnd"
-                    (select)="tempParamStorage(dragObject[item].altitudeEnd)"
-                    (click)="tempParamStorage(dragObject[item].altitudeEnd)"
-                    (change)="changeSize(item, 'altitudeEnd',true)">
-                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
-                  </span>
                   <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
-                    <select class="w7em" [(ngModel)]="dragObject[item].material">
+                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material)">
                       <option value={{item.id}} *ngFor="let item of materialList">
                         <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
                         <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
@@ -1486,7 +1481,7 @@
       <tr *ngIf="dragObject[svgId].type === 'obstacle'">
         <td>{{ 'material.setting' | translate }}</td>
         <td> <!-- 右鍵高度/材質設定 -->
-          <select [(ngModel)]="dragObject[svgId].material">
+          <select [(ngModel)]="dragObject[svgId].material" (change)="setMaterialName(svgId,dragObject[svgId].material)">
             <option value={{item.id}} *ngFor="let item of materialList">
               <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
               <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
