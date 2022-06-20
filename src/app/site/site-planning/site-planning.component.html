@@ -191,7 +191,7 @@
         </span> -->
         </span>
         <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
-        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item)" (contextmenu)="onRightClick($event, item, i)" >
           <ng-container *ngIf="svgStyle[item]">
             <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
               <g>
@@ -351,14 +351,14 @@
       <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
     </ng-template>
   </mat-menu>
-  <!-- <mat-menu #mater="matMenu">
+   <mat-menu #mater="matMenu">
     <ng-template matMenuContent>
       <button mat-menu-item (click)="materialChange('1')" [class]="(dragObject[svgId].material === '1' ? 'text-white bg-primary' : '')">木頭</button>
       <button mat-menu-item (click)="materialChange('2')" [class]="(dragObject[svgId].material === '2' ? 'text-white bg-primary' : '')">水泥</button>
       <button mat-menu-item (click)="materialChange('3')" [class]="(dragObject[svgId].material === '3' ? 'text-white bg-primary' : '')">輕鋼架</button>
       <button mat-menu-item (click)="materialChange('4')" [class]="(dragObject[svgId].material === '4' ? 'text-white bg-primary' : '')">玻璃</button>
     </ng-template>
-  </mat-menu> -->
+  </mat-menu> 
 
   
 

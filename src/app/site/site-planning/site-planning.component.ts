@@ -19,6 +19,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChartService } from '../../service/chart.service';
 import { AbsoluteSourceSpan, ReturnStatement } from '@angular/compiler';
 import { convertActionBinding } from '@angular/compiler/src/compiler_util/expression_converter';
+import  booleanContains from "@turf/boolean-contains";
+import { polygon } from "@turf/helpers";
+import circle from '@turf/circle';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
@@ -81,7 +84,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     height: '30px',
     left: '0px',
     top: '0px',
-    'z-index': 99999,
+    'z-index': 100,
     transform: {
       rotate: '0deg',
       scaleX: 1,
@@ -290,6 +293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   wb: XLSX.WorkBook;
   /** 互動區域範圍 */
   dragStyle = {};
+  dragTimes = 0;
   /** Wifi頻率 */
   wifiFrequency = '0';
   /** 是否為歷史紀錄 */
@@ -542,9 +546,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     //取得材質與模型列表
     let url_model = `${this.authService.API_URL}/mysql/pathLossModel/${this.authService.userId}`;
     let url_obs = `${this.authService.API_URL}/mysql/obstacle/${this.authService.userId}`;
-    this.http.get("http://192.168.1.118:4444/").subscribe(
+    this.http.get("http://140.96.102.115:4444/").subscribe(
       res => {
-        // console.log("----get http://192.168.1.118:4444/----");
+        // console.log("----get http://140.96.102.115:4444/----");
         let result = res;
         this.materialList = Object.values(result['obstacle']);
         let sorted = this.materialList.sort((a,b) => a.id - b.id);
@@ -558,9 +562,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // console.log('idToIndex',this.materialIdToIndex);
       }
     );
-    this.http.get("http://192.168.1.118:4444/model").subscribe(
+    this.http.get("http://140.96.102.115:4444/model").subscribe(
       res => {
-        // console.log("----get http://192.168.1.118:4444/model----");
+        // console.log("----get http://140.96.102.115:4444/model----");
         let result = res;
         this.modelList = Object.values(result['pathLossModel']);
         let sorted = this.modelList.sort((a,b) => a.id - b.id);
@@ -1305,7 +1309,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     return [w, h];
   }
-
+  ccc(){
+    console.log('ccc');
+  }
   /**
    * dataURI to blob
    * @param dataURI
@@ -1333,6 +1339,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   addMoveable(id) {
+    console.log("addMoveable");
     try {
       this.moveable.destroy();
     } catch (error) {}
@@ -1557,14 +1564,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       height: `${height}px`,
       left: `${this.initpxl}px`,
       top: `${this.initpxl}px`,
-      'z-index': 99999,
+      'z-index': 100,
       transform: {
         rotate: '0deg',
         scaleX: 1,
         scaleY: 1
       }
     });
-
+    console.log("index",this.frame);
     // this.initpxl += 10;
 
     // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
@@ -1623,6 +1630,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   moveClick(id) {
+    console.log("now click:",id);
     try {
       this.moveable.destroy();
     } catch (error) {}
@@ -1640,17 +1648,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       height: this.spanStyle[id].height,
       left: this.spanStyle[id].left,
       top: this.spanStyle[id].top,
-      'z-index': 99999,
+      'z-index': 10000+10*this.dragObject[this.svgId].width,
       transform: {
         rotate: `${this.dragObject[this.svgId].rotate}deg`,
         scaleX: 1,
         scaleY: 1
       }
     });
+    // this.setTransform(this.target);
+    console.log("index",this.frame);
+      this.dragTimes += 10;
     // console.log(this.frame);
     // console.log(this.target);
     // console.log(this.spanStyle);
-    // console.log(this.frame);
     // console.log(this.dragObject[id]);
     // console.log(this.moveable);
 
@@ -1706,7 +1716,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** tooltip 文字 */
   getTooltip() {
     const id = this.hoverObj.id;
-    console.log(this.checkObstacleIsOverlaped(id));
     let title = `${this.dragObject[id].title}: ${this.svgNum}`;
     let overlappedIdList = this.checkObstacleIsOverlaped(id);
     if (overlappedIdList.length > 0){
@@ -1732,51 +1741,39 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   checkObstacleIsOverlaped(ObjId){
+    if (ObjId.split('_')[0] != "rect" && ObjId.split('_')[0] != "polygon" && ObjId.split('_')[0] != "trapezoid" && ObjId.split('_')[0] != "ellipse"){
+      return [];
+    }
     let overlapedIDList = [];
     let obj = this.dragObject[ObjId];
     let shape = Number(obj.element);
-    console.log('------');
-    console.log("new check obstacle1:",ObjId);
-    let coordinate = this.calculateCoordinate(obj,shape);
-    console.log("this.obstacleList",this.obstacleList);
-    console.log("this.obstacleList length",this.obstacleList.length);
-    let id;
+    // console.log("new check obstacle1:",ObjId);
+    let coordinateObj = this.calculateCoordinate(obj,shape);
+    let coordinate = coordinateObj[0];
+    let turfobj = coordinateObj[1];
     for (let i=0; i<this.obstacleList.length; i++){
-      id = this.obstacleList[i];
-      console.log("obstacle2:",id);
+      let id = this.obstacleList[i];
+      // console.log("obstacle2:",id);
       if (id == ObjId){
         continue;
       } else {
-        
         let obj2 = this.dragObject[id];
         let shape2 = Number(obj2.element);
-        let coordinate2 = this.calculateCoordinate(obj2,shape2);
-        
+        let coordinateobj2 = this.calculateCoordinate(obj2,shape2);
+        let coordinate2 = coordinateobj2[0];
+        let turfobj2 = coordinateobj2[1];
         let interObj;
-        // let interObj = Intersection.intersectRectangleRectangle(coordinate[0],coordinate[1],coordinate2[0],coordinate2[1]);
         if (shape == 2 && shape2 == 2){
-          console.log("both circle",id,ObjId);
-          console.log('coordinate',coordinate);
-          console.log('coordinate2',coordinate2);
           interObj = Intersection.intersectCircleCircle(coordinate[0],coordinate[1],coordinate2[0],coordinate2[1]);
         } else if(shape == 2){
-          console.log("circle",ObjId);
-          console.log('[circle]coordinate',coordinate);
-          console.log('coordinate2',coordinate2);
           interObj = Intersection.intersectCirclePolygon(coordinate[0],coordinate[1],coordinate2);
         } else if(shape2 == 2){
-          console.log("circle",id);
-          console.log('coordinate',coordinate);
-          console.log('[circle]coordinate2',coordinate2);
           interObj = Intersection.intersectCirclePolygon(coordinate2[0],coordinate2[1],coordinate);
         } else {
-          console.log("both Polygon",id,ObjId);
-          console.log('coordinate',coordinate);
-          console.log('coordinate2',coordinate2);
           interObj = Intersection.intersectPolygonPolygon(coordinate,coordinate2);
         }
-        console.log('interObj',interObj);
-        if (interObj.status == "Intersection" || interObj.status == "Inside"){
+        // console.log('interObj',interObj);
+        if (interObj.status == "Intersection" || interObj.status == "Inside" || booleanContains(turfobj, turfobj2) || booleanContains(turfobj2, turfobj)){
           overlapedIDList.push(i+1);
         }
       }
@@ -1785,53 +1782,134 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   calculateCoordinate(obj,shape){
     let coordinate = [];
-    let x1 = Number(obj.x);
-    let y1 = Number(obj.y);
-    let width = Number(obj.width);
-    let height = Number(obj.height);
-    let angle = Number(obj.rotate);
-    // console.log('obj',obj);
+    let turfObj;
+    let angle = Number(obj.rotate%360);
+    let obWid = Number(obj.width);
+    let obHei = Number(obj.height);
+    let deg = 2*Math.PI/360;
+    let x = Number(obj.x);
+    let y = Number(obj.y);
+    let tempAngle = 360 - angle; 
+    if (angle < 0) {angle+=360};
     if (shape == 0) { // 0:矩形, 1:三角形, 2:正圓形, 3:梯形
-      console.log("矩形");
-      let x2 = x1 + width;
-      let y2 = y1 + height;
-      let x1y1 = new Point2D(x1,y1);
-      let x1y2 = new Point2D(x1,y2);
-      let x2y1 = new Point2D(x2,y1);
-      let x2y2 = new Point2D(x2,y2);
-      coordinate = [x1y1,x2y1,x2y2,x1y2];
+      let rcc = [x+obWid/2,y+obHei/2];
+      let leftbot = [x,y];
+      let lefttop = [x,y+obHei];
+      let rightbot = [x+obWid,y];
+      let righttop = [x+obWid,y+obHei];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(leftbot[0],leftbot[1]),
+          new Point2D(rightbot[0],rightbot[1]),
+          new Point2D(righttop[0],righttop[1]),
+          new Point2D(lefttop[0],lefttop[1])
+        ];
+        turfObj = polygon([[leftbot,rightbot,righttop,lefttop,leftbot]]);
+      } else {
+        let rotleftbot = [
+          (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotlefttop = [
+          (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrightbot = [
+          (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrighttop = [
+          (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleftbot[0],rotleftbot[1]),
+          new Point2D(rotrightbot[0],rotrightbot[1]),
+          new Point2D(rotrighttop[0],rotrighttop[1]),
+          new Point2D(rotlefttop[0],rotlefttop[1])
+        ];
+        turfObj = polygon([[rotleftbot,rotrightbot,rotrighttop,rotlefttop,rotleftbot]]);
+      }
     } else if (shape == 1) { // width: X, height: Y
-      console.log("三角形");
-      let x2 = x1 + width;
-      let y2 = y1;
-      let x3 = x1 + 0.5*width;
-      let y3 = y1 + height;
-      let x1y1 = new Point2D(x1,y1);
-      let x2y2 = new Point2D(x2,y2);
-      let x3y3 = new Point2D(x3,y3);
-      coordinate = [x1y1,x2y2,x3y3];
+      let rcc = [x+obWid/2,y+obHei/2];
+      let top = [x+obWid/2,y+obHei];
+      let left = [x,y];
+      let right = [x+obWid,y];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(left[0],left[1]),
+          new Point2D(right[0],right[1]),
+          new Point2D(top[0],top[1])
+        ];
+        turfObj = polygon([[left,right,top,left]]);
+      } else {
+        let rottop = [
+          (top[0]-rcc[0])*Math.cos(tempAngle*deg)-(top[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (top[0]-rcc[0])*Math.sin(tempAngle*deg)+(top[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotleft = [
+          (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotright = [
+          (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleft[0],rotleft[1]),
+          new Point2D(rotright[0],rotright[1]),
+          new Point2D(rottop[0],rottop[1])
+        ];
+        turfObj = polygon([[rotleft,rotright,rottop,rotleft]]);
+      }
     } else if (shape == 2) { 
-      console.log("圓形");
-      let r = 0.5*width;
-      let rx = x1 + r;
-      let ry = y1 + r;
+      let r = 0.5*obWid;
+      let rx = x + r;
+      let ry = y + r;
       let x1y1 = new Point2D(rx,ry);
       coordinate = [x1y1,r];
+      turfObj = circle([rx,ry],r);
     } else if (shape == 3) { 
-      console.log("梯形");
-      let x2 = x1 + width;
-      let y2 = y1;
-      let x3 = x1 + 0.25*width;
-      let y3 = y1 + height;
-      let x4 = x1 + 0.75*width;
-      let y4 = y1 + height;
-      let x1y1 = new Point2D(x1,y1);
-      let x2y2 = new Point2D(x2,y2);
-      let x3y3 = new Point2D(x3,y3);
-      let x4y4 = new Point2D(x4,y4);
-      coordinate = [x1y1,x2y2,x4y4,x3y3];
+      let rcc = [x+obWid/2,y+obHei/2];
+      let leftbot = [x,y];
+      let lefttop = [x+obWid/4,y+obHei];
+      let rightbot = [x+obWid,y];
+      let righttop = [x+(3*obWid/4),y+obHei];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(leftbot[0],leftbot[1]),
+          new Point2D(rightbot[0],rightbot[1]),
+          new Point2D(righttop[0],righttop[1]),
+          new Point2D(lefttop[0],lefttop[1])
+        ];
+        turfObj = polygon([[leftbot,rightbot,righttop,lefttop,leftbot]]);
+      } else {
+        let rotleftbot = [
+          (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotlefttop = [
+          (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrightbot = [
+          (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrighttop = [
+          (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleftbot[0],rotleftbot[1]),
+          new Point2D(rotrightbot[0],rotrightbot[1]),
+          new Point2D(rotrighttop[0],rotrighttop[1]),
+          new Point2D(rotlefttop[0],rotlefttop[1])
+        ];
+        turfObj = polygon([[rotleftbot,rotrightbot,rotrighttop,rotlefttop,rotleftbot]]);
+      }
     }
-    return coordinate;
+    return [coordinate,turfObj];
   }
   /** set drag object data */
   setDragData() {
@@ -1939,6 +2017,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onDrag({ target, clientX, clientY, top, left, isPinch }: OnDrag) {
+    console.log("OnDrag");
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
@@ -1947,18 +2026,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = target;
       this.frame.set('left', `${left}px`);
       this.frame.set('top', `${top}px`);
-      this.frame.set('z-index', 999999);
-      /*
-      if(this.svgNum == 1){
-        console.log("set frame 999999");
-        this.frame.set('z-index', 999999);
-      }
-      if(this.svgNum == 3){
-        console.log("set frame 9");
-        this.frame.set('z-index', 9);
-      }
-      */
+      this.frame.set('z-index', 10000+10*this.dragObject[this.svgId].width);
+      this.dragTimes += 10;
       this.setTransform(target);
+      console.log("index",this.frame);
 
       this.spanStyle[this.svgId].left = `${left}px`;
       this.spanStyle[this.svgId].top = `${top}px`;
@@ -2016,6 +2087,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onResize({ target, clientX, clientY, width, height, drag }: OnResize) {
+    console.log("onResize");
     if (this.svgId !== this.realId) {
       // 物件太接近，id有時會錯亂，還原id
       this.svgId = _.cloneDeep(this.realId);
@@ -2048,7 +2120,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     
     this.spanStyle[this.svgId].transform = `rotate(${this.dragObject[this.svgId].rotate}deg)`;   
-    this.frame.set('z-index', 100);
+    this.frame.set('z-index', 10000+10*this.dragObject[this.svgId].width);
     this.frame.set('transform', 'rotate', `${this.dragObject[this.svgId].rotate}deg`);
     this.setTransform(target);
     
@@ -2563,28 +2635,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     return false;
   }
-  /* ToDo
-  checkDragobjectOverlaped(ObjId){
-    let overlapedIDList = [];
-    let obj = this.dragObject[ObjId];
-    let x2 = Number(obj.x) + Number(obj.width);
-    let x1 = Number(obj.x);
-    let y2 = Number(obj.y) + Number(obj.height);
-    let y2 = Number(obj.y);
-    let angle = Number(obj.rotate);
-
-    for (let id in this.dragObject){
-      let obj2 = this.dragObject[id];
-      let xx2 = Number(obj2.x) + Number(obj2.width);
-      let xx1 = Number(obj2.x);
-      let yy2 = Number(obj2.y) + Number(obj2.height);
-      let yy2 = Number(obj2.y);
-      let angle2 = Number(obj2.rotate);
-    }
-
-    return overlapedIDList;
-  }
-  */
 
   // 檢查是否有基地台的參數重疊
   checkRFParamIsOverlaped() {
@@ -4521,9 +4571,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
               (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
-            // console.log(rotTop);
-            // console.log(rotLeft);
-            // console.log(rotRight);
             let maxX = Math.max(rotTop[0],rotLeft[0],rotRight[0]);
             let minX = Math.min(rotTop[0],rotLeft[0],rotRight[0]);
             if (minX.toString().length > 10) {
@@ -6555,7 +6602,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   materialCustomize(){
     window.setTimeout(() => {
-      console.log("----update http://192.168.1.118:4444/----");
+      console.log("----update http://140.96.102.115:4444/----");
       let data = {
         'obstacle':{
             'id': Number(this.materialId),
@@ -6566,7 +6613,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       console.log(JSON.stringify(data));
       if(this.checkMaterialForm(false)){
-        this.http.put("http://192.168.1.118:4444/", JSON.stringify(data)).subscribe(
+        this.http.put("http://140.96.102.115:4444/", JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
@@ -6581,7 +6628,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   pathLossCustomize(){
     window.setTimeout(() => {
-      console.log("----update http://192.168.1.118:4444/model----");
+      console.log("----update http://140.96.102.115:4444/model----");
       let data = {
         'pathLossModel':{
             'id': Number(this.calculateForm.pathLossModelId),
@@ -6593,14 +6640,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       console.log(JSON.stringify(data));
       if(this.checkModelForm(false)){
-        this.http.put("http://192.168.1.118:4444/model", JSON.stringify(data)).subscribe(
+        this.http.put("http://140.96.102.115:4444/model", JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.matDialog.closeAll();
 
-            this.http.get("http://192.168.1.118:4444/model").subscribe(
+            this.http.get("http://140.96.102.115:4444/model").subscribe(
               res => {
-                console.log("----get http://192.168.1.118:4444/model----");
+                console.log("----get http://140.96.102.115:4444/model----");
                 let result = res;
                 let index = 0;
                 for(let i = 0; i < (result['pathLossModel']).length; i++){
@@ -6633,7 +6680,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.checkMaterialForm(true)){
       // 新增材質到後端
       window.setTimeout(() => {
-        // console.log("----post http://192.168.1.118:4444/----");
+        // console.log("----post http://140.96.102.115:4444/----");
         let data = {
           'obstacle':{
               'name': this.materialName,
@@ -6642,7 +6689,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
         }
         console.log(JSON.stringify(data));
-        this.http.post("http://192.168.1.118:4444/", JSON.stringify(data)).subscribe(
+        this.http.post("http://140.96.102.115:4444/", JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
             this.materialName = "";
@@ -6706,7 +6753,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.checkModelForm(true)){
       // 新增無線模型到後端
       window.setTimeout(() => {
-        console.log("----post http://192.168.1.118:4444/model----");
+        console.log("----post http://140.96.102.115:4444/model----");
         let data = {
           'pathLossModel':{
               'name': this.modelName,
@@ -6716,12 +6763,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
         }
         console.log(JSON.stringify(data));
-        this.http.post("http://192.168.1.118:4444/model", JSON.stringify(data)).subscribe(
+        this.http.post("http://140.96.102.115:4444/model", JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            this.http.get("http://192.168.1.118:4444/model").subscribe(
+            this.http.get("http://140.96.102.115:4444/model").subscribe(
               res => {
-                console.log("----get http://192.168.1.118:4444/model----");
+                console.log("----get http://140.96.102.115:4444/model----");
                 let result = res;
                 this.modelList.push(result['pathLossModel'][(result['pathLossModel'].length-1)]);
                 for (let i = 0;i < this.modelList.length;i++) {
@@ -6815,7 +6862,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.matDialog.closeAll();
     if(flag) {
       window.setTimeout(() => {
-        console.log("----delete http://192.168.1.118:4444/----");
+        console.log("----delete http://140.96.102.115:4444/----");
         let data = {
           'obstacle':{
               'id': Number(this.materialId),
@@ -6827,7 +6874,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete("http://192.168.1.118:4444/",httpOptions).subscribe(
+        this.http.delete("http://140.96.102.115:4444/",httpOptions).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
@@ -6848,7 +6895,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(flag) {
       // DELETE API
       window.setTimeout(() => {
-        console.log("----delete http://192.168.1.118:4444/model----");
+        console.log("----delete http://140.96.102.115:4444/model----");
         let data = {
           'pathLossModel':{
               'id': Number(this.calculateForm.pathLossModelId),
@@ -6860,7 +6907,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           headers: {},
           body: JSON.stringify(data)
         }
-        this.http.delete("http://192.168.1.118:4444/model",httpOptions).subscribe(
+        this.http.delete("http://140.96.102.115:4444/model",httpOptions).subscribe(
           res => {
             console.log(res);
             this.ngOnInit();
