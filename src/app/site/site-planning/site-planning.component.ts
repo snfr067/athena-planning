@@ -110,7 +110,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** model list */
   modelList = [];
   /** new material & new model */
-  materialId: number = 1;
+  materialId: number = 0;
   materialName: string = null;
   materialLossCoefficient: number = 0.1;
   materialProperty: string = null;
@@ -224,8 +224,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   tooltipStr = '';
   /** 4捨5入格式化 */
   roundFormat = Plotly.d3.format('.1f');
-  /** 預設無線模型 list */
-  pathLossModelIdList = [];
   /** 物件移動範圍 */
   bounds = {
     left: 0,
@@ -529,10 +527,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // clear Storage
     // this.authService.clearStorage();
     document.querySelector('body').style.overflow = 'hidden';
-
-    for (let i = 0; i < 9; i++) {
-      this.pathLossModelIdList.push(i);
-    }
     // 接收URL參數
     this.route.queryParams.subscribe(params => {
       if (typeof params['taskId'] !== 'undefined') {
@@ -551,6 +545,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.materialList = Object.values(result);
           // console.log('this.materialList',this.materialList);
           // let sorted = this.materialList.sort((a,b) => a.id - b.id);
+          this.materialId = this.materialList[0]['id'];
           for (let i = 0;i < this.materialList.length;i++) {
             let id = this.materialList[i]['id'];
             this.materialIdToIndex[id]=i;
@@ -565,7 +560,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     });
     //取得材質與模型列表
     promise.then((promiseResult) => new Promise((resolve, reject) => {
-      console.log("promise resolve",promiseResult);
+      console.log(promiseResult);
       let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
       this.http.get(url_model).subscribe(
         res => {
@@ -584,7 +579,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       );
     }).then((resolve) => {
-      console.log("promise slove",resolve);
+      console.log(resolve);
       if (sessionStorage.getItem('importFile') != null) {
         // from new-planning import file
         this.calculateForm = new CalculateForm();
@@ -798,7 +793,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
-    console.log('Check altitdue function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
+    console.log('Check altitude function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
     altitude = Number(altitude);
     let msg = '';
     if (altitude < 0 || altitude > this.calculateForm.altitude) {
@@ -1350,7 +1345,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   addMoveable(id) {
-    console.log("addMoveable");
     try {
       this.moveable.destroy();
     } catch (error) {}
@@ -1556,7 +1550,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
-      z: this.zValues[0],
+      // z: this.zValues[0],
+      z: 0,
       width: width,
       height: height,
       altitude: this.calculateForm.altitude,
@@ -1582,7 +1577,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         scaleY: 1
       }
     });
-    console.log("index",this.frame);
     // this.initpxl += 10;
 
     // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
@@ -1635,13 +1629,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }, 0);
 
   }
-
+  changeZvalue(id){
+    try {
+      this.moveable.destroy();
+    } catch (error) {}
+    // window.setTimeout(() => {
+    //   this.live = true;
+    // }, 0);
+    this.target = document.getElementById(id);
+    this.svgId = id;
+    this.realId = _.cloneDeep(id);
+    this.frame = new Frame({
+      width: this.spanStyle[id].width,
+      height: this.spanStyle[id].height,
+      left: this.spanStyle[id].left,
+      top: this.spanStyle[id].top,
+      'z-index': 100+10*this.dragObject[this.svgId].z,
+      transform: {
+        rotate: `${this.dragObject[this.svgId].rotate}deg`,
+        scaleX: 1,
+        scaleY: 1
+      }
+    });
+    this.setTransform(this.target);
+    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) + Number(this.dragObject[id].altitude) > Number(this.calculateForm.altitude)) {
+      // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+      this.recoverParam(id,'z');
+      let msg = this.translateService.instant('z_greater_then_field_altitude');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+  }
   /**
    * click互動物件
    * @param id 
    */
   moveClick(id) {
-    console.log("now click:",id);
     try {
       this.moveable.destroy();
     } catch (error) {}
@@ -1659,7 +1686,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       height: this.spanStyle[id].height,
       left: this.spanStyle[id].left,
       top: this.spanStyle[id].top,
-      'z-index': 10000+10*this.dragObject[this.svgId].width,
+      'z-index': 100+10*this.dragObject[this.svgId].z,
       transform: {
         rotate: `${this.dragObject[this.svgId].rotate}deg`,
         scaleX: 1,
@@ -1667,8 +1694,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
     // this.setTransform(this.target);
-    console.log("index",this.frame);
-      this.dragTimes += 10;
     // console.log(this.frame);
     // console.log(this.target);
     // console.log(this.spanStyle);
@@ -1735,6 +1760,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
+    title += `Z: ${this.dragObject[id].z}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
       title += `${this.translateService.instant('width')}: ${this.dragObject[id].width}<br>`;
       title += `${this.translateService.instant('height')}: ${this.dragObject[id].height}<br>`;
@@ -2036,7 +2062,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onDrag({ target, clientX, clientY, top, left, isPinch }: OnDrag) {
-    console.log("OnDrag");
     if (this.svgId !== this.realId) {
       this.svgId = _.cloneDeep(this.realId);
       target = document.querySelector(`#${this.svgId}`);
@@ -2045,10 +2070,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = target;
       this.frame.set('left', `${left}px`);
       this.frame.set('top', `${top}px`);
-      this.frame.set('z-index', 10000+10*this.dragObject[this.svgId].width);
-      this.dragTimes += 10;
+      this.frame.set('z-index', 100+10*this.dragObject[this.svgId].z);
       this.setTransform(target);
-      console.log("index",this.frame);
 
       this.spanStyle[this.svgId].left = `${left}px`;
       this.spanStyle[this.svgId].top = `${top}px`;
@@ -2106,7 +2129,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param param0 
    */
   onResize({ target, clientX, clientY, width, height, drag }: OnResize) {
-    console.log("onResize");
     if (this.svgId !== this.realId) {
       // 物件太接近，id有時會錯亂，還原id
       this.svgId = _.cloneDeep(this.realId);
@@ -2139,7 +2161,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     
     this.spanStyle[this.svgId].transform = `rotate(${this.dragObject[this.svgId].rotate}deg)`;   
-    this.frame.set('z-index', 10000+10*this.dragObject[this.svgId].width);
+    this.frame.set('z-index', 100+10*this.dragObject[this.svgId].z);
     this.frame.set('transform', 'rotate', `${this.dragObject[this.svgId].rotate}deg`);
     this.setTransform(target);
     
@@ -2473,7 +2495,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    checkRFParamIsEmpty(protocol, duplex) {
     let error = false;
     let msg = '<br>';
-    if (this.calculateForm.pathLossModelId == 999){
+    if (this.calculateForm.pathLossModelId == 999 || !(this.calculateForm.pathLossModelId in this.modelIdToIndex) ){
       error = true;
       msg += `${this.translateService.instant('plz_fill_pathLossModel')}<br/>`;
       msg+= '</p>';
@@ -3494,12 +3516,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.calculateForm[key] = Number(this.calculateForm[key]);
       }
     });
-
+    /*
     Object.keys(this.calculateForm.pathLossModel).forEach((key) => {
       this.calculateForm.pathLossModel[key] = Number(this.calculateForm.pathLossModel[key]);
       
     });
-
+    */
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // Wifi強制指定為wifi模型
       this.calculateForm.pathLossModelId = 9;
@@ -3596,6 +3618,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.dragObject[svgId].altitude < 0) {
         this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
         let msg = this.translateService.instant('wha_cant_less_than_0');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      } else if (Number(this.dragObject[svgId].z) + Number(this.dragObject[svgId].altitude) > Number(this.calculateForm.altitude)) {
+        // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+        this.recoverParam(svgId,'altitude');
+        let msg = this.translateService.instant('z_greater_then_field_altitude');
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -4494,6 +4525,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else if (type == 'height') {
       this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
       this.changeSize(svgId,'height',false);
+    } else if (type == 'z'){
+      this.dragObject[svgId].z = Number(window.sessionStorage.getItem('tempParam'));
+    } else if (type == 'altitude' ){
+      this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
     }
   }
 
@@ -5087,11 +5122,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const ueWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ueData);
     XLSX.utils.book_append_sheet(wb, ueWS, 'ue');
     // obstacle
-    const obstacleData = [['x', 'y', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
+    const obstacleData = [['x', 'y', 'z', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
     for (const item of this.obstacleList) {
       const shape = this.parseElement(this.dragObject[item].element);
       obstacleData.push([
-        this.dragObject[item].x, this.dragObject[item].y,
+        this.dragObject[item].x, this.dragObject[item].y,this.dragObject[item].z,
         this.dragObject[item].width, this.dragObject[item].height,
         this.dragObject[item].altitude, this.dragObject[item].rotate,
         this.dragObject[item].material, this.dragObject[item].color,
@@ -5133,14 +5168,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.maxConnectionNum = 32;
     }
     const algorithmData = [
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
-      // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'TxGain', 'RxGain', 'noiseFigure', 'maxConnectionNum'],
+      // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'pathLossModelTxGain', 'pathLossModelRxGain', 'pathLossModelNoiseFigure', 'maxConnectionNum'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
-        // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.pathLossModel['TxGain'],
+        // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.pathLossModelTxGain, this.calculateForm.pathLossModelRxGain, this.calculateForm.pathLossModelNoiseFigure,
         this.calculateForm.maxConnectionNum
       ]
     ];
@@ -5489,7 +5524,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         let id;
         let type;
-        let shape = this.parseElement(obstacleData[i][8]);
+        let diff = Object.keys(obstacleData[i]).length - 10; //因應版本不同,欄位長度不同
+        let shape = this.parseElement(obstacleData[i][8+diff]);
         if (shape === 'rect' || Number(shape) === 0) {
           id = `rect_${this.generateString(10)}`;
           type = 'rect';
@@ -5513,19 +5549,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           type = 'rect';
 
         }
-        let material = (typeof obstacleData[i][6] === 'undefined' ? '0' : obstacleData[i][6].toString());
-        if (!materialReg.test(material)) {
-          material = '0';
+        let material = (typeof obstacleData[i][6+diff] === 'undefined' ? '0' : obstacleData[i][6+diff].toString());
+        // if (!materialReg.test(material)) {
+        //   material = '0';
+        // }
+        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
+          material = this.materialList[0]['id'];
+        }else{
+          let index = this.materialIdToIndex[obstacleData[i][7+diff]];
+          material = this.materialList[index]['id'];
         }
-        const color = (typeof obstacleData[i][7] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][7]);
+        const color = (typeof obstacleData[i][8+diff] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][8+diff]);
+        let zValue = obstacleData[i][2+diff];
+        if (diff == -1){
+          zValue = 0;
+        }
         this.dragObject[id] = {
           x: obstacleData[i][0],
           y: obstacleData[i][1],
-          z: 0,
-          width: obstacleData[i][2],
-          height: obstacleData[i][3],
-          altitude: obstacleData[i][4],
-          rotate: (typeof obstacleData[i][5] === 'undefined' ? 0 : obstacleData[i][5]),
+          z: zValue,
+          width: obstacleData[i][3+diff],
+          height: obstacleData[i][4+diff],
+          altitude: obstacleData[i][5+diff],
+          rotate: (typeof obstacleData[i][6+diff] === 'undefined' ? 0 : obstacleData[i][6+diff]),
           title: this.svgMap[type].title,
           type: this.svgMap[type].type,
           color: color,
@@ -5599,15 +5645,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // this.calculateForm.computeRound = Number(algorithmParametersData[1][4]);
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
-      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      /*
-      this.calculateForm.pathLossModel = {
-        "TxGain": Number(algorithmParametersData[1][7]),
-        "RxGain": Number(algorithmParametersData[1][8]),
-        "noiseFigure": Number(algorithmParametersData[1][9])
-      }
+      // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+      
+      this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][7]);
+      this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][8]);
+      this.calculateForm.pathLossModelNoiseFigure = Number(algorithmParametersData[1][9]);
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][10]);
-      */
+      
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
@@ -5738,14 +5782,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           const item = JSON.parse(obstacle[i]);
           let diff = item.length - 9;
           let shape = '0';
-          if (typeof item[8] !== 'undefined') {
+          if (typeof item[8+diff] !== 'undefined') {
             shape = this.parseElement(item[8+diff]);
           }
           const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
-          let index = this.materialIdToIndex[Number(item[7])];
+          let index = this.materialIdToIndex[Number(item[7+diff])];
           let material = item[7+diff].toString();
           // 對舊專案的處理
-          if(!(item[7] in this.materialIdToIndex)){ 
+          if(!(item[7+diff] in this.materialIdToIndex)){ 
             index = 0;
             material = this.materialList[index]['id'];
             // console.log('__maybe old project, replace material');
@@ -6630,9 +6674,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   pathLossCustomizeDialog(inputValue){
     if (inputValue != 999){
       let index = this.modelIdToIndex[inputValue];
-      console.log('**this.modelList',this.modelList);
-      console.log('**this.modelList[index]',this.modelList[index]);
-      console.log('**this.modelList[index][name]',this.modelList[index]['name']);
       this.modelName = this.modelList[index]['name'];
       this.modelDissCoefficient = this.modelList[index]['distancePowerLoss'];
       this.modelfieldLoss = this.modelList[index]['fieldLoss'];
@@ -6911,18 +6952,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           'name': this.materialName
         }
         console.log(JSON.stringify(data));
+        /*
         let httpOptions = {
           headers: {},
           body: JSON.stringify(data)
         }
+        */
         this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            this.ngOnInit();
+            const promise = new Promise((resolve, reject) => {
+              try{
+                this.ngOnInit();
+                resolve(res);
+              }
+              catch(error){
+                return reject(error);
+              }
+            });
+            console.log("delete then data:",this.calculateForm);
+            this.checkAfterDelete();
           },
           err => {
             console.log('err:',err);
-            // this.ngOnInit();
           }
         );
       }, 100);
@@ -6930,6 +6982,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       this.matDialog.open(this.materialCustomizeModal);
     }
+  }
+  checkAfterDelete(){
+    console.log("this.obstacleList",this.obstacleList);
+    console.log("this.dragObject",this.dragObject);
+    console.log("this.materialList",this.materialList);
+    console.log("this.materialIdToIndex",this.materialIdToIndex);
+    for(let i = 0; i < this.obstacleList.length; i++){
+      const obj = this.dragObject[this.obstacleList[i]];
+      console.log("checkAfterDelete",obj);
+      console.log("obj.material",obj.material,"compare",obj.material in this.materialIdToIndex);
+      if( obj.type != "obstacle"){
+        continue;
+      }
+      else if( !(obj.material in this.materialIdToIndex) ){
+        this.dragObject[this.obstacleList[i]].material = this.materialList[0]['id'];
+      }
+    }
+    console.log("DONE:calculateForm",this.calculateForm);
   }
   deleteModel(flag){
     this.matDialog.closeAll();
@@ -6943,10 +7013,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           'name': this.modelName
         }
         console.log(JSON.stringify(data));
+        /*
         let httpOptions = {
           headers: {},
           body: JSON.stringify(data)
         }
+        */
         this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);

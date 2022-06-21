@@ -18,16 +18,20 @@ export class CalculateForm {
   width: number = null;
   height: number = null;
   altitude: number = null;
-  altitudeEnd: number = null;
-
   zValue: string = null;
   pathLossModelId: number = 0;
+  /*
   pathLossModel: object = {
     "TxGain": 0,
     "RxGain": 0,
     "noiseFigure": 0
   }
-
+  */
+  
+  pathLossModelTxGain: number = 0;
+  pathLossModelRxGain: number = 0;
+  pathLossModelNoiseFigure: number = 0;
+  
   ueCoordinate: string = null;
   ueRsrp: number = null;
   ueSinr: number = null;

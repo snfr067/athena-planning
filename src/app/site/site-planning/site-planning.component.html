@@ -1123,7 +1123,8 @@
                     <label>Z</label>
                     <input type="text" [(ngModel)]="dragObject[item].z" 
                     (select)="tempParamStorage(dragObject[item].z)"
-                    (click)="tempParamStorage(dragObject[item].z)">
+                    (click)="tempParamStorage(dragObject[item].z)"
+                    (change)="changeZvalue(item)">
                   </span>
                   <br>              
                   <span>
@@ -1355,15 +1356,15 @@
                 </li>
                 <li>
                   <p>{{ 'TxGain' | translate }}</p> 
-                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['TxGain']"><span style="color: #516c8c">dB</span>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModelTxGain"><span style="color: #516c8c">dB</span>
                 </li>
                 <li>
                   <p>{{ 'RxGain' | translate }}</p> 
-                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['RxGain']"><span style="color: #516c8c">dB</span>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModelRxGain"><span style="color: #516c8c">dB</span>
                 </li>
                 <li>
                   <p>{{ 'noise' | translate }}</p>
-                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModel['noiseFigure']"><span style="color: #516c8c">dB</span>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="calculateForm.pathLossModelNoiseFigure"><span style="color: #516c8c">dB</span>
                 </li>
                 <!-- <li>
                   <label>自訂無線模型(@jane要再給)</label>
@@ -1622,8 +1623,6 @@
   <div class="modalFooter" style="padding-top:0.8em;">
     
     <ng-container *ngIf="calculateForm.pathLossModelId != 999">
-      <a href="javascript:void(0)" (click)="selectAndClose()">{{ 'planning.select.model' | translate }}</a>
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <a href="javascript:void(0)" (click)="pathLossCustomize()">{{ 'planning.submit' | translate }}</a>
     </ng-container>
     <ng-container *ngIf="calculateForm.pathLossModelId == 999">

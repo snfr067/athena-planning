@@ -1343,6 +1343,7 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.num'),
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
+      this.translateService.instant('result.propose.candidateBs.z'),
       `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
@@ -1352,7 +1353,7 @@ export class PdfComponent implements OnInit {
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
       console.log(item);
-      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
+      obstacleData.push([(k + 1), item.x, item.y, item.z, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},

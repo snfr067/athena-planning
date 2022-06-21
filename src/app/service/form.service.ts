@@ -74,7 +74,9 @@ export class FormService {
     calculateForm.objectiveIndex = result['objectiveindex'];
     calculateForm.obstacleInfo = result['obstacleinfo'];
     calculateForm.pathLossModelId = result['pathlossmodelid'];
-    calculateForm.pathLossModel = result['pathLossModel'];
+    calculateForm.pathLossModelTxGain = result['pathlossmodeltxgain'];
+    calculateForm.pathLossModelRxGain = result['pathlossmodelrxgain'];
+    calculateForm.pathLossModelNoiseFigure = result['pathlossmodelnoisefigure'];
     calculateForm.powerMaxRange = result['powermaxrange'];
     calculateForm.powerMinRange = result['powerminrange'];
     calculateForm.seed = result['seed'];
@@ -93,27 +95,7 @@ export class FormService {
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
-    // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
-    // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
-
-    
-    // try {
-    //   calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
-    // } catch (error) {
-    //   console.log("**error**",error);
-    //   calculateForm.maxConnectionNum = result['maxConnectionNum'];
-    // }
-
-   
-    calculateForm.pathLossModel = {
-      "TxGain": 1,
-      "RxGain": 1,
-      "noiseFigure": 1
-    }
-    // calculateForm.pathLossModel['TxGain'] = 3;
     console.log("calculateForm",calculateForm);
-
-
     return calculateForm;
   }
 
