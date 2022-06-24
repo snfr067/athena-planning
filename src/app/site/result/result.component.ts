@@ -429,7 +429,7 @@ export class ResultComponent implements OnInit {
           
           for (const item of obstacleInfo) {
             const obj = JSON.parse(item);
-            console.log('-- result obj',obj);
+            // console.log('-- result obj',obj);
             this.obstacleList.push({
               x: obj[0],
               y: obj[1],

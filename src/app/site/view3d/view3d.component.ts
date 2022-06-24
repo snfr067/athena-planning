@@ -190,7 +190,7 @@ export class View3dComponent implements OnInit {
       const depth = item.altitude / 2;
       let obstacleData;
       let obstacle;
-      
+      console.log('----item',item);
       if (item.element === 0) {
         obstacleData = [
           new BABYLON.Vector3(-depth, 0, 0),
@@ -228,10 +228,10 @@ export class View3dComponent implements OnInit {
       // 超過180度或-180度時重算角度，否則位置會跑很多
       if (item.rotate < -180) {
         item.rotate = item.rotate % -360;
-        item.rotate = 360 + item.rotate;
+        item.rotate = 360 - item.rotate;
       } else if (item.rotate > 180) {
         item.rotate = item.rotate % 360;
-        item.rotate = 360 - item.rotate;
+        item.rotate = 360 + item.rotate;
       }
       if (item.rotate === 360) {
         item.rotate = 0;

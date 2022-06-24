@@ -509,7 +509,7 @@ export class SignalUlThroughputComponent implements OnInit {
           },
           hover: text
         });
-        console.log("this.rectList",this.rectList);
+        // console.log("this.rectList",this.rectList);
       }
     }
 

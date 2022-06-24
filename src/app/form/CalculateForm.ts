@@ -19,15 +19,7 @@ export class CalculateForm {
   height: number = null;
   altitude: number = null;
   zValue: string = null;
-  pathLossModelId: number = 0;
-  /*
-  pathLossModel: object = {
-    "TxGain": 0,
-    "RxGain": 0,
-    "noiseFigure": 0
-  }
-  */
-  
+  pathLossModelId: number = 0; 
   pathLossModelTxGain: number = 0;
   pathLossModelRxGain: number = 0;
   pathLossModelNoiseFigure: number = 0;
@@ -112,13 +104,6 @@ export class CalculateForm {
   mimoNumber: string = null;
 
   maxConnectionNum: number = 32;
-
-  materialName: string = null;
-  materialLossCoefficient: number = 0.1;
-
-  distanceCoefficient: number = 0.1;
-  floorPenetrationLoss: number = 0.1;
-
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

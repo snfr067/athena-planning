@@ -115,6 +115,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialLossCoefficient: number = 0.1;
   materialProperty: string = null;
   materialIdToIndex = {};
+  deleteMaterialList = [];
   modelName: string = null;
   modelDissCoefficient: number = 0.1;
   modelfieldLoss: number = 0.1;
@@ -536,8 +537,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     });
+    //取得材質列表
     const promise = new Promise((resolve, reject) => {
       let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      this.materialIdToIndex = {};
       this.http.get(url_obs).subscribe(
         res => {
           // console.log("----get",url_obs);
@@ -558,9 +561,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       );
     });
-    //取得材質與模型列表
+    //取得模型列表
     promise.then((promiseResult) => new Promise((resolve, reject) => {
       console.log(promiseResult);
+      this.modelIdToIndex = {};
       let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
       this.http.get(url_model).subscribe(
         res => {
@@ -627,6 +631,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   tempBsNum = 0;
                 } else {
                   tempBsNum = this.calculateForm.defaultBs.split('|').length;
+                }
+                if( !(this.calculateForm.pathLossModelId in this.modelIdToIndex) ){
+                  this.calculateForm.pathLossModelId = this.modelList[0]['id'];
                 }
                 this.calculateForm.availableNewBsNumber -= tempBsNum;
                 this.hstOutput['gaResult'] = {};
@@ -785,7 +792,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         //     console.log('Calculation')
         //   }
         // }, 1000);
-
       }
     })
     .catch(err => console.log(err))
@@ -1765,13 +1771,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title += `${this.translateService.instant('width')}: ${this.dragObject[id].width}<br>`;
       title += `${this.translateService.instant('height')}: ${this.dragObject[id].height}<br>`;
       title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+    /*
     } else if (this.dragObject[id].type === 'defaultBS' || this.dragObject[id].type === 'candidate') {
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+      // title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
     } else if (this.dragObject[id].type === 'subField') {
+
     } else {
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
+      // title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
     }
     if (this.dragObject[id].type === 'obstacle') {
+    */
       title += `${this.translateService.instant('material')}: ${this.dragObject[id].materialName}`;
     }
     return title;
@@ -1954,7 +1963,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       this.dragObject[id].materialName = this.translateService.instant('customize') + "_" + this.materialList[index]['name'];
     }
-    console.log(this.dragObject[id]);
   }
   /** set drag object data */
   setDragData() {
@@ -1987,7 +1995,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         hVal = this.roundFormat(this.yLinear(this.subFieldStyle[this.svgId].height));
       }
     }
-
     const mOrigin = document.querySelector('.moveable-origin');
     // console.log(mOrigin)
     if (mOrigin != null) {
@@ -2495,12 +2502,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    checkRFParamIsEmpty(protocol, duplex) {
     let error = false;
     let msg = '<br>';
-    if (this.calculateForm.pathLossModelId == 999 || !(this.calculateForm.pathLossModelId in this.modelIdToIndex) ){
-      error = true;
-      msg += `${this.translateService.instant('plz_fill_pathLossModel')}<br/>`;
-      msg+= '</p>';
+    if (this.calculateForm.pathLossModelId == 999 || !(this.calculateForm.pathLossModelId in this.modelIdToIndex)) {
+        error = true;
+        msg += `${this.translateService.instant('plz_fill_pathLossModel')}<br/>`;
+        msg+= '</p>';
     }
-
      if (protocol == '1') { //5G
       if (duplex == 'tdd') {
         for (let i = 0; i < this.defaultBSList.length; i++) {
@@ -3282,7 +3288,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       for (let i = 0; i < this.obstacleList.length; i++) {
         const obj = this.dragObject[this.obstacleList[i]];
         const shape = this.parseElement(obj.element);
-        obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
+        obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${Number(obj.material)},${shape}]`;
         if (i < this.obstacleList.length - 1) {
           obstacleInfo += '|';
         }
@@ -5517,7 +5523,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
     const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
     if (obstacleData.length > 1) {
-
       for (let i = 1; i < obstacleData.length; i++) {
         if ((<Array<any>> obstacleData[i]).length === 0) {
           continue;
@@ -5525,7 +5530,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         let id;
         let type;
         let diff = Object.keys(obstacleData[i]).length - 10; //因應版本不同,欄位長度不同
-        let shape = this.parseElement(obstacleData[i][8+diff]);
+        let shape = this.parseElement(obstacleData[i][9+diff]);
         if (shape === 'rect' || Number(shape) === 0) {
           id = `rect_${this.generateString(10)}`;
           type = 'rect';
@@ -5549,12 +5554,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           type = 'rect';
 
         }
-        let material = (typeof obstacleData[i][6+diff] === 'undefined' ? '0' : obstacleData[i][6+diff].toString());
+        let material = (typeof obstacleData[i][7+diff] === 'undefined' ? '0' : obstacleData[i][7+diff].toString());
         // if (!materialReg.test(material)) {
         //   material = '0';
         // }
-        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
-          material = this.materialList[0]['id'];
+        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ ;
+          material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
         }else{
           let index = this.materialIdToIndex[obstacleData[i][7+diff]];
           material = this.materialList[index]['id'];
@@ -5576,7 +5581,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           type: this.svgMap[type].type,
           color: color,
           material: material,
-          element: shape
+          element: shape,
+          materialName: this.materialList[this.materialIdToIndex[material]]['name']
         };
 
         if (this.dragObject[id].altitude > this.calculateForm.altitude) {
@@ -5646,7 +5652,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
       // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      
+      if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ ;
+        this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+      }
       this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][7]);
       this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][8]);
       this.calculateForm.pathLossModelNoiseFigure = Number(algorithmParametersData[1][9]);
@@ -5654,6 +5662,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
+      }
+      if (this.calculateForm.pathLossModelTxGain == null || isNaN(this.calculateForm.pathLossModelTxGain) || typeof this.calculateForm.pathLossModelTxGain === 'undefined'){
+        this.calculateForm.pathLossModelTxGain = 0;
+      }
+      if (this.calculateForm.pathLossModelRxGain == null || isNaN(this.calculateForm.pathLossModelRxGain) || typeof this.calculateForm.pathLossModelRxGain === 'undefined'){
+        this.calculateForm.pathLossModelRxGain = 0;
+      }
+      if (this.calculateForm.pathLossModelNoiseFigure == null || isNaN(this.calculateForm.pathLossModelNoiseFigure) || typeof this.calculateForm.pathLossModelTxGain === 'undefined'){
+        this.calculateForm.pathLossModelNoiseFigure = 0;
       }
     }
     /* objective parameters sheet */
@@ -5791,8 +5808,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // 對舊專案的處理
           if(!(item[7+diff] in this.materialIdToIndex)){ 
             index = 0;
-            material = this.materialList[index]['id'];
-            // console.log('__maybe old project, replace material');
+            material = Number(this.materialList[index]['id']);
           }
           let materialName = "";
           if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
@@ -6689,6 +6705,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialCustomize(){
     window.setTimeout(() => {
       let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
       // console.log("----update",url);
       let data = {
           'id': Number(this.materialId),
@@ -6702,7 +6719,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           res => {
             console.log(res);
             this.matDialog.closeAll();
-            this.ngOnInit();
+            // this.ngOnInit();
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                let index = 0;
+                for(let i = 0; i < (result).length; i++){
+                  if(result[i]['id'] == this.materialId){
+                    index = i;
+                    // console.log('i',i,'result',result[i]);
+                    break;
+                  } 
+                }
+                this.materialList[this.materialIdToIndex[this.materialId]]['decayCoefficient'] = result[index]['decayCoefficient'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
           },
           err => {
             console.log(err);
@@ -6737,7 +6772,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 for(let i = 0; i < (result).length; i++){
                   if(result[i]['id'] == this.calculateForm.pathLossModelId){
                     index = i;
-                    console.log('i',i,'result',result[i]);
+                    // console.log('i',i,'result',result[i]);
                     break;
                   } 
                 }
@@ -6764,6 +6799,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.checkMaterialForm(true)){
       // 新增材質到後端
       let url = `${this.authService.API_URL}/addObstacle/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
       window.setTimeout(() => {
         // console.log("----post----",url);
         let data = {
@@ -6775,10 +6811,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.http.post(url, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                this.materialList.push(result[(result.length-1)]);
+                for (let i = 0;i < this.materialList.length;i++) {
+                  let id = this.materialList[i]['id'];
+                  this.materialIdToIndex[id]=i;
+                }
+                this.materialId = result[(result.length-1)]['id'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+            
             this.materialName = "";
             this.materialLossCoefficient = 0.1;
             this.matDialog.closeAll();
-            this.ngOnInit();
+            // this.ngOnInit();
           },
           err => {
             console.log(err);
@@ -6866,8 +6918,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 console.log(err);
               }
             );
-
-
             this.modelName = "";
             this.modelDissCoefficient = 0.1;
             this.modelfieldLoss = 0.1;
@@ -6944,34 +6994,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   deleteMaterial(flag){
     this.matDialog.closeAll();
     if(flag) {
+      let url = `${this.authService.API_URL}/deleteObstacle/${this.authService.userToken}`;
       window.setTimeout(() => {
-        let url = `${this.authService.API_URL}/deleteObstacle/${this.authService.userToken}`;;
         // console.log("----(post) delete",url);
         let data = {
           'id': Number(this.materialId),
           'name': this.materialName
         }
-        console.log(JSON.stringify(data));
-        /*
-        let httpOptions = {
-          headers: {},
-          body: JSON.stringify(data)
-        }
-        */
+        this.deleteMaterialList.push(Number(this.materialId));
+        this.materialList[this.materialIdToIndex[this.materialId]].name = "";
         this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            const promise = new Promise((resolve, reject) => {
-              try{
-                this.ngOnInit();
-                resolve(res);
+            for(let i = 0; i < this.obstacleList.length; i++){
+              const obj = this.dragObject[this.obstacleList[i]];
+              if( obj.type != "obstacle"){
+                continue;
               }
-              catch(error){
-                return reject(error);
+              else if( !(Number(obj.material) in this.materialIdToIndex) || this.deleteMaterialList.includes(Number(obj.material))){
+                // console.log("replace:",this.dragObject[this.obstacleList[i]]);
+                this.dragObject[this.obstacleList[i]].material = this.materialList[0]['id'];
+                this.dragObject[this.obstacleList[i]].materialName = this.materialList[0]['name'];
               }
-            });
-            console.log("delete then data:",this.calculateForm);
-            this.checkAfterDelete();
+            }
           },
           err => {
             console.log('err:',err);
@@ -6983,30 +7028,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(this.materialCustomizeModal);
     }
   }
-  checkAfterDelete(){
-    console.log("this.obstacleList",this.obstacleList);
-    console.log("this.dragObject",this.dragObject);
-    console.log("this.materialList",this.materialList);
-    console.log("this.materialIdToIndex",this.materialIdToIndex);
-    for(let i = 0; i < this.obstacleList.length; i++){
-      const obj = this.dragObject[this.obstacleList[i]];
-      console.log("checkAfterDelete",obj);
-      console.log("obj.material",obj.material,"compare",obj.material in this.materialIdToIndex);
-      if( obj.type != "obstacle"){
-        continue;
-      }
-      else if( !(obj.material in this.materialIdToIndex) ){
-        this.dragObject[this.obstacleList[i]].material = this.materialList[0]['id'];
-      }
-    }
-    console.log("DONE:calculateForm",this.calculateForm);
-  }
   deleteModel(flag){
     this.matDialog.closeAll();
     if(flag) {
       // DELETE API
       window.setTimeout(() => {
         let url = `${this.authService.API_URL}/deletePathLossModel/${this.authService.userToken}`
+        let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
         // console.log("----(post) delete",url);
         let data = {
           'id': Number(this.calculateForm.pathLossModelId),
@@ -7022,7 +7050,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.http.post(url,JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
-            this.ngOnInit();
+            // this.ngOnInit();
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                this.modelList = Object.values(res);
+                for (let i = 0;i < this.modelList.length;i++) {
+                  let id = this.modelList[i]['id'];
+                  this.modelIdToIndex[id]=i;
+                 }
+              },
+              err => {
+                console.log(err);
+              }
+            );
           },
           err => {
             console.log('err:',err);

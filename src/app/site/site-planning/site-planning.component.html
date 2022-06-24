@@ -1073,10 +1073,13 @@
                     <label>{{ 'materialList' | translate }}</label>
                     <span>
                       <select style="min-width: 16em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
-                          <option value={{item.id}} *ngFor="let item of materialList">   
-                            <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
-                            <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container>
-                          </option>
+                        <ng-container *ngFor="let item of materialList;">
+                          <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                          <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                              <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                              <ng-container *ngIf="item.property == 'customized' "> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
+                          </option> 
+                        </ng-container>
                           <!-- <option value="1">{{ 'material.wood' | translate }}</option>
                           <option value="2">{{ 'material.cement' | translate }}</option>
                           <option value="3">{{ 'material.light_steel_frame' | translate }}</option>
@@ -1160,11 +1163,14 @@
                   </span>
                   <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
-                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material)">
-                      <option value={{item.id}} *ngFor="let item of materialList">
-                        <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
-                        <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
+                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material);">
+                    <ng-container *ngFor="let item of materialList;">
+                      <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                      <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                          <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                          <ng-container *ngIf="item.property == 'customized' "> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
                       </option> 
+                    </ng-container>
                      <!-- <option value="0">{{ 'material.wood' | translate }}</option>
                       <option value="1">{{ 'material.cement' | translate }}</option>
                       <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
@@ -1483,10 +1489,13 @@
         <td>{{ 'material.setting' | translate }}</td>
         <td> <!-- 右鍵高度/材質設定 -->
           <select [(ngModel)]="dragObject[svgId].material" (change)="setMaterialName(svgId,dragObject[svgId].material)">
-            <option value={{item.id}} *ngFor="let item of materialList">
-              <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
-              <ng-container *ngIf="item.property == 'customized'"> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
-            </option>
+            <ng-container *ngFor="let item of materialList;">
+              <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+              <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                  <ng-container *ngIf="item.property == 'default'"> {{ item.name }}</ng-container>       
+                  <ng-container *ngIf="item.property == 'customized' "> {{ 'customize' | translate }}_{{ item.name }}</ng-container> 
+              </option> 
+            </ng-container>
             <!-- <option value="0">{{ 'material.wood' | translate }}</option>
             <option value="1">{{ 'material.cement' | translate }}</option>
             <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
