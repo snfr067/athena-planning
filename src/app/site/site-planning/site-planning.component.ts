@@ -1574,6 +1574,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       element: this.parseElement(id),
       materialName: this.materialList[0]['name']
     };
+    if (id == 'UE'){
+      this.dragObject[this.svgId].z = this.zValues[0];
+    }
+
     this.realId = _.cloneDeep(this.svgId);
     // 預設互動外框設定值
     this.frame = new Frame({
