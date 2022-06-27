@@ -626,14 +626,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 }
                 // this.calculateForm.defaultBs = output['defaultBs'];
                 // this.calculateForm.bsList = output['defaultBs'];
+                if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+                  if(this.calculateForm.pathLossModelId < this.modelList.length){
+                    this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+                  }
+                  else{
+                    this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+                  }
+                }
                 let tempBsNum = 0;
                 if (this.calculateForm.defaultBs == "") {
                   tempBsNum = 0;
                 } else {
                   tempBsNum = this.calculateForm.defaultBs.split('|').length;
-                }
-                if( !(this.calculateForm.pathLossModelId in this.modelIdToIndex) ){
-                  this.calculateForm.pathLossModelId = this.modelList[0]['id'];
                 }
                 this.calculateForm.availableNewBsNumber -= tempBsNum;
                 this.hstOutput['gaResult'] = {};
@@ -5559,7 +5564,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         //   material = '0';
         // }
         if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
-          if(Number(obstacleData[i][7+diff] < this.materialList.length)){
+          if(Number(obstacleData[i][7+diff]) < this.materialList.length){
             material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
           } else {
             material = this.materialList[0]['id'];
@@ -5814,11 +5819,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
           let index = this.materialIdToIndex[Number(item[7+diff])];
           let material = item[7+diff].toString();
-          // 對舊專案的處理
+          
+          /*
           if(!(item[7+diff] in this.materialIdToIndex)){ 
             index = 0;
             material = Number(this.materialList[index]['id']);
           }
+          */
+          if(!(item[7+diff] in this.materialIdToIndex)){ 
+            index = 0;
+            if(Number(item[7+diff]) < this.materialList.length){ // 對舊專案的處理
+              material = this.materialList[Number(item[7+diff])]['id'];
+            } else {
+              material = this.materialList[0]['id'];
+            }
+          }
+
+
+
           let materialName = "";
           if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
             console.log('*DEBUG:this.materialList',this.materialList);
