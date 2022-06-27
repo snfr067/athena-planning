@@ -6760,6 +6760,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   } 
                 }
                 this.materialList[this.materialIdToIndex[this.materialId]]['decayCoefficient'] = result[index]['decayCoefficient'];
+                this.materialList[this.materialIdToIndex[this.materialId]]['name'] = result[index]['name'];
               },
               err => {
                 console.log(err);
@@ -6803,6 +6804,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                     break;
                   } 
                 }
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['name'] = result[index]['name'];
                 this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result[index]['distancePowerLoss'];
                 this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result[index]['fieldLoss'];
               },
