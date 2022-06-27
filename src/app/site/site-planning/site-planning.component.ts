@@ -1574,6 +1574,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       element: this.parseElement(id),
       materialName: this.materialList[0]['name']
     };
+
     if (id == 'UE'){
       this.dragObject[this.svgId].z = this.zValues[0];
     }
@@ -7091,7 +7092,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 for (let i = 0;i < this.modelList.length;i++) {
                   let id = this.modelList[i]['id'];
                   this.modelIdToIndex[id]=i;
-                 }
+                }
+                this.calculateForm.pathLossModelId = this.modelList[0]['id'];
               },
               err => {
                 console.log(err);
