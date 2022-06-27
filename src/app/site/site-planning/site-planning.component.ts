@@ -5558,8 +5558,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // if (!materialReg.test(material)) {
         //   material = '0';
         // }
-        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ ;
-          material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
+        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
+          if(Number(obstacleData[i][7+diff] < this.materialList.length)){
+            material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
+          } else {
+            material = this.materialList[0]['id'];
+          }
         }else{
           let index = this.materialIdToIndex[obstacleData[i][7+diff]];
           material = this.materialList[index]['id'];
@@ -5652,8 +5656,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
       // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ ;
-        this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+      if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+        if(this.calculateForm.pathLossModelId < this.modelList.length){
+          this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+        }
+        else{
+          this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+        }
       }
       this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][7]);
       this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][8]);
