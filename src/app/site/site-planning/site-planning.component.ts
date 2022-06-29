@@ -3631,7 +3631,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   changeSize(svgId, type, first) {
     if (type == 'altitude') {
-      if (this.dragObject[svgId].altitude < 0) {
+      if (this.dragObject[svgId].altitude <= 0) {
         this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
         let msg = this.translateService.instant('wha_cant_less_than_0');
         this.msgDialogConfig.data = {
@@ -3640,7 +3640,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         };
         this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       } else if (Number(this.dragObject[svgId].z) + Number(this.dragObject[svgId].altitude) > Number(this.calculateForm.altitude)) {
-        // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
         this.recoverParam(svgId,'altitude');
         let msg = this.translateService.instant('z_greater_then_field_altitude');
         this.msgDialogConfig.data = {
