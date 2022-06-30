@@ -4994,7 +4994,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // map
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     var maxLength = 32767;
-    console.log("export mapImage.length,",this.calculateForm.mapImage.length);
     // console.log("calculateForm.mapImage,",this.calculateForm.mapImage);
     const mapData = [
       ['image', 'imageName', 'width', 'height', 'altitude', 'protocol', 'mapLayer'],
@@ -5015,26 +5014,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ]);
       }
     }
-
-    if (this.calculateForm.mapImage.length >= maxLength){
-      let splitTimes = parseInt((this.calculateForm.mapImage.length / maxLength)+"") + 1;
-      console.log("exceed",maxLength,", splitTimes:",splitTimes);
-      for (let i = 1; i < splitTimes; i++) {
-        if (i < mapData.length){
-          console.log("i:",i,"maxLength*(i-1)",maxLength*(i-1),"maxLength*i",maxLength*i);
-          mapData[i][0] = this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i);
+    if (!(this.calculateForm.mapImage == null)){
+      if (this.calculateForm.mapImage.length >= maxLength){
+        let splitTimes = parseInt((this.calculateForm.mapImage.length / maxLength)+"") + 1;
+        console.log("exceed",maxLength,", splitTimes:",splitTimes);
+        for (let i = 1; i < splitTimes; i++) {
+          if (i < mapData.length){
+            console.log("i:",i,"maxLength*(i-1)",maxLength*(i-1),"maxLength*i",maxLength*i);
+            mapData[i][0] = this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i);
+          }
+          else{
+            mapData.push([
+              this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i), '', '', '', '', '', ''
+            ]);
+          }
         }
-        else{
-          mapData.push([
-            this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i), '', '', '', '', '', ''
-          ]);
-        }
+        // 切割完剩下的最後一塊
+        mapData.push([
+          this.calculateForm.mapImage.substring(maxLength*(splitTimes-1),this.calculateForm.mapImage.length), '', '', '', '', '', ''
+        ]);
+        console.log("mapData.length",mapData.length);
       }
-      // 切割完剩下的最後一塊
-      mapData.push([
-        this.calculateForm.mapImage.substring(maxLength*(splitTimes-1),this.calculateForm.mapImage.length), '', '', '', '', '', ''
-      ]);
-      console.log("mapData.length",mapData.length);
     }
 
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
@@ -5186,14 +5186,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     const algorithmData = [
       // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'pathLossModelTxGain', 'pathLossModelRxGain', 'pathLossModelNoiseFigure', 'maxConnectionNum'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum','pathLossModelTxGain', 'pathLossModelRxGain', 'pathLossModelNoiseFigure'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
         // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.pathLossModelTxGain, this.calculateForm.pathLossModelRxGain, this.calculateForm.pathLossModelNoiseFigure,
-        this.calculateForm.maxConnectionNum
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.maxConnectionNum, this.calculateForm.pathLossModelTxGain, this.calculateForm.pathLossModelRxGain, this.calculateForm.pathLossModelNoiseFigure,
+        
       ]
     ];
     const algorithmWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(algorithmData);
@@ -5675,10 +5675,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.calculateForm.pathLossModelId = this.modelList[0]['id'];
         }
       }
-      this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][7]);
-      this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][8]);
-      this.calculateForm.pathLossModelNoiseFigure = Number(algorithmParametersData[1][9]);
-      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][10]);
+      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+      this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][8]);
+      this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][9]);
+      this.calculateForm.pathLossModelNoiseFigure = Number(algorithmParametersData[1][10]);
+      
       
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
