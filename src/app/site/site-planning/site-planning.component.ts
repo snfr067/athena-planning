@@ -785,8 +785,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           } else if (this.calculateForm.objectiveIndex === '2') {
             // this.calculateForm.bandwidth = '[1]';
           }
-
           this.initData(false, false, '');
+          if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+              this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+          }
         }
         // setTimeout(()=> {
         //   if (this.calculateForm.defaultBs !== "") {
