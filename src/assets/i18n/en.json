@@ -75,7 +75,7 @@
 	"materialList":"Field material list",
 	"TxGain": "TX Gain",
 	"RxGain": "RX Gain",
-	"Noise": "Noise Figure",
+	"noise": "Noise Figure",
 	"mctsC": "C value",
 	"mctsMimo": "MIMO number",
 	"mctsTemperature": "Temperature",
