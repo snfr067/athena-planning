@@ -46,6 +46,9 @@ export class FormService {
     calculateForm.wifiMimo = result['wifimimo'];
     calculateForm.mimoNumber = result['mimonumber'];
     calculateForm.isSimulation = JSON.parse(result['issimulation']);
+    calculateForm.bsTxGain = result['bstxgain'];
+    calculateForm.bsNoiseFigure = result['bsnoisefigure'];
+
   
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
@@ -74,9 +77,6 @@ export class FormService {
     calculateForm.objectiveIndex = result['objectiveindex'];
     calculateForm.obstacleInfo = result['obstacleinfo'];
     calculateForm.pathLossModelId = result['pathlossmodelid'];
-    calculateForm.pathLossModelTxGain = result['pathlossmodeltxgain'];
-    calculateForm.pathLossModelRxGain = result['pathlossmodelrxgain'];
-    calculateForm.pathLossModelNoiseFigure = result['pathlossmodelnoisefigure'];
     calculateForm.powerMaxRange = result['powermaxrange'];
     calculateForm.powerMinRange = result['powerminrange'];
     calculateForm.seed = result['seed'];
@@ -84,9 +84,9 @@ export class FormService {
     calculateForm.totalRound = result['totalround'];
     calculateForm.ueCoordinate = result['uecoordinate'];
     calculateForm.useUeCoordinate = result['useuecoordinate'];
+    calculateForm.ueRxGain = result['uerxgain'];
     calculateForm.beamMaxId = result['beammaxid'];
     calculateForm.createTime = result['createtime'];
-
     calculateForm.isUeAvgSinr = JSON.parse(result['isueavgsinr']);
     calculateForm.isUeAvgThroughput = JSON.parse(result['isueavgthroughput']);
     calculateForm.isUeCoverage = JSON.parse(result['isuecoverage']);

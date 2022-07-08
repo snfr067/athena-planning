@@ -191,7 +191,15 @@ export class PdfComponent implements OnInit {
               obstacle = this.calculateForm.obstacleInfo.split('|');
               for (const item of obstacle) {
                 const obj = JSON.parse(item);
-                let materialName = this.materialList[this.materialIdToIndex[obj[7]]]['name'];
+                let materialName = '';
+                if(this.materialList[this.materialIdToIndex[obj[7]]]['property'] == "customized"){
+                  materialName = this.translateService.instant('customize')+ "_";
+                }
+                if(this.authService.lang =='zh-TW'){
+                  materialName += this.materialList[this.materialIdToIndex[obj[7]]]['chineseName'];
+                }else{
+                  materialName += this.materialList[this.materialIdToIndex[obj[7]]]['name'];
+                }
                 this.obstacleList.push({
                   x: obj[0],
                   y: obj[1],
@@ -753,7 +761,7 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
       // '下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','Frequency','SCS(kHz)','Bandwidth','UL MCStable',
-      'DL MCStable','UL MIMOLayer','DL MIMOLayer'];
+      'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -768,6 +776,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
       let unsorttxpower = [];
@@ -808,6 +818,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
         ]);
       }
     } else {
@@ -825,7 +837,7 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
       // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
-      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer'];
+      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -843,6 +855,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
       let unsorttxpower = [];
@@ -883,6 +897,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
         ]);
       }
     }
@@ -1369,17 +1385,17 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.num'),
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
-      this.translateService.instant('result.propose.candidateBs.z'),
+      this.translateService.instant('altitude.start'),
+      `${this.translateService.instant('altitude.obstacle')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
-      `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
       this.translateService.instant('material')
     ];
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
       console.log(item);
-      obstacleData.push([(k + 1), item.x, item.y, item.z, item.width, item.height, item.altitude, item.materialName]);
+      obstacleData.push([(k + 1), item.x, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},

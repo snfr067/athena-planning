@@ -155,7 +155,7 @@ export class AuthService {
    * @param val 
    */
   isEmpty(val) {
-    if (val == null || val === 'null' || val === '') {
+    if (val == null || val === 'null' || val === '' || val === 'undefined') {
       return true;
     } else {
       return false;

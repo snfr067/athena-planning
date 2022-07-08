@@ -20,11 +20,9 @@ export class CalculateForm {
   altitude: number = null;
   zValue: string = null;
   pathLossModelId: number = 0; 
-  pathLossModelTxGain: number = 0;
-  pathLossModelRxGain: number = 0;
-  pathLossModelNoiseFigure: number = 0;
   
   ueCoordinate: string = null;
+  ueRxGain: string = null;
   ueRsrp: number = null;
   ueSinr: number = null;
   ueSignallevel: number = null;
@@ -102,7 +100,8 @@ export class CalculateForm {
   guardInterval: string = null;
   wifiMimo: string = null;
   mimoNumber: string = null;
-
+  bsTxGain: string = null;
+  bsNoiseFigure: string = null;
   maxConnectionNum: number = 32;
   // constructor(options: {
   //   sessionid?: string,

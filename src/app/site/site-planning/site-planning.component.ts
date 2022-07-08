@@ -142,6 +142,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   candidateList = [];
   /** 新增ＵＥ */
   ueList = [];
+  ueListParam = {};
   /** 要被刪除的List */
   deleteList = [];
   /** 比例尺 X軸pixel轉長度公式 */
@@ -351,6 +352,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+  @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
@@ -442,6 +444,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     wifiMimo: '2x2',
     wifiBandwidth: '20',
     wifiFrequency: 2412,
+    bsTxGain: 0,
+    bsNoiseFigure: 0
   }
 
   
@@ -805,20 +809,34 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     )
   }
 
-  checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
-    console.log('Check altitude function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
+  checkHeiWidAlt(fieldOrId , altitude, type) {
     altitude = Number(altitude);
     let msg = '';
+    // 檢查障礙物高度不能為零
+    console.log("type",type);
+    console.log("altitude",altitude);
+    console.log("this.dragObject[fieldOrId].altitude",this.dragObject[fieldOrId].altitude);
+    console.log("this.dragObject[fieldOrId].z",this.dragObject[fieldOrId].z);
+    if (type == 'altitude' && altitude == 0){
+      msg = this.translateService.instant('wha_cant_less_than_0');
+      this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
+      if(this.dragObject[fieldOrId].altitude + this.dragObject[fieldOrId].z > this.calculateForm.altitude){
+        this.dragObject[fieldOrId].z = 0;
+      }
+    } // 檢查高度有無小於0或超過場域高度
     if (altitude < 0 || altitude > this.calculateForm.altitude) {
-      if (altitude < 0) {
+      if(altitude < 0){
         msg = this.translateService.instant('alt_less_0');
       } else {
         msg = this.translateService.instant('alt_greater_than_field');
+      } 
+      if (type == 'z'){
+        this.dragObject[fieldOrId].z = 0;
       }
-      // 障礙物or基地台
-      if (fieldOrId.length > 1) { //障礙物
+      else if (type == 'altitude'){
         this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
-      } else { //zValue
+      }
+      if (type == "uezValues"){     
         let existed = false;
         for (let i = 0;i < this.zValues.length;i++) {
           // if (this.zValues[i] == this.calculateForm.altitude.toString()) {
@@ -834,9 +852,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     }
-    //zValues
-    if (fieldOrId.length == 1) {
-      // 先檢視是否有重複高度
+    // 根據不同型態做不同檢查
+    if (type == 'z'){
+      if (altitude + Number(this.dragObject[fieldOrId].altitude) > Number(this.calculateForm.altitude)){
+        msg = this.translateService.instant('z_plus_altitude_greater_then_field_altitude');
+        this.dragObject[fieldOrId].z = 0;
+      } 
+    }else if (type == 'altitude'){
+      if (altitude + Number(this.dragObject[fieldOrId].z) > Number(this.calculateForm.altitude)){
+        msg = this.translateService.instant('z_plus_altitude_greater_then_field_altitude');
+        this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
+        this.dragObject[fieldOrId].z = 0;
+      }
+    }
+    if (type == "uezValues"){     
       for (let i = 0; i < 3; i++) {
         if (Number(fieldOrId) == i) {
           continue;
@@ -1150,7 +1179,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     };
 
     window.setTimeout(() => {
-  
       if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
         const reader = new FileReader();
         reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
@@ -1435,7 +1463,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         guardInterval: '400ns',
         wifiMimo: '2x2',
         wifiFrequency: 2412,
-        wifiBandwidth: '20'
+        wifiBandwidth: '20',
+        bsTxGain: 0,
+        bsNoiseFigure: 0
       };
       if (this.calculateForm.objectiveIndex === '0') {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1481,6 +1511,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         guardInterval: '400ns',
         wifiMimo: '2x2',
         // wifiBandwidth: 20
+        bsTxGain: 0,
+        bsNoiseFigure: 0
       };
       if (Number(this.calculateForm.objectiveIndex) === 0) {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1490,6 +1522,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       color = this.UE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.ueList.push(this.svgId);
+      this.ueListParam[this.svgId] = {
+        ueRxGain:0
+      };
       this.pathStyle[this.svgId] = {
         fill: this.UE_COLOR
       };
@@ -1559,7 +1594,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       width: width,
       height: height
     };
-
+    let materialName = '';
+    if(this.authService.lang =='zh-TW'){
+      materialName = this.materialList[0]['chineseName'];
+    }else{
+      materialName = this.materialList[0]['name'];
+    }
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
@@ -1574,7 +1614,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       color: color,
       material: this.materialList[0]['id'],
       element: this.parseElement(id),
-      materialName: this.materialList[0]['name']
+      materialName: materialName
     };
 
     if (id == 'UE'){
@@ -1778,11 +1818,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
-    title += `Z: ${this.dragObject[id].z}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
+      title += `${this.translateService.instant('altitude.start')}: ${this.dragObject[id].z}<br>`;
+      title += `${this.translateService.instant('altitude.obstacle')}: ${this.dragObject[id].altitude}<br>`;
       title += `${this.translateService.instant('width')}: ${this.dragObject[id].width}<br>`;
       title += `${this.translateService.instant('height')}: ${this.dragObject[id].height}<br>`;
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
     /*
     } else if (this.dragObject[id].type === 'defaultBS' || this.dragObject[id].type === 'candidate') {
       // title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
@@ -1794,7 +1834,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.dragObject[id].type === 'obstacle') {
     */
       title += `${this.translateService.instant('material')}: ${this.dragObject[id].materialName}`;
+    } else {
+      title += `Z: ${this.dragObject[id].z}<br>`;
     }
+    /*
+    if (this.dragObject[id].type === 'UE') {
+      title += `${this.translateService.instant('RxGain')}: ${this.ueListParam[id].ueRxGain}<br>`;
+    }
+    */
     return title;
   }
   checkObstacleIsOverlaped(ObjId){
@@ -1970,10 +2017,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
   setMaterialName(id,material){
     let index = this.materialIdToIndex[Number(material)];
+    let materialName = '';
+    if(this.authService.lang =='zh-TW'){
+      materialName = this.materialList[index]['chineseName'];
+    }else{
+      materialName = this.materialList[index]['name'];
+    }
     if(this.materialList[index]['property'] == "default"){
-      this.dragObject[id].materialName = this.materialList[index]['name'];
+      this.dragObject[id].materialName = materialName;
     } else {
-      this.dragObject[id].materialName = this.translateService.instant('customize') + "_" + this.materialList[index]['name'];
+      this.dragObject[id].materialName = this.translateService.instant('customize') + "_" + materialName;
     }
   }
   /** set drag object data */
@@ -2384,10 +2437,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     // console.log(this.svgId);
     // console.log(item);
+    // console.log(this.svgNum);
     // this.matDialog.open(this.rfModal);
     this.matDialog.open(this.rfModalTable);
   }
-
+  openUEParamSetting(item, i) {
+    this.svgId = item;
+    this.svgNum = i + 1;
+    this.matDialog.open(this.ueModalTable);
+  }
   openDeleteSetting() {
     this.matDialog.open(this.deleteModal);
   }
@@ -2528,6 +2586,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
+          if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
           if (this.isEmpty(obj.tddscs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddscs')}<br/>`;  }
           if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulModulationCodScheme')}<br/>`;  }
@@ -2551,6 +2611,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
+          if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
           if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('uulBandwidth')}<br/>`;  }
           if (this.isEmpty(obj.dlScs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlscs')}<br/>`;  }
@@ -3308,12 +3370,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.obstacleInfo = obstacleInfo;
     }
     let ueCoordinate = '';
+    let ueRxGain = [];
     this.calculateForm.ueCoordinate = ueCoordinate;
     if (this.ueList.length > 0) {
       for (let i = 0; i < this.ueList.length; i++) {
         const obj = this.dragObject[this.ueList[i]];
         // ueCoordinate += `[${obj.x},${obj.y},${obj.z},${obj.material}]`;
         ueCoordinate += `[${obj.x},${obj.y},${obj.z}]`;
+        ueRxGain.push(this.ueListParam[this.ueList[i]].ueRxGain);
         if (i < this.ueList.length - 1) {
           ueCoordinate += '|';
         }
@@ -3322,7 +3386,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       ueCoordinate = '';
     }
     this.calculateForm.ueCoordinate = ueCoordinate;
-
+    this.calculateForm.ueRxGain = `[${ueRxGain.toString()}]`;;
     let defaultBs = '';
     this.calculateForm.defaultBs = defaultBs;
     if (this.defaultBSList.length > 0) {
@@ -3351,6 +3415,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       mapProtocol = 'wifi';
     }
     //4G and 5G
+    let bsTxGain = [];
+    let bsNoiseFigure = [];
     let duplex = this.duplexMode;
     let tddFrameRatio = this.dlRatio;
     let dlFrequency = []; //Array
@@ -3384,6 +3450,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.candidateList.length > 0) {
         for (let i = 0; i < this.candidateList.length; i++) {
           const canObj = this.dragObject[this.candidateList[i]];
+          bsTxGain.push(this.tempCalParamSet.bsTxGain);
+          bsNoiseFigure.push(this.tempCalParamSet.bsNoiseFigure);
           candidate += `[${canObj.x},${canObj.y},${canObj.altitude}]`;
           // candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
           if (i < this.candidateList.length - 1) {
@@ -3434,6 +3502,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         console.log(`obj: ${JSON.stringify(obj)}`)
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
+        bsTxGain.push(obj.bsTxGain);
+        bsNoiseFigure.push(obj.bsNoiseFigure);
         // freqList.push(obj.frequency);
         
         if (mapProtocol !== 'wifi') {
@@ -3476,7 +3546,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       this.calculateForm.scalingFactor = scalingFactor;
       this.calculateForm.tddFrameRatio = tddFrameRatio;
-
+      this.calculateForm.bsTxGain = `[${bsTxGain.toString()}]`;
+      this.calculateForm.bsNoiseFigure = `[${bsNoiseFigure.toString()}]`;
       //4G
       this.calculateForm.mimoNumber = `[${mimoNumber.toString()}]`;
       //5G
@@ -5044,7 +5115,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers', 
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -5079,6 +5150,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].wifiMimo,
         this.bsListRfParam[item].wifiBandwidth,
         this.bsListRfParam[item].wifiFrequency,
+        this.bsListRfParam[item].bsTxGain,
+        this.bsListRfParam[item].bsNoiseFigure,
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -5089,7 +5162,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers',
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -5122,16 +5195,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiMimo,
         this.tempCalParamSet.wifiBandwidth,
         this.tempCalParamSet.wifiFrequency,
+        this.tempCalParamSet.bsTxGain,
+        this.tempCalParamSet.bsNoiseFigure
       ]);
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
     XLSX.utils.book_append_sheet(wb, candidateWS, 'candidate');
     // UE
-    const ueData = [['x', 'y', 'z']];
+    const ueData = [['x', 'y', 'z','ueRxGain']];
     for (const item of this.ueList) {
       ueData.push([
         this.dragObject[item].x, this.dragObject[item].y,
         this.dragObject[item].z, 
+        this.ueListParam[item].ueRxGain
         // this.dragObject[item].material,
         // this.dragObject[item].color
       ]);
@@ -5186,13 +5262,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     const algorithmData = [
       // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum','pathLossModelTxGain', 'pathLossModelRxGain', 'pathLossModelNoiseFigure'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
         // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.maxConnectionNum, this.calculateForm.pathLossModelTxGain, this.calculateForm.pathLossModelRxGain, this.calculateForm.pathLossModelNoiseFigure,
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.maxConnectionNum, 
         
       ]
     ];
@@ -5367,6 +5443,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         // RF parameter import
         const offset = 2;
+        let bsTxGain = 0
+        let bsNoiseFigure = 0
+        if (Object.values(baseStationData[0]).includes("bsTxGain")){
+          bsTxGain= baseStationData[i][24+offset]
+        }
+        if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
+          bsNoiseFigure= baseStationData[i][25+offset]
+        }
         this.bsListRfParam[id] = {
           txpower: baseStationData[i][3+offset],
           beampattern: baseStationData[i][4+offset],
@@ -5389,6 +5473,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           wifiMimo: baseStationData[i][21+offset],
           wifiBandwidth: baseStationData[i][22+offset],
           wifiFrequency: baseStationData[i][23+offset],
+          bsTxGain: bsTxGain,
+          bsNoiseFigure: bsNoiseFigure
         };
         
         this.defaultBSList.push(id);
@@ -5465,7 +5551,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiMimo = candidateData[i][19+offset];
         this.tempCalParamSet.wifiBandwidth = candidateData[i][20+offset];
         this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
-
+        let bsTxGain = 0
+        let bsNoiseFigure = 0
+        if (Object.values(candidateData[0]).includes("bsTxGain")){
+          bsTxGain= candidateData[i][22+offset]
+        }
+        if (Object.values(candidateData[0]).includes("bsNoiseFigure")){
+          bsNoiseFigure= candidateData[i][23+offset]
+        }
+        this.tempCalParamSet.bsTxGain = bsTxGain;
+        this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
         // set UE位置
         // this.setCandidateSize(id);
 
@@ -5522,7 +5617,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             material: material,
             element: this.svgMap['UE'].element
           };
-
+          if (Object.values(ueData[0]).includes("ueRxGain")){
+            //新增欄位
+            var ueRxGain= ueData[i][3]
+          } else {
+            var ueRxGain = 0
+          }
+          this.ueListParam[id] = {
+            ueRxGain: ueRxGain
+          }
           // set UE位置
           // this.setUeSize(id);
         }
@@ -5533,6 +5636,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const obstacle: string = this.wb.SheetNames[sheetNameIndex['obstacle']];
     const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
     const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
+    console.log("obstacle sheet obstacleData",obstacleData);
     if (obstacleData.length > 1) {
       for (let i = 1; i < obstacleData.length; i++) {
         if ((<Array<any>> obstacleData[i]).length === 0) {
@@ -5584,6 +5688,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (diff == -1){
           zValue = 0;
         }
+        let materialName = '';
+        if(this.authService.lang =='zh-TW'){
+          materialName = this.materialList[this.materialIdToIndex[material]]['chineseName'];
+        }else{
+          materialName = this.materialList[this.materialIdToIndex[material]]['name'];
+        }
         this.dragObject[id] = {
           x: obstacleData[i][0],
           y: obstacleData[i][1],
@@ -5597,7 +5707,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           color: color,
           material: material,
           element: shape,
-          materialName: this.materialList[this.materialIdToIndex[material]]['name']
+          materialName: materialName
         };
 
         if (this.dragObject[id].altitude > this.calculateForm.altitude) {
@@ -5676,23 +5786,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      this.calculateForm.pathLossModelTxGain = Number(algorithmParametersData[1][8]);
-      this.calculateForm.pathLossModelRxGain = Number(algorithmParametersData[1][9]);
-      this.calculateForm.pathLossModelNoiseFigure = Number(algorithmParametersData[1][10]);
-      
-      
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
-      if (this.calculateForm.pathLossModelTxGain == null || isNaN(this.calculateForm.pathLossModelTxGain) || typeof this.calculateForm.pathLossModelTxGain === 'undefined'){
-        this.calculateForm.pathLossModelTxGain = 0;
-      }
-      if (this.calculateForm.pathLossModelRxGain == null || isNaN(this.calculateForm.pathLossModelRxGain) || typeof this.calculateForm.pathLossModelRxGain === 'undefined'){
-        this.calculateForm.pathLossModelRxGain = 0;
-      }
-      if (this.calculateForm.pathLossModelNoiseFigure == null || isNaN(this.calculateForm.pathLossModelNoiseFigure) || typeof this.calculateForm.pathLossModelTxGain === 'undefined'){
-        this.calculateForm.pathLossModelNoiseFigure = 0;
-      }
+
     }
     /* objective parameters sheet */
     const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];
@@ -5842,8 +5939,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
           }
 
-
-
           let materialName = "";
           if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
             console.log('*DEBUG:this.materialList',this.materialList);
@@ -5854,7 +5949,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             materialName = "need init";
             this.ngOnInit();
           } 
-          materialName = this.materialList[index]['name'];
+          if(this.authService.lang =='zh-TW'){
+            materialName = this.materialList[index]['chineseName'];
+          }else{
+            materialName = this.materialList[index]['name'];
+          }
           let zValue = item[2+diff];
           if (diff == -1){
             zValue = 0;
@@ -5911,7 +6010,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
           // set 新增基站位置
           // this.setCandidateSize(id);
-          
+          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
+            this.tempCalParamSet.bsTxGain = 0
+          } else {
+            this.tempCalParamSet.bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i];
+          }
+          if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
+            this.tempCalParamSet.bsNoiseFigure = 0
+          } else {
+            this.tempCalParamSet.bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i];
+          }
           this.tempCalParamSet.txpower = txpower[0];
           this.tempCalParamSet.beampattern = beamId[0];
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
@@ -5985,6 +6093,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             subcarrier: 15,
             scsBandwidth: 10,
           };
+          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
+            this.bsListRfParam[id].bsTxGain = 0
+          } else {
+            this.bsListRfParam[id].bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i+candidateNum];
+          }
+          if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
+            this.bsListRfParam[id].bsNoiseFigure = 0
+          } else {
+            this.bsListRfParam[id].bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+candidateNum];
+          }
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
             this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
             this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
@@ -6058,10 +6176,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (!this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
         const ue = this.calculateForm.ueCoordinate.split('|');
         const ueLen = ue.length;
+        console.log("this.ueListParam",this.ueListParam);
         for (let i = 0; i < ueLen; i++) {
           const item = JSON.parse(ue[i]);
           const id = `ue_${this.generateString(10)}`;
-          this.ueList.push(id);
+          this.ueList.push(id);          
           this.dragObject[id] = {
             x: item[0],
             y: item[1],
@@ -6076,6 +6195,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             material: '0',
             element: 'UE'
           };
+          if (this.authService.isEmpty(this.calculateForm.ueRxGain)){ 
+            this.ueListParam[id] = {
+              ueRxGain:0
+            };
+          } else {
+            this.ueListParam[id] = {
+              ueRxGain: JSON.parse(this.calculateForm.ueRxGain)[i]
+            }
+          }
           // set UE位置
           // this.setUeSize(id);
         }
@@ -6120,6 +6248,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 歷史資料塞回form
    * @param result 
    */
+  /*
   setHstToForm(result) {
     this.calculateForm.addFixedBsNumber = result['addfixedbsnumber'];
     this.calculateForm.availableNewBsNumber = result['availablenewbsnumber'];
@@ -6150,7 +6279,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.useUeCoordinate = result['useuecoordinate'];
     this.calculateForm.beamMaxId = result['beammaxid'];
   }
-
+  */
   protocolSwitchWarning() {
     if (this.defaultBSList.length !== 0 ) {
       let msg = this.translateService.instant('planning.protocolSwitchWarning');
@@ -6711,7 +6840,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialCustomizeDialog(inputValue){
     if (inputValue != 999){
       let index = this.materialIdToIndex[inputValue];
-      this.materialName = this.materialList[index]['name'];
+      let materialName = '';
+      if(this.authService.lang =='zh-TW'){
+        materialName = this.materialList[index]['chineseName'];
+      }else{
+        materialName = this.materialList[index]['name'];
+      }
+      this.materialName = materialName;
       this.materialLossCoefficient = this.materialList[index]['decayCoefficient'];
       this.materialProperty = this.materialList[index]['property'];
     } else {
@@ -6724,7 +6859,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   pathLossCustomizeDialog(inputValue){
     if (inputValue != 999){
       let index = this.modelIdToIndex[inputValue];
-      this.modelName = this.modelList[index]['name'];
+      let modelName = '';
+      if(this.authService.lang =='zh-TW'){
+        modelName = this.modelList[index]['chineseName'];
+      }else{
+        modelName = this.modelList[index]['name'];
+      }
+      this.modelName = modelName;
       this.modelDissCoefficient = this.modelList[index]['distancePowerLoss'];
       this.modelfieldLoss = this.modelList[index]['fieldLoss'];
       this.modelProperty = this.modelList[index]['property'];
@@ -6768,6 +6909,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 }
                 this.materialList[this.materialIdToIndex[this.materialId]]['decayCoefficient'] = result[index]['decayCoefficient'];
                 this.materialList[this.materialIdToIndex[this.materialId]]['name'] = result[index]['name'];
+                this.materialList[this.materialIdToIndex[this.materialId]]['chineseName'] = result[index]['chineseName'];
               },
               err => {
                 console.log(err);
@@ -6794,7 +6936,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           'property': this.modelProperty
       }
       console.log(JSON.stringify(data));
-      if(this.checkModelForm(false)){
+      let isDefault = this.modelProperty == 'default' ? true : false;
+      console.log("isDefault",isDefault);
+      if(this.checkModelForm(false,isDefault)){
         this.http.post(url_update, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
@@ -6812,6 +6956,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   } 
                 }
                 this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['name'] = result[index]['name'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['chineseName'] = result[index]['chineseName'];
                 this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result[index]['distancePowerLoss'];
                 this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result[index]['fieldLoss'];
               },
@@ -6888,7 +7033,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 檢查現有材質名稱是否已存在
     if(create){
       for (let i = 0; i < this.materialList.length; i++) {
-        if(this.materialName == this.materialList[i]['name']){
+        if(this.materialName == this.materialList[i]['name'] || this.materialName == this.materialList[i]['chineseName']){
           console.log("duplicate by",this.materialName);
           duplicate = true;
           break;
@@ -6921,7 +7066,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     return pass
   }
   createNewModel(){
-    if(this.checkModelForm(true)){
+    if(this.checkModelForm(true,false)){
       // 新增無線模型到後端
       let url_add = `${this.authService.API_URL}/addPathLossModel/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
@@ -6967,7 +7112,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }, 100);
     }
   }
-  checkModelForm(create){
+  checkModelForm(create,deafult){
     let pass = true; 
     let duplicate = false;
     let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
@@ -6977,10 +7122,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
     // format checking 包含特殊字元 || 不是英文中文數字
     let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
+    if (deafult) { illegal=false; }
     // 檢查現有模型名稱是否已存在
     if (create){
       for (let i = 0; i < this.modelList.length; i++) {
-        if(this.modelName == this.modelList[i]['name']){
+        if(this.modelName == this.modelList[i]['name'] || this.modelName == this.modelList[i]['chineseName']){
           console.log("duplicate by",this.modelName);
           duplicate = true;
           break;
@@ -7110,6 +7256,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }, 100);
     } else {
       this.matDialog.open(this.modelCustomizeModal);
+    }
+  }
+  checkIfChinese(){
+    if (this.authService.lang == 'zh-TW') {
+      return true;
+    } else {
+      return false;
     }
   }
 }
