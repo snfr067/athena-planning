@@ -1470,8 +1470,6 @@ export class PdfComponent implements OnInit {
             , `${this.financial(ueulTpt[k])} Mbps`
             , `${JSON.parse(this.calculateForm.ueRxGain)[i]} dB`
           ]);
-          console.log("1JSON.parse(this.calculateForm.ueRxGain[i])",JSON.parse(this.calculateForm.ueRxGain)[i]);
-          
         }
       }
     }
@@ -1487,10 +1485,8 @@ export class PdfComponent implements OnInit {
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
-            , `${JSON.parse(this.calculateForm.ueRxGain)[i]} dB`
+            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
           ]);
-          console.log("2JSON.parse(this.calculateForm.ueRxGain[i])",JSON.parse(this.calculateForm.ueRxGain)[i]);
-          
         }
       }
     }

@@ -2441,9 +2441,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // this.matDialog.open(this.rfModal);
     this.matDialog.open(this.rfModalTable);
   }
-  openUEParamSetting(item, i) {
+  openUEParamSetting(item, i, isNav) {
     this.svgId = item;
-    this.svgNum = i + 1;
+    if (isNav) { // 右方障礙物資訊id與左方平面圖障礙物id序號差1
+      this.svgNum = i + 1;
+    } else {
+      this.svgNum = i;
+    }
     this.matDialog.open(this.ueModalTable);
   }
   openDeleteSetting() {
@@ -5636,7 +5640,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const obstacle: string = this.wb.SheetNames[sheetNameIndex['obstacle']];
     const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
     const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
-    console.log("obstacle sheet obstacleData",obstacleData);
+    // console.log("obstacle sheet obstacleData",obstacleData);
     if (obstacleData.length > 1) {
       for (let i = 1; i < obstacleData.length; i++) {
         if ((<Array<any>> obstacleData[i]).length === 0) {
@@ -5938,7 +5942,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               material = this.materialList[0]['id'];
             }
           }
-
+          
           let materialName = "";
           if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
             console.log('*DEBUG:this.materialList',this.materialList);

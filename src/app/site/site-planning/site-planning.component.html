@@ -348,6 +348,7 @@
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
       <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'UE'" class="rightClickBtnGroup" (click)="openUEParamSetting(svgId, svgNum, false)">{{ 'ueParamLink' | translate }}</button>
       <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
     </ng-template>
   </mat-menu>
@@ -1252,13 +1253,14 @@
                         <label>Frequency</label>
                         <input type="text" [(ngModel)]="bsListRfParam[item].frequency" (change)="changeTxBfFreq(item)">
                       </span> -->
-                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
                       <!-- <span (click)="openRfParamSetting(item)">
                         <span class="material-icons">{{ 'rfParamLink' | translate }}</span>
                       </span> -->
                       <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
                         <span class="material-icons">clear</span>
                       </span>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
                     </li>
                   </ol>
                 </li>
@@ -1337,7 +1339,8 @@
                       <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
                         <span class="material-icons">clear</span>
                       </span>
-                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openUEParamSetting(item, i)">{{ 'ueParamLink' | translate }}</button>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openUEParamSetting(item, i, true)">{{ 'ueParamLink' | translate }}</button>
                     </li>
                   </ol>
                 </li>
