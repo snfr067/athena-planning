@@ -1468,7 +1468,7 @@ export class PdfComponent implements OnInit {
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
-            , `${JSON.parse(this.calculateForm.ueRxGain)[i]} dB`
+            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
           ]);
         }
       }
