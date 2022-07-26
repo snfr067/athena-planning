@@ -1071,9 +1071,9 @@
                 <li>
                   <p style="display: block;">{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
                   <ol class="inline-block">
-                    <li><input type="number" class="inputNum" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],'uezValues')"></li>
-                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],'uezValues')"></li>
-                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],'uezValues')"></li>
+                    <li><input type="number" class="inputNum" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
                   </ol>
                 </li>
 
@@ -1492,7 +1492,7 @@
           <td>{{ 'altitude.setting' | translate }}</td>
           <td>
             <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,'altitude')">{{ 'meter' | translate }}
+              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
             </ng-container>
             <ng-container *ngIf="dragObject[svgId].type === 'UE'">
               <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
@@ -1505,11 +1505,22 @@
       <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
         <tr>
           <td>{{ 'altitude.start' | translate }}</td>
-          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].z" (change)="checkHeiWidAlt(svgId,dragObject[svgId].z,'z')">{{ 'meter' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].z" 
+            (select)="tempParamStorage(dragObject[svgId].z)"
+            (click)="tempParamStorage(dragObject[svgId].z)"
+            (change)="changeZvalue(svgId)">
+            {{ 'meter' | translate }}
+          </td>
         </tr>
         <tr>
           <td>{{ 'altitude.obstacle' | translate }}</td>
-          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,'altitude')">{{ 'meter' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].altitude" 
+            (select)="tempParamStorage(dragObject[svgId].altitude)"
+            (click)="tempParamStorage(dragObject[svgId].altitude)"
+            (change)="changeSize(svgId, 'altitude',true)">
+            {{ 'meter' | translate }}</td>
         </tr>
       </ng-container>
       

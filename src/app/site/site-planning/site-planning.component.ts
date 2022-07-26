@@ -809,34 +809,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     )
   }
 
-  checkHeiWidAlt(fieldOrId , altitude, type) {
+  checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
+    console.log('Check altitdue function works:'+ altitude + ' Field altitude:' + this.calculateForm.altitude);
     altitude = Number(altitude);
     let msg = '';
-    // 檢查障礙物高度不能為零
-    console.log("type",type);
-    console.log("altitude",altitude);
-    console.log("this.dragObject[fieldOrId].altitude",this.dragObject[fieldOrId].altitude);
-    console.log("this.dragObject[fieldOrId].z",this.dragObject[fieldOrId].z);
-    if (type == 'altitude' && altitude == 0){
-      msg = this.translateService.instant('wha_cant_less_than_0');
-      this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
-      if(this.dragObject[fieldOrId].altitude + this.dragObject[fieldOrId].z > this.calculateForm.altitude){
-        this.dragObject[fieldOrId].z = 0;
-      }
-    } // 檢查高度有無小於0或超過場域高度
     if (altitude < 0 || altitude > this.calculateForm.altitude) {
-      if(altitude < 0){
+      if (altitude < 0) {
         msg = this.translateService.instant('alt_less_0');
       } else {
         msg = this.translateService.instant('alt_greater_than_field');
-      } 
-      if (type == 'z'){
-        this.dragObject[fieldOrId].z = 0;
       }
-      else if (type == 'altitude'){
+      // 障礙物or基地台
+      if (fieldOrId.length > 1) { //障礙物
         this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
-      }
-      if (type == "uezValues"){     
+      } else { //zValue
         let existed = false;
         for (let i = 0;i < this.zValues.length;i++) {
           // if (this.zValues[i] == this.calculateForm.altitude.toString()) {
@@ -852,20 +838,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     }
-    // 根據不同型態做不同檢查
-    if (type == 'z'){
-      if (altitude + Number(this.dragObject[fieldOrId].altitude) > Number(this.calculateForm.altitude)){
-        msg = this.translateService.instant('z_plus_altitude_greater_then_field_altitude');
-        this.dragObject[fieldOrId].z = 0;
-      } 
-    }else if (type == 'altitude'){
-      if (altitude + Number(this.dragObject[fieldOrId].z) > Number(this.calculateForm.altitude)){
-        msg = this.translateService.instant('z_plus_altitude_greater_then_field_altitude');
-        this.dragObject[fieldOrId].altitude = this.calculateForm.altitude;
-        this.dragObject[fieldOrId].z = 0;
-      }
-    }
-    if (type == "uezValues"){     
+    //zValues
+    if (fieldOrId.length == 1) {
+      // 先檢視是否有重複高度
       for (let i = 0; i < 3; i++) {
         if (Number(fieldOrId) == i) {
           continue;
@@ -1691,9 +1666,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     try {
       this.moveable.destroy();
     } catch (error) {}
-    // window.setTimeout(() => {
-    //   this.live = true;
-    // }, 0);
+    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) + Number(this.dragObject[id].altitude) > Number(this.calculateForm.altitude)) {
+      // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+      this.recoverParam(id,'z');
+      let msg = this.translateService.instant('z_greater_then_field_altitude');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
     this.target = document.getElementById(id);
     this.svgId = id;
     this.realId = _.cloneDeep(id);
@@ -1710,17 +1693,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
     this.setTransform(this.target);
-    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) + Number(this.dragObject[id].altitude) > Number(this.calculateForm.altitude)) {
-      // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
-      this.recoverParam(id,'z');
-      let msg = this.translateService.instant('z_greater_then_field_altitude');
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: msg
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-      return;
-    }
   }
   /**
    * click互動物件
@@ -1833,7 +1805,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if (this.dragObject[id].type === 'obstacle') {
     */
-      title += `${this.translateService.instant('material')}: ${this.dragObject[id].materialName}`;
+      let index = this.materialIdToIndex[Number(this.dragObject[id].material)];
+      title += `${this.translateService.instant('material')}: `;
+      if(this.materialList[index]['property'] == "default"){
+        title += `${this.dragObject[id].materialName}`;
+      } else {
+        title += `${this.translateService.instant('customize')}_${this.dragObject[id].materialName}`;
+      }
+      
     } else {
       title += `Z: ${this.dragObject[id].z}<br>`;
     }
@@ -6663,6 +6642,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   setObstacleSize(id) {
+
+    let target =  this.target = document.getElementById(`${id}`);
+    this.frame.set('z-index', 100+10*this.dragObject[id].z);
+    this.setTransform(target);
+    try {
+      this.moveable.destroy();
+    } catch (error) {
+      this.moveable.ngOnInit();
+      this.moveable.destroy();
+    }
     this.spanStyle[id] = {
       left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
       top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
