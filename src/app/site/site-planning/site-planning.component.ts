@@ -1785,7 +1785,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let title = `${this.dragObject[id].title}: ${this.svgNum}`;
     let overlappedIdList = this.checkObstacleIsOverlaped(id);
     if (overlappedIdList.length > 0){
-      title += `<br>重疊: ${overlappedIdList}`;
+      title += `<br>${this.translateService.instant('overlap')}: ${overlappedIdList}`;  
     }
     title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
