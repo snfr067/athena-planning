@@ -175,7 +175,10 @@ export class SignalUlThroughputComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue);
-
+    var CooUnit = 1;
+    if (this.calculateForm.width > 200 || this.calculateForm.height > 200){
+      CooUnit = 2;
+    }
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.ulThroughputMap_chart`)[zValues.indexOf(this.zValue)];
@@ -205,6 +208,11 @@ export class SignalUlThroughputComponent implements OnInit {
       for (let i = 0; i < zLen; i++) {
         let yIndex = 0;
         for (const yData of item) {
+          // if (CooUnit == 2){
+          //   if ((yIndex >= this.calculateForm.height/2 || xIndex >= this.calculateForm.width/2)){
+          //     continue;
+          //   }
+          // }
           if (typeof zData[i][yIndex] === 'undefined') {
             zData[i][yIndex] = [];
             zText[i][yIndex] = [];
@@ -246,17 +254,17 @@ export class SignalUlThroughputComponent implements OnInit {
 
     const x = [];
     const y = [];
-    const wRatio = this.calculateForm.width / this.result['ulThroughputMap'].length;
+    const wRatio = this.calculateForm.width / this.result['ulThroughputMap'].length*CooUnit;
     let xval = 0;
     const xLen = this.result['ulThroughputMap'].length;
-    for (let i = 0; i <= xLen; i++) {
+    for (let i = 0; i <= xLen; i+=CooUnit) {
       x.push(xval);
       xval += wRatio;
     }
-    const hRatio = this.calculateForm.height / this.result['ulThroughputMap'][0].length;
+    const hRatio = this.calculateForm.height / this.result['ulThroughputMap'][0].length*CooUnit;
     let yval = 0;
     const yLen = this.result['ulThroughputMap'][0].length;
-    for (let i = 0; i <= yLen; i++) {
+    for (let i = 0; i <= yLen; i+=CooUnit) {
       y.push(yval);
       yval += hRatio;
     }
