@@ -106,8 +106,16 @@ export class PdfComponent implements OnInit {
   /**
    * @param taskId
    * @param isHst 歷史紀錄
+   * @param scaleMinSQ
+   * @param scaleMaxSQ
+   * @param scaleMinST
+   * @param scaleMaxST
+   * @param scaleMinUL
+   * @param scaleMaxUL
+   * @param scaleMaxDL
+   * @param scaleMaxDL
    */
-  async export(taskId, isHst) {
+  async export(taskId, isHst, scaleMinSQ, scaleMaxSQ, scaleMinST, scaleMaxST, scaleMinUL, scaleMaxUL, scaleMinDL, scaleMaxDL) {
 
     new Promise((resolve, reject) => {
       let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
@@ -251,7 +259,7 @@ export class PdfComponent implements OnInit {
               this.quality.forEach(element => {
                 element.calculateForm = this.calculateForm;
                 element.result = this.result;
-                element.draw(true, this.zValues[index]);
+                element.draw(true, this.zValues[index], scaleMinSQ, scaleMaxSQ);
                 index++;
               });
 
@@ -269,7 +277,7 @@ export class PdfComponent implements OnInit {
               this.strength.forEach(element => {
                 element.calculateForm = this.calculateForm;
                 element.result = this.result;
-                element.draw(true, this.zValues[index]);
+                element.draw(true, this.zValues[index],scaleMinST,scaleMaxST);
                 index++;
               });
 
@@ -278,7 +286,7 @@ export class PdfComponent implements OnInit {
               this.ulThroughputMap.forEach(element => {
                 element.calculateForm = this.calculateForm;
                 element.result = this.result;
-                element.draw(true, this.zValues[index]);
+                element.draw(true, this.zValues[index], scaleMinUL, scaleMaxUL);
                 index++;
               });
 
@@ -287,7 +295,7 @@ export class PdfComponent implements OnInit {
               this.dlThroughputMap.forEach(element => {
                 element.calculateForm = this.calculateForm;
                 element.result = this.result;
-                element.draw(true, this.zValues[index]);
+                element.draw(true, this.zValues[index], scaleMinDL, scaleMaxDL);
                 index++;
               });
 

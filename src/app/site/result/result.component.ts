@@ -780,7 +780,7 @@ export class ResultComponent implements OnInit {
 
   /** export PDF */
   async exportPDF() {
-    this.pdf.export(this.taskId, this.isHst);
+    this.pdf.export(this.taskId, this.isHst, this.scaleMinSQ, this.scaleMaxSQ, this.scaleMinST, this.scaleMaxST, this.scaleMinUL, this.scaleMaxUL, this.scaleMinDL, this.scaleMaxDL);
   }
 
   /** 訊號品質圖 */
@@ -1142,7 +1142,7 @@ export class ResultComponent implements OnInit {
   }
 
   checkMaxMinValue(){
-    if (this.scaleMax<this.scaleMin){
+    if (this.scaleMax<this.scaleMin || this.scaleMax == this.scaleMin){
       this.scaleInputError = true;
     } else {
       this.scaleInputError = false;
