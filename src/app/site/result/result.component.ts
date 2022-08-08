@@ -135,7 +135,18 @@ export class ResultComponent implements OnInit {
   isSimulate = false;
   /* 是否有暫存子場域 */
   isSubFieldExist = false;
-
+  /* 比例尺最大最小值 */
+  scaleMax; 
+  scaleMin; 
+  scaleMaxSQ;
+  scaleMinSQ; 
+  scaleMaxST; 
+  scaleMinST; 
+  scaleMaxUL; 
+  scaleMinUL; 
+  scaleMaxDL; 
+  scaleMinDL; 
+  scaleInputError = false;
   /** PDF Component */
   @ViewChild('pdf') pdf: PdfComponent;
   /** 建議方案 Component */
@@ -567,6 +578,20 @@ export class ResultComponent implements OnInit {
         this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
         this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
         this.authService.spinnerHide();
+        // this.scaleMaxSQ = Number.parseFloat(this.hstOutput['sinrMax']).toFixed(2);
+        // this.scaleMinSQ = Number.parseFloat(this.hstOutput['sinrMin']).toFixed(2);
+        this.scaleMaxSQ = 29.32;
+        this.scaleMinSQ = -1.889;
+        // this.scaleMaxST = Number.parseFloat(this.hstOutput['rsrpMax']).toFixed(2);
+        // this.scaleMinST = Number.parseFloat(this.hstOutput['rsrpMin']).toFixed(2);
+        this.scaleMaxST = -70;
+        this.scaleMinST = -120;
+        this.scaleMaxUL = Number.parseFloat(this.hstOutput['ulThroughputMax']).toFixed(1);
+        this.scaleMinUL = Number.parseFloat(this.hstOutput['ulThroughputMin']).toFixed(1);
+        this.scaleMaxDL = Number.parseFloat(this.hstOutput['dlThroughputMax']).toFixed(1);
+        this.scaleMinDL = Number.parseFloat(this.hstOutput['dlThroughputMin']).toFixed(1);
+        
+
       }
     );
     // this.getCandidateList();
@@ -760,6 +785,9 @@ export class ResultComponent implements OnInit {
 
   /** 訊號品質圖 */
   drawQuality(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showCover = false;
       this.showStrength = false;
@@ -774,7 +802,14 @@ export class ResultComponent implements OnInit {
       this.quality.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.quality.showCandidate = this.showCandidate;
       this.quality.opacityValue = this.opacityValue;
-      this.quality.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxSQ;
+        this.scaleMin = this.scaleMinSQ;
+      } else {
+        this.scaleMaxSQ = this.scaleMax;
+        this.scaleMinSQ = this.scaleMin;
+      }
+      this.quality.draw(false, this.zValue, this.scaleMinSQ, this.scaleMaxSQ);
     }, 0);
   }
 
@@ -798,6 +833,9 @@ export class ResultComponent implements OnInit {
 
   /** 訊號強度圖 */
   drawStrength(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -812,12 +850,22 @@ export class ResultComponent implements OnInit {
       this.strength.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.strength.showCandidate = this.showCandidate;
       this.strength.opacityValue = this.opacityValue;
-      this.strength.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxST;
+        this.scaleMin = this.scaleMinST;
+      } else {
+        this.scaleMaxST = this.scaleMax;
+        this.scaleMinST = this.scaleMin;
+      }
+      this.strength.draw(false, this.zValue, this.scaleMinST, this.scaleMaxST);
     }, 0);
   }
 
   /** 上行傳輸速率圖 */
   drawUlThroughputMap(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -832,12 +880,24 @@ export class ResultComponent implements OnInit {
       this.ulThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.ulThroughputMap.showCandidate = this.showCandidate;
       this.ulThroughputMap.opacityValue = this.opacityValue;
-      this.ulThroughputMap.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxUL;
+        this.scaleMin = this.scaleMinUL;
+      } else {
+        this.scaleMaxUL = this.scaleMax;
+        this.scaleMinUL = this.scaleMin;
+      }
+      this.ulThroughputMap.draw(false, this.zValue, this.scaleMinUL,this.scaleMaxUL);
+      
     }, 0);
+    
   }
 
   /** 下行傳輸速率圖 */
   drawDlThroughputMap(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -852,7 +912,14 @@ export class ResultComponent implements OnInit {
       this.dlThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.dlThroughputMap.showCandidate = this.showCandidate;
       this.dlThroughputMap.opacityValue = this.opacityValue;
-      this.dlThroughputMap.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxDL;
+        this.scaleMin = this.scaleMinDL;
+      } else {
+        this.scaleMaxDL = this.scaleMax;
+        this.scaleMinDL = this.scaleMin;
+      }
+      this.dlThroughputMap.draw(false, this.zValue, this.scaleMinDL,this.scaleMaxDL);
     }, 0);
   }
 
@@ -1072,6 +1139,14 @@ export class ResultComponent implements OnInit {
       }
     }
     return ary;
+  }
+
+  checkMaxMinValue(){
+    if (this.scaleMax<this.scaleMin){
+      this.scaleInputError = true;
+    } else {
+      this.scaleInputError = false;
+    }
   }
 
 }

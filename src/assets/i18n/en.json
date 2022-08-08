@@ -84,7 +84,8 @@
 	"mctsTotalTime": "Time limit of current simulation",
 	"taskName": "Project name",
 	"createTime": "Established time",
-
+	"scaleMax": "maximum",
+	"scaleMin": "minimum",
 	"statistics.info": "Statistical report",
 	"statistics.site_modulation": "Ratio of applied modulation codes in current field",
 	"statistics.site_modulation_cdf": "CDF analysis of applied modulation codes",

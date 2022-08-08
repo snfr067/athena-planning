@@ -90,7 +90,7 @@ export class SignalStrengthComponent implements OnInit {
    * @param isPDF 
    * @param zValue 
    */
-  draw(isPDF, zValue) {
+  draw(isPDF, zValue, scalemin, scalemax) {
     zValue = Number(zValue);
     this.zValue = zValue;
     const images = [];
@@ -113,10 +113,10 @@ export class SignalStrengthComponent implements OnInit {
           layer: 'below'
         });
 
-        this.drawChart(isPDF, images);
+        this.drawChart(isPDF, images, scalemin, scalemax);
       };
     } else {
-      this.drawChart(isPDF, images);
+      this.drawChart(isPDF, images, scalemin, scalemax);
     }
   }
 
@@ -125,7 +125,7 @@ export class SignalStrengthComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images) {
+  drawChart(isPDF, images, scalemin, scalemax) {
     const defaultPlotlyConfiguration = {
       displaylogo: false,
       showTips: false,
@@ -166,7 +166,6 @@ export class SignalStrengthComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue);
-
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.signal_strength`)[zValues.indexOf(this.zValue)];
@@ -282,8 +281,8 @@ export class SignalStrengthComponent implements OnInit {
 
     // let scalemax = Number(this.financial(Plotly.d3.max(rsrpAry)));
     // let scalemin = Number(this.financial(Plotly.d3.min(rsrpAry)));
-    let scalemax = -70;
-    let scalemin = -120;
+    // let scalemax = -70;
+    // let scalemin = -120;
     let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));

@@ -84,7 +84,8 @@
 	"mctsTotalTime": "本次規劃之模擬次數上限",
 	"taskName": "場域名稱",
 	"createTime": "建立時間",
-
+	"scaleMax": "最大值",
+	"scaleMin": "最小值",
 	"statistics.info": "統計資訊",
 	"statistics.site_modulation": "場域Modulation統計",
 	"statistics.site_modulation_cdf": "場域Modulation CDF圖",

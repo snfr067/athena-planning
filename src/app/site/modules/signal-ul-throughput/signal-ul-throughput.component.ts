@@ -96,7 +96,7 @@ export class SignalUlThroughputComponent implements OnInit {
    * @param isPDF 
    * @param zValue 
    */
-  draw(isPDF, zValue) {
+  draw(isPDF, zValue, scalemin, scalemax) {
     zValue = Number(zValue);
     this.zValue = zValue;
     const images = [];
@@ -119,10 +119,10 @@ export class SignalUlThroughputComponent implements OnInit {
           layer: 'below'
         });
 
-        this.drawChart(isPDF, images);
+        this.drawChart(isPDF, images, scalemin, scalemax);
       };
     } else {
-      this.drawChart(isPDF, images);
+      this.drawChart(isPDF, images, scalemin, scalemax);
     }
   }
 
@@ -131,7 +131,7 @@ export class SignalUlThroughputComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images) {
+  drawChart(isPDF, images, scalemin, scalemax) {
     // draw background image chart
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -175,7 +175,6 @@ export class SignalUlThroughputComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue);
-
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.ulThroughputMap_chart`)[zValues.indexOf(this.zValue)];
@@ -306,8 +305,8 @@ export class SignalUlThroughputComponent implements OnInit {
       console.log('No ulThorughput data, it may be an old record');
     }
 
-    let scalemax = Number(this.financial(Plotly.d3.max(ulThroughputAry)));
-    let scalemin = Number(this.financial(Plotly.d3.min(ulThroughputAry)));
+    // this.scalemax = Number(this.financial(Plotly.d3.max(ulThroughputAry)));
+    // this.scalemin = Number(this.financial(Plotly.d3.min(ulThroughputAry)));
     let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));
