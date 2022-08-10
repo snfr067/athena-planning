@@ -46,6 +46,9 @@ export class FormService {
     calculateForm.wifiMimo = result['wifimimo'];
     calculateForm.mimoNumber = result['mimonumber'];
     calculateForm.isSimulation = JSON.parse(result['issimulation']);
+    calculateForm.bsTxGain = result['bstxgain'];
+    calculateForm.bsNoiseFigure = result['bsnoisefigure'];
+
   
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
@@ -81,9 +84,9 @@ export class FormService {
     calculateForm.totalRound = result['totalround'];
     calculateForm.ueCoordinate = result['uecoordinate'];
     calculateForm.useUeCoordinate = result['useuecoordinate'];
+    calculateForm.ueRxGain = result['uerxgain'];
     calculateForm.beamMaxId = result['beammaxid'];
     calculateForm.createTime = result['createtime'];
-
     calculateForm.isUeAvgSinr = JSON.parse(result['isueavgsinr']);
     calculateForm.isUeAvgThroughput = JSON.parse(result['isueavgthroughput']);
     calculateForm.isUeCoverage = JSON.parse(result['isuecoverage']);
@@ -92,16 +95,7 @@ export class FormService {
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
-    // console.log("**calculateForm.maxConnectionNum**",calculateForm.maxConnectionNum);
-    // console.log("**result['maxConnectionNum']**",result['maxConnectionNum']);
-    
-    // try {
-    //   calculateForm.maxConnectionNum = result['output']['ueCon_maxConnectionNum'];
-    // } catch (error) {
-    //   console.log("**error**",error);
-    //   calculateForm.maxConnectionNum = result['maxConnectionNum'];
-    // }
-
+    console.log("calculateForm",calculateForm);
     return calculateForm;
   }
 

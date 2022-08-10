@@ -302,10 +302,13 @@ export class ExcelService {
 
     const algorithmData = [
       ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel'],
+      // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'TxGain', 'RxGain', 'noiseFigure', 'maxConnectionNum'],
       [
         calculateForm.crossover, calculateForm.mutation,
         calculateForm.iteration, calculateForm.seed,
         1, calculateForm.useUeCoordinate, calculateForm.pathLossModelId
+        // 1, calculateForm.useUeCoordinate, calculateForm.pathLossModelId, calculateForm.pathLossModel['TxGain'], calculateForm.pathLossModel['RxGain'], calculateForm.pathLossModel['noiseFigure'],
+        // this.calculateForm.maxConnectionNum
       ]
     ];
     const algorithmWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(algorithmData);

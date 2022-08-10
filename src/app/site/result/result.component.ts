@@ -135,7 +135,18 @@ export class ResultComponent implements OnInit {
   isSimulate = false;
   /* 是否有暫存子場域 */
   isSubFieldExist = false;
-
+  /* 比例尺最大最小值 */
+  scaleMax; 
+  scaleMin; 
+  scaleMaxSQ;
+  scaleMinSQ; 
+  scaleMaxST; 
+  scaleMinST; 
+  scaleMaxUL; 
+  scaleMinUL; 
+  scaleMaxDL; 
+  scaleMinDL; 
+  scaleInputError = false;
   /** PDF Component */
   @ViewChild('pdf') pdf: PdfComponent;
   /** 建議方案 Component */
@@ -426,18 +437,21 @@ export class ResultComponent implements OnInit {
         if (this.calculateForm.obstacleInfo !== '') {
           this.showObstacleArea = true;
           const obstacleInfo = this.calculateForm.obstacleInfo.split('|');
+          
           for (const item of obstacleInfo) {
             const obj = JSON.parse(item);
+            // console.log('-- result obj',obj);
             this.obstacleList.push({
               x: obj[0],
               y: obj[1],
-              width: obj[2],
-              height: obj[3],
-              altitude: obj[4],
+              z: obj[2],
+              width: obj[3],
+              height: obj[4],
+              altitude: obj[5],
               color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
-              rotate: obj[5],
-              material: obj[6],
-              element: obj[7],
+              rotate: obj[6],
+              material: obj[7],
+              element: obj[8],
             });
           }
         }
@@ -564,6 +578,20 @@ export class ResultComponent implements OnInit {
         this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
         this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
         this.authService.spinnerHide();
+        // this.scaleMaxSQ = Number.parseFloat(this.hstOutput['sinrMax']).toFixed(2);
+        // this.scaleMinSQ = Number.parseFloat(this.hstOutput['sinrMin']).toFixed(2);
+        this.scaleMaxSQ = 29.32;
+        this.scaleMinSQ = -1.889;
+        // this.scaleMaxST = Number.parseFloat(this.hstOutput['rsrpMax']).toFixed(2);
+        // this.scaleMinST = Number.parseFloat(this.hstOutput['rsrpMin']).toFixed(2);
+        this.scaleMaxST = -70;
+        this.scaleMinST = -120;
+        this.scaleMaxUL = Number.parseFloat(this.hstOutput['ulThroughputMax']).toFixed(1);
+        this.scaleMinUL = Number.parseFloat(this.hstOutput['ulThroughputMin']).toFixed(1);
+        this.scaleMaxDL = Number.parseFloat(this.hstOutput['dlThroughputMax']).toFixed(1);
+        this.scaleMinDL = Number.parseFloat(this.hstOutput['dlThroughputMin']).toFixed(1);
+        
+
       }
     );
     // this.getCandidateList();
@@ -752,11 +780,14 @@ export class ResultComponent implements OnInit {
 
   /** export PDF */
   async exportPDF() {
-    this.pdf.export(this.taskId, this.isHst);
+    this.pdf.export(this.taskId, this.isHst, this.scaleMinSQ, this.scaleMaxSQ, this.scaleMinST, this.scaleMaxST, this.scaleMinUL, this.scaleMaxUL, this.scaleMinDL, this.scaleMaxDL);
   }
 
   /** 訊號品質圖 */
   drawQuality(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showCover = false;
       this.showStrength = false;
@@ -771,7 +802,14 @@ export class ResultComponent implements OnInit {
       this.quality.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.quality.showCandidate = this.showCandidate;
       this.quality.opacityValue = this.opacityValue;
-      this.quality.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxSQ;
+        this.scaleMin = this.scaleMinSQ;
+      } else {
+        this.scaleMaxSQ = this.scaleMax;
+        this.scaleMinSQ = this.scaleMin;
+      }
+      this.quality.draw(false, this.zValue, this.scaleMinSQ, this.scaleMaxSQ);
     }, 0);
   }
 
@@ -795,6 +833,9 @@ export class ResultComponent implements OnInit {
 
   /** 訊號強度圖 */
   drawStrength(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -809,12 +850,22 @@ export class ResultComponent implements OnInit {
       this.strength.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.strength.showCandidate = this.showCandidate;
       this.strength.opacityValue = this.opacityValue;
-      this.strength.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxST;
+        this.scaleMin = this.scaleMinST;
+      } else {
+        this.scaleMaxST = this.scaleMax;
+        this.scaleMinST = this.scaleMin;
+      }
+      this.strength.draw(false, this.zValue, this.scaleMinST, this.scaleMaxST);
     }, 0);
   }
 
   /** 上行傳輸速率圖 */
   drawUlThroughputMap(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -829,12 +880,24 @@ export class ResultComponent implements OnInit {
       this.ulThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.ulThroughputMap.showCandidate = this.showCandidate;
       this.ulThroughputMap.opacityValue = this.opacityValue;
-      this.ulThroughputMap.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxUL;
+        this.scaleMin = this.scaleMinUL;
+      } else {
+        this.scaleMaxUL = this.scaleMax;
+        this.scaleMinUL = this.scaleMin;
+      }
+      this.ulThroughputMap.draw(false, this.zValue, this.scaleMinUL,this.scaleMaxUL);
+      
     }, 0);
+    
   }
 
   /** 下行傳輸速率圖 */
   drawDlThroughputMap(getColorScale) {
+    if (this.scaleInputError){
+      return;
+    }
     if (!getColorScale) {
       this.showQuality = false;
       this.showCover = false;
@@ -849,7 +912,14 @@ export class ResultComponent implements OnInit {
       this.dlThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.dlThroughputMap.showCandidate = this.showCandidate;
       this.dlThroughputMap.opacityValue = this.opacityValue;
-      this.dlThroughputMap.draw(false, this.zValue);
+      if (!getColorScale) {
+        this.scaleMax = this.scaleMaxDL;
+        this.scaleMin = this.scaleMinDL;
+      } else {
+        this.scaleMaxDL = this.scaleMax;
+        this.scaleMinDL = this.scaleMin;
+      }
+      this.dlThroughputMap.draw(false, this.zValue, this.scaleMinDL,this.scaleMaxDL);
     }, 0);
   }
 
@@ -1026,15 +1096,16 @@ export class ResultComponent implements OnInit {
     }
     for (const el of obstacleList) {
       let item = JSON.parse(el);
-      let angle = Number(item[5]%360);
-      let obWid = Number(item[2]);
-      let obHei = Number(item[3]);
+      let angle = Number(item[6]%360);
+      let obWid = Number(item[3]);
+      let obHei = Number(item[4]);
       let deg = 2*Math.PI/360;
       let x = Number(item[0]);
       let y = Number(item[1]);
+      let z = Number(item[2]);
       let xy = [];
       if (angle != 0) { //有旋轉
-        if (item[7] == 0) { // 矩形
+        if (item[8] == 0) { // 矩形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2]; //中心
           let leftbot = [x,y];
@@ -1042,7 +1113,7 @@ export class ResultComponent implements OnInit {
             (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
             (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
           ];
-        } else if (item[7] == 1) { //三角形
+        } else if (item[8] == 1) { //三角形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2];
           let left = [x,y];
@@ -1050,7 +1121,7 @@ export class ResultComponent implements OnInit {
             (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
             (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
           ];
-        } else if (item[7] == 3) { //梯形
+        } else if (item[8] == 3) { //梯形
           let tempAngle = 360 - angle; 
           let rcc = [x+obWid/2,y+obHei/2];
           let leftbot = [x,y];
@@ -1068,6 +1139,14 @@ export class ResultComponent implements OnInit {
       }
     }
     return ary;
+  }
+
+  checkMaxMinValue(){
+    if (this.scaleMax<this.scaleMin || this.scaleMax == this.scaleMin){
+      this.scaleInputError = true;
+    } else {
+      this.scaleInputError = false;
+    }
   }
 
 }

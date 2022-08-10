@@ -58,7 +58,9 @@ export class PdfComponent implements OnInit {
   ueList = [];
   /** 行動終端 */
   isHst = false;
-
+  /** 材質列表 */
+  materialList = [];
+  materialIdToIndex = {};
   /** 建議方案 Component */
   @ViewChild('propose') propose: ProposeComponent;
   /** 建議方案 Component */
@@ -104,369 +106,410 @@ export class PdfComponent implements OnInit {
   /**
    * @param taskId
    * @param isHst 歷史紀錄
+   * @param scaleMinSQ
+   * @param scaleMaxSQ
+   * @param scaleMinST
+   * @param scaleMaxST
+   * @param scaleMinUL
+   * @param scaleMaxUL
+   * @param scaleMaxDL
+   * @param scaleMaxDL
    */
-  async export(taskId, isHst) {
-    // Initial
-    this.defaultBs.length = 0;
-    this.inputBsList.length = 0;
-    this.ueList.length = 0;
-    //
-    this.taskId = taskId;
-    this.authService.spinnerShowPdf();
-    if (typeof this.taskId !== 'undefined') {
-      let url;
-      if (isHst) {
-        url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
-        url += `${this.authService.userToken}/${taskId}`;
-      } else {
-        url = `${this.authService.API_URL}/completeCalcResult/${this.taskId}/${this.authService.userToken}`;
-      }
-      this.http.get(url).subscribe(
+  async export(taskId, isHst, scaleMinSQ, scaleMaxSQ, scaleMinST, scaleMaxST, scaleMinUL, scaleMaxUL, scaleMinDL, scaleMaxDL) {
+
+    new Promise((resolve, reject) => {
+      let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      this.materialIdToIndex = {};
+      this.http.get(url_obs).subscribe(
         res => {
-          console.log(res);
-          if (document.getElementById('pdf_area') != null) {
-            document.getElementById('pdf_area').style.display = 'block';
+          let result = res;
+          this.materialList = Object.values(result);
+          for (let i = 0;i < this.materialList.length;i++) {
+            let id = this.materialList[i]['id'];
+            this.materialIdToIndex[id]=i;
           }
-          if (isHst) {
-            // 歷史紀錄
-            this.isHst = true;
-            this.result = this.formService.setHstOutputToResultOutput(res['output']);
-            this.result['createTime'] = res['createtime'];
-            const form = res;
-            // delete form['output'];
-            this.calculateForm = this.formService.setHstToForm(form);
-            this.result['inputWidth'] = this.calculateForm.width;
-            this.result['inputHeight'] = this.calculateForm.height;
-            console.log(this.calculateForm);
-          } else {
-            this.isHst = false;
-            this.calculateForm = res['input'];
-            this.result = res['output'];
-          }
-          // 現有基站
-          let bs = [];
-          if (!this.isEmpty(this.calculateForm.defaultBs)) {
-            if (this.calculateForm.defaultBs !== '') {
-              bs = this.calculateForm.defaultBs.split('|');
-              for (const item of bs) {
-                this.defaultBs.push(JSON.parse(item));
-              }
-            }
-          }          
-          // 新增基站
-          let candidateBsAry = [];
-          if (!this.isEmpty(this.calculateForm.candidateBs)) {
-            candidateBsAry = this.calculateForm.candidateBs.split('|');
-            for (const item of candidateBsAry) {
-              this.inputBsList.push(JSON.parse(item));
-            }
-          }          
-          this.result['inputBsList'] = this.inputBsList;
-          // 障礙物資訊
-          let obstacle = [];
-          if (!this.isEmpty(this.calculateForm.obstacleInfo)) {
-            obstacle = this.calculateForm.obstacleInfo.split('|');
-            for (const item of obstacle) {
-              const obj = JSON.parse(item);
-              this.obstacleList.push({
-                x: obj[0],
-                y: obj[1],
-                width: obj[2],
-                height: obj[3],
-                altitude: obj[4],
-                color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
-                rotate: obj[5],
-                material: obj[6],
-                element: obj[7],
-              });
-            }
-            obstacle = this.obstacleList;
-          }
-
-
-          // 行動終端分佈
-          let ueCoordinate = [];
-          if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
-            ueCoordinate = this.calculateForm.ueCoordinate.split('|');
-            for (const item of ueCoordinate) {
-              this.ueList.push(JSON.parse(item));
-            }
-          }
-
-          this.zValues = JSON.parse(this.calculateForm.zValue);
-          
-          window.setTimeout(() => {
-            if (candidateBsAry.length != 0) {
-              this.propose.calculateForm = this.calculateForm;
-              this.propose.result = this.result;
-              this.propose.isPDF = true;
-              this.propose.drawLayout(true);
-            }
-            // 編輯場域
-            let idx = 0;
-            this.sitePlanningMap.forEach(element => {
-              element.drawDown = false;
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[idx]);
-              idx++;
-            });
-
-            // 訊號品質圖
-            let index = 0;
-            this.quality.forEach(element => {
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[index]);
-              index++;
-            });
-
-            // 訊號覆蓋圖
-            index = 0;
-            this.cover.forEach(element => {
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[index]);
-              index++;
-            });
-
-            // 訊號強度圖
-            index = 0;
-            this.strength.forEach(element => {
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[index]);
-              index++;
-            });
-
-            // 上行傳輸速率圖
-            index = 0;
-            this.ulThroughputMap.forEach(element => {
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[index]);
-              index++;
-            });
-
-            // 下行傳輸速率圖
-            index = 0;
-            this.dlThroughputMap.forEach(element => {
-              element.calculateForm = this.calculateForm;
-              element.result = this.result;
-              element.draw(true, this.zValues[index]);
-              index++;
-            });
-
-
-            this.result['gaResult'] = {};
-            this.result['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
-            this.result['gaResult']['sinrMap'] = this.result['sinrMap'];
-            // this.result['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
-            this.result['gaResult']['rsrpMap'] = this.result['rsrpMap'];
-            this.result['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
-            this.result['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
-
-            const sinrAry = [];
-            this.result['sinrMap'].map(v => {
-              v.map(m => {
-                m.map(d => {
-                  sinrAry.push(d);
-                });
-              });
-            });
-
-            const rsrpAry = [];
-            this.result['rsrpMap'].map(v => {
-              v.map(m => {
-                m.map(d => {
-                  rsrpAry.push(d);
-                });
-              });
-            });
-
-            const ulThroughputAry = [];
-            try {
-              this.result['ulThroughputMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    ulThroughputAry.push(d);
-                  });
-                });
-              });
-            } catch(e) {
-              console.log('No ulThorughput data, it may be an old record');
-            }
-    
-            const dlThroughputAry = [];
-            try {
-              this.result['throughputMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    dlThroughputAry.push(d);
-                  });
-                });
-              });
-            } catch(e){
-              console.log('No dlThorughput data, it may be an old record');
-            }
-
-            this.result['sinrMax'] = Plotly.d3.max(sinrAry);
-            this.result['sinrMin'] = Plotly.d3.min(sinrAry);
-            this.result['rsrpMax'] = Plotly.d3.max(rsrpAry);
-            this.result['rsrpMin'] = Plotly.d3.min(rsrpAry);
-            this.result['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
-            this.result['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
-            this.result['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
-            this.result['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
-
-            console.log(document.querySelectorAll('.canvas_3d').length);
-
-            for (const zValue of this.zValues) {
-              // 3D訊號品質圖
-              index = 0;
-              this.view3D1.forEach(element => {
-                if (index === this.zValues.indexOf(zValue)) {
-                  // element.isSimulation = this.calculateForm.isSimulation;
-                  element.calculateForm = this.calculateForm;
-                  element.obstacle = obstacle;
-                  element.defaultBs = bs;
-                  element.candidate = candidateBsAry;
-                  element.ue = ueCoordinate;
-                  element.width = this.calculateForm.width;
-                  element.height = this.calculateForm.height;
-                  element.zValue = this.zValues;
-                  element.planeHeight = zValue.toString();
-                  element.result = this.result;
-                  element.isPDF = true;
-      
-                  element.mounted();
-                  element.switchHeatMap();
-                }
-                index++;
-              });
-
-              // 3D訊號覆蓋圖
-              index = 0;
-              this.view3D2.forEach(element => {
-                if (index === this.zValues.indexOf(zValue)) {
-                  // element.isSimulation = this.calculateForm.isSimulation;
-                  element.calculateForm = this.calculateForm;
-                  element.obstacle = obstacle;
-                  element.defaultBs = bs;
-                  element.candidate = candidateBsAry;
-                  element.ue = ueCoordinate;
-                  element.width = this.calculateForm.width;
-                  element.height = this.calculateForm.height;
-                  element.zValue = this.zValues;
-                  element.planeHeight = zValue.toString();
-                  element.result = this.result;
-                  element.isPDF = true;
-                  element.heatmapType = 1;
-
-                  element.mounted();
-                  element.switchHeatMap();
-                }
-                index++;
-              });
-
-              // 3D訊號強度圖
-              index = 0;
-              this.view3D3.forEach(element => {
-                if (index === this.zValues.indexOf(zValue)) {
-                  // element.isSimulation = this.calculateForm.isSimulation;
-                  element.calculateForm = this.calculateForm;
-                  element.obstacle = obstacle;
-                  element.defaultBs = bs;
-                  element.candidate = candidateBsAry;
-                  element.ue = ueCoordinate;
-                  element.width = this.calculateForm.width;
-                  element.height = this.calculateForm.height;
-                  element.zValue = this.zValues;
-                  element.planeHeight = zValue.toString();
-                  element.result = this.result;
-                  element.isPDF = true;
-                  element.heatmapType = 2;
-      
-                  element.mounted();
-                  element.switchHeatMap();
-                }
-                index++;
-              });
-
-              // 3D上行傳輸速率圖
-              index = 0;
-              this.view3D4.forEach(element => {
-                if (index === this.zValues.indexOf(zValue)) {
-                  // element.isSimulation = this.calculateForm.isSimulation;
-                  element.calculateForm = this.calculateForm;
-                  element.obstacle = obstacle;
-                  element.defaultBs = bs;
-                  element.candidate = candidateBsAry;
-                  element.ue = ueCoordinate;
-                  element.width = this.calculateForm.width;
-                  element.height = this.calculateForm.height;
-                  element.zValue = this.zValues;
-                  element.planeHeight = zValue.toString();
-                  element.result = this.result;
-                  element.isPDF = true;
-                  element.heatmapType = 3;
-      
-                  element.mounted();
-                  element.switchHeatMap();
-                }
-                index++;
-              });
-
-              // 3D下行傳輸速率圖
-              index = 0;
-              this.view3D5.forEach(element => {
-                if (index === this.zValues.indexOf(zValue)) {
-                  // element.isSimulation = this.calculateForm.isSimulation;
-                  element.calculateForm = this.calculateForm;
-                  element.obstacle = obstacle;
-                  element.defaultBs = bs;
-                  element.candidate = candidateBsAry;
-                  element.ue = ueCoordinate;
-                  element.width = this.calculateForm.width;
-                  element.height = this.calculateForm.height;
-                  element.zValue = this.zValues;
-                  element.planeHeight = zValue.toString();
-                  element.result = this.result;
-                  element.isPDF = true;
-                  element.heatmapType = 4;
-      
-                  element.mounted();
-                  element.switchHeatMap();
-                }
-                index++;
-              });
-
-            }
-
-            // 統計資訊
-            this.performance.calculateForm = this.calculateForm;
-            this.performance.result = this.result;
-            this.performance.isHst = this.isHst;
-            this.performance.setData();
-            this.statistics.calculateForm = this.calculateForm;
-            this.statistics.result = this.result;
-            this.statistics.drawChart(true);
-            this.statistics.showTitle = false;
-
-            this.siteInfo.calculateForm = this.calculateForm;
-            this.siteInfo.result = this.result;
-            window.setTimeout(() => {
-              this.siteInfo.inputBsListCount = this.inputBsList.length;
-              this.siteInfo.defaultBsCount = this.defaultBs.length;
-            }, 0);
-            console.log(this.result);
-            window.setTimeout(() => {
-              this.genericPDF(this.calculateForm.taskName);
-            }, 3000);
-          }, 0);
+          resolve(res);
+        },
+        err => {
+          console.log(err);
+          return reject(err);
         }
       );
-    }
+    }).then((resolve) => {
+      console.log(resolve);
+      // Initial
+      this.defaultBs.length = 0;
+      this.inputBsList.length = 0;
+      this.ueList.length = 0;
+      //
+      this.taskId = taskId;
+      this.authService.spinnerShowPdf();
+      if (typeof this.taskId !== 'undefined') {
+        let url;
+        if (isHst) {
+          url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
+          url += `${this.authService.userToken}/${taskId}`;
+        } else {
+          url = `${this.authService.API_URL}/completeCalcResult/${this.taskId}/${this.authService.userToken}`;
+        }
+        this.http.get(url).subscribe(
+          res => {
+            console.log(res);
+            if (document.getElementById('pdf_area') != null) {
+              document.getElementById('pdf_area').style.display = 'block';
+            }
+            if (isHst) {
+              // 歷史紀錄
+              this.isHst = true;
+              this.result = this.formService.setHstOutputToResultOutput(res['output']);
+              this.result['createTime'] = res['createtime'];
+              const form = res;
+              // delete form['output'];
+              this.calculateForm = this.formService.setHstToForm(form);
+              this.result['inputWidth'] = this.calculateForm.width;
+              this.result['inputHeight'] = this.calculateForm.height;
+              console.log(this.calculateForm);
+            } else {
+              this.isHst = false;
+              this.calculateForm = res['input'];
+              this.result = res['output'];
+            }
+            // 現有基站
+            let bs = [];
+            if (!this.isEmpty(this.calculateForm.defaultBs)) {
+              if (this.calculateForm.defaultBs !== '') {
+                bs = this.calculateForm.defaultBs.split('|');
+                for (const item of bs) {
+                  this.defaultBs.push(JSON.parse(item));
+                }
+              }
+            }          
+            // 新增基站
+            let candidateBsAry = [];
+            if (!this.isEmpty(this.calculateForm.candidateBs)) {
+              candidateBsAry = this.calculateForm.candidateBs.split('|');
+              for (const item of candidateBsAry) {
+                this.inputBsList.push(JSON.parse(item));
+              }
+            }          
+            this.result['inputBsList'] = this.inputBsList;
+            // 障礙物資訊
+            let obstacle = [];
+            if (!this.isEmpty(this.calculateForm.obstacleInfo)) {
+              obstacle = this.calculateForm.obstacleInfo.split('|');
+              for (const item of obstacle) {
+                const obj = JSON.parse(item);
+                let materialName = '';
+                if(this.materialList[this.materialIdToIndex[obj[7]]]['property'] == "customized"){
+                  materialName = this.translateService.instant('customize')+ "_";
+                }
+                if(this.authService.lang =='zh-TW'){
+                  materialName += this.materialList[this.materialIdToIndex[obj[7]]]['chineseName'];
+                }else{
+                  materialName += this.materialList[this.materialIdToIndex[obj[7]]]['name'];
+                }
+                this.obstacleList.push({
+                  x: obj[0],
+                  y: obj[1],
+                  z: obj[2],
+                  width: obj[3],
+                  height: obj[4],
+                  altitude: obj[5],
+                  color: (typeof obj[8] !== 'undefined' ? obj[8] : '#73805c'),
+                  rotate: obj[6],
+                  material: obj[7],
+                  materialName: materialName,
+                  element: obj[8],
+                });
+              }
+              obstacle = this.obstacleList;
+            }
+
+
+            // 行動終端分佈
+            let ueCoordinate = [];
+            if (!this.isEmpty(this.calculateForm.ueCoordinate)) {
+              ueCoordinate = this.calculateForm.ueCoordinate.split('|');
+              for (const item of ueCoordinate) {
+                this.ueList.push(JSON.parse(item));
+              }
+            }
+
+            this.zValues = JSON.parse(this.calculateForm.zValue);
+            
+            window.setTimeout(() => {
+              if (candidateBsAry.length != 0) {
+                this.propose.calculateForm = this.calculateForm;
+                this.propose.result = this.result;
+                this.propose.isPDF = true;
+                this.propose.drawLayout(true);
+              }
+              // 編輯場域
+              let idx = 0;
+              this.sitePlanningMap.forEach(element => {
+                element.drawDown = false;
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[idx]);
+                idx++;
+              });
+
+              // 訊號品質圖
+              let index = 0;
+              this.quality.forEach(element => {
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[index], scaleMinSQ, scaleMaxSQ);
+                index++;
+              });
+
+              // 訊號覆蓋圖
+              index = 0;
+              this.cover.forEach(element => {
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[index]);
+                index++;
+              });
+
+              // 訊號強度圖
+              index = 0;
+              this.strength.forEach(element => {
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[index],scaleMinST,scaleMaxST);
+                index++;
+              });
+
+              // 上行傳輸速率圖
+              index = 0;
+              this.ulThroughputMap.forEach(element => {
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[index], scaleMinUL, scaleMaxUL);
+                index++;
+              });
+
+              // 下行傳輸速率圖
+              index = 0;
+              this.dlThroughputMap.forEach(element => {
+                element.calculateForm = this.calculateForm;
+                element.result = this.result;
+                element.draw(true, this.zValues[index], scaleMinDL, scaleMaxDL);
+                index++;
+              });
+
+
+              this.result['gaResult'] = {};
+              this.result['gaResult']['chosenCandidate'] = this.result['chosenCandidate'];
+              this.result['gaResult']['sinrMap'] = this.result['sinrMap'];
+              // this.result['gaResult']['connectionMapAll'] = this.result['connectionMapAll'];
+              this.result['gaResult']['rsrpMap'] = this.result['rsrpMap'];
+              this.result['gaResult']['ulThroughputMap'] = this.result['ulThroughputMap'];
+              this.result['gaResult']['dlThroughputMap'] = this.result['throughputMap'];
+
+              const sinrAry = [];
+              this.result['sinrMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    sinrAry.push(d);
+                  });
+                });
+              });
+
+              const rsrpAry = [];
+              this.result['rsrpMap'].map(v => {
+                v.map(m => {
+                  m.map(d => {
+                    rsrpAry.push(d);
+                  });
+                });
+              });
+
+              const ulThroughputAry = [];
+              try {
+                this.result['ulThroughputMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      ulThroughputAry.push(d);
+                    });
+                  });
+                });
+              } catch(e) {
+                console.log('No ulThorughput data, it may be an old record');
+              }
+      
+              const dlThroughputAry = [];
+              try {
+                this.result['throughputMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      dlThroughputAry.push(d);
+                    });
+                  });
+                });
+              } catch(e){
+                console.log('No dlThorughput data, it may be an old record');
+              }
+
+              this.result['sinrMax'] = Plotly.d3.max(sinrAry);
+              this.result['sinrMin'] = Plotly.d3.min(sinrAry);
+              this.result['rsrpMax'] = Plotly.d3.max(rsrpAry);
+              this.result['rsrpMin'] = Plotly.d3.min(rsrpAry);
+              this.result['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+              this.result['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+              this.result['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+              this.result['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
+
+              console.log(document.querySelectorAll('.canvas_3d').length);
+
+              for (const zValue of this.zValues) {
+                // 3D訊號品質圖
+                index = 0;
+                this.view3D1.forEach(element => {
+                  if (index === this.zValues.indexOf(zValue)) {
+                    // element.isSimulation = this.calculateForm.isSimulation;
+                    element.calculateForm = this.calculateForm;
+                    element.obstacle = obstacle;
+                    element.defaultBs = bs;
+                    element.candidate = candidateBsAry;
+                    element.ue = ueCoordinate;
+                    element.width = this.calculateForm.width;
+                    element.height = this.calculateForm.height;
+                    element.zValue = this.zValues;
+                    element.planeHeight = zValue.toString();
+                    element.result = this.result;
+                    element.isPDF = true;
+        
+                    element.mounted();
+                    element.switchHeatMap();
+                  }
+                  index++;
+                });
+
+                // 3D訊號覆蓋圖
+                index = 0;
+                this.view3D2.forEach(element => {
+                  if (index === this.zValues.indexOf(zValue)) {
+                    // element.isSimulation = this.calculateForm.isSimulation;
+                    element.calculateForm = this.calculateForm;
+                    element.obstacle = obstacle;
+                    element.defaultBs = bs;
+                    element.candidate = candidateBsAry;
+                    element.ue = ueCoordinate;
+                    element.width = this.calculateForm.width;
+                    element.height = this.calculateForm.height;
+                    element.zValue = this.zValues;
+                    element.planeHeight = zValue.toString();
+                    element.result = this.result;
+                    element.isPDF = true;
+                    element.heatmapType = 1;
+
+                    element.mounted();
+                    element.switchHeatMap();
+                  }
+                  index++;
+                });
+
+                // 3D訊號強度圖
+                index = 0;
+                this.view3D3.forEach(element => {
+                  if (index === this.zValues.indexOf(zValue)) {
+                    // element.isSimulation = this.calculateForm.isSimulation;
+                    element.calculateForm = this.calculateForm;
+                    element.obstacle = obstacle;
+                    element.defaultBs = bs;
+                    element.candidate = candidateBsAry;
+                    element.ue = ueCoordinate;
+                    element.width = this.calculateForm.width;
+                    element.height = this.calculateForm.height;
+                    element.zValue = this.zValues;
+                    element.planeHeight = zValue.toString();
+                    element.result = this.result;
+                    element.isPDF = true;
+                    element.heatmapType = 2;
+        
+                    element.mounted();
+                    element.switchHeatMap();
+                  }
+                  index++;
+                });
+
+                // 3D上行傳輸速率圖
+                index = 0;
+                this.view3D4.forEach(element => {
+                  if (index === this.zValues.indexOf(zValue)) {
+                    // element.isSimulation = this.calculateForm.isSimulation;
+                    element.calculateForm = this.calculateForm;
+                    element.obstacle = obstacle;
+                    element.defaultBs = bs;
+                    element.candidate = candidateBsAry;
+                    element.ue = ueCoordinate;
+                    element.width = this.calculateForm.width;
+                    element.height = this.calculateForm.height;
+                    element.zValue = this.zValues;
+                    element.planeHeight = zValue.toString();
+                    element.result = this.result;
+                    element.isPDF = true;
+                    element.heatmapType = 3;
+        
+                    element.mounted();
+                    element.switchHeatMap();
+                  }
+                  index++;
+                });
+
+                // 3D下行傳輸速率圖
+                index = 0;
+                this.view3D5.forEach(element => {
+                  if (index === this.zValues.indexOf(zValue)) {
+                    // element.isSimulation = this.calculateForm.isSimulation;
+                    element.calculateForm = this.calculateForm;
+                    element.obstacle = obstacle;
+                    element.defaultBs = bs;
+                    element.candidate = candidateBsAry;
+                    element.ue = ueCoordinate;
+                    element.width = this.calculateForm.width;
+                    element.height = this.calculateForm.height;
+                    element.zValue = this.zValues;
+                    element.planeHeight = zValue.toString();
+                    element.result = this.result;
+                    element.isPDF = true;
+                    element.heatmapType = 4;
+        
+                    element.mounted();
+                    element.switchHeatMap();
+                  }
+                  index++;
+                });
+
+              }
+
+              // 統計資訊
+              this.performance.calculateForm = this.calculateForm;
+              this.performance.result = this.result;
+              this.performance.isHst = this.isHst;
+              this.performance.setData();
+              this.statistics.calculateForm = this.calculateForm;
+              this.statistics.result = this.result;
+              this.statistics.drawChart(true);
+              this.statistics.showTitle = false;
+
+              this.siteInfo.calculateForm = this.calculateForm;
+              this.siteInfo.result = this.result;
+              window.setTimeout(() => {
+                this.siteInfo.inputBsListCount = this.inputBsList.length;
+                this.siteInfo.defaultBsCount = this.defaultBs.length;
+              }, 0);
+              console.log(this.result);
+              window.setTimeout(() => {
+                this.genericPDF(this.calculateForm.taskName);
+              }, 3000);
+            }, 0);
+          }
+        );
+      }
+    });
   }
 
   financial(x) {
@@ -726,7 +769,7 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
       // '下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','Frequency','SCS(kHz)','Bandwidth','UL MCStable',
-      'DL MCStable','UL MIMOLayer','DL MIMOLayer'];
+      'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -741,6 +784,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
       let unsorttxpower = [];
@@ -781,6 +826,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
         ]);
       }
     } else {
@@ -798,7 +845,7 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
       // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
-      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer'];
+      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -816,6 +863,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
       let unsorttxpower = [];
@@ -856,6 +905,8 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
         ]);
       }
     }
@@ -1342,16 +1393,17 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.num'),
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
+      this.translateService.instant('altitude.start'),
+      `${this.translateService.instant('altitude.obstacle')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.height')}(${this.translateService.instant('meter')})`,
-      `${this.translateService.instant('result.pdf.altitude')}(${this.translateService.instant('meter')})`,
       this.translateService.instant('material')
     ];
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
       console.log(item);
-      obstacleData.push([(k + 1), item.x, item.y, item.width, item.height, item.altitude, this.authService.parseMaterial(item.material)]);
+      obstacleData.push([(k + 1), item.x, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -1382,6 +1434,7 @@ export class PdfComponent implements OnInit {
       'SINR',
       'DL Throughput',
       'UL Throughput',
+      'RxGain'
     ];
     const ueData = [];
     let uedlTpt = [];
@@ -1423,6 +1476,7 @@ export class PdfComponent implements OnInit {
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
+            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
           ]);
         }
       }
@@ -1439,6 +1493,7 @@ export class PdfComponent implements OnInit {
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
+            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
           ]);
         }
       }

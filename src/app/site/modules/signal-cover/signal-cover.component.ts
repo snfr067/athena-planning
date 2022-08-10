@@ -532,44 +532,48 @@ export class SignalCoverComponent implements OnInit {
         const oData = JSON.parse(item);
         const xdata = oData[0];
         const ydata = oData[1];
-        const oColor = '#000000';
+        const width = oData[3];
+        const height = oData[4];
+        const altitude = oData[5];
+        const rotate = oData[6];
+        const material = oData[7];
         // 0~3分別是矩型、三角形、圓形、梯形
-        let shape = oData[7];
+        let shape = oData[8];
+        const oColor = '#000000';
+        
         let text = `${this.translateService.instant('planning.obstacleInfo')}
         X: ${xdata}
         Y: ${ydata}
-        ${this.translateService.instant('width')}: ${oData[2]}
-        ${this.translateService.instant('height')}: ${oData[3]}
-        ${this.translateService.instant('altitude')}: ${oData[4]}
+        ${this.translateService.instant('width')}: ${width}
+        ${this.translateService.instant('height')}: ${height}
+        ${this.translateService.instant('altitude')}: ${altitude}
         `;
-        if (typeof oData[6] !== 'undefined') {
-          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(oData[6])}`;
+        if (typeof material !== 'undefined') {
+          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(material)}`;
         }
-        if (typeof oData[7] === 'undefined') {
+        if (typeof shape === 'undefined') {
           shape = '0';
         }
-        const rotate = oData[5];
-
         this.rectList.push({
           x: xdata,
           y: ydata,
-          width: oData[2],
-          height: oData[3],
-          rotate: oData[5],
+          width: width,
+          height: height,
+          rotate: rotate,
           shape: shape,
           style: {
             left: 0,
             top: 0,
-            width: oData[2],
-            height: oData[3],
+            width: width,
+            height: height,
             // transform: `rotate(${oData[5]}deg)`,
             position: 'absolute',
             visibility: this.showObstacle,
             opacity: 0
           },
           svgStyle: {
-            width: oData[2],
-            height: oData[3],
+            width: width,
+            height: height,
             fill: oColor,
           },
           hover: text

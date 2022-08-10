@@ -19,17 +19,22 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChartService } from '../../service/chart.service';
 import { AbsoluteSourceSpan, ReturnStatement } from '@angular/compiler';
 import { convertActionBinding } from '@angular/compiler/src/compiler_util/expression_converter';
+import  booleanContains from "@turf/boolean-contains";
+import { polygon } from "@turf/helpers";
+import circle from '@turf/circle';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
-
+declare var Intersection: any;
+declare var Point2D: any;
 /**
  * 場域規劃頁
  */
 @Component({
   selector: 'app-site-planning',
   templateUrl: './site-planning.component.html',
-  styleUrls: ['./site-planning.component.scss']
+  styleUrls: ['./site-planning.component.scss',
+  ]
 })
 export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
@@ -79,7 +84,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     height: '30px',
     left: '0px',
     top: '0px',
-    'z-index': 99999,
+    'z-index': 100,
     transform: {
       rotate: '0deg',
       scaleX: 1,
@@ -100,6 +105,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   live = false;
   /** calculate form */
   calculateForm: CalculateForm = new CalculateForm();
+  /** material list */
+  materialList = [];
+  /** model list */
+  modelList = [];
+  /** new material & new model */
+  materialId: number = 0;
+  materialName: string = null;
+  materialLossCoefficient: number = 0.1;
+  materialProperty: string = null;
+  materialIdToIndex = {};
+  deleteMaterialList = [];
+  modelName: string = null;
+  modelDissCoefficient: number = 0.1;
+  modelfieldLoss: number = 0.1;
+  modelProperty: string = null;
+  modelIdToIndex = {};
   /** upload image src */
   imageSrc;
   /** subitem class */
@@ -109,7 +130,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   };
   /** 平面高度 */
   zValues = [1];
-  /** 障礙物 */
+  /** 障礙物 IDList */
   obstacleList = [];
   /** 互動物件 */
   dragObject = {};
@@ -121,6 +142,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   candidateList = [];
   /** 新增ＵＥ */
   ueList = [];
+  ueListParam = {};
   /** 要被刪除的List */
   deleteList = [];
   /** 比例尺 X軸pixel轉長度公式 */
@@ -204,8 +226,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   tooltipStr = '';
   /** 4捨5入格式化 */
   roundFormat = Plotly.d3.format('.1f');
-  /** 預設無線模型 list */
-  pathLossModelIdList = [];
   /** 物件移動範圍 */
   bounds = {
     left: 0,
@@ -273,6 +293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   wb: XLSX.WorkBook;
   /** 互動區域範圍 */
   dragStyle = {};
+  dragTimes = 0;
   /** Wifi頻率 */
   wifiFrequency = '0';
   /** 是否為歷史紀錄 */
@@ -331,6 +352,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+  @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
+  /** 新增自訂材質 */
+  @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
+  @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
+  @ViewChild('confirmDeleteMaterial') confirmDeleteMaterial: TemplateRef<any>;
+  @ViewChild('confirmDeleteModel') confirmDeleteModel: TemplateRef<any>;
 
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
@@ -417,6 +444,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     wifiMimo: '2x2',
     wifiBandwidth: '20',
     wifiFrequency: 2412,
+    bsTxGain: 0,
+    bsNoiseFigure: 0
   }
 
   
@@ -503,10 +532,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // clear Storage
     // this.authService.clearStorage();
     document.querySelector('body').style.overflow = 'hidden';
-
-    for (let i = 0; i < 9; i++) {
-      this.pathLossModelIdList.push(i);
-    }
     // 接收URL參數
     this.route.queryParams.subscribe(params => {
       if (typeof params['taskId'] !== 'undefined') {
@@ -516,213 +541,272 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     });
-
-    if (sessionStorage.getItem('importFile') != null) {
-      // from new-planning import file
-      this.calculateForm = new CalculateForm();
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.readXls(e.target.result);
-      };
-      reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
-
-      sessionStorage.removeItem('importFile');
-
-    // Not import File
-    } else {
-      
-      if (this.taskid !== '') {
-        // 編輯場域
-        let url;
-        if (this.isHst) {
-          // 歷史紀錄
-          url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
-          url += `${this.authService.userToken}/${this.taskid}`;
-        } else {
-          url = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
-        }
-        this.http.get(url).subscribe(
-          res => {
-            if (this.isHst) {
-              const result = res;
-              console.log(result);
-              const output = this.formService.setHstOutputToResultOutput(result['output']);
-              // delete result['output'];
-              // 大小寫不同，各自塞回form
-              // console.log(result);
-              // console.log(output);
-              this.dlRatio = result['tddframeratio'];
-              this.calculateForm = this.formService.setHstToForm(result);
-              if (!(Number(this.calculateForm.maxConnectionNum)>0)){
-                this.calculateForm['maxConnectionNum'] = 32;
-              }
-              // this.calculateForm.defaultBs = output['defaultBs'];
-              // this.calculateForm.bsList = output['defaultBs'];
-              let tempBsNum = 0;
-              if (this.calculateForm.defaultBs == "") {
-                tempBsNum = 0;
-              } else {
-                tempBsNum = this.calculateForm.defaultBs.split('|').length;
-              }
-              this.calculateForm.availableNewBsNumber -= tempBsNum;
-              
-              
-              this.hstOutput['gaResult'] = {};
-              this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
-              this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
-              // this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
-              this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
-              this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
-              this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
-              if (this.calculateForm.isSimulation) {
-                this.planningIndex = '3';
-              } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                  this.planningIndex = '1';
-                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                  if (this.calculateForm.isAverageSinr == true) {
-                    this.calculateForm.isCoverage = true;
-                    this.calculateForm.isAverageSinr = false;
-                  }
-                } else {
-                  this.planningIndex = '2';
-                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                  if (this.calculateForm.isUeAvgSinr) {
-                    this.calculateForm.isUeAvgThroughput = true;
-                    this.calculateForm.isUeAvgSinr = false;
-                  }
-                }
-              }
-              // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
-              //   isAverageSinr: this.calculateForm.isAverageSinr,
-              //   isCoverage: this.calculateForm.isCoverage,
-              //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
-              //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
-              //   isUeCoverage: this.calculateForm.isUeCoverage
-              // }));
-
-              const sinrAry = [];
-              output['sinrMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    sinrAry.push(d);
-                  });
-                });
-              });
-
-              const rsrpAry = [];
-              output['rsrpMap'].map(v => {
-                v.map(m => {
-                  m.map(d => {
-                    rsrpAry.push(d);
-                  });
-                });
-              });
-
-              const ulThroughputAry = [];
-              try {
-                this.result['ulThroughputMap'].map(v => {
-                  v.map(m => {
-                    m.map(d => {
-                      ulThroughputAry.push(d);
-                    });
-                  });
-                });
-              } catch(e) {
-                // console.log('No ulThorughput data, it may be an old record');
-              }
-      
-              const dlThroughputAry = [];
-              try {
-                this.result['throughputMap'].map(v => {
-                  v.map(m => {
-                    m.map(d => {
-                      dlThroughputAry.push(d);
-                    });
-                  });
-                });
-              } catch(e){
-                // console.log('No dlThorughput data, it may be an old record');
-              }
-
-              this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
-              this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
-              this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
-              this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
-              this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
-              this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
-              this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
-              this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
-
-            } else {
-              console.log(res)
-              this.calculateForm = res['input'];
-
-              if (this.calculateForm.isSimulation) {
-                this.planningIndex = '3';
-              } else {
-                if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                  this.planningIndex = '1';
-                } else {
-                  this.planningIndex = '2';
-                }
-              }
-
-              let tempBsNum = 0;
-              if (this.calculateForm.defaultBs == "") {
-                tempBsNum = 0;
-              } else {
-                tempBsNum = this.calculateForm.defaultBs.split('|').length;
-              }
-              this.calculateForm.availableNewBsNumber -= tempBsNum;
-              // this.calculateForm = res['input'];
-              console.log(this.calculateForm);
-              this.calculateForm.defaultBs = this.calculateForm.bsList;
-            }
-            this.zValues = JSON.parse(this.calculateForm.zValue);
-
-            // console.log(this.calculateForm);
-            if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
-              // 從暫存取出
-              // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
-            }
-            // console.log(this.calculateForm);
-            this.initData(false, false, '');
-          },
-          err => {
-            this.msgDialogConfig.data = {
-              type: 'error',
-              infoMessage: this.translateService.instant('cant_get_result')
-            };
-            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    //取得材質列表
+    const promise = new Promise((resolve, reject) => {
+      let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      this.materialIdToIndex = {};
+      this.http.get(url_obs).subscribe(
+        res => {
+          // console.log("----get",url_obs);
+          let result = res;
+          this.materialList = Object.values(result);
+          // console.log('this.materialList',this.materialList);
+          // let sorted = this.materialList.sort((a,b) => a.id - b.id);
+          this.materialId = this.materialList[0]['id'];
+          for (let i = 0;i < this.materialList.length;i++) {
+            let id = this.materialList[i]['id'];
+            this.materialIdToIndex[id]=i;
           }
-        );
-      } else {
-        // 新增場域 upload image
-        this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
-        // 頻寬初始值
-        this.changeWifiFrequency();
-        if (this.calculateForm.objectiveIndex === '0') {
-          // this.calculateForm.bandwidth = '[3]';
-        } else if (this.calculateForm.objectiveIndex === '1') {
-          // this.calculateForm.bandwidth = '[5]';
-        } else if (this.calculateForm.objectiveIndex === '2') {
-          // this.calculateForm.bandwidth = '[1]';
+          resolve(res);
+        },
+        err => {
+          console.log(err);
+          return reject(err);
         }
-        this.initData(false, false, '');
+      );
+    });
+    //取得模型列表
+    promise.then((promiseResult) => new Promise((resolve, reject) => {
+      console.log(promiseResult);
+      this.modelIdToIndex = {};
+      let url_model = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      this.http.get(url_model).subscribe(
+        res => {
+          // console.log("----get",url_model);
+          let result = res;
+          this.modelList = Object.values(result);
+          // let sorted = this.modelList.sort((a,b) => a.id - b.id);
+          for (let i = 0;i < this.modelList.length;i++) {
+            let id = this.modelList[i]['id'];
+            this.modelIdToIndex[id]=i;
+          }
+          resolve(res);
+        },err => {
+          console.log(err);
+          return reject(err);
+        }
+      );
+    }).then((resolve) => {
+      console.log(resolve);
+      if (sessionStorage.getItem('importFile') != null) {
+        // from new-planning import file
+        this.calculateForm = new CalculateForm();
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.readXls(e.target.result);
+        };
+        reader.readAsBinaryString(this.dataURLtoBlob(sessionStorage.getItem('importFile')));
+
+        sessionStorage.removeItem('importFile');
+
+      // Not import File
+      } else {
+        if (this.taskid !== '' ) {
+          // 編輯場域
+          let url;
+          if (this.isHst) {
+            // 歷史紀錄
+            url = `${this.authService.API_URL}/historyDetail/${this.authService.userId}/`;
+            url += `${this.authService.userToken}/${this.taskid}`;
+          } else {
+            url = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
+          }
+          this.http.get(url).subscribe(
+            res => {
+              // console.log("----request url:",url);
+              if (this.isHst) {
+                const result = res;
+                console.log(result);
+                const output = this.formService.setHstOutputToResultOutput(result['output']);
+                // delete result['output'];
+                // 大小寫不同，各自塞回form
+                // console.log(result);
+                // console.log(output);
+                this.dlRatio = result['tddframeratio'];
+                this.calculateForm = this.formService.setHstToForm(result);
+                if (!(Number(this.calculateForm.maxConnectionNum)>0)){
+                  this.calculateForm['maxConnectionNum'] = 32;
+                }
+                // this.calculateForm.defaultBs = output['defaultBs'];
+                // this.calculateForm.bsList = output['defaultBs'];
+                if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+                  if(this.calculateForm.pathLossModelId < this.modelList.length){
+                    this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+                  }
+                  else{
+                    this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+                  }
+                }
+                let tempBsNum = 0;
+                if (this.calculateForm.defaultBs == "") {
+                  tempBsNum = 0;
+                } else {
+                  tempBsNum = this.calculateForm.defaultBs.split('|').length;
+                }
+                this.calculateForm.availableNewBsNumber -= tempBsNum;
+                this.hstOutput['gaResult'] = {};
+                this.hstOutput['gaResult']['chosenCandidate'] = output['chosenCandidate'];
+                this.hstOutput['gaResult']['sinrMap'] = output['sinrMap'];
+                // this.hstOutput['gaResult']['connectionMapAll'] = output['connectionMapAll'];
+                this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
+                this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
+                this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
+                if (this.calculateForm.isSimulation) {
+                  this.planningIndex = '3';
+                } else {
+                  if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                    this.planningIndex = '1';
+                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                    if (this.calculateForm.isAverageSinr == true) {
+                      this.calculateForm.isCoverage = true;
+                      this.calculateForm.isAverageSinr = false;
+                    }
+                  } else {
+                    this.planningIndex = '2';
+                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                    if (this.calculateForm.isUeAvgSinr) {
+                      this.calculateForm.isUeAvgThroughput = true;
+                      this.calculateForm.isUeAvgSinr = false;
+                    }
+                  }
+                }
+                // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
+                //   isAverageSinr: this.calculateForm.isAverageSinr,
+                //   isCoverage: this.calculateForm.isCoverage,
+                //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
+                //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
+                //   isUeCoverage: this.calculateForm.isUeCoverage
+                // }));
+
+                const sinrAry = [];
+                output['sinrMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      sinrAry.push(d);
+                    });
+                  });
+                });
+
+                const rsrpAry = [];
+                output['rsrpMap'].map(v => {
+                  v.map(m => {
+                    m.map(d => {
+                      rsrpAry.push(d);
+                    });
+                  });
+                });
+
+                const ulThroughputAry = [];
+                try {
+                  this.result['ulThroughputMap'].map(v => {
+                    v.map(m => {
+                      m.map(d => {
+                        ulThroughputAry.push(d);
+                      });
+                    });
+                  });
+                } catch(e) {
+                  // console.log('No ulThorughput data, it may be an old record');
+                }
+        
+                const dlThroughputAry = [];
+                try {
+                  this.result['throughputMap'].map(v => {
+                    v.map(m => {
+                      m.map(d => {
+                        dlThroughputAry.push(d);
+                      });
+                    });
+                  });
+                } catch(e){
+                  // console.log('No dlThorughput data, it may be an old record');
+                }
+
+                this.hstOutput['sinrMax'] = Plotly.d3.max(sinrAry);
+                this.hstOutput['sinrMin'] = Plotly.d3.min(sinrAry);
+                this.hstOutput['rsrpMax'] = Plotly.d3.max(rsrpAry);
+                this.hstOutput['rsrpMin'] = Plotly.d3.min(rsrpAry);
+                this.hstOutput['ulThroughputMax'] = Plotly.d3.max(ulThroughputAry);
+                this.hstOutput['ulThroughputMin'] = Plotly.d3.min(ulThroughputAry);
+                this.hstOutput['dlThroughputMax'] = Plotly.d3.max(dlThroughputAry);
+                this.hstOutput['dlThroughputMin'] = Plotly.d3.min(dlThroughputAry);
+
+              } else {
+                console.log(res);
+                this.calculateForm = res['input'];
+
+                if (this.calculateForm.isSimulation) {
+                  this.planningIndex = '3';
+                } else {
+                  if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
+                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                    this.planningIndex = '1';
+                  } else {
+                    this.planningIndex = '2';
+                  }
+                }
+
+                let tempBsNum = 0;
+                if (this.calculateForm.defaultBs == "") {
+                  tempBsNum = 0;
+                } else {
+                  tempBsNum = this.calculateForm.defaultBs.split('|').length;
+                }
+                this.calculateForm.availableNewBsNumber -= tempBsNum;
+                // this.calculateForm = res['input'];
+                console.log(this.calculateForm);
+                this.calculateForm.defaultBs = this.calculateForm.bsList;
+              }
+              this.zValues = JSON.parse(this.calculateForm.zValue);
+
+              // console.log(this.calculateForm);
+              if (window.sessionStorage.getItem(`form_${this.taskid}`) != null) {
+                // 從暫存取出
+                // this.calculateForm = JSON.parse(window.sessionStorage.getItem(`form_${this.taskid}`));
+              }
+              // console.log(this.calculateForm);
+              this.initData(false, false, '');
+            },
+            err => {
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: this.translateService.instant('cant_get_result')
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            }
+          );
+        } else {
+          // 新增場域 upload image
+          this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
+          // 頻寬初始值
+          this.changeWifiFrequency();
+          if (this.calculateForm.objectiveIndex === '0') {
+            // this.calculateForm.bandwidth = '[3]';
+          } else if (this.calculateForm.objectiveIndex === '1') {
+            // this.calculateForm.bandwidth = '[5]';
+          } else if (this.calculateForm.objectiveIndex === '2') {
+            // this.calculateForm.bandwidth = '[1]';
+          }
+          this.initData(false, false, '');
+          if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+              this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+          }
+        }
+        // setTimeout(()=> {
+        //   if (this.calculateForm.defaultBs !== "") {
+        //     this.planningIndex = '3';
+        //     console.log('Simulation')
+        //   } else {
+        //     this.planningIndex = '1';
+        //     console.log('Calculation')
+        //   }
+        // }, 1000);
       }
-      // setTimeout(()=> {
-      //   if (this.calculateForm.defaultBs !== "") {
-      //     this.planningIndex = '3';
-      //     console.log('Simulation')
-      //   } else {
-      //     this.planningIndex = '1';
-      //     console.log('Calculation')
-      //   }
-      // }, 1000);
-    }
+    })
+    .catch(err => console.log(err))
+    )
   }
 
   checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
@@ -885,6 +969,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   tempParamStorage (temp) {
     window.sessionStorage.setItem('tempParam',temp);
+    // console.log("--this.dragObject",this.dragObject);
   }
 
   checkFieldWidHei(isHWChange) {
@@ -963,7 +1048,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param isImportImg 是否import image
    */
   initData(isImportXls, isImportImg, isHWAChange) {
-
+    // console.log('--initData.');
     console.log(this.defaultBSList);
     //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
@@ -1069,7 +1154,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     };
 
     window.setTimeout(() => {
-  
       if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
         const reader = new FileReader();
         reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
@@ -1247,7 +1331,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     return [w, h];
   }
-
+  ccc(){
+    console.log('ccc');
+  }
   /**
    * dataURI to blob
    * @param dataURI
@@ -1352,7 +1438,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         guardInterval: '400ns',
         wifiMimo: '2x2',
         wifiFrequency: 2412,
-        wifiBandwidth: '20'
+        wifiBandwidth: '20',
+        bsTxGain: 0,
+        bsNoiseFigure: 0
       };
       if (this.calculateForm.objectiveIndex === '0') {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1398,6 +1486,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         guardInterval: '400ns',
         wifiMimo: '2x2',
         // wifiBandwidth: 20
+        bsTxGain: 0,
+        bsNoiseFigure: 0
       };
       if (Number(this.calculateForm.objectiveIndex) === 0) {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1407,6 +1497,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       color = this.UE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.ueList.push(this.svgId);
+      this.ueListParam[this.svgId] = {
+        ueRxGain:0
+      };
       this.pathStyle[this.svgId] = {
         fill: this.UE_COLOR
       };
@@ -1476,11 +1569,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       width: width,
       height: height
     };
-
+    let materialName = '';
+    if(this.authService.lang =='zh-TW'){
+      materialName = this.materialList[0]['chineseName'];
+    }else{
+      materialName = this.materialList[0]['name'];
+    }
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
-      z: this.zValues[0],
+      // z: this.zValues[0],
+      z: 0,
       width: width,
       height: height,
       altitude: this.calculateForm.altitude,
@@ -1488,9 +1587,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       title: this.svgMap[id].title,
       type: this.svgMap[id].type,
       color: color,
-      material: '0',
-      element: this.parseElement(id)
+      material: this.materialList[0]['id'],
+      element: this.parseElement(id),
+      materialName: materialName
     };
+
+    if (id == 'UE'){
+      this.dragObject[this.svgId].z = this.zValues[0];
+    }
 
     this.realId = _.cloneDeep(this.svgId);
     // 預設互動外框設定值
@@ -1499,14 +1603,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       height: `${height}px`,
       left: `${this.initpxl}px`,
       top: `${this.initpxl}px`,
-      'z-index': 99999,
+      'z-index': 100,
       transform: {
         rotate: '0deg',
         scaleX: 1,
         scaleY: 1
       }
     });
-
     // this.initpxl += 10;
 
     // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
@@ -1559,7 +1662,38 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }, 0);
 
   }
-
+  changeZvalue(id){
+    try {
+      this.moveable.destroy();
+    } catch (error) {}
+    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) + Number(this.dragObject[id].altitude) > Number(this.calculateForm.altitude)) {
+      // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
+      this.recoverParam(id,'z');
+      let msg = this.translateService.instant('z_greater_then_field_altitude');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+    this.target = document.getElementById(id);
+    this.svgId = id;
+    this.realId = _.cloneDeep(id);
+    this.frame = new Frame({
+      width: this.spanStyle[id].width,
+      height: this.spanStyle[id].height,
+      left: this.spanStyle[id].left,
+      top: this.spanStyle[id].top,
+      'z-index': 100+10*this.dragObject[this.svgId].z,
+      transform: {
+        rotate: `${this.dragObject[this.svgId].rotate}deg`,
+        scaleX: 1,
+        scaleY: 1
+      }
+    });
+    this.setTransform(this.target);
+  }
   /**
    * click互動物件
    * @param id 
@@ -1582,17 +1716,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       height: this.spanStyle[id].height,
       left: this.spanStyle[id].left,
       top: this.spanStyle[id].top,
-      'z-index': 99999,
+      'z-index': 100+10*this.dragObject[this.svgId].z,
       transform: {
         rotate: `${this.dragObject[this.svgId].rotate}deg`,
         scaleX: 1,
         scaleY: 1
       }
     });
+    // this.setTransform(this.target);
     // console.log(this.frame);
     // console.log(this.target);
     // console.log(this.spanStyle);
-    // console.log(this.frame);
     // console.log(this.dragObject[id]);
     // console.log(this.moveable);
 
@@ -1648,27 +1782,232 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** tooltip 文字 */
   getTooltip() {
     const id = this.hoverObj.id;
-    let title = `${this.dragObject[id].title}`;
-    // console.log('this.svgNum',this.svgNum);
-    title +=` : ${this.svgNum}<br><strong>—————</strong><br>`;
+    let title = `${this.dragObject[id].title}: ${this.svgNum}`;
+    let overlappedIdList = this.checkObstacleIsOverlaped(id);
+    if (overlappedIdList.length > 0){
+      title += `<br>${this.translateService.instant('overlap')}: ${overlappedIdList}`;  
+    }
+    title +=`<br><strong>—————</strong><br>`;
     title += `X: ${this.dragObject[id].x}<br>`;
     title += `Y: ${this.dragObject[id].y}<br>`;
     if (this.dragObject[id].type === 'obstacle') {
+      title += `${this.translateService.instant('altitude.start')}: ${this.dragObject[id].z}<br>`;
+      title += `${this.translateService.instant('altitude.obstacle')}: ${this.dragObject[id].altitude}<br>`;
       title += `${this.translateService.instant('width')}: ${this.dragObject[id].width}<br>`;
       title += `${this.translateService.instant('height')}: ${this.dragObject[id].height}<br>`;
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+    /*
     } else if (this.dragObject[id].type === 'defaultBS' || this.dragObject[id].type === 'candidate') {
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
+      // title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].altitude}<br>`;
     } else if (this.dragObject[id].type === 'subField') {
+
     } else {
-      title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
+      // title += `${this.translateService.instant('result.pdf.altitude')}: ${this.dragObject[id].z}<br>`;
     }
     if (this.dragObject[id].type === 'obstacle') {
-      title += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(this.dragObject[id].material)}`;
+    */
+      let index = this.materialIdToIndex[Number(this.dragObject[id].material)];
+      title += `${this.translateService.instant('material')}: `;
+      if(this.materialList[index]['property'] == "default"){
+        title += `${this.dragObject[id].materialName}`;
+      } else {
+        title += `${this.translateService.instant('customize')}_${this.dragObject[id].materialName}`;
+      }
+      
+    } else {
+      title += `Z: ${this.dragObject[id].z}<br>`;
     }
+    /*
+    if (this.dragObject[id].type === 'UE') {
+      title += `${this.translateService.instant('RxGain')}: ${this.ueListParam[id].ueRxGain}<br>`;
+    }
+    */
     return title;
   }
-
+  checkObstacleIsOverlaped(ObjId){
+    if (ObjId.split('_')[0] != "rect" && ObjId.split('_')[0] != "polygon" && ObjId.split('_')[0] != "trapezoid" && ObjId.split('_')[0] != "ellipse"){
+      return [];
+    }
+    let overlapedIDList = [];
+    let obj = this.dragObject[ObjId];
+    let shape = Number(obj.element);
+    // console.log("new check obstacle1:",ObjId);
+    let coordinateObj = this.calculateCoordinate(obj,shape);
+    let coordinate = coordinateObj[0];
+    let turfobj = coordinateObj[1];
+    for (let i=0; i<this.obstacleList.length; i++){
+      let id = this.obstacleList[i];
+      // console.log("obstacle2:",id);
+      if (id == ObjId){
+        continue;
+      } else {
+        let obj2 = this.dragObject[id];
+        let shape2 = Number(obj2.element);
+        let coordinateobj2 = this.calculateCoordinate(obj2,shape2);
+        let coordinate2 = coordinateobj2[0];
+        let turfobj2 = coordinateobj2[1];
+        let interObj;
+        if (shape == 2 && shape2 == 2){
+          interObj = Intersection.intersectCircleCircle(coordinate[0],coordinate[1],coordinate2[0],coordinate2[1]);
+        } else if(shape == 2){
+          interObj = Intersection.intersectCirclePolygon(coordinate[0],coordinate[1],coordinate2);
+        } else if(shape2 == 2){
+          interObj = Intersection.intersectCirclePolygon(coordinate2[0],coordinate2[1],coordinate);
+        } else {
+          interObj = Intersection.intersectPolygonPolygon(coordinate,coordinate2);
+        }
+        // console.log('interObj',interObj);
+        if (interObj.status == "Intersection" || interObj.status == "Inside" || booleanContains(turfobj, turfobj2) || booleanContains(turfobj2, turfobj)){
+          overlapedIDList.push(i+1);
+        }
+      }
+    }
+    return overlapedIDList;
+  }
+  calculateCoordinate(obj,shape){
+    let coordinate = [];
+    let turfObj;
+    let angle = Number(obj.rotate%360);
+    let obWid = Number(obj.width);
+    let obHei = Number(obj.height);
+    let deg = 2*Math.PI/360;
+    let x = Number(obj.x);
+    let y = Number(obj.y);
+    let tempAngle = 360 - angle; 
+    if (angle < 0) {angle+=360};
+    if (shape == 0) { // 0:矩形, 1:三角形, 2:正圓形, 3:梯形
+      let rcc = [x+obWid/2,y+obHei/2];
+      let leftbot = [x,y];
+      let lefttop = [x,y+obHei];
+      let rightbot = [x+obWid,y];
+      let righttop = [x+obWid,y+obHei];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(leftbot[0],leftbot[1]),
+          new Point2D(rightbot[0],rightbot[1]),
+          new Point2D(righttop[0],righttop[1]),
+          new Point2D(lefttop[0],lefttop[1])
+        ];
+        turfObj = polygon([[leftbot,rightbot,righttop,lefttop,leftbot]]);
+      } else {
+        let rotleftbot = [
+          (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotlefttop = [
+          (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrightbot = [
+          (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrighttop = [
+          (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleftbot[0],rotleftbot[1]),
+          new Point2D(rotrightbot[0],rotrightbot[1]),
+          new Point2D(rotrighttop[0],rotrighttop[1]),
+          new Point2D(rotlefttop[0],rotlefttop[1])
+        ];
+        turfObj = polygon([[rotleftbot,rotrightbot,rotrighttop,rotlefttop,rotleftbot]]);
+      }
+    } else if (shape == 1) { // width: X, height: Y
+      let rcc = [x+obWid/2,y+obHei/2];
+      let top = [x+obWid/2,y+obHei];
+      let left = [x,y];
+      let right = [x+obWid,y];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(left[0],left[1]),
+          new Point2D(right[0],right[1]),
+          new Point2D(top[0],top[1])
+        ];
+        turfObj = polygon([[left,right,top,left]]);
+      } else {
+        let rottop = [
+          (top[0]-rcc[0])*Math.cos(tempAngle*deg)-(top[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (top[0]-rcc[0])*Math.sin(tempAngle*deg)+(top[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotleft = [
+          (left[0]-rcc[0])*Math.cos(tempAngle*deg)-(left[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (left[0]-rcc[0])*Math.sin(tempAngle*deg)+(left[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotright = [
+          (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleft[0],rotleft[1]),
+          new Point2D(rotright[0],rotright[1]),
+          new Point2D(rottop[0],rottop[1])
+        ];
+        turfObj = polygon([[rotleft,rotright,rottop,rotleft]]);
+      }
+    } else if (shape == 2) { 
+      let r = 0.5*obWid;
+      let rx = x + r;
+      let ry = y + r;
+      let x1y1 = new Point2D(rx,ry);
+      coordinate = [x1y1,r];
+      turfObj = circle([rx,ry],r);
+    } else if (shape == 3) { 
+      let rcc = [x+obWid/2,y+obHei/2];
+      let leftbot = [x,y];
+      let lefttop = [x+obWid/4,y+obHei];
+      let rightbot = [x+obWid,y];
+      let righttop = [x+(3*obWid/4),y+obHei];
+      if (angle == 0){
+        coordinate = [
+          new Point2D(leftbot[0],leftbot[1]),
+          new Point2D(rightbot[0],rightbot[1]),
+          new Point2D(righttop[0],righttop[1]),
+          new Point2D(lefttop[0],lefttop[1])
+        ];
+        turfObj = polygon([[leftbot,rightbot,righttop,lefttop,leftbot]]);
+      } else {
+        let rotleftbot = [
+          (leftbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(leftbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (leftbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(leftbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotlefttop = [
+          (lefttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(lefttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (lefttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(lefttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrightbot = [
+          (rightbot[0]-rcc[0])*Math.cos(tempAngle*deg)-(rightbot[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (rightbot[0]-rcc[0])*Math.sin(tempAngle*deg)+(rightbot[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        let rotrighttop = [
+          (righttop[0]-rcc[0])*Math.cos(tempAngle*deg)-(righttop[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
+          (righttop[0]-rcc[0])*Math.sin(tempAngle*deg)+(righttop[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
+        ];
+        coordinate = [
+          new Point2D(rotleftbot[0],rotleftbot[1]),
+          new Point2D(rotrightbot[0],rotrightbot[1]),
+          new Point2D(rotrighttop[0],rotrighttop[1]),
+          new Point2D(rotlefttop[0],rotlefttop[1])
+        ];
+        turfObj = polygon([[rotleftbot,rotrightbot,rotrighttop,rotlefttop,rotleftbot]]);
+      }
+    }
+    return [coordinate,turfObj];
+  }
+  setMaterialName(id,material){
+    let index = this.materialIdToIndex[Number(material)];
+    let materialName = '';
+    if(this.authService.lang =='zh-TW'){
+      materialName = this.materialList[index]['chineseName'];
+    }else{
+      materialName = this.materialList[index]['name'];
+    }
+    if(this.materialList[index]['property'] == "default"){
+      this.dragObject[id].materialName = materialName;
+    } else {
+      this.dragObject[id].materialName = this.translateService.instant('customize') + "_" + materialName;
+    }
+  }
   /** set drag object data */
   setDragData() {
     const rect = this.target.getBoundingClientRect();
@@ -1700,7 +2039,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         hVal = this.roundFormat(this.yLinear(this.subFieldStyle[this.svgId].height));
       }
     }
-
     const mOrigin = document.querySelector('.moveable-origin');
     // console.log(mOrigin)
     if (mOrigin != null) {
@@ -1783,7 +2121,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = target;
       this.frame.set('left', `${left}px`);
       this.frame.set('top', `${top}px`);
-      this.frame.set('z-index', 9999999);
+      this.frame.set('z-index', 100+10*this.dragObject[this.svgId].z);
       this.setTransform(target);
 
       this.spanStyle[this.svgId].left = `${left}px`;
@@ -1874,7 +2212,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     
     this.spanStyle[this.svgId].transform = `rotate(${this.dragObject[this.svgId].rotate}deg)`;   
-    this.frame.set('z-index', 9999999);
+    this.frame.set('z-index', 100+10*this.dragObject[this.svgId].z);
     this.frame.set('transform', 'rotate', `${this.dragObject[this.svgId].rotate}deg`);
     this.setTransform(target);
     
@@ -2078,10 +2416,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     // console.log(this.svgId);
     // console.log(item);
+    // console.log(this.svgNum);
     // this.matDialog.open(this.rfModal);
     this.matDialog.open(this.rfModalTable);
   }
-
+  openUEParamSetting(item, i, isNav) {
+    this.svgId = item;
+    if (isNav) { // 右方障礙物資訊id與左方平面圖障礙物id序號差1
+      this.svgNum = i + 1;
+    } else {
+      this.svgNum = i;
+    }
+    this.matDialog.open(this.ueModalTable);
+  }
   openDeleteSetting() {
     this.matDialog.open(this.deleteModal);
   }
@@ -2208,6 +2555,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    checkRFParamIsEmpty(protocol, duplex) {
     let error = false;
     let msg = '<br>';
+    if (this.calculateForm.pathLossModelId == 999 || !(this.calculateForm.pathLossModelId in this.modelIdToIndex)) {
+        error = true;
+        msg += `${this.translateService.instant('plz_fill_pathLossModel')}<br/>`;
+        msg+= '</p>';
+    }
      if (protocol == '1') { //5G
       if (duplex == 'tdd') {
         for (let i = 0; i < this.defaultBSList.length; i++) {
@@ -2217,6 +2569,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
+          if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
           if (this.isEmpty(obj.tddscs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddscs')}<br/>`;  }
           if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulModulationCodScheme')}<br/>`;  }
@@ -2240,6 +2594,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
+          if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
           if (this.isEmpty(obj.ulBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('uulBandwidth')}<br/>`;  }
           if (this.isEmpty(obj.dlScs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlscs')}<br/>`;  }
@@ -2989,7 +3345,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       for (let i = 0; i < this.obstacleList.length; i++) {
         const obj = this.dragObject[this.obstacleList[i]];
         const shape = this.parseElement(obj.element);
-        obstacleInfo += `[${obj.x},${obj.y},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${obj.material},${shape}]`;
+        obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${Number(obj.material)},${shape}]`;
         if (i < this.obstacleList.length - 1) {
           obstacleInfo += '|';
         }
@@ -2997,12 +3353,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.obstacleInfo = obstacleInfo;
     }
     let ueCoordinate = '';
+    let ueRxGain = [];
     this.calculateForm.ueCoordinate = ueCoordinate;
     if (this.ueList.length > 0) {
       for (let i = 0; i < this.ueList.length; i++) {
         const obj = this.dragObject[this.ueList[i]];
         // ueCoordinate += `[${obj.x},${obj.y},${obj.z},${obj.material}]`;
         ueCoordinate += `[${obj.x},${obj.y},${obj.z}]`;
+        ueRxGain.push(this.ueListParam[this.ueList[i]].ueRxGain);
         if (i < this.ueList.length - 1) {
           ueCoordinate += '|';
         }
@@ -3011,7 +3369,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       ueCoordinate = '';
     }
     this.calculateForm.ueCoordinate = ueCoordinate;
-
+    this.calculateForm.ueRxGain = `[${ueRxGain.toString()}]`;;
     let defaultBs = '';
     this.calculateForm.defaultBs = defaultBs;
     if (this.defaultBSList.length > 0) {
@@ -3040,6 +3398,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       mapProtocol = 'wifi';
     }
     //4G and 5G
+    let bsTxGain = [];
+    let bsNoiseFigure = [];
     let duplex = this.duplexMode;
     let tddFrameRatio = this.dlRatio;
     let dlFrequency = []; //Array
@@ -3073,6 +3433,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.candidateList.length > 0) {
         for (let i = 0; i < this.candidateList.length; i++) {
           const canObj = this.dragObject[this.candidateList[i]];
+          bsTxGain.push(this.tempCalParamSet.bsTxGain);
+          bsNoiseFigure.push(this.tempCalParamSet.bsNoiseFigure);
           candidate += `[${canObj.x},${canObj.y},${canObj.altitude}]`;
           // candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
           if (i < this.candidateList.length - 1) {
@@ -3123,6 +3485,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         console.log(`obj: ${JSON.stringify(obj)}`)
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
+        bsTxGain.push(obj.bsTxGain);
+        bsNoiseFigure.push(obj.bsNoiseFigure);
         // freqList.push(obj.frequency);
         
         if (mapProtocol !== 'wifi') {
@@ -3165,7 +3529,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       this.calculateForm.scalingFactor = scalingFactor;
       this.calculateForm.tddFrameRatio = tddFrameRatio;
-
+      this.calculateForm.bsTxGain = `[${bsTxGain.toString()}]`;
+      this.calculateForm.bsNoiseFigure = `[${bsNoiseFigure.toString()}]`;
       //4G
       this.calculateForm.mimoNumber = `[${mimoNumber.toString()}]`;
       //5G
@@ -3223,7 +3588,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.calculateForm[key] = Number(this.calculateForm[key]);
       }
     });
-
+    /*
+    Object.keys(this.calculateForm.pathLossModel).forEach((key) => {
+      this.calculateForm.pathLossModel[key] = Number(this.calculateForm.pathLossModel[key]);
+      
+    });
+    */
     if (Number(this.calculateForm.objectiveIndex) === 2) {
       // Wifi強制指定為wifi模型
       this.calculateForm.pathLossModelId = 9;
@@ -3320,6 +3690,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.dragObject[svgId].altitude <= 0) {
         this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
         let msg = this.translateService.instant('wha_cant_less_than_0');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      } else if (Number(this.dragObject[svgId].z) + Number(this.dragObject[svgId].altitude) > Number(this.calculateForm.altitude)) {
+        this.recoverParam(svgId,'altitude');
+        let msg = this.translateService.instant('z_greater_then_field_altitude');
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: msg
@@ -4218,6 +4596,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else if (type == 'height') {
       this.dragObject[svgId].height = Number(window.sessionStorage.getItem('tempParam'));
       this.changeSize(svgId,'height',false);
+    } else if (type == 'z'){
+      this.dragObject[svgId].z = Number(window.sessionStorage.getItem('tempParam'));
+    } else if (type == 'altitude' ){
+      this.dragObject[svgId].altitude = Number(window.sessionStorage.getItem('tempParam'));
     }
   }
 
@@ -4314,9 +4696,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               (right[0]-rcc[0])*Math.cos(tempAngle*deg)-(right[1]-rcc[1])*Math.sin(tempAngle*deg)+rcc[0],
               (right[0]-rcc[0])*Math.sin(tempAngle*deg)+(right[1]-rcc[1])*Math.cos(tempAngle*deg)+rcc[1]
             ];
-            // console.log(rotTop);
-            // console.log(rotLeft);
-            // console.log(rotRight);
             let maxX = Math.max(rotTop[0],rotLeft[0],rotRight[0]);
             let minX = Math.min(rotTop[0],rotLeft[0],rotRight[0]);
             if (minX.toString().length > 10) {
@@ -4668,6 +5047,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     /* generate worksheet */
     // map
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    var maxLength = 32767;
+    // console.log("calculateForm.mapImage,",this.calculateForm.mapImage);
     const mapData = [
       ['image', 'imageName', 'width', 'height', 'altitude', 'protocol', 'mapLayer'],
       [
@@ -4687,6 +5068,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         ]);
       }
     }
+    if (!(this.calculateForm.mapImage == null)){
+      if (this.calculateForm.mapImage.length >= maxLength){
+        let splitTimes = parseInt((this.calculateForm.mapImage.length / maxLength)+"") + 1;
+        console.log("exceed",maxLength,", splitTimes:",splitTimes);
+        for (let i = 1; i < splitTimes; i++) {
+          if (i < mapData.length){
+            console.log("i:",i,"maxLength*(i-1)",maxLength*(i-1),"maxLength*i",maxLength*i);
+            mapData[i][0] = this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i);
+          }
+          else{
+            mapData.push([
+              this.calculateForm.mapImage.substring(maxLength*(i-1),maxLength*i), '', '', '', '', '', ''
+            ]);
+          }
+        }
+        // 切割完剩下的最後一塊
+        mapData.push([
+          this.calculateForm.mapImage.substring(maxLength*(splitTimes-1),this.calculateForm.mapImage.length), '', '', '', '', '', ''
+        ]);
+        console.log("mapData.length",mapData.length);
+      }
+    }
+
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
     // defaultBS
@@ -4694,7 +5098,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers', 
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -4729,6 +5133,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].wifiMimo,
         this.bsListRfParam[item].wifiBandwidth,
         this.bsListRfParam[item].wifiFrequency,
+        this.bsListRfParam[item].bsTxGain,
+        this.bsListRfParam[item].bsNoiseFigure,
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -4739,7 +5145,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers',
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -4772,16 +5178,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiMimo,
         this.tempCalParamSet.wifiBandwidth,
         this.tempCalParamSet.wifiFrequency,
+        this.tempCalParamSet.bsTxGain,
+        this.tempCalParamSet.bsNoiseFigure
       ]);
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
     XLSX.utils.book_append_sheet(wb, candidateWS, 'candidate');
     // UE
-    const ueData = [['x', 'y', 'z']];
+    const ueData = [['x', 'y', 'z','ueRxGain']];
     for (const item of this.ueList) {
       ueData.push([
         this.dragObject[item].x, this.dragObject[item].y,
         this.dragObject[item].z, 
+        this.ueListParam[item].ueRxGain
         // this.dragObject[item].material,
         // this.dragObject[item].color
       ]);
@@ -4789,11 +5198,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const ueWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ueData);
     XLSX.utils.book_append_sheet(wb, ueWS, 'ue');
     // obstacle
-    const obstacleData = [['x', 'y', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
+    const obstacleData = [['x', 'y', 'z', 'width', 'height', 'altitude', 'rotate', 'material', 'color', 'shape']];
     for (const item of this.obstacleList) {
       const shape = this.parseElement(this.dragObject[item].element);
       obstacleData.push([
-        this.dragObject[item].x, this.dragObject[item].y,
+        this.dragObject[item].x, this.dragObject[item].y,this.dragObject[item].z,
         this.dragObject[item].width, this.dragObject[item].height,
         this.dragObject[item].altitude, this.dragObject[item].rotate,
         this.dragObject[item].material, this.dragObject[item].color,
@@ -4835,13 +5244,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.maxConnectionNum = 32;
     }
     const algorithmData = [
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
+      // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
-        this.calculateForm.maxConnectionNum
+        // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.maxConnectionNum, 
+        
       ]
     ];
     const algorithmWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(algorithmData);
@@ -4901,15 +5312,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.wb = XLSX.read(result, {type: 'binary'});
 
     /* map sheet */
-    const map: string = this.wb.SheetNames[0];
-    const mapWS: XLSX.WorkSheet = this.wb.Sheets[map];
-    const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1}));
-
+    const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
+    const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
+    const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
+    /*
+      mapData = [
+        ['image', 'imageName', ...]
+        ['data:image/...', 'EGATRON3F.png', ...]
+        ['','', ,,, , 2.1]
+      ]
+      0對應column name, 1+對應data
+    */
     try {
       this.calculateForm.mapImage = '';
       const keyMap = {};
       Object.keys(mapData[0]).forEach((key) => {
-        keyMap[mapData[0][key]] = key;
+        keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
       });
       this.zValues.length = 0;
       for (let i = 1; i < mapData.length; i++) {
@@ -5008,6 +5426,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         // RF parameter import
         const offset = 2;
+        let bsTxGain = 0
+        let bsNoiseFigure = 0
+        if (Object.values(baseStationData[0]).includes("bsTxGain")){
+          bsTxGain= baseStationData[i][24+offset]
+        }
+        if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
+          bsNoiseFigure= baseStationData[i][25+offset]
+        }
         this.bsListRfParam[id] = {
           txpower: baseStationData[i][3+offset],
           beampattern: baseStationData[i][4+offset],
@@ -5030,6 +5456,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           wifiMimo: baseStationData[i][21+offset],
           wifiBandwidth: baseStationData[i][22+offset],
           wifiFrequency: baseStationData[i][23+offset],
+          bsTxGain: bsTxGain,
+          bsNoiseFigure: bsNoiseFigure
         };
         
         this.defaultBSList.push(id);
@@ -5106,7 +5534,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiMimo = candidateData[i][19+offset];
         this.tempCalParamSet.wifiBandwidth = candidateData[i][20+offset];
         this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
-
+        let bsTxGain = 0
+        let bsNoiseFigure = 0
+        if (Object.values(candidateData[0]).includes("bsTxGain")){
+          bsTxGain= candidateData[i][22+offset]
+        }
+        if (Object.values(candidateData[0]).includes("bsNoiseFigure")){
+          bsNoiseFigure= candidateData[i][23+offset]
+        }
+        this.tempCalParamSet.bsTxGain = bsTxGain;
+        this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
         // set UE位置
         // this.setCandidateSize(id);
 
@@ -5163,7 +5600,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             material: material,
             element: this.svgMap['UE'].element
           };
-
+          if (Object.values(ueData[0]).includes("ueRxGain")){
+            //新增欄位
+            var ueRxGain= ueData[i][3]
+          } else {
+            var ueRxGain = 0
+          }
+          this.ueListParam[id] = {
+            ueRxGain: ueRxGain
+          }
           // set UE位置
           // this.setUeSize(id);
         }
@@ -5174,15 +5619,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const obstacle: string = this.wb.SheetNames[sheetNameIndex['obstacle']];
     const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
     const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
+    // console.log("obstacle sheet obstacleData",obstacleData);
     if (obstacleData.length > 1) {
-
       for (let i = 1; i < obstacleData.length; i++) {
         if ((<Array<any>> obstacleData[i]).length === 0) {
           continue;
         }
         let id;
         let type;
-        let shape = this.parseElement(obstacleData[i][8]);
+        let diff = Object.keys(obstacleData[i]).length - 10; //因應版本不同,欄位長度不同
+        let shape = this.parseElement(obstacleData[i][9+diff]);
         if (shape === 'rect' || Number(shape) === 0) {
           id = `rect_${this.generateString(10)}`;
           type = 'rect';
@@ -5206,24 +5652,45 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           type = 'rect';
 
         }
-        let material = (typeof obstacleData[i][6] === 'undefined' ? '0' : obstacleData[i][6].toString());
-        if (!materialReg.test(material)) {
-          material = '0';
+        let material = (typeof obstacleData[i][7+diff] === 'undefined' ? '0' : obstacleData[i][7+diff].toString());
+        // if (!materialReg.test(material)) {
+        //   material = '0';
+        // }
+        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
+          if(Number(obstacleData[i][7+diff]) < this.materialList.length){
+            material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
+          } else {
+            material = this.materialList[0]['id'];
+          }
+        }else{
+          let index = this.materialIdToIndex[obstacleData[i][7+diff]];
+          material = this.materialList[index]['id'];
         }
-        const color = (typeof obstacleData[i][7] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][7]);
+        const color = (typeof obstacleData[i][8+diff] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][8+diff]);
+        let zValue = obstacleData[i][2+diff];
+        if (diff == -1){
+          zValue = 0;
+        }
+        let materialName = '';
+        if(this.authService.lang =='zh-TW'){
+          materialName = this.materialList[this.materialIdToIndex[material]]['chineseName'];
+        }else{
+          materialName = this.materialList[this.materialIdToIndex[material]]['name'];
+        }
         this.dragObject[id] = {
           x: obstacleData[i][0],
           y: obstacleData[i][1],
-          z: 0,
-          width: obstacleData[i][2],
-          height: obstacleData[i][3],
-          altitude: obstacleData[i][4],
-          rotate: (typeof obstacleData[i][5] === 'undefined' ? 0 : obstacleData[i][5]),
+          z: zValue,
+          width: obstacleData[i][3+diff],
+          height: obstacleData[i][4+diff],
+          altitude: obstacleData[i][5+diff],
+          rotate: (typeof obstacleData[i][6+diff] === 'undefined' ? 0 : obstacleData[i][6+diff]),
           title: this.svgMap[type].title,
           type: this.svgMap[type].type,
           color: color,
           material: material,
-          element: shape
+          element: shape,
+          materialName: materialName
         };
 
         if (this.dragObject[id].altitude > this.calculateForm.altitude) {
@@ -5292,10 +5759,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // this.calculateForm.computeRound = Number(algorithmParametersData[1][4]);
       this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
       this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
+      // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+      if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+        if(this.calculateForm.pathLossModelId < this.modelList.length){
+          this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
+        }
+        else{
+          this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+        }
+      }
       this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
+
     }
     /* objective parameters sheet */
     const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];
@@ -5421,26 +5898,67 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             continue;
           }
           const item = JSON.parse(obstacle[i]);
+          let diff = item.length - 9;
           let shape = '0';
-          if (typeof item[7] !== 'undefined') {
-            shape = this.parseElement(item[7]);
+          if (typeof item[8+diff] !== 'undefined') {
+            shape = this.parseElement(item[8+diff]);
           }
           const id = `${this.parseShape(shape)}_${this.generateString(10)}`;
+          let index = this.materialIdToIndex[Number(item[7+diff])];
+          let material = item[7+diff].toString();
           
+          /*
+          if(!(item[7+diff] in this.materialIdToIndex)){ 
+            index = 0;
+            material = Number(this.materialList[index]['id']);
+          }
+          */
+          if(!(item[7+diff] in this.materialIdToIndex)){ 
+            index = 0;
+            if(Number(item[7+diff]) < this.materialList.length){ // 對舊專案的處理
+              material = this.materialList[Number(item[7+diff])]['id'];
+            } else {
+              material = this.materialList[0]['id'];
+            }
+          }
+          
+          let materialName = "";
+          if (Object.keys(this.materialList).length < 1 || Object.keys(this.materialIdToIndex).length < 1 ){
+            console.log('*DEBUG:this.materialList',this.materialList);
+            console.log('index',index);
+            console.log('this.materialIdToIndex',this.materialIdToIndex);
+            console.log('item[7]',item[7+diff]);
+            console.log('do not init!');
+            materialName = "need init";
+            this.ngOnInit();
+          } 
+          if(this.authService.lang =='zh-TW'){
+            materialName = this.materialList[index]['chineseName'];
+          }else{
+            materialName = this.materialList[index]['name'];
+          }
+          let zValue = item[2+diff];
+          if (diff == -1){
+            zValue = 0;
+          }
+          // console.log("diff",diff);
           this.dragObject[id] = {
             x: item[0],
             y: item[1],
-            z: 0,
-            width: item[2],
-            height: item[3],
-            altitude: item[4],
-            rotate: item[5],
+            z: zValue,
+            width: item[3+diff],
+            height: item[4+diff],
+            altitude: item[5+diff],
+            rotate: item[6+diff],
             title: this.translateService.instant('obstacleInfo'),
             type: this.svgElmMap(shape).type,
             color: this.OBSTACLE_COLOR,
-            material: item[6].toString(),
+            material: material,
+            materialName: materialName,
             element: shape
           };
+          // console.log("this.dragObject[id]",this.dragObject[id]);
+    
           // set 障礙物尺寸與位置
           // this.setObstacleSize(id);
           
@@ -5475,7 +5993,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
           // set 新增基站位置
           // this.setCandidateSize(id);
-          
+          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
+            this.tempCalParamSet.bsTxGain = 0
+          } else {
+            this.tempCalParamSet.bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i];
+          }
+          if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
+            this.tempCalParamSet.bsNoiseFigure = 0
+          } else {
+            this.tempCalParamSet.bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i];
+          }
           this.tempCalParamSet.txpower = txpower[0];
           this.tempCalParamSet.beampattern = beamId[0];
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
@@ -5549,6 +6076,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             subcarrier: 15,
             scsBandwidth: 10,
           };
+          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
+            this.bsListRfParam[id].bsTxGain = 0
+          } else {
+            this.bsListRfParam[id].bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i+candidateNum];
+          }
+          if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
+            this.bsListRfParam[id].bsNoiseFigure = 0
+          } else {
+            this.bsListRfParam[id].bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+candidateNum];
+          }
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
             this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
             this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
@@ -5622,10 +6159,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (!this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
         const ue = this.calculateForm.ueCoordinate.split('|');
         const ueLen = ue.length;
+        console.log("this.ueListParam",this.ueListParam);
         for (let i = 0; i < ueLen; i++) {
           const item = JSON.parse(ue[i]);
           const id = `ue_${this.generateString(10)}`;
-          this.ueList.push(id);
+          this.ueList.push(id);          
           this.dragObject[id] = {
             x: item[0],
             y: item[1],
@@ -5640,6 +6178,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             material: '0',
             element: 'UE'
           };
+          if (this.authService.isEmpty(this.calculateForm.ueRxGain)){ 
+            this.ueListParam[id] = {
+              ueRxGain:0
+            };
+          } else {
+            this.ueListParam[id] = {
+              ueRxGain: JSON.parse(this.calculateForm.ueRxGain)[i]
+            }
+          }
           // set UE位置
           // this.setUeSize(id);
         }
@@ -5684,6 +6231,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 歷史資料塞回form
    * @param result 
    */
+  /*
   setHstToForm(result) {
     this.calculateForm.addFixedBsNumber = result['addfixedbsnumber'];
     this.calculateForm.availableNewBsNumber = result['availablenewbsnumber'];
@@ -5714,7 +6262,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.useUeCoordinate = result['useuecoordinate'];
     this.calculateForm.beamMaxId = result['beammaxid'];
   }
-
+  */
   protocolSwitchWarning() {
     if (this.defaultBSList.length !== 0 ) {
       let msg = this.translateService.instant('planning.protocolSwitchWarning');
@@ -6094,6 +6642,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   setObstacleSize(id) {
+
+    let target =  this.target = document.getElementById(`${id}`);
+    this.frame.set('z-index', 100+10*this.dragObject[id].z);
+    this.setTransform(target);
+    try {
+      this.moveable.destroy();
+    } catch (error) {
+      this.moveable.ngOnInit();
+      this.moveable.destroy();
+    }
     this.spanStyle[id] = {
       left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
       top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
@@ -6272,4 +6830,432 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
   }
 
+  materialCustomizeDialog(inputValue){
+    if (inputValue != 999){
+      let index = this.materialIdToIndex[inputValue];
+      let materialName = '';
+      if(this.authService.lang =='zh-TW'){
+        materialName = this.materialList[index]['chineseName'];
+      }else{
+        materialName = this.materialList[index]['name'];
+      }
+      this.materialName = materialName;
+      this.materialLossCoefficient = this.materialList[index]['decayCoefficient'];
+      this.materialProperty = this.materialList[index]['property'];
+    } else {
+      this.materialName = "";
+      this.materialLossCoefficient = 0.1;
+      this.materialProperty = "customized";
+    }
+    this.matDialog.open(this.materialCustomizeModal);
+  }
+  pathLossCustomizeDialog(inputValue){
+    if (inputValue != 999){
+      let index = this.modelIdToIndex[inputValue];
+      let modelName = '';
+      if(this.authService.lang =='zh-TW'){
+        modelName = this.modelList[index]['chineseName'];
+      }else{
+        modelName = this.modelList[index]['name'];
+      }
+      this.modelName = modelName;
+      this.modelDissCoefficient = this.modelList[index]['distancePowerLoss'];
+      this.modelfieldLoss = this.modelList[index]['fieldLoss'];
+      this.modelProperty = this.modelList[index]['property'];
+    } else {
+      this.modelName = "";
+      this.modelDissCoefficient = 0.1;
+      this.modelfieldLoss = 0.1;
+      this.modelProperty = "customized";
+    }
+    this.matDialog.open(this.modelCustomizeModal);
+  }
+  materialCustomize(){
+    window.setTimeout(() => {
+      let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      // console.log("----update",url);
+      let data = {
+          'id': Number(this.materialId),
+          'name': this.materialName,
+          'decayCoefficient': this.materialLossCoefficient,
+          'property': this.materialProperty
+      }
+      console.log(JSON.stringify(data));
+      if(this.checkMaterialForm(false)){
+        this.http.post(url, JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.matDialog.closeAll();
+            // this.ngOnInit();
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                let index = 0;
+                for(let i = 0; i < (result).length; i++){
+                  if(result[i]['id'] == this.materialId){
+                    index = i;
+                    // console.log('i',i,'result',result[i]);
+                    break;
+                  } 
+                }
+                this.materialList[this.materialIdToIndex[this.materialId]]['decayCoefficient'] = result[index]['decayCoefficient'];
+                this.materialList[this.materialIdToIndex[this.materialId]]['name'] = result[index]['name'];
+                this.materialList[this.materialIdToIndex[this.materialId]]['chineseName'] = result[index]['chineseName'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }
+    }, 100);
+  }
+  pathLossCustomize(){
+    window.setTimeout(() => {
+      let url_update = `${this.authService.API_URL}/updatePathLossModel/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      // console.log("----update",url_update);
+      let data = {
+          'id': Number(this.calculateForm.pathLossModelId),
+          'name': this.modelName,
+          'distancePowerLoss': this.modelDissCoefficient,
+          'fieldLoss': this.modelfieldLoss,
+          'property': this.modelProperty
+      }
+      console.log(JSON.stringify(data));
+      let isDefault = this.modelProperty == 'default' ? true : false;
+      console.log("isDefault",isDefault);
+      if(this.checkModelForm(false,isDefault)){
+        this.http.post(url_update, JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.matDialog.closeAll();
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                let index = 0;
+                for(let i = 0; i < (result).length; i++){
+                  if(result[i]['id'] == this.calculateForm.pathLossModelId){
+                    index = i;
+                    // console.log('i',i,'result',result[i]);
+                    break;
+                  } 
+                }
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['name'] = result[index]['name'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['chineseName'] = result[index]['chineseName'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['distancePowerLoss'] = result[index]['distancePowerLoss'];
+                this.modelList[this.modelIdToIndex[this.calculateForm.pathLossModelId]]['fieldLoss'] = result[index]['fieldLoss'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }
+    }, 100);
+    
+  }
+  createNewMaterial(){
+    // console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
+    // console.log("this.materialName.length",String(this.materialName).length);
+    if(this.checkMaterialForm(true)){
+      // 新增材質到後端
+      let url = `${this.authService.API_URL}/addObstacle/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
+      window.setTimeout(() => {
+        // console.log("----post----",url);
+        let data = {
+          'name': this.materialName,
+          'decayCoefficient': this.materialLossCoefficient,
+          'property': "customized"
+        }
+        console.log(JSON.stringify(data));
+        this.http.post(url, JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                this.materialList.push(result[(result.length-1)]);
+                for (let i = 0;i < this.materialList.length;i++) {
+                  let id = this.materialList[i]['id'];
+                  this.materialIdToIndex[id]=i;
+                }
+                this.materialId = result[(result.length-1)]['id'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+            
+            this.materialName = "";
+            this.materialLossCoefficient = 0.1;
+            this.matDialog.closeAll();
+            // this.ngOnInit();
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }, 100);
+    }
+  }
+  checkMaterialForm(create){
+    let pass = true; 
+    let duplicate = false;
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    // format checking 包含特殊字元 || 不是英文中文數字
+    let illegal = ((reg_spc.test(this.materialName) || reg_tch.test(this.materialName)) || (!(reg_ch.test(this.materialName)) && !(reg_en.test(this.materialName)) && !(reg_num.test(this.materialName))));
+    // 檢查現有材質名稱是否已存在
+    if(create){
+      for (let i = 0; i < this.materialList.length; i++) {
+        if(this.materialName == this.materialList[i]['name'] || this.materialName == this.materialList[i]['chineseName']){
+          console.log("duplicate by",this.materialName);
+          duplicate = true;
+          break;
+        }
+      }
+    }
+    // 錯誤訊息
+    if( !this.materialName || !(Number(this.materialLossCoefficient)>-1000) || this.materialLossCoefficient == null || Number(this.materialLossCoefficient>1000) || duplicate || illegal ){
+      pass = false;
+      let msg = "";
+      if (!this.materialName) {
+        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+      } else if(!(Number(this.materialLossCoefficient)>-1000)) { 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(Number(this.materialLossCoefficient)>1000) { 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_less_than') + '1000';
+      } else if(this.materialLossCoefficient == null){ 
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('contain_special_character') + '!';
+      } else if(illegal){
+        msg += this.translateService.instant('material.name') + this.translateService.instant('contain_special_character') + '!';
+      } else {
+        msg += this.translateService.instant('material.name') +':'+ this.materialName + this.translateService.instant('alreadyexist') + '!'
+      } 
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+    return pass
+  }
+  createNewModel(){
+    if(this.checkModelForm(true,false)){
+      // 新增無線模型到後端
+      let url_add = `${this.authService.API_URL}/addPathLossModel/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      window.setTimeout(() => {
+        // console.log("----post",url_add);
+        let data = {
+            'name': this.modelName,
+            'distancePowerLoss': this.modelDissCoefficient,
+            'fieldLoss': this.modelfieldLoss,
+            'property': "customized"
+        }
+        console.log(JSON.stringify(data));
+        this.http.post(url_add, JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                let result = res;
+                this.modelList.push(result[(result.length-1)]);
+                for (let i = 0;i < this.modelList.length;i++) {
+                  let id = this.modelList[i]['id'];
+                  this.modelIdToIndex[id]=i;
+                }
+                this.calculateForm.pathLossModelId = result[(result.length-1)]['id'];
+                console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
+                console.log('this.modelList.push',this.modelList);
+              },
+              err => {
+                console.log(err);
+              }
+            );
+            this.modelName = "";
+            this.modelDissCoefficient = 0.1;
+            this.modelfieldLoss = 0.1;
+            this.matDialog.closeAll();
+            // this.ngOnInit();
+          },
+          err => {
+            console.log(err);
+          }
+        );
+      }, 100);
+    }
+  }
+  checkModelForm(create,deafult){
+    let pass = true; 
+    let duplicate = false;
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    // format checking 包含特殊字元 || 不是英文中文數字
+    let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
+    if (deafult) { illegal=false; }
+    // 檢查現有模型名稱是否已存在
+    if (create){
+      for (let i = 0; i < this.modelList.length; i++) {
+        if(this.modelName == this.modelList[i]['name'] || this.modelName == this.modelList[i]['chineseName']){
+          console.log("duplicate by",this.modelName);
+          duplicate = true;
+          break;
+        }
+      }
+    }
+    if(!this.modelName || !(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000) || duplicate || illegal ){
+      let msg = "";
+      pass = false;
+      if (!this.modelName) {
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+      } else if(!(Number(this.modelDissCoefficient)>-1000)) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(this.modelDissCoefficient == null) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('contain_special_character') + '!';
+      } else if(Number(this.modelDissCoefficient>1000)) { 
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_less_than') + '1000';
+      } else if(!(Number(this.modelfieldLoss)>-1000)) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_greater_then') + '-1000';
+      } else if(this.modelfieldLoss == null) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('contain_special_character') + '!';
+      } else if(Number(this.modelfieldLoss>1000)) { 
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_less_than') + '1000';
+      } else if(illegal) {
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('contain_special_character') + '!';
+      } else {
+        msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
+      }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+    return pass
+  }
+  selectAndClose(){
+    this.matDialog.closeAll();
+    
+  }
+  deleteMaterialDialog(){
+    this.matDialog.open(this.confirmDeleteMaterial);
+  }
+  deleteModelDialog(){
+    this.matDialog.open(this.confirmDeleteModel);
+  }
+  deleteMaterial(flag){
+    this.matDialog.closeAll();
+    if(flag) {
+      let url = `${this.authService.API_URL}/deleteObstacle/${this.authService.userToken}`;
+      window.setTimeout(() => {
+        // console.log("----(post) delete",url);
+        let data = {
+          'id': Number(this.materialId),
+          'name': this.materialName
+        }
+        this.deleteMaterialList.push(Number(this.materialId));
+        this.materialList[this.materialIdToIndex[this.materialId]].name = "";
+        this.http.post(url,JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            for(let i = 0; i < this.obstacleList.length; i++){
+              const obj = this.dragObject[this.obstacleList[i]];
+              if( obj.type != "obstacle"){
+                continue;
+              }
+              else if( !(Number(obj.material) in this.materialIdToIndex) || this.deleteMaterialList.includes(Number(obj.material))){
+                // console.log("replace:",this.dragObject[this.obstacleList[i]]);
+                this.dragObject[this.obstacleList[i]].material = this.materialList[0]['id'];
+                this.dragObject[this.obstacleList[i]].materialName = this.materialList[0]['name'];
+              }
+            }
+          },
+          err => {
+            console.log('err:',err);
+          }
+        );
+      }, 100);
+
+    } else {
+      this.matDialog.open(this.materialCustomizeModal);
+    }
+  }
+  deleteModel(flag){
+    this.matDialog.closeAll();
+    if(flag) {
+      // DELETE API
+      window.setTimeout(() => {
+        let url = `${this.authService.API_URL}/deletePathLossModel/${this.authService.userToken}`
+        let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+        // console.log("----(post) delete",url);
+        let data = {
+          'id': Number(this.calculateForm.pathLossModelId),
+          'name': this.modelName
+        }
+        console.log(JSON.stringify(data));
+        /*
+        let httpOptions = {
+          headers: {},
+          body: JSON.stringify(data)
+        }
+        */
+        this.http.post(url,JSON.stringify(data)).subscribe(
+          res => {
+            console.log(res);
+            // this.ngOnInit();
+            this.http.get(url_get).subscribe(
+              (res: any[]) => {
+                // console.log("----get",url_get);
+                this.modelList = Object.values(res);
+                for (let i = 0;i < this.modelList.length;i++) {
+                  let id = this.modelList[i]['id'];
+                  this.modelIdToIndex[id]=i;
+                }
+                this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+              },
+              err => {
+                console.log(err);
+              }
+            );
+          },
+          err => {
+            console.log('err:',err);
+            // this.ngOnInit();
+          }
+        );
+      }, 100);
+    } else {
+      this.matDialog.open(this.modelCustomizeModal);
+    }
+  }
+  checkIfChinese(){
+    if (this.authService.lang == 'zh-TW') {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

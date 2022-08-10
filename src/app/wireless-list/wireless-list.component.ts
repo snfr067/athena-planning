@@ -217,10 +217,11 @@ export class WirelessListComponent implements OnInit, OnDestroy {
    * @param taskId taskId
    * @param isHst 是否歷史紀錄
    */
+  /*
   async exportPDF(taskId, isHst) {
     this.pdf.export(taskId, isHst);
   }
-
+  */
   /**
    * 編輯場域
    * @param taskId taskId
@@ -318,6 +319,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
       };
       this.http.post(url, JSON.stringify(form)).subscribe(
         res => {
+          console.log(res);
           if (type === 'hst') {
             this.hstList.splice(this.hstList.indexOf(item), 1);
           } else {

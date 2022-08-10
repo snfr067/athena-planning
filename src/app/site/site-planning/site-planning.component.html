@@ -191,7 +191,7 @@
         </span> -->
         </span>
         <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
-        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item)" (contextmenu)="onRightClick($event, item, i)" >
           <ng-container *ngIf="svgStyle[item]">
             <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
               <g>
@@ -348,17 +348,18 @@
         <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
       </button>
       <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'UE'" class="rightClickBtnGroup" (click)="openUEParamSetting(svgId, svgNum, false)">{{ 'ueParamLink' | translate }}</button>
       <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
     </ng-template>
   </mat-menu>
-  <!-- <mat-menu #mater="matMenu">
+   <mat-menu #mater="matMenu">
     <ng-template matMenuContent>
       <button mat-menu-item (click)="materialChange('1')" [class]="(dragObject[svgId].material === '1' ? 'text-white bg-primary' : '')">木頭</button>
       <button mat-menu-item (click)="materialChange('2')" [class]="(dragObject[svgId].material === '2' ? 'text-white bg-primary' : '')">水泥</button>
       <button mat-menu-item (click)="materialChange('3')" [class]="(dragObject[svgId].material === '3' ? 'text-white bg-primary' : '')">輕鋼架</button>
       <button mat-menu-item (click)="materialChange('4')" [class]="(dragObject[svgId].material === '4' ? 'text-white bg-primary' : '')">玻璃</button>
     </ng-template>
-  </mat-menu> -->
+  </mat-menu> 
 
   
 
@@ -903,6 +904,14 @@
                   </select>
                 </td>
               </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'TxGain' | translate }}</td>
+                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsTxGain">dB</td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'noise' | translate }}</td>
+                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsNoiseFigure">dB</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1067,6 +1076,39 @@
                     <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
                   </ol>
                 </li>
+
+                <li>
+                  <p>  <!-- 右方場域基本資訊新增材質列表 -->
+                    <label>{{ 'materialList' | translate }}</label>
+                    <span>
+                      <select style="min-width: 16em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
+                        <ng-container *ngFor="let item of materialList;">
+                          <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                          <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                              <ng-container *ngIf="item.property == 'default'">
+                                <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                                <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                              </ng-container>       
+                              <ng-container *ngIf="item.property == 'customized' "> 
+                                <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                                <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                              </ng-container> 
+                          </option> 
+                        </ng-container>
+                          <!-- <option value="1">{{ 'material.wood' | translate }}</option>
+                          <option value="2">{{ 'material.cement' | translate }}</option>
+                          <option value="3">{{ 'material.light_steel_frame' | translate }}</option>
+                          <option value="4">{{ 'material.glass' | translate }}</option>
+                          <option value="5">{{ 'material.stainless' | translate }}</option>
+                          <option value="6">{{ 'material.fireproof' | translate }}</option>
+                          <option value="7">{{ 'material.fireSoundproof' | translate }}</option>
+                          <option value="8">{{ 'material.whiteBrick' | translate }}</option>
+                           -->
+                           <option value=999>【{{ 'material.customize' | translate }}】</option>
+                        </select>
+                    </span>
+                  </p>
+                </li>
               </ul>
             </mat-expansion-panel>
 
@@ -1085,7 +1127,7 @@
                     <label>X</label>
                     <input type="text" [(ngModel)]="dragObject[item].x" 
                     (select)="tempParamStorage(dragObject[item].x)"
-                    (click)="tempParamStorage(dragObject[item].x)"
+                    (click)="moveClick(item);tempParamStorage(dragObject[item].x);"
                     (change)="changePosition('x',item)">
                   </span>
                   <span>
@@ -1095,15 +1137,23 @@
                     (click)="tempParamStorage(dragObject[item].y)"
                     (change)="changePosition('y',item)">
                   </span>
-                  <span>
-                    <label>{{ 'rotate' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].rotate"
-                    (select)="tempParamStorage(dragObject[item].rotate)"
-                    (click)="tempParamStorage(dragObject[item].rotate)"
-                    (change)="changeRotate(item)"
-                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
-                  </span>
                   <br>
+                  <span>
+                    <label>{{ 'altitude.start' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" 
+                    (select)="tempParamStorage(dragObject[item].z)"
+                    (click)="tempParamStorage(dragObject[item].z)"
+                    (change)="changeZvalue(item)">
+                  </span>
+                  <span>
+                    <label>{{ 'altitude.obstacle' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].altitude"
+                    (select)="tempParamStorage(dragObject[item].altitude)"
+                    (click)="tempParamStorage(dragObject[item].altitude)"
+                    (change)="changeSize(item, 'altitude',true)">
+                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                  </span>
+                  <br>              
                   <span>
                     <label>{{ 'width' | translate }}</label>
                     <input type="text" [(ngModel)]="dragObject[item].width"
@@ -1119,27 +1169,44 @@
                     (change)="changeSize(item, 'height',true)">
                   </span>
                   <span>
-                    <label>{{ 'altitude' | translate }}</label>
-                    <input type="text" [(ngModel)]="dragObject[item].altitude"
-                    (select)="tempParamStorage(dragObject[item].altitude)"
-                    (click)="tempParamStorage(dragObject[item].altitude)"
-                    (change)="changeSize(item, 'altitude',true)">
-                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                    <label>{{ 'rotate' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].rotate"
+                    (select)="tempParamStorage(dragObject[item].rotate)"
+                    (click)="tempParamStorage(dragObject[item].rotate)"
+                    (change)="changeRotate(item)"
+                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
                   </span>
-                  <span>
+                  <span> <!-- 右方場域障礙物資訊 -->
                     <label>{{ 'material' | translate }}</label>
-                    <select class="w7em" [(ngModel)]="dragObject[item].material">
-                      <option value="0">{{ 'material.wood' | translate }}</option>
+                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material);">
+                    <ng-container *ngFor="let item of materialList;">
+                      <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                      <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                        <ng-container *ngIf="item.property == 'default'">
+                          <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                          <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                        </ng-container>       
+                        <ng-container *ngIf="item.property == 'customized' "> 
+                          <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                          <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                        </ng-container> 
+                      </option> 
+                    </ng-container>
+                     <!-- <option value="0">{{ 'material.wood' | translate }}</option>
                       <option value="1">{{ 'material.cement' | translate }}</option>
                       <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
                       <option value="3">{{ 'material.glass' | translate }}</option>
                       <option value="4">{{ 'material.stainless' | translate }}</option>
                       <option value="5">{{ 'material.fireproof' | translate }}</option>
                       <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
+<<<<<<< HEAD
                       <option value="7">{{ 'material.whiteBrick' | translate }}</option>
                       <option value="8">{{ 'material.flameproof' | translate }}</option>
                       <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
                       <option value="10">{{ 'material.cabinet' | translate }}</option>
+=======
+                      <option value="7">{{ 'material.whiteBrick' | translate }}</option>-->
+>>>>>>> custimize
                     </select>
                   </span>
                   <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
@@ -1193,13 +1260,14 @@
                         <label>Frequency</label>
                         <input type="text" [(ngModel)]="bsListRfParam[item].frequency" (change)="changeTxBfFreq(item)">
                       </span> -->
-                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
                       <!-- <span (click)="openRfParamSetting(item)">
                         <span class="material-icons">{{ 'rfParamLink' | translate }}</span>
                       </span> -->
                       <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
                         <span class="material-icons">clear</span>
                       </span>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
                     </li>
                   </ol>
                 </li>
@@ -1254,7 +1322,7 @@
               <ul>
                 <li>
                   <ol>
-                    <li *ngFor="let item of ueList">
+                    <li *ngFor="let item of ueList; let i = index;">
                       <span>
                         <label>X</label>
                         <input type="text" [(ngModel)]="dragObject[item].x"
@@ -1278,6 +1346,8 @@
                       <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
                         <span class="material-icons">clear</span>
                       </span>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openUEParamSetting(item, i, true)">{{ 'ueParamLink' | translate }}</button>
                     </li>
                   </ol>
                 </li>
@@ -1293,12 +1363,22 @@
                   <p>
                     <label>{{ 'pathLossModelId' | translate }}</label>
                     <span>
-                      <select style="min-width: 16em;" [(ngModel)]="calculateForm.pathLossModelId">
+                      <select style="min-width: 16em;" (change)="pathLossCustomizeDialog($event.target.value)" [(ngModel)]="calculateForm.pathLossModelId">
                         <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else pathLossModelIdTemp">
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
                         </ng-container>
                         <ng-template #pathLossModelIdTemp>
-                          <option value="0">{{ 'planning.itri.51' | translate }}</option>
+                          <option value={{item.id}} *ngFor="let item of modelList;">
+                            <ng-container *ngIf="item.property == 'default'">
+                              <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                            </ng-container>       
+                            <ng-container *ngIf="item.property == 'customized' "> 
+                              <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                            </ng-container> 
+                          </option>
+                          <!-- <option value="0">{{ 'planning.itri.51' | translate }}</option>
                           <option value="1">{{ 'planning.taichung' | translate }}</option>
                           <option value="2">ITU office 900MHz</option>
                           <option value="3">ITU office 1.2~1.3GHz</option>
@@ -1307,13 +1387,11 @@
                           <option value="12">{{ 'planning.4.7G.Office' | translate }}</option>
                           <option value="11">ITU office 5.2GHz</option>
                           <option value="7">ITU commercial 900MHz</option>
-                          <option value="8">ITU commercial 1.2~1.3, 1.8~2, 4GHz</option>
+                          <option value="8">ITU commercial 1.2~1.3, 1.8~2.4GHz</option>
                           <option value="6">ITU residential 1.8~2, 2.4GHz</option>                     
                           <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
-                          <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option>
-                          <option value="13">{{ 'planning.algorithm.model.pegatron.7FDemo' | translate }}</option>
-                          <option value="14">{{ 'planning.algorithm.model.pegatron.3F.Xindian' | translate }}</option>
-                          <!-- <option value="1000">{{ 'planning.user_define' | translate }}</option> -->
+                          <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option> -->
+                          <option value="999">【{{ 'planning.user_define' | translate }}】</option>
                         </ng-template>
                       </select>
                     </span>
@@ -1420,37 +1498,75 @@
   </ng-template>
   <table class="altParamTable">
     <tbody>
-      <tr>
-        <td>{{ 'altitude.setting' | translate }}</td>
-        <td>
-          <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
-            <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
-          </ng-container>
-          <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-            <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
-          </ng-container>
-          <ng-container *ngIf="dragObject[svgId].type === 'UE'">
-            <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
-              <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
-            </select>
-          </ng-container>
-        </td>
-      </tr>
+      <ng-container *ngIf="dragObject[svgId].type != 'obstacle'">
+        <tr>
+          <td>{{ 'altitude.setting' | translate }}</td>
+          <td>
+            <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
+              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
+            </ng-container>
+            <ng-container *ngIf="dragObject[svgId].type === 'UE'">
+              <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
+                <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
+              </select>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
+        <tr>
+          <td>{{ 'altitude.start' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].z" 
+            (select)="tempParamStorage(dragObject[svgId].z)"
+            (click)="tempParamStorage(dragObject[svgId].z)"
+            (change)="changeZvalue(svgId)">
+            {{ 'meter' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ 'altitude.obstacle' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].altitude" 
+            (select)="tempParamStorage(dragObject[svgId].altitude)"
+            (click)="tempParamStorage(dragObject[svgId].altitude)"
+            (change)="changeSize(svgId, 'altitude',true)">
+            {{ 'meter' | translate }}</td>
+        </tr>
+      </ng-container>
+      
       <tr *ngIf="dragObject[svgId].type === 'obstacle'">
         <td>{{ 'material.setting' | translate }}</td>
-        <td>
-          <select [(ngModel)]="dragObject[svgId].material">
-            <option value="0">{{ 'material.wood' | translate }}</option>
+        <td> <!-- 右鍵高度/材質設定 -->
+          <select [(ngModel)]="dragObject[svgId].material" (change)="setMaterialName(svgId,dragObject[svgId].material)">
+            <ng-container *ngFor="let item of materialList;">
+              <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+              <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                <ng-container *ngIf="item.property == 'default'">
+                  <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                  <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                </ng-container>       
+                <ng-container *ngIf="item.property == 'customized' "> 
+                  <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                  <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                </ng-container> 
+              </option> 
+            </ng-container>
+            <!-- <option value="0">{{ 'material.wood' | translate }}</option>
             <option value="1">{{ 'material.cement' | translate }}</option>
             <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
             <option value="3">{{ 'material.glass' | translate }}</option>
             <option value="4">{{ 'material.stainless' | translate }}</option>
             <option value="5">{{ 'material.fireproof' | translate }}</option>
             <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
+<<<<<<< HEAD
             <option value="7">{{ 'material.whiteBrick' | translate }}</option>
             <option value="8">{{ 'material.flameproof' | translate }}</option>
             <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
             <option value="10">{{ 'material.cabinet' | translate }}</option>
+=======
+            <option value="7">{{ 'material.whiteBrick' | translate }}</option> -->
+>>>>>>> custimize
           </select>
         </td>
       </tr>
@@ -1458,8 +1574,155 @@
   </table>
 </ng-template>
 
+<ng-template #materialCustomizeModal>
+  <h5 *ngIf="materialId == 999 ; else editMaterialTemp">{{ 'material.customize' | translate }} </h5>
+  <ng-template #editMaterialTemp>
+    <h5>{{ 'material.edit' | translate }}</h5>
+  </ng-template>
+  <table class="altParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'material.name' | translate }}</td>
+        <td>
+          <ng-container *ngIf="materialProperty == 'default'">
+            <span>{{materialName}}</span>
+          </ng-container>
+          <ng-container *ngIf="materialProperty == 'customized'">
+            <input type="text" [(ngModel)]="materialName">
+          </ng-container>
+       </td>
+      </tr>
+      <tr>
+      <tr>
+       <td>{{ 'material.loss.coefficient' | translate }}</td>
+       <td>
+          <input type="number" step="0.1" min="-1000" [(ngModel)]="materialLossCoefficient" >
+       </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="modalFooter" style="padding-top:0.8em;"> <!-- 0.8em -->
+    <ng-container *ngIf="materialId == 999">
+      <a href="javascript:void(0)" (click)="createNewMaterial()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999">
+      <a href="javascript:void(0)" (click)="materialCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999 && materialProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteMaterialDialog()">{{ 'planning.delete.material' | translate }}</a>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMaterial>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteMaterial' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteMaterial(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteMaterial(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteModel>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteModel' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteModel(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteModel(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #modelCustomizeModal>
+  <h5 *ngIf="calculateForm.pathLossModelId == 999 ; else editModelTemp">{{ 'planning.user_define' | translate }} </h5>
+  <ng-template #editModelTemp>
+    <h5>{{ 'planning.edit' | translate }}</h5>
+  </ng-template>
+  <div style="text-align:center; margin-bottom:1em;; font-size:110%">
+    <span style="font-style: italic;">L<sub>total</sub> =</span>
+    <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
+    <span>20 log<sub>10</sub>&#402; + </span>
+    <span style="font-style: italic;">N</span>
+    <span> log<sub>10</sub></span>
+    <span style="font-style: italic;"> d</span>
+    <span> + </span>
+    <span style="font-style: italic;">L<sub>&#402;</sub></span>
+    <span> - 28</span>
+  </div>
+  <div style="text-align:right; margin-bottom:1em; font-size:70%">
+    <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
+    <br>
+    <span style="font-style: italic;">d</span>
+    <span>: {{ 'planning.model.distenceBsUe' | translate }} ({{ 'meter' | translate }})</span>
+    <br>
+    <span>{{ 'note' | translate }}: {{ 'assume' | translate }}{{ 'planning.model.freeSpaceProp' | translate }} = </span>
+    <span>20 log<sub>10</sub>&#402; -28 </span>
+  </div>
+  <table class="altParamTable">
+    <tbody>
+      <tr style="border-top: 1px solid #ddd;">
+        <td>{{ 'planning.model.name' | translate }}</td>
+        <td>
+          <ng-container *ngIf="modelProperty == 'default'">
+            <span>{{modelName}}</span>
+          </ng-container>
+          <ng-container *ngIf="modelProperty == 'customized'">
+            <input  type="text" [(ngModel)]="modelName">
+          </ng-container>
+       </td>
+      </tr>
+      <tr>
+       <td>{{ 'planning.model.disscoefficient' | translate }}(<span style="font-style: italic;">N</span>)</td>
+       <td>
+          <input type="number" step="0.1" min="0" [(ngModel)]="modelDissCoefficient" >
+       </td>
+      </tr>
+      <tr>
+        <td>{{ 'planning.model.fieldLoss' | translate }}
+          <span style="font-style: italic;">L<sub>f</sub></span>
+        </td>
+        <td>
+           <input type="number" step="0.1" min="0" [(ngModel)]="modelfieldLoss" >
+        </td>
+       </tr>
+    </tbody>
+  </table>
+  <div class="modalFooter" style="padding-top:0.8em;">
+    
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999">
+      <a href="javascript:void(0)" (click)="pathLossCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999">
+      <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999 && modelProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteModelDialog()">{{ 'planning.delete.model' | translate }}</a>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #UeModalTable>
+  <h5 mat-dialog-title>UE{{svgNum}}{{'for' | translate}}{{ 'ueParamLink' | translate }}</h5>
+  <table class="rfParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'RxGain' | translate }}</td>
+        <td><input type="number" class="inputNum" step="0.1" style="width: 175px"
+          [(ngModel)]="ueListParam[svgId].ueRxGain"
+          tabindex="-1"></td> dB
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
 <ng-template #RfModalTable>
-  <h5 mat-dialog-title>BS {{svgNum}}{{'for' | translate}} {{ 'rfparam.setting' | translate }}</h5>
+  <h5 mat-dialog-title>BS{{svgNum}}{{'for' | translate}}{{ 'rfparam.setting' | translate }}</h5>
   <table class="rfParamTable">
     <!------------------------------>
     <!--   TDD              4G    -->
@@ -1765,6 +2028,20 @@
           </select>
         </td>
       </tr>
+      <tr>
+        <td>{{ 'TxGain' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+          tabindex="-1"
+          ></td>dB
+      </tr>
+      <tr>
+        <td>{{ 'noise' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
+          tabindex="-1"
+          ></td>dB
+      </tr>
     </tbody>
     <!------------------------------>
     <!--   FDD              5G    -->
@@ -1998,6 +2275,20 @@
           </select>
           MHz
         </td>
+      </tr>
+      <tr>
+        <td>{{ 'TxGain' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+          tabindex="-1"
+          ></td>dB
+      </tr>
+      <tr>
+        <td>{{ 'noise' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
+          tabindex="-1"
+          ></td>dB
       </tr>
     </tbody>
     <!------------------------------>

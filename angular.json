@@ -32,7 +32,9 @@
               "src/styles.css"
             ],
             "scripts": [
-              "./node_modules/html2canvas/dist/html2canvas.min.js"
+              "./node_modules/html2canvas/dist/html2canvas.min.js",
+              "src/assets/js/Intersection.js",
+              "src/assets/js/Point2D.js"
             ]
           },
           "configurations": {

@@ -185,30 +185,36 @@ export class View3dComponent implements OnInit {
     obstacleMat.diffuseColor = new BABYLON.Color3(121 / 255, 221 / 255, 242 / 255);
     let i = 0;
     for (const item of this.obstacle) {
-      // const item = this.obstacle[id];
-      // const item = this.dragObject[id];
-      const depth = item.altitude / 2;
+      // const depth = item.altitude / 2;
       let obstacleData;
       let obstacle;
-      
       if (item.element === 0) {
+        /*
         obstacleData = [
-          new BABYLON.Vector3(-depth, 0, 0),
-          new BABYLON.Vector3(depth, 0, 0),
-          new BABYLON.Vector3(depth, 0, item.height),
-          new BABYLON.Vector3(-depth, 0, item.height)
+          new BABYLON.Vector3(-depth, item.z, 0),
+          new BABYLON.Vector3(depth, item.z, 0),
+          new BABYLON.Vector3(depth, item.z, item.height),
+          new BABYLON.Vector3(-depth, item.z, item.height)
         ];
-
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.width}, scene, Earcut);
+        */
+        obstacleData = [
+          new BABYLON.Vector3(0, item.z, 0),
+          new BABYLON.Vector3(item.width, item.z, 0),
+          new BABYLON.Vector3(item.width, item.z, item.height),
+          new BABYLON.Vector3(0, item.z, item.height)
+        ];
+        obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
+        
+
       } else if (item.element === 1) {
         // 三角形
         obstacleData = [
-          new BABYLON.Vector3(0, 0, 0),
-          new BABYLON.Vector3(item.width, 0, 0),
-          new BABYLON.Vector3(item.width / 2, 0, item.height)
+          new BABYLON.Vector3(0, item.z, 0),
+          new BABYLON.Vector3(item.width, item.z, 0),
+          new BABYLON.Vector3(item.width / 2, item.z, item.height)
         ];
         obstacle = BABYLON.MeshBuilder.ExtrudePolygon('obstacle', {shape: obstacleData, depth: item.altitude}, scene, Earcut);
-
       } else if (item.element === 2) {
         // 圓形: name, 高度, 上直徑, 下直徑, 邊數, 高向細分度, 場景
         obstacle = BABYLON.Mesh.CreateCylinder('obstacle', item.altitude, item.height, item.height, 99, 1, scene);
@@ -228,36 +234,40 @@ export class View3dComponent implements OnInit {
       // 超過180度或-180度時重算角度，否則位置會跑很多
       if (item.rotate < -180) {
         item.rotate = item.rotate % -360;
-        item.rotate = 360 + item.rotate;
       } else if (item.rotate > 180) {
         item.rotate = item.rotate % 360;
-        item.rotate = 360 - item.rotate;
       }
       if (item.rotate === 360) {
         item.rotate = 0;
       }
       // console.log(`rotate: ${item.rotate}`);
 
+      /*
       obstacle.position.x = item.x + offsetX;
       if (item.element === 1 || item.element === 3) {
         // 三角形與梯形
-        obstacle.position.y = item.altitude + offsetY;
+        obstacle.position.y = item.altitude + offsetY + item.z;
       } else {
-        obstacle.position.y = depth + offsetY;
+        obstacle.position.y = depth + offsetY + item.z;
       }
-      // console.log(this.ary);
+      */
+      obstacle.position.y = item.altitude + offsetY + item.z;
+
+      // console.log("this.ary",this.ary); // 障礙物的(x,y)最終座標(可能經過旋轉)
       obstacle.position.x = Number(this.ary[i][0]) + offsetX;
       obstacle.position.z = Number(this.ary[i][1]) + offsetZ;
 
       if (item.element === 2) {
         // 圓形
+        obstacle.position.y = item.z + offsetY + item.altitude/2 ;
         obstacle.position.x = item.x + offsetX + (item.height / 2);
         obstacle.position.z = item.y + offsetZ + (item.height / 2);
       }
-
+      /*
       if (item.element === 0) {
         obstacle.rotation.z = Math.PI / 2;
       }
+      */
       obstacle.rotation.y = BABYLON.Tools.ToRadians(item.rotate);
       
       obstacle.material = obstacleMat;

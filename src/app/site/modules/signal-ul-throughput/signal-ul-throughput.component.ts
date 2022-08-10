@@ -96,7 +96,7 @@ export class SignalUlThroughputComponent implements OnInit {
    * @param isPDF 
    * @param zValue 
    */
-  draw(isPDF, zValue) {
+  draw(isPDF, zValue, scalemin, scalemax) {
     zValue = Number(zValue);
     this.zValue = zValue;
     const images = [];
@@ -119,10 +119,10 @@ export class SignalUlThroughputComponent implements OnInit {
           layer: 'below'
         });
 
-        this.drawChart(isPDF, images);
+        this.drawChart(isPDF, images, scalemin, scalemax);
       };
     } else {
-      this.drawChart(isPDF, images);
+      this.drawChart(isPDF, images, scalemin, scalemax);
     }
   }
 
@@ -131,7 +131,7 @@ export class SignalUlThroughputComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images) {
+  drawChart(isPDF, images, scalemin, scalemax) {
     // draw background image chart
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -175,7 +175,6 @@ export class SignalUlThroughputComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue);
-
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.ulThroughputMap_chart`)[zValues.indexOf(this.zValue)];
@@ -306,8 +305,8 @@ export class SignalUlThroughputComponent implements OnInit {
       console.log('No ulThorughput data, it may be an old record');
     }
 
-    let scalemax = Number(this.financial(Plotly.d3.max(ulThroughputAry)));
-    let scalemin = Number(this.financial(Plotly.d3.min(ulThroughputAry)));
+    // this.scalemax = Number(this.financial(Plotly.d3.max(ulThroughputAry)));
+    // this.scalemin = Number(this.financial(Plotly.d3.min(ulThroughputAry)));
     let unit = Number(this.financial((scalemax-scalemin)))/4;
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));
@@ -463,49 +462,53 @@ export class SignalUlThroughputComponent implements OnInit {
         const oData = JSON.parse(item);
         const xdata = oData[0];
         const ydata = oData[1];
+        const width = oData[3];
+        const height = oData[4];
+        const altitude = oData[5];
+        const rotate = oData[6];
+        const material = oData[7];
         const oColor = '#000000';
         // 0~3分別是矩型、三角形、圓形、梯形
-        let shape = oData[7];
+        let shape = oData[8];
         let text = `${this.translateService.instant('planning.obstacleInfo')}
         X: ${xdata}
         Y: ${ydata}
-        ${this.translateService.instant('width')}: ${oData[2]}
-        ${this.translateService.instant('height')}: ${oData[3]}
-        ${this.translateService.instant('altitude')}: ${oData[4]}
+        ${this.translateService.instant('width')}: ${width}
+        ${this.translateService.instant('height')}: ${height}
+        ${this.translateService.instant('altitude')}: ${altitude}
         `;
 
-        if (typeof oData[6] !== 'undefined') {
-          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(oData[6])}`;
+        if (typeof material !== 'undefined') {
+          text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(material)}`;
         }
-        if (typeof oData[7] === 'undefined') {
+        if (typeof shape === 'undefined') {
           shape = '0';
         }
-
         this.rectList.push({
           x: xdata,
           y: ydata,
-          width: oData[2],
-          height: oData[3],
-          rotate: oData[5],
+          width: width,
+          height: height,
+          rotate: rotate,
           shape: shape,
           style: {
             left: 0,
             top: 0,
-            width: oData[2],
-            height: oData[3],
+            width: width,
+            height: height,
             // transform: `rotate(${oData[5]}deg)`,
             position: 'absolute',
             visibility: this.showObstacle,
             opacity: 0
           },
           svgStyle: {
-            width: oData[2],
-            height: oData[3],
+            width: width,
+            height: height,
             // fill: oColor,
           },
           hover: text
         });
-
+        // console.log("this.rectList",this.rectList);
       }
     }
 
