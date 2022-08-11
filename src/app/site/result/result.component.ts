@@ -1141,11 +1141,16 @@ export class ResultComponent implements OnInit {
     return ary;
   }
 
-  checkMaxMinValue(){
+  checkMaxMinValue(checkNegative){
     if (this.scaleMax<this.scaleMin || this.scaleMax == this.scaleMin){
       this.scaleInputError = true;
     } else {
       this.scaleInputError = false;
+    }
+    if (checkNegative){
+      if (this.scaleMin < 0){
+        this.scaleInputError = true;
+      }
     }
   }
 
