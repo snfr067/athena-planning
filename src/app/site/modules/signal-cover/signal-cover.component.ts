@@ -165,7 +165,10 @@ export class SignalCoverComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue.toString());
-
+    var CooUnit = 1;
+    if (this.calculateForm.width > 200 || this.calculateForm.height > 200){
+      CooUnit = 2;
+    }
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.signal_cover`)[zValues.indexOf(Number(this.zValue))];
@@ -232,6 +235,11 @@ export class SignalCoverComponent implements OnInit {
         let yIndex = 0;
         for (const yData of item) {
         // console.log(yData)
+          // if (CooUnit == 2){
+          //     if ((yIndex >= this.calculateForm.height/2 || xIndex >= this.calculateForm.width/2)){
+          //       continue;
+          //     }
+          // }
           if (typeof zData[i][yIndex] == 'undefined') {
             zData[i][yIndex] = [];
             zText[i][yIndex] = [];
@@ -261,17 +269,17 @@ export class SignalCoverComponent implements OnInit {
 
     const x = [];
     const y = [];
-    const wRatio = this.calculateForm.width / this.result['connectionMap'].length;
+    const wRatio = this.calculateForm.width / this.result['connectionMap'].length*CooUnit;
     let xval = 0;
     const xLen = this.result['connectionMap'].length;
-    for (let i = 0; i <= xLen; i++) {
+    for (let i = 0; i <= xLen; i+=CooUnit) {
       x.push(xval);
       xval += wRatio;
     }
-    const hRatio = this.calculateForm.height / this.result['connectionMap'][0].length;
+    const hRatio = this.calculateForm.height / this.result['connectionMap'][0].length*CooUnit;
     let yval = 0;
     const yLen = this.result['connectionMap'][0].length;
-    for (let i = 0; i <= yLen; i++) {
+    for (let i = 0; i <= yLen; i+=CooUnit) {
       y.push(yval);
       yval += hRatio;
     }
@@ -484,6 +492,11 @@ export class SignalCoverComponent implements OnInit {
           let yIndex = 0;
           for (const yData of item) {
             // console.log(yData)
+            // if (CooUnit == 2){
+            //   if ((yIndex >= this.calculateForm.height/2 || xIndex >= this.calculateForm.width/2)){
+            //     continue;
+            //   }
+            // }
             if (typeof apMap[yData[i]] === 'undefined') {
               zText[i][yIndex][xIndex] = '無';
             } else {
