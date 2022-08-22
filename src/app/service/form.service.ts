@@ -95,6 +95,7 @@ export class FormService {
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
+    calculateForm.resolution = Number(result['resolution']);
     console.log("calculateForm",calculateForm);
     return calculateForm;
   }

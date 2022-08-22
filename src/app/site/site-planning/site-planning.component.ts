@@ -256,7 +256,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'availableNewBsNumber', 'addFixedBsNumber', 'sinrRatio',
     'throughputRatio', 'coverageRatio', 'ueAvgSinrRatio', 'ueAvgThroughputRatio', 'ueTpByDistanceRatio',
     'mctsC', 'mctsMimo', 'ueCoverageRatio', 'ueTpByRsrpRatio',
-    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime'];
+    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime','resolution'];
 
   /** task id */
   taskid = '';
@@ -627,6 +627,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.calculateForm = this.formService.setHstToForm(result);
                 if (!(Number(this.calculateForm.maxConnectionNum)>0)){
                   this.calculateForm['maxConnectionNum'] = 32;
+                }
+                if (!(Number(this.calculateForm.resolution)>0)){
+                  this.calculateForm['resolution'] = 1;
                 }
                 // this.calculateForm.defaultBs = output['defaultBs'];
                 // this.calculateForm.bsList = output['defaultBs'];
@@ -5243,6 +5246,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (!(Number(this.calculateForm.maxConnectionNum)>0)){
       this.calculateForm.maxConnectionNum = 32;
     }
+    if (!(Number(this.calculateForm.resolution)>0)){
+      this.calculateForm['resolution'] = 1;
+    }
     const algorithmData = [
       // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
       ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum'],
@@ -5772,7 +5778,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
-
+      if (!(Number(this.calculateForm.resolution)>0)){
+        this.calculateForm['resolution'] = 1;
+      }
     }
     /* objective parameters sheet */
     const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];

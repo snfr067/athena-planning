@@ -20,7 +20,7 @@ export class CalculateForm {
   altitude: number = null;
   zValue: string = null;
   pathLossModelId: number = 0; 
-  
+  resolution: number = 1; 
   ueCoordinate: string = null;
   ueRxGain: string = null;
   ueRsrp: number = null;

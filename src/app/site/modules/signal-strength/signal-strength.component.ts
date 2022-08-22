@@ -166,10 +166,10 @@ export class SignalStrengthComponent implements OnInit {
     };
 
     const zValues = JSON.parse(this.calculateForm.zValue);
-    var CooUnit = 1;
-    if (this.calculateForm.width > 200 || this.calculateForm.height > 200){
-      CooUnit = 2;
-    }
+    var CooUnit = this.calculateForm.resolution;
+    // if (this.calculateForm.width > 200 || this.calculateForm.height > 200){
+    //   CooUnit = 2;
+    // }
     let id;
     if (isPDF) {
       id = document.querySelector('#pdf_area').querySelectorAll(`.signal_strength`)[zValues.indexOf(this.zValue)];
@@ -232,19 +232,19 @@ export class SignalStrengthComponent implements OnInit {
 
     const x = [];
     const y = [];
-    const wRatio = this.calculateForm.width / this.result['rsrpMap'].length*CooUnit;
+    // const wRatio = this.calculateForm.width / this.result['rsrpMap'].length*CooUnit;
     let xval = 0;
-    const xLen = this.result['rsrpMap'].length;
+    const xLen = this.calculateForm.width;
     for (let i = 0; i <= xLen; i+=CooUnit) {
       x.push(xval);
-      xval += wRatio;
+      xval += CooUnit;
     }
-    const hRatio = this.calculateForm.height / this.result['rsrpMap'][0].length*CooUnit;
+    // const hRatio = this.calculateForm.height / this.result['rsrpMap'][0].length*CooUnit;
     let yval = 0;
-    const yLen = this.result['rsrpMap'][0].length;
+    const yLen = this.calculateForm.height;
     for (let i = 0; i <= yLen; i+=CooUnit) {
       y.push(yval);
-      yval += hRatio;
+      yval += CooUnit;
     }
     const traces = [];
     // UE

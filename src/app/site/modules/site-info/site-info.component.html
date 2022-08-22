@@ -13,6 +13,9 @@
       <span><label>{{ 'maxConnectionNum' | translate }}</label>{{ calculateForm['maxConnectionNum'] }}</span>
     </li>
     <li>
+      <span><label>{{ 'resolution' | translate }}</label>{{ calculateForm['resolution'] }} x {{ calculateForm['resolution'] }} ( {{ 'meter' | translate }} )</span>
+    </li>
+    <li>
       <span *ngIf="this.inputBsListCount !== 0">
         <label>{{ 'planning.target' | translate }}</label>
         <div *ngIf="planningObj.isAverageSinr">{{ 'isAverageSinr' | translate }}</div>

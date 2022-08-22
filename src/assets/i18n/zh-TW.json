@@ -76,6 +76,7 @@
 	"RxGain": "接收增益",
 	"noise": "雜訊指數",
 	"materialList":"新增/編輯材質列表",
+	"resolution":"熱點圖網格大小",
 	"mctsC": "C 值",
 	"mctsMimo": "天線數",
 	"mctsTemperature": "氣溫",

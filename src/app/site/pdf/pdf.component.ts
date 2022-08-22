@@ -677,11 +677,12 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('taskName'),this.calculateForm['taskName']],
       [this.translateService.instant('createTime'),this.result['createTime']],
       [this.translateService.instant('result.layered.info'),target],
-      [this.translateService.instant('maxConnectionNum'),this.calculateForm['maxConnectionNum']],
       [this.translateService.instant('result.pdf.width'),this.result['inputWidth']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('result.pdf.height'),this.result['inputHeight']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('result.pdf.altitude'),this.calculateForm['altitude']+' '+this.translateService.instant('meter')],
       [this.translateService.instant('zValue'),this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')+this.translateService.instant('meter')],
+      [this.translateService.instant('maxConnectionNum'),this.calculateForm['maxConnectionNum']],
+      [this.translateService.instant('resolution'),this.calculateForm['resolution']+' x '+this.calculateForm['resolution']+'('+this.translateService.instant('meter')+')'],
     ]
     pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.content')], fieldParameter, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -695,7 +696,7 @@ export class PdfComponent implements OnInit {
       }
     });
 
-    pos+=70;
+    pos+=83;
 
     let statistics;
     if (this.calculateForm.isSimulation) {

@@ -73,6 +73,7 @@
 	"wifiFrequency": "WiFi frequency",
 	"pathLossModelId": "Default pathloss model",
 	"materialList":"Field material list",
+	"resolution":"Heatmap grid size",
 	"TxGain": "TX Gain",
 	"RxGain": "RX Gain",
 	"noise": "Noise Figure",
