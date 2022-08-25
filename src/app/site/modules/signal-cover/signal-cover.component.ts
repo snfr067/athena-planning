@@ -64,6 +64,10 @@ export class SignalCoverComponent implements OnInit {
   traces = [];
   /** 障礙物element */
   @ViewChildren('obstaclecElm') obstacleElm: QueryList<ElementRef>;
+  /** 顯示圖轉換的image */
+  showImg = false;
+  /** 圖轉換的image src */
+  imageSRC = '';
 
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
@@ -269,17 +273,13 @@ export class SignalCoverComponent implements OnInit {
 
     const x = [];
     const y = [];
-    const wRatio = this.calculateForm.width / this.result['connectionMap'].length*CooUnit;
-    let xval = 0;
-    const xLen = this.calculateForm.width;
-    for (let i = 0; i <= xLen; i+=CooUnit) {
+    let xval = CooUnit/2;
+    while(xval - CooUnit/2 < this.calculateForm.width){
       x.push(xval);
       xval += CooUnit;
     }
-    const hRatio = this.calculateForm.height / this.result['connectionMap'][0].length*CooUnit;
-    let yval = 0;
-    const yLen = this.calculateForm.height;
-    for (let i = 0; i <= yLen; i+=CooUnit) {
+    let yval = CooUnit/2;
+    while(yval - CooUnit/2 < this.calculateForm.height){
       y.push(yval);
       yval += CooUnit;
     }
@@ -808,12 +808,18 @@ export class SignalCoverComponent implements OnInit {
       }
 
       if (isPDF) {
-        this.style['z-index'] = 0;
-        this.style['opacity'] = 0.2;
-        this.divStyle['text-align'] = 'left';
-        for (const item of this.rectList) {
-          item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0.2)';
-        }
+        // pdf轉成png，避免colorbar空白
+        this.showImg = true;
+        Plotly.toImage(gd2, {width: layoutOption.width, height: layoutOption.height}).then(dataUri => {
+          this.imageSRC = dataUri;
+          Plotly.d3.select(gd2.querySelector('.plotly')).remove();
+          this.style['z-index'] = 0;
+          this.style['opacity'] = 0.2;
+          this.divStyle['text-align'] = 'left';
+          for (const item of this.rectList) {
+            item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0.2)';
+          }
+        });
       }
 
     });

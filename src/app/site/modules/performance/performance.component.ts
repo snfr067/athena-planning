@@ -40,21 +40,18 @@ export class PerformanceComponent implements OnInit {
     this.avgCoverageRsrp = 0;
     const zValues = this.calculateForm.zValue.replace('[', '').replace(']', '').split(',');
     console.log(zValues.length);
-    var CooUnit = this.calculateForm.resolution;
-    // if (this.calculateForm.width > 200 || this.calculateForm.height > 200){
-    //   CooUnit = 2;
-    // }
+
     for (let i = 0;i < zValues.length; i++) {
       // this.zCoverageRsrp.push(0);
-      for (let j = 0;j < Math.floor(this.calculateForm.width/CooUnit);j++) {
-        for (let k = 0;k < Math.floor(this.calculateForm.height/CooUnit);k++) {
+      for (let j = 0;j < this.result['rsrpMap'].length;j++) {
+        for (let k = 0;k < this.result['rsrpMap'][0].length;k++) {
           if (this.result['rsrpMap'][j][k][i] > this.rsrpTh) {
             this.zCoverageRsrp[i]++;
           }
         }
       }
     }
-    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el/(this.calculateForm.width*this.calculateForm.height)*100));
+    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el/(this.result['rsrpMap'].length*this.result['rsrpMap'][0].length)*100));
     console.log(this.zCoverageRsrp);
     for (let i = 0; i < zValues.length; i++) {
       this.zValueList.push([

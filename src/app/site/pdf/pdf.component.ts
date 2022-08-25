@@ -940,6 +940,10 @@ export class PdfComponent implements OnInit {
         // 訊號強度圖等待轉png
         await this.sleep(1500);
       }
+      if (data.querySelector('#is_cover') != null) {
+        // 訊號覆蓋圖等待轉png
+        await this.sleep(1500);
+      }
       if (data.querySelector('#is_ulThroughputMap') != null) {
         // 上行傳輸速率圖等待轉png
         await this.sleep(1500);

@@ -1,6 +1,9 @@
 <div [ngStyle]="divStyle">
   <div class="signal_cover">
-    <div class="quality_img" [ngStyle]="style" style="z-index: -1;" >
+    <input type="hidden" id="is_cover" value="true">
+    <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
+
+    <div class="cover_img" [ngStyle]="style" style="z-index: -1;" >
       <!-- 障礙物 -->
       <span *ngFor="let item of rectList" #obstaclecElm [ngStyle]="item.style">
         <svg *ngIf="item.shape == '0'" class="drag_obj" [attr.width]="item.style.width"  [attr.height]="item.style.height" #tooltip="matTooltip" matTooltip="{{ item.hover }}" xmlns="http://www.w3.org/2000/svg">

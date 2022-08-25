@@ -1114,12 +1114,14 @@
                     <label>{{ 'resolution' | translate }}</label>
                     <span>
                       <select style="min-width: 16em;" [(ngModel)]="calculateForm.resolution">
-                          <option  value="1">1 x 1 ({{ 'meter' | translate }})</option>
+                        <option *ngFor="let item of resolutionList" [value]="item">
+                          {{ item }} x {{ item }} ({{ 'meter' | translate }})</option>
+                          <!-- <option value="1">1 x 1 ({{ 'meter' | translate }})</option>
                           <option value="2">2 x 2 ({{ 'meter' | translate }})</option>
                           <option value="4">4 x 4 ({{ 'meter' | translate }})</option>
                           <option value="6">6 x 6 ({{ 'meter' | translate }})</option>
                           <option value="8">8 x 8 ({{ 'meter' | translate }})</option>
-                          <option value="10">10 x 10 ({{ 'meter' | translate }})</option>
+                          <option value="10">10 x 10 ({{ 'meter' | translate }})</option> -->
                         </select>
                     </span>
                   </p>

@@ -344,6 +344,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   subFieldList = [];
   subFieldStyle = {};
   isShowSubField = true;
+  /** 解析度List  **/
+  resolutionList = [1];
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -591,7 +593,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (sessionStorage.getItem('importFile') != null) {
         // from new-planning import file
         this.calculateForm = new CalculateForm();
-
         const reader = new FileReader();
         reader.onload = (e) => {
           this.readXls(e.target.result);
@@ -1053,6 +1054,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   initData(isImportXls, isImportImg, isHWAChange) {
     // console.log('--initData.');
     console.log(this.defaultBSList);
+    this.createResolutionList();
     //檢查有沒有場域長寬高被改成負數
     if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
       if (this.calculateForm.height < 0) {
@@ -7264,6 +7266,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       return true;
     } else {
       return false;
+    }
+  }
+  createResolutionList(){
+    let resolution = 2;
+    while((this.calculateForm.width / resolution >=6) && (this.calculateForm.height /resolution >= 6) && resolution <= 10){
+      console.log("this.calculateForm.width / resolution ",this.calculateForm.width / resolution);
+      console.log("this.calculateForm.height /resolution n ",this.calculateForm.height /resolution);
+      console.log("resolution",resolution);
+      this.resolutionList.push(resolution);
+      resolution += 2;
     }
   }
 }

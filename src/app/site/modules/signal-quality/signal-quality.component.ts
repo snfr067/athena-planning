@@ -264,17 +264,13 @@ export class SignalQualityComponent implements OnInit {
 
     const x = [];
     const y = [];
-    // const wRatio = this.calculateForm.width / this.result['sinrMap'].length;
-    let xval = 0;
-    const xLen = this.calculateForm.width;
-    for (let i = 0; i <= xLen; i+=CooUnit) {
+    let xval = CooUnit/2;
+    while(xval - CooUnit/2 < this.calculateForm.width){
       x.push(xval);
       xval += CooUnit;
     }
-    // const hRatio = this.calculateForm.height / this.result['sinrMap'][0].length;
-    let yval = 0;
-    const yLen = this.calculateForm.height;
-    for (let i = 0; i <= yLen; i+=CooUnit) {
+    let yval = CooUnit/2;
+    while(yval - CooUnit/2 < this.calculateForm.height){
       y.push(yval);
       yval += CooUnit;
     }
