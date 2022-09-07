@@ -1818,7 +1818,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         title += `${this.translateService.instant('customize')}_${this.dragObject[id].materialName}`;
       }
       
-    } else {
+    } else if (this.dragObject[id].type != 'subField') {
       title += `Z: ${this.dragObject[id].z}<br>`;
     }
     /*
@@ -7271,9 +7271,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   createResolutionList(){
     let resolution = 2;
     while((this.calculateForm.width / resolution >=6) && (this.calculateForm.height /resolution >= 6) && resolution <= 10){
-      console.log("this.calculateForm.width / resolution ",this.calculateForm.width / resolution);
-      console.log("this.calculateForm.height /resolution n ",this.calculateForm.height /resolution);
-      console.log("resolution",resolution);
       this.resolutionList.push(resolution);
       resolution += 2;
     }

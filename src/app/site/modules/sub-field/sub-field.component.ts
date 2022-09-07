@@ -146,11 +146,12 @@ export class SubFieldComponent implements OnInit {
     } else {
       valueArr = this.result['ulThroughputMap'];
     }
+    var CooUnit = this.calculateForm.resolution;
     for (let i = 0;i < sub_field_arr.length;i++) {
-      let x_start = Math.ceil(Number(sub_field_arr[i].x));
-      let x_end = Math.floor(Number(sub_field_arr[i].x)+Number(sub_field_arr[i].width));
-      let y_start = Math.ceil(Number(sub_field_arr[i].y));
-      let y_end = Math.floor(Number(sub_field_arr[i].y)+Number(sub_field_arr[i].height));
+      let x_start = Math.floor(Number(sub_field_arr[i].x));
+      let x_end = Math.ceil(Number(sub_field_arr[i].x)+Number(sub_field_arr[i].width));
+      let y_start = Math.floor(Number(sub_field_arr[i].y));
+      let y_end = Math.ceil(Number(sub_field_arr[i].y)+Number(sub_field_arr[i].height));
       // 我只是想放N/A: (當x_start < x_end) ,y亦然
       if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
         if (type === 'coverage' || type === 'coverageRsrp') {
@@ -159,14 +160,14 @@ export class SubFieldComponent implements OnInit {
           zResult = 0/0; // N/A
         }
       } else {
-        if (x_end == Math.floor(this.calculateForm.width)) {
+        if (x_end > Math.floor(this.calculateForm.width)) {
           x_end = x_end - 1;
         }
-        if (y_end == Math.floor(this.calculateForm.height)) {
+        if (y_end > Math.floor(this.calculateForm.height)) {
           y_end = y_end - 1;
         }
-        for (let i = x_start;i <= x_end;i++) {
-          for (let j = y_start;j <= y_end;j++) {
+        for (let i = Math.floor(x_start/CooUnit);i < Math.ceil(x_end/CooUnit);i++) {
+          for (let j = Math.floor(y_start/CooUnit);j < Math.ceil(y_end/CooUnit);j++) {
             // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
             if (type === 'coverage') {
               if (Number(tempSinrValue[i][j][z]) > covTh) {
@@ -188,6 +189,7 @@ export class SubFieldComponent implements OnInit {
         
       }
     }
+    // console.log("points",points);
     if (type === 'coverage') {
       zResult = this.financial(Number(totalValue/points)*100, 2);
     } else if (type === 'coverageRsrp') {
