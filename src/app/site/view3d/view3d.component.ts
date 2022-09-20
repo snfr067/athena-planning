@@ -102,7 +102,7 @@ export class View3dComponent implements OnInit {
   heatmapConfig = [[12, 51, 131], [10, 136, 186], [242, 211, 56], [242, 143, 56], [217, 30, 30]];
   /** 訊號覆蓋圖是否為藍色 */
   isCoverBlue = true;
-
+  coounit = 1;
   ary = [];
   /** 跟2d圖相同的colorscale */
   // colorscale: any = [
@@ -131,6 +131,7 @@ export class View3dComponent implements OnInit {
   ngOnInit() {
     // this.draw();
     console.log(this.calculateForm);
+    this.coounit = this.calculateForm.resolution;
   }
 
   /**
@@ -343,10 +344,10 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z] = [];
 
         const sinrMapPlane = BABYLON.MeshBuilder.CreateGround('sinrmap_' + z, {width: this.width, height: this.height}, scene);
-        sinrMapPlane.position.y = z*0.1 + offsetY;
+        sinrMapPlane.position.y = z + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
-            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), this.width, this.height, scene, false, false);
+            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genSinrMapData(i), Math.ceil(this.width/this.coounit), Math.ceil(this.height/this.coounit), scene, false, false);
             heatmapMat.diffuseTexture = texture;
             /**
              * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
@@ -359,10 +360,10 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(sinrMapPlane);
 
         const pciMapPlane = BABYLON.MeshBuilder.CreateGround('pcimap_' + z, {width: this.width, height: this.height}, scene);
-        pciMapPlane.position.y = z*0.1 + offsetY;
+        pciMapPlane.position.y = z + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
-            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), this.width, this.height, scene, false, false);
+            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genPciMapData(i), Math.ceil(this.width/this.coounit), Math.ceil(this.height/this.coounit), scene, false, false);
             heatmapMat.diffuseTexture = texture;
             // /**
             //  * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
@@ -375,10 +376,10 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(pciMapPlane);
 
         const rsrpMapPlane = BABYLON.MeshBuilder.CreateGround('rsrpmap_' + z, {width: this.width, height: this.height}, scene);
-        rsrpMapPlane.position.y = z*0.1 + offsetY;
+        rsrpMapPlane.position.y = z + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
-            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), this.width, this.height, scene, false, false);
+            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genRsrpMapData(i), Math.ceil(this.width/this.coounit), Math.ceil(this.height/this.coounit), scene, false, false);
             heatmapMat.diffuseTexture = texture;
             /**
              * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
@@ -391,10 +392,10 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(rsrpMapPlane);
 
         const ulThroughputMapPlane = BABYLON.MeshBuilder.CreateGround('ulThroughput_' + z, {width: this.width, height: this.height}, scene);
-        ulThroughputMapPlane.position.y = z*0.1 + offsetY;
+        ulThroughputMapPlane.position.y = z + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
-            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), this.width, this.height, scene, false, false);
+            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genUlThroughputMapData(i), Math.ceil(this.width/this.coounit), Math.ceil(this.height/this.coounit), scene, false, false);
             heatmapMat.diffuseTexture = texture;
             /**
              * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
@@ -407,10 +408,10 @@ export class View3dComponent implements OnInit {
         this.heatmapGroup[z].push(ulThroughputMapPlane);
 
         const dlThroughputMapPlane = BABYLON.MeshBuilder.CreateGround('dlThroughput_' + z, {width: this.width, height: this.height}, scene);
-        dlThroughputMapPlane.position.y = z*0.1 + offsetY;
+        dlThroughputMapPlane.position.y = z + offsetY;
         if (null != this.result['gaResult']) {
             const heatmapMat = new BABYLON.StandardMaterial('heatmapMaterial', scene);
-            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), this.width, this.height, scene, false, false);
+            const texture = BABYLON.RawTexture.CreateRGBTexture(this.genDlThroughputMapData(i), Math.ceil(this.width/this.coounit), Math.ceil(this.height/this.coounit), scene, false, false);
             heatmapMat.diffuseTexture = texture;
             /**
              * heatmap透明度，2d底圖下方有障礙物需顯示，故設定heatmap div透明度0.85
@@ -472,7 +473,7 @@ export class View3dComponent implements OnInit {
    */
   genPciMapData(zIndex) {
     const blockCount = this.defaultBs.length + this.result['gaResult'].chosenCandidate.length;
-    const colorMap = new Uint8Array(this.width * this.height * 3);
+    const colorMap = new Uint8Array(Math.ceil(this.width/this.coounit) * Math.ceil(this.height/this.coounit) * 3);
     let allZero = true;
     const ary = [];
     this.result['gaResult']['connectionMap'].map(v => {
@@ -496,9 +497,9 @@ export class View3dComponent implements OnInit {
       colorRange.push(this.colorscale[k][1]);
     }
 
-    for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.width; i++) {
-            const n = (j * this.width + i) * 3;
+    for (let j = 0; j < Math.ceil(this.height/this.coounit); j++) {
+      for (let i = 0; i < Math.ceil(this.width/this.coounit); i++) {
+          const n = (j * Math.ceil(this.width/this.coounit) + i) * 3;
             if (typeof this.result['gaResult'].connectionMap[i][j] === 'undefined') {
             // if (typeof this.result['gaResult'].connectionMapAll[i][j] === 'undefined') {
               continue;
@@ -568,9 +569,10 @@ export class View3dComponent implements OnInit {
    * @param zIndex 高度
    */
   genSinrMapData(zIndex) {
-    const colorMap = new Uint8Array(this.width * this.height * 3);
-    const totalDelta = this.result['sinrMax'] - this.result['sinrMin'];
-
+    const colorMap = new Uint8Array(Math.ceil(this.width/this.coounit) * Math.ceil(this.height/this.coounit) * 3);
+    let scaleMax = 29.32; // this.result['sinrMax']
+    let scaleMin = (-1.1889); // this.result['sinrMin']
+    const totalDelta = scaleMax - scaleMin;
     // const sinrColorscale: any = [
     //   [0, 'rgb(12,51,131)'],
     //   [0.2, 'rgb(10,136,186)'],
@@ -585,14 +587,15 @@ export class View3dComponent implements OnInit {
     let zDomain = [];
     const colorRange = [];
     for (let k = 0; k < this.colorscale.length; k++) {
-      zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['sinrMin']);
+      // zDomain.push((totalDelta) * this.colorscale[k][0] + this.result['sinrMin']);
+      zDomain.push((totalDelta) * this.colorscale[k][0] + scaleMin);
       colorRange.push(this.colorscale[k][1]);
     }
     // alert(zDomain);
 
-    for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.width; i++) {
-            const n = (j * this.width + i) * 3;
+    for (let j = 0; j < Math.ceil(this.height/this.coounit); j++) {
+      for (let i = 0; i < Math.ceil(this.width/this.coounit); i++) {
+          const n = (j * Math.ceil(this.width/this.coounit) + i) * 3;
             if (typeof this.result['gaResult'].sinrMap[i][j] === 'undefined') {
               continue;
             }
@@ -655,7 +658,7 @@ export class View3dComponent implements OnInit {
    * @param zIndex 高度
    */
   genRsrpMapData(zIndex) {
-    const colorMap = new Uint8Array(this.width * this.height * 3);
+    const colorMap = new Uint8Array(Math.ceil(this.width/this.coounit) * Math.ceil(this.height/this.coounit) * 3);
     const totalDelta = this.result['rsrpMax'] - this.result['rsrpMin'];
     // const max = -44;
     // const min = -140;
@@ -668,9 +671,9 @@ export class View3dComponent implements OnInit {
       colorRange.push(this.colorscale[k][1]);
     }
 
-    for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.width; i++) {
-            const n = (j * this.width + i) * 3;
+    for (let j = 0; j < Math.ceil(this.height/this.coounit); j++) {
+        for (let i = 0; i < Math.ceil(this.width/this.coounit); i++) {
+            const n = (j * Math.ceil(this.width/this.coounit) + i) * 3;
             if (typeof this.result['gaResult'].rsrpMap[i][j] === 'undefined') {
               continue;
             }
@@ -727,7 +730,7 @@ export class View3dComponent implements OnInit {
    * @param zIndex 高度
    */
   genUlThroughputMapData(zIndex) {
-    const colorMap = new Uint8Array(this.width * this.height * 3);
+    const colorMap = new Uint8Array(Math.ceil(this.width/this.coounit) * Math.ceil(this.height/this.coounit) * 3);
     const totalDelta = this.result['ulThroughputMax'] - this.result['ulThroughputMin'];
     if (this.result['gaResult'].ulThroughputMap != null && this.result['gaResult'].ulThroughputMap.length > 0) {
       // const max = 1200;
@@ -739,9 +742,9 @@ export class View3dComponent implements OnInit {
         // zDomain = JSON.parse(sessionStorage.getItem('ulTpt_scale')).reverse();
         colorRange.push(this.colorscale[k][1]);
       }
-      for (let j = 0; j < this.height; j++) {
-        for (let i = 0; i < this.width; i++) {
-            const n = (j * this.width + i) * 3;
+      for (let j = 0; j < Math.ceil(this.height/this.coounit); j++) {
+        for (let i = 0; i < Math.ceil(this.width/this.coounit); i++) {
+            const n = (j * Math.ceil(this.width/this.coounit) + i) * 3;
             if (typeof this.result['gaResult'].ulThroughputMap[i][j] === 'undefined') {
               continue;
             }
@@ -802,14 +805,14 @@ export class View3dComponent implements OnInit {
    * @param zIndex 高度
    */
   genDlThroughputMapData(zIndex) {
-    const colorMap = new Uint8Array(this.width * this.height * 3);
+    const colorMap = new Uint8Array(Math.ceil(this.width/this.coounit) * Math.ceil(this.height/this.coounit) * 3);
     if (this.result['gaResult'].dlThroughputMap != null && this.result['gaResult'].dlThroughputMap.length > 0) {
       const totalDelta = this.result['dlThroughputMax'] - this.result['dlThroughputMin'];
       const max = 1200;
       const min = 100;
-      for (let j = 0; j < this.height; j++) {
-          for (let i = 0; i < this.width; i++) {
-              const n = (j * this.width + i) * 3;
+      for (let j = 0; j < Math.ceil(this.height/this.coounit); j++) {
+        for (let i = 0; i < Math.ceil(this.width/this.coounit); i++) {
+            const n = (j * Math.ceil(this.width/this.coounit) + i) * 3;
               if (typeof this.result['gaResult'].dlThroughputMap[i][j] === 'undefined') {
                 continue;
               }

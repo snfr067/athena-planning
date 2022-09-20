@@ -199,10 +199,12 @@ export class SignalQualityComponent implements OnInit {
       this.maxZ.push(this.result['sinrMap'][0][0][i]);
       this.minZ.push(this.result['sinrMap'][0][0][i]);
     }
+    /*
     const mapX = [];
     const mapY = [];
     const mapColor = [];
     const mapText = [];
+    */
     for (const item of this.result['sinrMap']) {
       for (let i = 0; i < zLen; i++) {
         let yIndex = 0;
@@ -229,6 +231,7 @@ export class SignalQualityComponent implements OnInit {
             console.log(item);
           }
           zText[i][yIndex][xIndex] = Math.round(yData[i] * 100) / 100;
+          /*
           if (zText[i][yIndex][xIndex] >= 24) {
             mapColor.push('rgb(217,30,30)');
           } else if (zText[i][yIndex][xIndex] >= 23) {
@@ -246,7 +249,7 @@ export class SignalQualityComponent implements OnInit {
           mapX.push(xIndex);
           mapY.push(yIndex);
           mapText.push(zText[i][yIndex][xIndex]);
-
+          */
           yIndex++;
           allZ[i].push(yData[i]);
         }
