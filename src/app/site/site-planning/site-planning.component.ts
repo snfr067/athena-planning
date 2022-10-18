@@ -109,6 +109,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   materialList = [];
   /** model list */
   modelList = [];
+  /** antenna list */
+  antennaList = [];
   /** new material & new model */
   materialId: number = 0;
   materialName: string = null;
@@ -256,7 +258,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'availableNewBsNumber', 'addFixedBsNumber', 'sinrRatio',
     'throughputRatio', 'coverageRatio', 'ueAvgSinrRatio', 'ueAvgThroughputRatio', 'ueTpByDistanceRatio',
     'mctsC', 'mctsMimo', 'ueCoverageRatio', 'ueTpByRsrpRatio',
-    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime','resolution'];
+    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime','resolution','maxConnectionNum','geographicalNorth'];
 
   /** task id */
   taskid = '';
@@ -346,6 +348,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   isShowSubField = true;
   /** 解析度List  **/
   resolutionList = [1];
+  /** smart antenna **/
+  manufactor = "All";
+  manufactorCal = "All";
+  AntennaManufactorList = [];
+  AntennaIdToIndex = {};
+  // useSmartAntenna = "false";
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
   /** 高度設定燈箱 */
@@ -360,7 +368,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
   @ViewChild('confirmDeleteMaterial') confirmDeleteMaterial: TemplateRef<any>;
   @ViewChild('confirmDeleteModel') confirmDeleteModel: TemplateRef<any>;
-
+  @ViewChild('coordinateInfoModal') coordinateInfoModal: TemplateRef<any>;
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
   @ViewChild('changeToSimulationModal') changeToSimulationModal: TemplateRef<any>;
@@ -421,7 +429,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   dlRatio = 70;
   scalingFactor = 1;
   rsrpThreshold = -90;
-
+  
   tempCalParamSet = {
     txpower: 0,
     beampattern: '0',
@@ -447,7 +455,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     wifiBandwidth: '20',
     wifiFrequency: 2412,
     bsTxGain: 0,
-    bsNoiseFigure: 0
+    bsNoiseFigure: 0,
+    AntennaId:1,
+    theta:0,
+    phi:0
   }
 
   
@@ -588,8 +599,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           return reject(err);
         }
       );
-    }).then((resolve) => {
-      console.log(resolve);
+    }).then(promiseResult => {
+      console.log(promiseResult);
+      let url_model = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+      // let url_model = `http://192.168.1.109:4444/antenna`;
+      this.http.get(url_model).subscribe(
+        res => {
+          let result = res;
+          this.antennaList = Object.values(result);
+          for (let i = 0;i < this.antennaList.length;i++) {
+            let id = this.antennaList[i]['antenna_id'];
+            this.AntennaIdToIndex[id]=i;
+          }
+          for (let item of this.antennaList) {
+            if(!(this.AntennaManufactorList.includes(item['manufactor']))){
+              this.AntennaManufactorList.push(item['manufactor']);
+            }
+          }
+          console.log(result);
+        },err => {
+          console.log(err);
+        }
+      );
+    }).then(() => {
       if (sessionStorage.getItem('importFile') != null) {
         // from new-planning import file
         this.calculateForm = new CalculateForm();
@@ -631,6 +663,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 }
                 if (!(Number(this.calculateForm.resolution)>0)){
                   this.calculateForm['resolution'] = 1;
+                }
+                if (this.authService.isEmpty(this.calculateForm.geographicalNorth)){
+                  this.calculateForm['geographicalNorth'] = 0;
                 }
                 // this.calculateForm.defaultBs = output['defaultBs'];
                 // this.calculateForm.bsList = output['defaultBs'];
@@ -1445,7 +1480,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         wifiFrequency: 2412,
         wifiBandwidth: '20',
         bsTxGain: 0,
-        bsNoiseFigure: 0
+        bsNoiseFigure: 0,
+        AntennaId:1,
+        theta:0,
+        phi:0
       };
       if (this.calculateForm.objectiveIndex === '0') {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1492,7 +1530,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         wifiMimo: '2x2',
         // wifiBandwidth: 20
         bsTxGain: 0,
-        bsNoiseFigure: 0
+        bsNoiseFigure: 0,
+        AntennaId:1,
+        theta:0,
+        phi:0
       };
       if (Number(this.calculateForm.objectiveIndex) === 0) {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -2423,6 +2464,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // console.log(item);
     // console.log(this.svgNum);
     // this.matDialog.open(this.rfModal);
+    this.manufactor = 'All';
     this.matDialog.open(this.rfModalTable);
   }
   openUEParamSetting(item, i, isNav) {
@@ -2574,6 +2616,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.AntennaId)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('Antenna')}<br/>`;  }
+          if (this.isEmpty(obj.theta)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('theta')}<br/>`;  }
+          if (this.isEmpty(obj.phi)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('phi')}<br/>`;  }
           if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
           if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
@@ -2599,6 +2644,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
             if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
+          if (this.isEmpty(obj.AntennaId)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('Antenna')}<br/>`;  }
+          if (this.isEmpty(obj.theta)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('theta')}<br/>`;  }
+          if (this.isEmpty(obj.phi)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('phi')}<br/>`;  }
           if (this.isEmpty(obj.bsTxGain)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('TxGain')}<br/>`;  }
           if (this.isEmpty(obj.bsNoiseFigure)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('noise')}<br/>`;  }
           if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
@@ -3403,7 +3451,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       mapProtocol = 'wifi';
     }
     //4G and 5G
-    let bsTxGain = [];
     let bsNoiseFigure = [];
     let duplex = this.duplexMode;
     let tddFrameRatio = this.dlRatio;
@@ -3434,16 +3481,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.defaultBSList.length > 0 || this.candidateList.length > 0) {
 
       let candidate = '';
-      this.calculateForm.candidateBs = candidate;
+      let candidateBsAnt = '';
       if (this.candidateList.length > 0) {
         for (let i = 0; i < this.candidateList.length; i++) {
           const canObj = this.dragObject[this.candidateList[i]];
-          bsTxGain.push(this.tempCalParamSet.bsTxGain);
           bsNoiseFigure.push(this.tempCalParamSet.bsNoiseFigure);
           candidate += `[${canObj.x},${canObj.y},${canObj.altitude}]`;
           // candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
           if (i < this.candidateList.length - 1) {
             candidate += '|';
+          }
+          candidateBsAnt += `[${this.tempCalParamSet.AntennaId},${this.tempCalParamSet.theta},${this.tempCalParamSet.phi},${this.tempCalParamSet.bsTxGain}]`;
+          if (i < this.candidateList.length - 1) {
+            candidateBsAnt += '|';
           }
           // const obj = this.bsListRfParam[this.candidateList[i]];
           // console.log(`obj: ${JSON.stringify(obj)}`);
@@ -3482,18 +3532,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             bandwidthList.push(this.tempCalParamSet.wifiBandwidth);
           }
         }
-        this.calculateForm.candidateBs = candidate;
       }
+      this.calculateForm.candidateBs = candidate;
+      this.calculateForm.candidateBsAnt = candidateBsAnt;
 
+      let defaultBsAnt = '';
       for (let i = 0; i < this.defaultBSList.length; i++) {
         const obj = this.bsListRfParam[this.defaultBSList[i]];
         console.log(`obj: ${JSON.stringify(obj)}`)
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
-        bsTxGain.push(obj.bsTxGain);
         bsNoiseFigure.push(obj.bsNoiseFigure);
         // freqList.push(obj.frequency);
-        
+        defaultBsAnt += `[${obj.AntennaId},${obj.theta},${obj.phi},${obj.bsTxGain}]`;
+        if (i < this.defaultBSList.length - 1) {
+          defaultBsAnt += '|';
+        }
         if (mapProtocol !== 'wifi') {
           if (mapProtocol === '5g') {
             ulMcsTable.push(obj.ulModulationCodScheme);
@@ -3524,7 +3578,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           bandwidthList.push(obj.wifiBandwidth);
         }
       }
-
+      this.calculateForm.defaultBsAnt = defaultBsAnt;
       //API body
       this.calculateForm.mapProtocol = mapProtocol;
       if (this.calculateForm.mapProtocol != 'wifi') {
@@ -3534,7 +3588,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       this.calculateForm.scalingFactor = scalingFactor;
       this.calculateForm.tddFrameRatio = tddFrameRatio;
-      this.calculateForm.bsTxGain = `[${bsTxGain.toString()}]`;
       this.calculateForm.bsNoiseFigure = `[${bsNoiseFigure.toString()}]`;
       //4G
       this.calculateForm.mimoNumber = `[${mimoNumber.toString()}]`;
@@ -5103,7 +5156,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers', 
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency',
+    'bsTxGain','bsNoiseFigure','AntennaId','theta','phi']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -5140,6 +5194,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].wifiFrequency,
         this.bsListRfParam[item].bsTxGain,
         this.bsListRfParam[item].bsNoiseFigure,
+        this.bsListRfParam[item].AntennaId,
+        this.bsListRfParam[item].theta,
+        this.bsListRfParam[item].phi
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
@@ -5150,7 +5207,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
     '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
     'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers',
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency','bsTxGain','bsNoiseFigure']];
+    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency',
+    'bsTxGain','bsNoiseFigure','AntennaId','theta','phi']];
     for (const item of this.candidateList) {
       candidateData.push([
         this.dragObject[item].x, this.dragObject[item].y,
@@ -5184,7 +5242,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiBandwidth,
         this.tempCalParamSet.wifiFrequency,
         this.tempCalParamSet.bsTxGain,
-        this.tempCalParamSet.bsNoiseFigure
+        this.tempCalParamSet.bsNoiseFigure,
+        this.tempCalParamSet.AntennaId,
+        this.tempCalParamSet.theta,
+        this.tempCalParamSet.phi
       ]);
     }
     const candidateWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(candidateData);
@@ -5251,15 +5312,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (!(Number(this.calculateForm.resolution)>0)){
       this.calculateForm['resolution'] = 1;
     }
+    if (this.authService.isEmpty(this.calculateForm.geographicalNorth)){
+      this.calculateForm['geographicalNorth'] = 0;
+    }
+    
     const algorithmData = [
       // ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel','maxConnectionNum'],
-      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 'pathLossModel', 'maxConnectionNum'],
+      ['crossover', 'mutation', 'iteration', 'seed', 'computeRound', 'useUeCoordinate', 
+      'pathLossModel', 'maxConnectionNum','resolution','geographicalNorth'],
       [
         
         this.calculateForm.crossover, this.calculateForm.mutation,
         this.calculateForm.iteration, this.calculateForm.seed,
         // 1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId,
-        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, this.calculateForm.maxConnectionNum, 
+        1, this.calculateForm.useUeCoordinate, this.calculateForm.pathLossModelId, 
+        this.calculateForm.maxConnectionNum, this.calculateForm.resolution, this.calculateForm.geographicalNorth
         
       ]
     ];
@@ -5434,13 +5501,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         // RF parameter import
         const offset = 2;
-        let bsTxGain = 0
-        let bsNoiseFigure = 0
+        let bsTxGain = 0;
+        let bsNoiseFigure = 0;
+        let AntennaId = 1;
+        let theta = 0;
+        let phi = 0;
         if (Object.values(baseStationData[0]).includes("bsTxGain")){
-          bsTxGain= baseStationData[i][24+offset]
+          bsTxGain= baseStationData[i][24+offset];
         }
         if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
-          bsNoiseFigure= baseStationData[i][25+offset]
+          bsNoiseFigure= baseStationData[i][25+offset];
+        }
+        if (Object.values(baseStationData[0]).includes("AntennaId")){
+          AntennaId= baseStationData[i][26+offset];
+        }
+        if (Object.values(baseStationData[0]).includes("theta")){
+          theta= baseStationData[i][27+offset];
+        }
+        if (Object.values(baseStationData[0]).includes("phi")){
+          phi= baseStationData[i][28+offset];
         }
         this.bsListRfParam[id] = {
           txpower: baseStationData[i][3+offset],
@@ -5465,7 +5544,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           wifiBandwidth: baseStationData[i][22+offset],
           wifiFrequency: baseStationData[i][23+offset],
           bsTxGain: bsTxGain,
-          bsNoiseFigure: bsNoiseFigure
+          bsNoiseFigure: bsNoiseFigure,
+          AntennaId :AntennaId,
+          theta:theta,
+          phi:phi
         };
         
         this.defaultBSList.push(id);
@@ -5544,14 +5626,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
         let bsTxGain = 0
         let bsNoiseFigure = 0
+        let AntennaId = 1;
+        let theta = 0;
+        let phi = 0;
         if (Object.values(candidateData[0]).includes("bsTxGain")){
-          bsTxGain= candidateData[i][22+offset]
+          bsTxGain= candidateData[i][22+offset];
         }
         if (Object.values(candidateData[0]).includes("bsNoiseFigure")){
-          bsNoiseFigure= candidateData[i][23+offset]
+          bsNoiseFigure= candidateData[i][23+offset];
+        }
+        if (Object.values(candidateData[0]).includes("AntennaId")){
+          AntennaId= candidateData[i][24+offset];
+        }
+        if (Object.values(candidateData[0]).includes("theta")){
+          theta= candidateData[i][25+offset];
+        }
+        if (Object.values(candidateData[0]).includes("phi")){
+          phi= candidateData[i][26+offset];
         }
         this.tempCalParamSet.bsTxGain = bsTxGain;
         this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
+        this.tempCalParamSet.AntennaId = AntennaId;
+        this.tempCalParamSet.theta = theta;
+        this.tempCalParamSet.phi = phi;
         // set UE位置
         // this.setCandidateSize(id);
 
@@ -5780,8 +5877,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (!(Number(this.calculateForm.maxConnectionNum)>0)){
         this.calculateForm.maxConnectionNum = 32;
       }
+      this.calculateForm.resolution = Number(algorithmParametersData[1][8]);
       if (!(Number(this.calculateForm.resolution)>0)){
         this.calculateForm['resolution'] = 1;
+      }
+      this.calculateForm.geographicalNorth = Number(algorithmParametersData[1][9]);
+      if (this.authService.isEmpty(this.calculateForm.geographicalNorth) || isNaN(this.calculateForm.geographicalNorth)){
+        this.calculateForm['geographicalNorth'] = 0;
       }
     }
     /* objective parameters sheet */
@@ -5981,9 +6083,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         const candidateLen = candidate.length;
         const txpower = JSON.parse(this.calculateForm.txPower);
         const beamId = JSON.parse(this.calculateForm.beamId);
+        var candidateAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
+          candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+        } else {
+          for (let i = 0; i < candidateLen; i++) {
+            candidateAnt.push("[1,0,0,0]");
+          }
+        }
+        console.log("candidateAnt",candidateAnt);
         for (let i = 0; i < candidateLen; i++) {
           const item = JSON.parse(candidate[i]);
           const id = `candidate_${this.generateString(10)}`;
+          const antObj = JSON.parse(candidateAnt[i]);
           this.candidateList.push(id);
           console.log(item[2]);
           this.dragObject[id] = {
@@ -6003,16 +6115,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
           // set 新增基站位置
           // this.setCandidateSize(id);
-          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
-            this.tempCalParamSet.bsTxGain = 0
-          } else {
-            this.tempCalParamSet.bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i];
-          }
           if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
-            this.tempCalParamSet.bsNoiseFigure = 0
+            this.tempCalParamSet.bsNoiseFigure = 0;
           } else {
             this.tempCalParamSet.bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i];
           }
+          this.tempCalParamSet.AntennaId = antObj[0];
+          this.tempCalParamSet.theta = antObj[1];
+          this.tempCalParamSet.phi = antObj[2];
+          this.tempCalParamSet.bsTxGain = antObj[3];
           this.tempCalParamSet.txpower = txpower[0];
           this.tempCalParamSet.beampattern = beamId[0];
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
@@ -6068,12 +6179,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // this.dlRatio = this.calculateForm.tddFrameRatio;
         let candidateNum = 0;
         if (this.candidateList.length != 0) {candidateNum = this.candidateList.length;}
-
         const defaultBSLen = defaultBS.length;
+        var defaultAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
+          defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        } else {
+          for (let i = 0; i < defaultBSLen; i++) {
+            defaultAnt.push("[1,0,0,0]");
+          }
+        }
         for (let i = 0; i < defaultBSLen; i++) {
           const item = JSON.parse(defaultBS[i]);
           const id = `defaultBS_${this.generateString(10)}`;
           this.defaultBSList.push(id);
+          const antObj = JSON.parse(defaultAnt[i]);
           //20210521
           this.bsListRfParam[id] = {
             txpower: txpower[i+candidateNum],
@@ -6086,16 +6205,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             subcarrier: 15,
             scsBandwidth: 10,
           };
-          if (this.authService.isEmpty(this.calculateForm.bsTxGain)){ 
-            this.bsListRfParam[id].bsTxGain = 0
-          } else {
-            this.bsListRfParam[id].bsTxGain = JSON.parse(this.calculateForm.bsTxGain)[i+candidateNum];
-          }
           if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
             this.bsListRfParam[id].bsNoiseFigure = 0
           } else {
             this.bsListRfParam[id].bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+candidateNum];
           }
+          this.bsListRfParam[id].AntennaId = antObj[0];
+          this.bsListRfParam[id].theta = antObj[1];
+          this.bsListRfParam[id].phi = antObj[2];
+          this.bsListRfParam[id].bsTxGain = antObj[3];
           if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
             this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
             this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
@@ -7273,6 +7391,52 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     while((this.calculateForm.width / resolution >=6) && (this.calculateForm.height /resolution >= 6) && resolution <= 10){
       this.resolutionList.push(resolution);
       resolution += 2;
+    }
+  }
+  coordinateInfo(){
+    this.matDialog.open(this.coordinateInfoModal);
+  }
+  manufactorChange(svgid){
+    // svgid ==> deafault, else ==> candidate
+    if (svgid != null){
+      var manufactor = this.manufactor;
+    } else {
+      var manufactor = this.manufactorCal;
+    }
+    if(manufactor == 'All'){ // all manufactor not specify
+      return;
+    }else{
+      // take first antenna of manufactor
+      let firstAntenna = 0;
+      for (let item of this.antennaList) {
+        if(item['manufactor'] == manufactor){
+          firstAntenna = item['antenna_id'];
+          break;
+        }
+      }
+      if (svgid != null){
+        this.bsListRfParam[svgid].AntennaId = firstAntenna;
+      }else{
+        this.tempCalParamSet.AntennaId = firstAntenna;;
+      }
+      this.antennaChangeCheck(svgid);
+    }
+  }
+  antennaChangeCheck(svgid){
+    if (svgid != null){
+      if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antenna_type'] == 'Omnidirectional'){
+        this.bsListRfParam[svgid].theta = 0;
+        this.bsListRfParam[svgid].phi = 0;
+      } else {
+        this.bsListRfParam[svgid].bsTxGain = 0;
+      }
+    }else{
+      if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antenna_type'] == 'Omnidirectional'){
+        this.tempCalParamSet.theta = 0;
+        this.tempCalParamSet.phi = 0;
+      } else {
+        this.tempCalParamSet.bsTxGain = 0;
+      }
     }
   }
 }

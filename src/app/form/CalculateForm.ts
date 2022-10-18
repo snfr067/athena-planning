@@ -100,9 +100,11 @@ export class CalculateForm {
   guardInterval: string = null;
   wifiMimo: string = null;
   mimoNumber: string = null;
-  bsTxGain: string = null;
   bsNoiseFigure: string = null;
   maxConnectionNum: number = 32;
+  geographicalNorth: number = 0;
+  candidateBsAnt: string = null;
+  defaultBsAnt: string = null;
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

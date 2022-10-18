@@ -683,6 +683,7 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('zValue'),this.calculateForm.zValue.replace(new RegExp(',', 'gi'), ', ')+this.translateService.instant('meter')],
       [this.translateService.instant('maxConnectionNum'),this.calculateForm['maxConnectionNum']],
       [this.translateService.instant('resolution'),this.calculateForm['resolution']+' x '+this.calculateForm['resolution']+'('+this.translateService.instant('meter')+')'],
+      [this.translateService.instant('compassDirection'),this.calculateForm['geographicalNorth']+' '+this.translateService.instant('angle')],
     ]
     pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.content')], fieldParameter, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -761,6 +762,7 @@ export class PdfComponent implements OnInit {
     // console.log(this.result);
     if (this.calculateForm.duplex == 'tdd') {
       const defaultBs = this.calculateForm.defaultBs.split('|');
+      const defaultBsAnt = this.calculateForm.defaultBsAnt.split('|');
       let ulmsc = this.calculateForm.ulMcsTable;
       let dlmsc = this.calculateForm.dlMcsTable;
       let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
@@ -770,7 +772,8 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
       // '下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','Frequency','SCS(kHz)','Bandwidth','UL MCStable',
-      'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+      // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+      'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -785,7 +788,7 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          // `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
           `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
@@ -827,8 +830,11 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          // `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
+          `${JSON.parse(defaultBs[i])[0]}`,
+          `${JSON.parse(defaultBs[i])[0]}`,
+          `${JSON.parse(defaultBs[i])[0]}`,
         ]);
       }
     } else {
@@ -846,7 +852,9 @@ export class PdfComponent implements OnInit {
       // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
       // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
       tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
-      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+      'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
+      // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+      'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
       let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         specData.push([
@@ -864,7 +872,7 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
+          // `${JSON.parse(this.calculateForm.bsTxGain)[0]}`,
           `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
         ]);
       }
@@ -906,7 +914,7 @@ export class PdfComponent implements OnInit {
           `${dlMcsTable[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+          // `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
         ]);
       }

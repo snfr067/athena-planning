@@ -169,6 +169,7 @@
       
     </div> -->
     <div #chart id="chart" style="position: relative; overflow-x: auto">
+      <img id="north" src="assets/img/north.jpg" align="right" [ngStyle]="{'transform': 'rotate(' + calculateForm.geographicalNorth+ 'deg)'}">
       <div #dragArea [ngStyle]="dragStyle">
         <span *ngIf="isShowSubField">
           <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
@@ -904,14 +905,63 @@
                   </select>
                 </td>
               </tr>
-              <tr *ngIf="calculateForm.objectiveIndex == '1'">
-                <td>{{ 'TxGain' | translate }}</td>
-                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsTxGain">dB</td>
-              </tr>
-              <tr *ngIf="calculateForm.objectiveIndex == '1'">
-                <td>{{ 'noise' | translate }}</td>
-                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsNoiseFigure">dB</td>
-              </tr>
+              <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
+                <tr>
+                  <td>{{ 'noise' | translate }}</td>
+                  <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsNoiseFigure">dB</td>
+                </tr>
+                <tr>
+                  <td>{{ 'manufactor' | translate }}</td>
+                  <td>
+                    <select  style="width: 150px;" [(ngModel)]="manufactorCal" (change)="manufactorChange(null)">
+                      <option value="All">{{ 'notSpecify' | translate }}</option>
+                      <option value={{item}} *ngFor="let item of AntennaManufactorList">
+                        {{item}}
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ 'antenna' | translate }}</td>
+                  <td>
+                    <select style="width: 165px;" [(ngModel)]="tempCalParamSet.AntennaId" (change)="antennaChangeCheck(null)">
+                      <ng-container *ngFor="let item of antennaList;">
+                        <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+                        <option *ngIf="item.manufactor == manufactorCal || manufactorCal == 'All'" value={{item.antenna_id}}>
+                            <ng-container *ngIf="item.property == 'default'">
+                              <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                            </ng-container>       
+                            <ng-container *ngIf="item.property == 'customized' "> 
+                              <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                            </ng-container> 
+                        </option> 
+                      </ng-container>
+                    </select>
+                  </td>
+                </tr>
+                <ng-container *ngIf="antennaList[AntennaIdToIndex[tempCalParamSet.AntennaId]]['antenna_type'] == 'Directional'  ; else txGainColumnCalculation">
+                  <tr>
+                    <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}</td>
+                    <td><input type="number" class="inputNum" step="1" [(ngModel)]="tempCalParamSet.theta">
+                      (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}</td>
+                    <td><input type="number" class="inputNum" step="1" [(ngModel)]="tempCalParamSet.phi">
+                      (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+                    </td>
+                  </tr> 
+                </ng-container>
+                <ng-template #txGainColumnCalculation>
+                  <tr>
+                    <td>{{ 'TxGain' | translate }}</td>
+                    <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsTxGain">dB</td>
+                  </tr>
+                </ng-template>
+              </ng-container>
             </tbody>
           </table>
         </div>
@@ -1034,6 +1084,14 @@
                   <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="scalingFactor">
                 </li>
 
+                <!-- <li *ngIf="calculateForm.objectiveIndex != '2' && planningIndex == '3'">
+                  <p>Smart Antenna</p>
+                  <mat-radio-group [(ngModel)]="useSmartAntenna">
+                    <mat-radio-button value="true" (click)="test()">啟用</mat-radio-button>
+                    <mat-radio-button value="false" (click)="test()">停用</mat-radio-button>
+                  </mat-radio-group>
+                </li> -->
+
                 <li>
                   <p>{{ 'rsrp_coverage_th' | translate }}	</p>
                   <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="rsrpThreshold" (change)="changeRsrpThreshold()">dbm
@@ -1077,11 +1135,10 @@
                   </ol>
                 </li>
 
-                <li>
-                  <p>  <!-- 右方場域基本資訊新增材質列表 -->
-                    <label>{{ 'materialList' | translate }}</label>
-                    <span>
-                      <select style="min-width: 16em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
+                <li>  <!-- 右方場域基本資訊新增材質列表 -->
+                  <p> {{ 'materialList' | translate }} </p>
+                    <span class="inline-block">
+                      <select style="width: 12em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
                         <ng-container *ngFor="let item of materialList;">
                           <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
                           <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
@@ -1107,24 +1164,26 @@
                            <option value=999>【{{ 'material.customize' | translate }}】</option>
                         </select>
                     </span>
-                  </p>
                 </li>
                 <li>
-                  <p>  <!-- 右方場域基本資訊新增材質列表 -->
-                    <label>{{ 'resolution' | translate }}</label>
-                    <span>
-                      <select style="min-width: 16em;" [(ngModel)]="calculateForm.resolution">
-                        <option *ngFor="let item of resolutionList" [value]="item">
-                          {{ item }} x {{ item }} ({{ 'meter' | translate }})</option>
-                          <!-- <option value="1">1 x 1 ({{ 'meter' | translate }})</option>
-                          <option value="2">2 x 2 ({{ 'meter' | translate }})</option>
-                          <option value="4">4 x 4 ({{ 'meter' | translate }})</option>
-                          <option value="6">6 x 6 ({{ 'meter' | translate }})</option>
-                          <option value="8">8 x 8 ({{ 'meter' | translate }})</option>
-                          <option value="10">10 x 10 ({{ 'meter' | translate }})</option> -->
-                        </select>
-                    </span>
-                  </p>
+                  <p> {{ 'resolution' | translate }} </p>
+                  <span class="inline-block">
+                    <select style="width: 13.21em;" [(ngModel)]="calculateForm.resolution">
+                      <option *ngFor="let item of resolutionList" [value]="item">
+                        {{ item }} x {{ item }} ({{ 'meter' | translate }})</option>
+                        <!-- <option value="1">1 x 1 ({{ 'meter' | translate }})</option>
+                        <option value="2">2 x 2 ({{ 'meter' | translate }})</option>
+                        <option value="4">4 x 4 ({{ 'meter' | translate }})</option>
+                        <option value="6">6 x 6 ({{ 'meter' | translate }})</option>
+                        <option value="8">8 x 8 ({{ 'meter' | translate }})</option>
+                        <option value="10">10 x 10 ({{ 'meter' | translate }})</option> -->
+                    </select>
+                  </span>
+                </li>
+                <li>
+                  <p>{{ 'compassDirection' | translate }}</p>
+                  <input type="number" class="inputNum" step="1" min="0" max="360" [(ngModel)]="calculateForm.geographicalNorth">
+                  {{ 'angle' | translate }}
                 </li>
               </ul>
             </mat-expansion-panel>
@@ -1144,7 +1203,7 @@
                     <label>X</label>
                     <input type="text" [(ngModel)]="dragObject[item].x" 
                     (select)="tempParamStorage(dragObject[item].x)"
-                    (click)="moveClick(item);tempParamStorage(dragObject[item].x);"
+                    (click)="tempParamStorage(dragObject[item].x);"
                     (change)="changePosition('x',item)">
                   </span>
                   <span>
@@ -1576,14 +1635,11 @@
             <option value="4">{{ 'material.stainless' | translate }}</option>
             <option value="5">{{ 'material.fireproof' | translate }}</option>
             <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
-<<<<<<< HEAD
             <option value="7">{{ 'material.whiteBrick' | translate }}</option>
             <option value="8">{{ 'material.flameproof' | translate }}</option>
             <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
-            <option value="10">{{ 'material.cabinet' | translate }}</option>
-=======
-            <option value="7">{{ 'material.whiteBrick' | translate }}</option> -->
->>>>>>> custimize
+            <option value="10">{{ 'material.cabinet' | translate }}</option> -->
+
           </select>
         </td>
       </tr>
@@ -1652,6 +1708,14 @@
   <div mat-dialog-actions>
     <button mat-button (click)="deleteModel(false)">{{ 'deleteCancel' | translate }}</button>
     <button mat-button (click)="deleteModel(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #coordinateInfoModal>
+  <h5 mat-dialog-title>{{ 'CoordinateDescription' | translate }}</h5>
+  <div mat-dialog-content>
+    <img *ngIf="checkIfChinese() == true" src="assets/img/coordinate-rotation.png">
+    <img *ngIf="checkIfChinese() == false" src="assets/img/coordinate-rotation-en.png">
   </div>
 </ng-template>
 
@@ -2046,19 +2110,70 @@
         </td>
       </tr>
       <tr>
-        <td>{{ 'TxGain' | translate }}</td>
-        <td><input type="number" class="inputNum" step="1"
-          [(ngModel)]="bsListRfParam[svgId].bsTxGain"
-          tabindex="-1"
-          ></td>dB
-      </tr>
-      <tr>
         <td>{{ 'noise' | translate }}</td>
         <td><input type="number" class="inputNum" step="1"
           [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
           tabindex="-1"
           ></td>dB
       </tr>
+      <tr>
+        <td>{{ 'manufactor' | translate }}</td>
+        <td>
+          <select style="width: 175px;" [(ngModel)]="manufactor" (change)="manufactorChange(svgId)">
+            <option value="All">{{ 'notSpecify' | translate }}</option>
+            <option value={{item}} *ngFor="let item of AntennaManufactorList">
+              {{item}}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'antenna' | translate }}</td>
+        <td>
+          <select style="width: 15em;" (change)="antennaChangeCheck(svgId)" [(ngModel)]="bsListRfParam[svgId].AntennaId">
+            <ng-container *ngFor="let item of antennaList;">
+              <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+              <option *ngIf="item.manufactor == manufactor || manufactor == 'All'" value={{item.antenna_id}}>
+                  <ng-container *ngIf="item.property == 'default'">
+                    <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                  </ng-container>       
+                  <ng-container *ngIf="item.property == 'customized' "> 
+                    <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                  </ng-container> 
+              </option> 
+            </ng-container>
+          </select>
+        </td>
+      </tr>
+      <ng-container *ngIf="antennaList[AntennaIdToIndex[bsListRfParam[svgId].AntennaId]]['antenna_type'] == 'Directional' ; else txGainColumnTDD">
+        <tr>
+          <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].theta"
+            tabindex="-1"
+            ></td>
+        </tr>
+        <tr>
+          <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].phi"
+            tabindex="-1"
+            ></td>
+        </tr> 
+      </ng-container>
+      <ng-template #txGainColumnTDD>
+        <tr>
+          <td>{{ 'TxGain' | translate }}</td>
+          <td><input type="number" class="inputNum" step="1"
+            [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+            tabindex="-1"
+            ></td>dB
+        </tr>
+      </ng-template>
     </tbody>
     <!------------------------------>
     <!--   FDD              5G    -->
@@ -2294,19 +2409,70 @@
         </td>
       </tr>
       <tr>
-        <td>{{ 'TxGain' | translate }}</td>
-        <td><input type="number" class="inputNum" step="1"
-          [(ngModel)]="bsListRfParam[svgId].bsTxGain"
-          tabindex="-1"
-          ></td>dB
-      </tr>
-      <tr>
         <td>{{ 'noise' | translate }}</td>
         <td><input type="number" class="inputNum" step="1"
           [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
           tabindex="-1"
           ></td>dB
       </tr>
+      <tr>
+        <td>{{ 'manufactor' | translate }}</td>
+        <td>
+          <select  style="width: 175px;" [(ngModel)]="manufactor" (change)="manufactorChange(svgId)">
+            <option value="All">{{ 'notSpecify' | translate }}</option>
+            <option value={{item}} *ngFor="let item of AntennaManufactorList">
+              {{item}}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'antenna' | translate }}</td>
+        <td>
+          <select style="width: 12em;" (change)="antennaChangeCheck(svgId)" [(ngModel)]="bsListRfParam[svgId].AntennaId">
+            <ng-container *ngFor="let item of antennaList;">
+              <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+              <option *ngIf="item.manufactor == manufactor || manufactor == 'All'" value={{item.antenna_id}}>
+                  <ng-container *ngIf="item.property == 'default'">
+                    <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                  </ng-container>       
+                  <ng-container *ngIf="item.property == 'customized' "> 
+                    <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                  </ng-container> 
+              </option> 
+            </ng-container>
+          </select>
+        </td>
+      </tr>
+      <ng-container *ngIf="antennaList[AntennaIdToIndex[bsListRfParam[svgId].AntennaId]]['antenna_type'] == 'Directional' ; else txGainColumnFDD">
+        <tr>
+          <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].theta"
+            tabindex="-1"
+            ></td>
+        </tr>
+        <tr>
+          <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].phi"
+            tabindex="-1"
+            ></td>
+        </tr> 
+      </ng-container>
+      <ng-template #txGainColumnFDD>
+        <tr>
+          <td>{{ 'TxGain' | translate }}</td>
+          <td><input type="number" class="inputNum" step="1"
+            [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+            tabindex="-1"
+            ></td>dB
+        </tr>
+      </ng-template>
     </tbody>
     <!------------------------------>
     <!--   WiFi                   -->

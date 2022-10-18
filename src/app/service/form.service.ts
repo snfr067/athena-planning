@@ -24,8 +24,10 @@ export class FormService {
     calculateForm.beamMaxId = result['beammaxid'];
     calculateForm.beamMinId = result['beamminid'];
     calculateForm.candidateBs = result['candidatebs'];
+    calculateForm.candidateBsAnt = result['candidatebsant'];
     calculateForm.crossover = result['crossover'];
     calculateForm.defaultBs = result['defaultbs'];
+    calculateForm.defaultBsAnt = result['defaultbsant'];
     calculateForm.frequency = result['frequency'];
     calculateForm.frequencyList = result['frequency'];
     //Add RF Param
@@ -46,10 +48,8 @@ export class FormService {
     calculateForm.wifiMimo = result['wifimimo'];
     calculateForm.mimoNumber = result['mimonumber'];
     calculateForm.isSimulation = JSON.parse(result['issimulation']);
-    calculateForm.bsTxGain = result['bstxgain'];
     calculateForm.bsNoiseFigure = result['bsnoisefigure'];
-
-  
+    calculateForm.geographicalNorth = result['geographicalnorth'];
     // console.log(result);
     // console.log(result['output']['defaultbspower']);
     // console.log(result['output']['defaultbeamid']);

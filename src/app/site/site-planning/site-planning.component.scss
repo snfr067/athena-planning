@@ -115,7 +115,7 @@ p.subitem.active + ol {
 
 }
 :host ::ng-deep .mat-expansion-panel-body ul > li div {
-    margin-left: 1em;
+    margin-left: 0.5em;
 }
 :host ::ng-deep .mat-expansion-panel-body p::before,
 .algorithm ul li span::before {
@@ -224,7 +224,7 @@ input[type="file"] {
     margin-left: .5em;
 }
 .w18 {
-    width: 18em!important;
+    width: 16em!important;
 }
 .spCell input {
     width: 6.5em!important;
@@ -507,6 +507,11 @@ ul {
 .inputNumFreqAI {
     display: inline-block;
     width: 150px;
+}
+.coordinate {
+    line-height: 32px;
+    padding: 0 7px;
+    font-size: 0.85em !important;
 }
 
 // #isShowSubField label .mat-checkbox-layout {
