@@ -483,7 +483,7 @@
                 </td>
               </tr>
               <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
-                <td>Frequency</td>
+                <td>{{ 'tddfrequency' | translate }}</td>
                 <td>
                   <input type="number" step="5" class="inputNum" max="10000" min="0"
                   [(ngModel)]="tempCalParamSet.tddfrequency"
@@ -498,7 +498,7 @@
                 <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="scalingFactor"></td>
               </tr>
               <tr *ngIf="calculateForm.objectiveIndex == '2'">
-                <td>Frequency</td>
+                <td>{{ 'tddfrequency' | translate }}</td>
                 <td *ngIf="tempCalParamSet.wifiProtocol != 'wifi5'">
                   <select type="number" class="inputNum"
                   [(ngModel)]="tempCalParamSet.wifiFrequency">
@@ -944,13 +944,21 @@
                 <ng-container *ngIf="antennaList[AntennaIdToIndex[tempCalParamSet.AntennaId]]['antenna_type'] == 'Directional'  ; else txGainColumnCalculation">
                   <tr>
                     <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}</td>
-                    <td><input type="number" class="inputNum" step="1" [(ngModel)]="tempCalParamSet.theta">
+                    <td><input type="number" class="inputNum" step="1" 
+                      [(ngModel)]="tempCalParamSet.theta"
+                      (select)="tempParamStorage(tempCalParamSet.theta)"
+                      (click)="tempParamStorage(tempCalParamSet.theta)"
+                      (change)="changeTheta(svgId, true)">
                       (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
                     </td>
                   </tr>
                   <tr>
                     <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}</td>
-                    <td><input type="number" class="inputNum" step="1" [(ngModel)]="tempCalParamSet.phi">
+                    <td><input type="number" class="inputNum" step="1" 
+                      [(ngModel)]="tempCalParamSet.phi"
+                      (select)="tempParamStorage(tempCalParamSet.phi)"
+                      (click)="tempParamStorage(tempCalParamSet.phi)"
+                      (change)="changePhi(svgId, true)">
                       (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
                     </td>
                   </tr> 
@@ -1820,7 +1828,7 @@
         <td><input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern" ></td>
       </tr>
       <tr>
-        <td>Frequency</td>
+        <td>{{ 'tddfrequency' | translate }}</td>
         <td>
           <input type="number" class="inputNumFreq" step="5"
           [(ngModel)]="bsListRfParam[svgId].tddfrequency"
@@ -1878,13 +1886,13 @@
           tabindex="-1"
           ></td>dbm
       </tr>
-      <tr *ngIf="planningIndex == '3'">
+      <!-- <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
         <td><input type="text"
           [(ngModel)]="bsListRfParam[svgId].beampattern"
           tabindex="-1"
           ></td>
-      </tr>
+      </tr> -->
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
         <td><input type="number" class="inputNumFreq" step="5"
@@ -1962,21 +1970,21 @@
     <!------------------------------>
     <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
       <tr *ngIf="planningIndex == '3'">
-        <td>TxPower</td>
+        <td>{{ 'txpower' | translate }}</td>
         <td><input type="number" class="inputNum" step="1"
           [(ngModel)]="bsListRfParam[svgId].txpower"
           tabindex="-1"
           ></td>dbm
       </tr>
-      <tr *ngIf="planningIndex == '3'">
+      <!-- <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
         <td><input type="text"
           [(ngModel)]="bsListRfParam[svgId].beampattern"
           tabindex="-1"
           ></td>
-      </tr>
+      </tr> -->
       <tr>
-        <td>Frequency</td>
+        <td>{{ 'tddfrequency' | translate }}</td>
         <td><input type="number" class="inputNumFreq" step="5"
           [(ngModel)]="bsListRfParam[svgId].tddfrequency"
           (select)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
@@ -2152,17 +2160,24 @@
           <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
             (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
           </td>
-          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].theta"
-            tabindex="-1"
-            ></td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].theta"
+            (select)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (click)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (change)="changeTheta(svgId, false)">
+          </td>
         </tr>
         <tr>
           <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
             (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
           </td>
-          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].phi"
-            tabindex="-1"
-            ></td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].phi"
+            (select)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (click)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (change)="changePhi(svgId, false)"
+            tabindex="-1">
+          </td>
         </tr> 
       </ng-container>
       <ng-template #txGainColumnTDD>
@@ -2180,19 +2195,19 @@
     <!------------------------------>
     <tbody *ngIf="duplexMode == 'fdd' && calculateForm.objectiveIndex == '1'">
       <tr *ngIf="planningIndex == '3'">
-        <td>TxPower</td>
+        <td>{{ 'txpower' | translate }}</td>
         <td><input type="number" class="inputNum" step="1"
           [(ngModel)]="bsListRfParam[svgId].txpower"
           tabindex="-1"
           ></td>dbm
       </tr>
-      <tr *ngIf="planningIndex == '3'">
+      <!-- <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
         <td><input type="text"
           [(ngModel)]="bsListRfParam[svgId].beampattern"
           tabindex="-1"
           ></td>
-      </tr>
+      </tr> -->
       <tr>
         <td>{{ 'uplink.frequency' | translate }}</td>
         <td><input type="number" class="inputNumFreq" step="5"
@@ -2451,7 +2466,11 @@
           <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
             (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
           </td>
-          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].theta"
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].theta"
+            (select)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (click)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (change)="changeTheta(svgId, false)"
             tabindex="-1"
             ></td>
         </tr>
@@ -2459,7 +2478,11 @@
           <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
             (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
           </td>
-          <td><input type="number" class="inputNum" step="1" [(ngModel)]="bsListRfParam[svgId].phi"
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].phi"
+            (select)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (click)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (change)="changePhi(svgId, false)"
             tabindex="-1"
             ></td>
         </tr> 
@@ -2485,15 +2508,15 @@
           tabindex="-1"
           ></td>dbm
       </tr>
-      <tr *ngIf="planningIndex == '3'">
+      <!-- <tr *ngIf="planningIndex == '3'">
         <td>BeamId</td>
         <td><input type="text"
           [(ngModel)]="bsListRfParam[svgId].beampattern"
           tabindex="-1"
           ></td>
-      </tr>
+      </tr> -->
       <tr>
-        <td>Frequency</td>
+        <td>{{ 'tddfrequency' | translate }}</td>
         <td *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi5'">
           <select type="number" class="inputNum"
           [(ngModel)]="bsListRfParam[svgId].wifiFrequency"

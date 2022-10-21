@@ -353,6 +353,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   manufactorCal = "All";
   AntennaManufactorList = [];
   AntennaIdToIndex = {};
+  /**  for antenna frequency check msg **/
+  infoMsg = "";
   // useSmartAntenna = "false";
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
@@ -601,9 +603,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       );
     }).then(promiseResult => {
       console.log(promiseResult);
-      let url_model = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+      let url_Ant = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
       // let url_model = `http://192.168.1.109:4444/antenna`;
-      this.http.get(url_model).subscribe(
+      this.http.get(url_Ant).subscribe(
         res => {
           let result = res;
           this.antennaList = Object.values(result);
@@ -2614,7 +2616,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let bsMsg = '';
           if (this.planningIndex == '3') {
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+          //   if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+          if (this.isEmpty(obj.beampattern)) {this.bsListRfParam[this.defaultBSList[i]].beampattern = 0;}
           }
           if (this.isEmpty(obj.AntennaId)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('Antenna')}<br/>`;  }
           if (this.isEmpty(obj.theta)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('theta')}<br/>`;  }
@@ -3265,7 +3268,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
-    } else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
+    } else if (Number(this.calculateForm.geographicalNorth)>=360) {
+      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_less_than') + ' 360';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
+    } else if (!(Number(this.calculateForm.geographicalNorth)>0)) {
+      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_greater_then') + ' 0';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
+    }  else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
       let msg = this.translateService.instant('bs_must_greater_then_zero')
       this.msgDialogConfig.data = {
         type: 'error',
@@ -7423,20 +7440,135 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
   antennaChangeCheck(svgid){
+    let thershold = 100;
+    let error = false;
+    let msg = "";
+    let multiple = false;
+    // TDD
     if (svgid != null){
-      if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antenna_type'] == 'Omnidirectional'){
+      // 根據天線類型將欄位歸零
+      if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antenna_type'] == 'Omnidirectional') {
         this.bsListRfParam[svgid].theta = 0;
         this.bsListRfParam[svgid].phi = 0;
       } else {
         this.bsListRfParam[svgid].bsTxGain = 0;
+        // 檢查天線frequency與基站frequency是否一致(+-100)
+        var Antfrequency = this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['frequency'];
+        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].tddfrequency))) {
+          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].tddfrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].tddfrequency))) {
+            msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[svgid].tddfrequency+ ' ';
+            error = true;
+          }
+        } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddUlFrequency)) && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddDlFrequency))) {
+          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddUlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddUlFrequency))) {
+            msg += this.translateService.instant('uplink.frequency')+ ' ' + this.bsListRfParam[svgid].fddUlFrequency+ ' ';
+            error = true;
+          } 
+          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddDlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddDlFrequency))) {
+            if (error) {
+              if (this.checkIfChinese()){ 
+                msg += ' 和 '; 
+              } else {
+                 msg += ' and the '; 
+              }
+              multiple = true;
+            }
+            msg += this.translateService.instant('downlink.frequency')+ ' ' + this.bsListRfParam[svgid].fddDlFrequency+ ' ';
+            error = true;
+          }
+        }
       }
-    }else{
-      if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antenna_type'] == 'Omnidirectional'){
+    } else { //FDD
+      if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antenna_type'] == 'Omnidirectional') {
         this.tempCalParamSet.theta = 0;
         this.tempCalParamSet.phi = 0;
       } else {
         this.tempCalParamSet.bsTxGain = 0;
+        var Antfrequency = this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['frequency'];
+        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.tempCalParamSet.tddfrequency))) {
+          if (!((Antfrequency - thershold <= this.tempCalParamSet.tddfrequency) && (Antfrequency + thershold >= this.tempCalParamSet.tddfrequency))) {
+            msg += this.translateService.instant('tddfrequency') + ' ' + this.tempCalParamSet.tddfrequency+ ' ';
+            error = true;
+          }
+        } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.tempCalParamSet.fddUlFrequency)) && !(this.authService.isEmpty(this.tempCalParamSet.fddDlFrequency))){
+          if(!((Antfrequency - thershold <= this.tempCalParamSet.fddUlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddUlFrequency))) {
+            msg += this.translateService.instant('uplink.frequency')+ ' ' + this.tempCalParamSet.fddUlFrequency+ ' ';
+            error = true;
+          }
+          if (!((Antfrequency - thershold <= this.tempCalParamSet.fddDlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddDlFrequency))) {
+            if (error){
+              if (this.checkIfChinese()) { 
+                  msg += ' 和 '; 
+              } else { 
+                msg += ' and the '; 
+              }
+              multiple = true;
+            }
+            msg += this.translateService.instant('downlink.frequency')+ ' ' + this.tempCalParamSet.fddDlFrequency+ ' ';
+            error = true;
+          }
+        }
       }
+    }
+    if (error){
+      if(this.checkIfChinese()){
+        this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + Antfrequency + " 差異較大, 可能導致計算結果不準確";
+      } else {
+        let msgString = "you set is ";
+        if (multiple) {
+          msgString = "you set are ";
+        }
+        this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + Antfrequency + ",<br> which may cause inaccurate calculation results.";
+      }
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.infoMsg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+  changeTheta(svgId, isCandidate){
+    let msg = '';
+    if (isCandidate) {
+      if ((Number(this.tempCalParamSet.theta) > 180 || Number(this.tempCalParamSet.theta) < 0)) {
+        msg = this.translateService.instant('theta_out_of_range');
+        this.tempCalParamSet.theta = Number(window.sessionStorage.getItem('tempParam'))
+      }
+    } else {
+      if ( (Number(this.bsListRfParam[svgId].theta) > 180 || Number(this.bsListRfParam[svgId].theta) < 0)) {
+        msg = this.translateService.instant('theta_out_of_range');
+        this.bsListRfParam[svgId].theta = Number(window.sessionStorage.getItem('tempParam'))
+      }
+    }
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      // return;
+    }
+  }
+  changePhi(svgId, isCandidate){
+    let msg = '';
+    if (isCandidate) {
+      if ((Number(this.tempCalParamSet.phi) > 360 || Number(this.tempCalParamSet.phi) < 0)) {
+        msg = this.translateService.instant('phi_out_of_range');
+        this.tempCalParamSet.phi = Number(window.sessionStorage.getItem('tempParam'))
+      }
+    } else {
+      if ( (Number(this.bsListRfParam[svgId].phi) > 360 || Number(this.bsListRfParam[svgId].phi) < 0)) {
+        msg = this.translateService.instant('phi_out_of_range');
+        this.bsListRfParam[svgId].phi = Number(window.sessionStorage.getItem('tempParam'))
+      }
+    }
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      // return;
     }
   }
 }

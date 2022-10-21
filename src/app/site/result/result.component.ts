@@ -147,6 +147,9 @@ export class ResultComponent implements OnInit {
   scaleMaxDL; 
   scaleMinDL; 
   scaleInputError = false;
+  /** 天線列表 **/ 
+  antennaList = [];
+  AntennaIdToIndex = [];
   /** PDF Component */
   @ViewChild('pdf') pdf: PdfComponent;
   /** 建議方案 Component */
@@ -195,7 +198,9 @@ export class ResultComponent implements OnInit {
   /**
    * 取得結果
    */
-  getResult() {
+  async getResult() {
+    const antlist = await this.getAntennList();
+    console.log(antlist);
     let url;
     this.authService.spinnerShowResult();
     if (this.isHst) {
@@ -243,6 +248,7 @@ export class ResultComponent implements OnInit {
           console.log(this.calculateForm);
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
+          const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
           let unsorttxpower = [];
           let unsortbeamid = [];
           let txpower = [];
@@ -354,6 +360,13 @@ export class ResultComponent implements OnInit {
           } else if (protocol == '1') {
             if (duplex == 'tdd') {
               for (const item of defaultBs) {
+                const antObj = JSON.parse(defaultAnt[i]);
+                let antennaName = "";
+                if(this.authService.lang =='zh-TW'){
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+                }else{
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+                }
                 const obj = JSON.parse(item);
                 this.defaultBSList5gTdd.push({
                   x: obj[0],
@@ -368,13 +381,20 @@ export class ResultComponent implements OnInit {
                   dlMcsTable: dlMcsTable[i],
                   ulMimoLayer: ulMimoLayer[i+candidateNum],
                   dlMimoLayer: dlMimoLayer[i+candidateNum],
-
+                  antennaName: antennaName
                 });
                 i++;
               }
             } else {
               // console.log(txpower);
               for (const item of defaultBs) {
+                const antObj = JSON.parse(defaultAnt[i]);
+                let antennaName = "";
+                if(this.authService.lang =='zh-TW'){
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+                }else{
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+                }
                 const obj = JSON.parse(item);
                 this.defaultBSList5gFdd.push({
                   x: obj[0],
@@ -393,6 +413,7 @@ export class ResultComponent implements OnInit {
                   ulFrequency: ulFrequency[i+candidateNum],
                   ulBandwidth: ulBandwidth[i+candidateNum],
                   dlBandwidth: dlBandwidth[i+candidateNum],
+                  antennaName: antennaName
                 });
                 i++;
               }
@@ -609,10 +630,12 @@ export class ResultComponent implements OnInit {
     const y = [];
     const text = [];
     let candidateBs = [];
+    let candidateAnt = [];
     // const color = [];
 
     if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
       candidateBs = this.calculateForm.candidateBs.split('|');
+      candidateAnt = this.calculateForm.candidateBsAnt.split('|');
       for (let i = 0; i < candidateBs.length; i++) {
         const candidate = JSON.parse(candidateBs[i]);
         numMap[candidate] = index;
@@ -719,6 +742,13 @@ export class ResultComponent implements OnInit {
     } else if (protocol == '1') {
       if (duplex == 'tdd') {
         for (const item of chosenNum) {
+          const antObj = JSON.parse(candidateAnt[i]);
+          let antennaName = "";
+          if(this.authService.lang =='zh-TW'){
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          }else{
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          }
           this.candidateTable5gTdd.push({
             num: item,
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
@@ -732,11 +762,19 @@ export class ResultComponent implements OnInit {
             dlMcsTable: dlMcsTable[item-1],
             ulMimoLayer: ulMimoLayer[item-1],
             dlMimoLayer: dlMimoLayer[item-1],
+            antennaName: antennaName
           });
           i++;
         }
       } else {
         for (const item of chosenNum) {
+          const antObj = JSON.parse(candidateAnt[i]);
+          let antennaName = "";
+          if(this.authService.lang =='zh-TW'){
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          }else{
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          }
           this.candidateTable5gFdd.push({
             num: item,
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
@@ -755,6 +793,7 @@ export class ResultComponent implements OnInit {
             dlMcsTable: dlMcsTable[item-1],
             ulMimoLayer: ulMimoLayer[item-1],
             dlMimoLayer: dlMimoLayer[item-1],
+            antennaName: antennaName
           });
           i++;
         }
@@ -1153,5 +1192,22 @@ export class ResultComponent implements OnInit {
       }
     }
   }
-
+  async getAntennList() {
+    let url_Ant = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+    // let url_model = `http://192.168.1.109:4444/antenna`;
+    this.http.get(url_Ant).subscribe(
+      res => {
+        let result = res;
+        this.antennaList = Object.values(result);
+        for (let i = 0;i < this.antennaList.length;i++) {
+          let id = this.antennaList[i]['antenna_id'];
+          this.AntennaIdToIndex[id]=i;
+        }
+        console.log(result);
+        return result;
+      },err => {
+        console.log(err);
+      }
+    );
+  }
 }
