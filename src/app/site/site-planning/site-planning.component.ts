@@ -2616,7 +2616,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let bsMsg = '';
           if (this.planningIndex == '3') {
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`; }
-          //   if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+            if (this.isEmpty(obj.beampattern)) { obj.beampattern = 0; }
+            // { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           if (this.isEmpty(obj.beampattern)) {this.bsListRfParam[this.defaultBSList[i]].beampattern = 0;}
           }
           if (this.isEmpty(obj.AntennaId)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('Antenna')}<br/>`;  }
@@ -2645,7 +2646,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let bsMsg = '';
           if (this.planningIndex == '3') {
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+            if (this.isEmpty(obj.beampattern)) { obj.beampattern = 0; }
+            // { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
           if (this.isEmpty(obj.AntennaId)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('Antenna')}<br/>`;  }
           if (this.isEmpty(obj.theta)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('theta')}<br/>`;  }
@@ -2686,7 +2688,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // console.log(obj.tddfrequency);
           if (this.planningIndex == '3') {
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+            if (this.isEmpty(obj.beampattern)) { obj.beampattern = 0; }
+            // { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
           if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('mimonum')}<br/>`;  }
           if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
@@ -2706,7 +2709,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let bsMsg = '';
           if (this.planningIndex == '3') {
             if (this.isEmpty(obj.txpower)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('txpower')}<br/>`;  }
-            if (this.isEmpty(obj.beampattern)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
+            if (this.isEmpty(obj.beampattern)) { obj.beampattern = 0; }
+            // { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('beamid')}<br/>`; }
           }
           if (this.isEmpty(obj.mimoNumber4G)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('mimonum')}<br/>`;  }
           if (this.isEmpty(obj.dlBandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ddlBandwidth')}<br/>`;  }
@@ -3247,7 +3251,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.candidateList.length < this.calculateForm.availableNewBsNumber) {
         msg += ' ' + this.translateService.instant('must_less_then') + this.candidateList.length;
       } else { 
-        msg += ' ' + this.translateService.instant('must_greater_then') + '0';
+        msg += ' ' + this.translateService.instant('must_greater_than') + '0';
       }
       this.msgDialogConfig.data = {
         type: 'error',
@@ -3255,35 +3259,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else if (!(Number(this.calculateForm.maxConnectionNum)>0)) {
-      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_then') + ' 0';
+      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_than') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
-    } else if (Number(this.calculateForm.maxConnectionNum)>=1000) {
-      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_less_than') + ' 1000';
+    } else if (!(Number(this.calculateForm.maxConnectionNum)<=1000)) {
+      let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_less_than_or_equal_to') + ' 1000';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
-    } else if (Number(this.calculateForm.geographicalNorth)>=360) {
-      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_less_than') + ' 360';
+    } else if (!(Number(this.calculateForm.geographicalNorth)<=360)) {
+      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_less_than_or_equal_to') + ' 360';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
-    } else if (!(Number(this.calculateForm.geographicalNorth)>0)) {
-      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_greater_then') + ' 0';
+    } else if (!(Number(this.calculateForm.geographicalNorth)>=0)) {
+      let msg = this.translateService.instant('compassDirection') +' '+ this.translateService.instant('must_greater_than_or_equal_to') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);  
     }  else if (this.planningIndex == '3' && this.defaultBSList.length == 0) {
-      let msg = this.translateService.instant('bs_must_greater_then_zero')
+      let msg = this.translateService.instant('bs_must_greater_than_zero')
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
@@ -7183,9 +7187,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       pass = false;
       let msg = "";
       if (!this.materialName) {
-        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_than') + '0' ;
       } else if(!(Number(this.materialLossCoefficient)>-1000)) { 
-        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_then') + '-1000';
+        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_than') + '-1000';
       } else if(Number(this.materialLossCoefficient)>1000) { 
         msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_less_than') + '1000';
       } else if(this.materialLossCoefficient == null){ 
@@ -7275,15 +7279,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let msg = "";
       pass = false;
       if (!this.modelName) {
-        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_then') + '0' ;
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_than') + '0' ;
       } else if(!(Number(this.modelDissCoefficient)>-1000)) { 
-        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_then') + '-1000';
+        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_than') + '-1000';
       } else if(this.modelDissCoefficient == null) { 
         msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('contain_special_character') + '!';
       } else if(Number(this.modelDissCoefficient>1000)) { 
         msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_less_than') + '1000';
       } else if(!(Number(this.modelfieldLoss)>-1000)) { 
-        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_greater_then') + '-1000';
+        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_greater_than') + '-1000';
       } else if(this.modelfieldLoss == null) { 
         msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('contain_special_character') + '!';
       } else if(Number(this.modelfieldLoss>1000)) { 
