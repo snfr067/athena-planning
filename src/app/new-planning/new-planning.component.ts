@@ -117,6 +117,7 @@ export class NewPlanningComponent implements OnInit {
     // } else {
     //   this.isExceed = false;
     // }
+    // 即使沒有圖片也會是空字串, 此條件永遠不會成立
     if (this.calculateForm.mapName == null) {
       this.showImgMsg = true;
       return;

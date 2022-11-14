@@ -27,7 +27,7 @@
           <input type="file" #mapFile style="display: none;" (change)="fileChange($event)" accept="image/jpeg,image/png,image/jpg" >
           <span *ngIf="this.calculateForm.mapName != ''" class="ml-2">{{ this.calculateForm.mapName }}</span>
           <span *ngIf="this.calculateForm.mapName == ''" class="ml-2">{{ 'nofile' | translate }}</span>
-          <span class="note ml-2">{{ 'planning.limit' | translate }}...</span>
+          <!-- <span class="note ml-2">{{ 'planning.limit' | translate }}...</span> -->
           <div *ngIf="showImgMsg" class="alert alert-danger">
               {{ 'image.required' | translate }}
           </div>

@@ -427,7 +427,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   ]
 
   //4G 5G WiFi new attribute
-  duplexMode = "fdd";
+  duplexMode = "tdd";
   dlRatio = 70;
   scalingFactor = 1;
   rsrpThreshold = -90;
@@ -592,6 +592,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.modelList = Object.values(result);
           // let sorted = this.modelList.sort((a,b) => a.id - b.id);
           for (let i = 0;i < this.modelList.length;i++) {
+            // if( this.modelList[i]['name'].includes("Pegatron") ){
+            //   this.modelList[i]['name'] = this.modelList[i]['name'].replace("Pegatron","P")
+            //   this.modelList[i]['chineseName'] = this.modelList[i]['chineseName'].replace("和碩","P")
+            // }
             let id = this.modelList[i]['id'];
             this.modelIdToIndex[id]=i;
           }
@@ -612,6 +616,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           for (let i = 0;i < this.antennaList.length;i++) {
             let id = this.antennaList[i]['antenna_id'];
             this.AntennaIdToIndex[id]=i;
+            // if( this.antennaList[i]['antenna_name'].includes("Pegatron") ){
+            //   this.antennaList[i]['antenna_name'] = this.antennaList[i]['antenna_name'].replace("Pegatron","P")
+            //   this.antennaList[i]['chinese_name'] = this.antennaList[i]['chinese_name'].replace("Pegatron","P")
+            //   this.antennaList[i]['manufactor'] = this.antennaList[i]['manufactor'].replace("Pegatron","P")
+            // }
           }
           for (let item of this.antennaList) {
             if(!(this.AntennaManufactorList.includes(item['manufactor']))){
@@ -1862,7 +1871,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       
     } else if (this.dragObject[id].type != 'subField') {
-      title += `Z: ${this.dragObject[id].z}<br>`;
+      title += `Z: ${this.dragObject[id].altitude}<br>`;
     }
     /*
     if (this.dragObject[id].type === 'UE') {
@@ -6512,11 +6521,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isCoverage = true;
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = false;
+      this.changeAntennaToOmidirectial();
     } else if (this.planningIndex === '2') {
       this.calculateForm.isSimulation = false;
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = true;
       this.calculateForm.isCoverage = false;
+      this.changeAntennaToOmidirectial();
     } else {
       if (this.candidateList.length != 0) {
         // this.msgDialogConfig.data = {
@@ -7574,5 +7585,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       // return;
     }
+  }
+  changeAntennaToOmidirectial(){
+    this.manufactor = "All";
+    this.manufactorCal = "All";
+    for(let svgid of this.defaultBSList){
+      this.bsListRfParam[svgid].AntennaId = 1;
+    }
+    this.tempCalParamSet.AntennaId = 1;
   }
 }

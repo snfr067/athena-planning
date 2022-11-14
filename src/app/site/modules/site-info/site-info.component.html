@@ -37,7 +37,7 @@
       <span *ngIf="this.defaultBsCount !== 0 && calculateForm.mapProtocol != 'wifi'"><label>{{ 'defaultBs' | translate }}</label>{{ getBsCount() }}</span>
       <span *ngIf="this.defaultBsCount !== 0 && calculateForm.mapProtocol == 'wifi'"><label>{{ 'result.propose.defaultAp' | translate }}</label>{{ getBsCount() }}</span>
       <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.dbm.range' | translate }}</label>	{{ calculateForm.powerMinRange }} dBm ~ {{ calculateForm.powerMaxRange }} dBm</span>
-      <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.beam.range' | translate }}</label>0 ~ 0</span>
+      <!-- <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'result.beam.range' | translate }}</label>0 ~ 0</span> -->
       <!-- <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'bandwidth' | translate }}(MHz)</label>	{{ calculateForm.bandwidth }} MHz</span> -->
       <!-- <span *ngIf="this.inputBsListCount !== 0"><label>{{ 'frequency' | translate }}(MHz)</label>	{{ calculateForm.frequency }} MHz</span> -->
     </li>
