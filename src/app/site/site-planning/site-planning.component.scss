@@ -416,6 +416,8 @@ ul {
     tr td{
         // border-bottom: 1.5px solid #5aa5e2;
         line-height: 1.1;
+        // width: 100%;
+        white-space:nowrap;
     }
     tr td:first-child {
         text-align: right;
@@ -426,6 +428,19 @@ ul {
     }
     select{
         width: 200px;
+    }
+    input{
+        width: 100%;
+    }
+    span{
+        font-size: 90%
+    }
+    #uploadBt{
+        cursor: pointer;
+        border-width: 2px;
+        border-color: black;
+        background-color: #ececec;
+        padding: 0;
     }
 }
 

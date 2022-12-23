@@ -22,11 +22,15 @@ import { convertActionBinding } from '@angular/compiler/src/compiler_util/expres
 import  booleanContains from "@turf/boolean-contains";
 import { polygon } from "@turf/helpers";
 import circle from '@turf/circle';
+import CryptoJS from 'crypto-js';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
 declare var Intersection: any;
 declare var Point2D: any;
+// declare var require: any;
+
+
 /**
  * 場域規劃頁
  */
@@ -123,8 +127,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   modelfieldLoss: number = 0.1;
   modelProperty: string = null;
   modelIdToIndex = {};
+  modelFileName = '';
   /** upload image src */
   imageSrc;
+  file;
   /** subitem class */
   subitemClass = {
     obstacle: 'subitem active',
@@ -264,6 +270,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   taskid = '';
   /** progress interval */
   progressInterval = 0;
+  /** polling interval  */
+  pollingInterval = 0;
   /** 畫圖layout參數 */
   plotLayout;
   /** View 3D dialog config */
@@ -355,6 +363,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   AntennaIdToIndex = {};
   /**  for antenna frequency check msg **/
   infoMsg = "";
+  /** http error */
+  statusCode = "";
+  errMsg = "";
   // useSmartAntenna = "false";
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
@@ -1075,6 +1086,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (isHWChange == 'width') {
           if (this.calculateForm.width < this.dragObject[this.ueList[i]].x) {
             this.deleteList.push([this.ueList[i],i]);
+            console.log('push',this.ueList[i],i);
           }
         } else {
           if (this.calculateForm.height < this.dragObject[this.ueList[i]].y) {
@@ -1381,9 +1393,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
 
     return [w, h];
-  }
-  ccc(){
-    console.log('ccc');
   }
   /**
    * dataURI to blob
@@ -6986,13 +6995,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // document.getElementById('chart').style.overflowY = 'hidden';
   }
 
+  /** 更改RSRP閥值 */
   changeRsrpThreshold() {
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
   }
 
-  materialCustomizeDialog(inputValue){
-    if (inputValue != 999){
-      let index = this.materialIdToIndex[inputValue];
+  /**
+   * 自訂材質Dialog
+   * @param materialId
+   */
+  materialCustomizeDialog(materialId){
+    if (materialId != 999){
+      let index = this.materialIdToIndex[materialId];
       let materialName = '';
       if(this.authService.lang =='zh-TW'){
         materialName = this.materialList[index]['chineseName'];
@@ -7009,9 +7023,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     this.matDialog.open(this.materialCustomizeModal);
   }
-  pathLossCustomizeDialog(inputValue){
-    if (inputValue != 999){
-      let index = this.modelIdToIndex[inputValue];
+
+  /**
+   * 自訂PathLossModel Dialog
+   * @param modelId
+   */
+  pathLossCustomizeDialog(modelId){
+    if (modelId != 999){
+      let index = this.modelIdToIndex[modelId];
       let modelName = '';
       if(this.authService.lang =='zh-TW'){
         modelName = this.modelList[index]['chineseName'];
@@ -7030,6 +7049,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     this.matDialog.open(this.modelCustomizeModal);
   }
+
+  /** 發送post requset 編輯材質 */
   materialCustomize(){
     window.setTimeout(() => {
       let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
@@ -7076,6 +7097,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     }, 100);
   }
+
+  /** 發送post requset 編輯PathLossModel */
   pathLossCustomize(){
     window.setTimeout(() => {
       let url_update = `${this.authService.API_URL}/updatePathLossModel/${this.authService.userToken}`;
@@ -7091,7 +7114,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       console.log(JSON.stringify(data));
       let isDefault = this.modelProperty == 'default' ? true : false;
       console.log("isDefault",isDefault);
-      if(this.checkModelForm(false,isDefault)){
+      if(this.checkModelForm(false,isDefault,false)){
         this.http.post(url_update, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
@@ -7127,6 +7150,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }, 100);
     
   }
+
+  /** 發送post requset 新增材質 */
   createNewMaterial(){
     // console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
     // console.log("this.materialName.length",String(this.materialName).length);
@@ -7173,6 +7198,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }, 100);
     }
   }
+
+  /** 
+   * 檢查材質相關欄位
+   * @param create 新增或編輯
+  */
   checkMaterialForm(create){
     let pass = true; 
     let duplicate = false;
@@ -7218,8 +7248,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     return pass
   }
+
+  /** 發送post request 新增PathLossModel */
   createNewModel(){
-    if(this.checkModelForm(true,false)){
+    if(this.checkModelForm(true,false,false)){
       // 新增無線模型到後端
       let url_add = `${this.authService.API_URL}/addPathLossModel/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
@@ -7265,7 +7297,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }, 100);
     }
   }
-  checkModelForm(create,deafult){
+  
+  /** 
+   * 檢查PathLossModel相關欄位
+   * @param create 新增或編輯
+   * @param deafult 預設或自訂
+   * @param calculate 是否為PathLossModel校正
+  */
+  checkModelForm(create,deafult,calculate){
     let pass = true; 
     let duplicate = false;
     let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
@@ -7273,11 +7312,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let reg_en = new RegExp('[\A-Za-z]+');
     let reg_num = new RegExp('[\0-9]+');
     let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    let msg = "";
     // format checking 包含特殊字元 || 不是英文中文數字
     let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
     if (deafult) { illegal=false; }
     // 檢查現有模型名稱是否已存在
-    if (create){
+    if (create || calculate){
       for (let i = 0; i < this.modelList.length; i++) {
         if(this.modelName == this.modelList[i]['name'] || this.modelName == this.modelList[i]['chineseName']){
           console.log("duplicate by",this.modelName);
@@ -7286,12 +7326,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     }
-    if(!this.modelName || !(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000) || duplicate || illegal ){
-      let msg = "";
+    if(!this.modelName || duplicate || illegal ){
       pass = false;
       if (!this.modelName) {
         msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_than') + '0' ;
-      } else if(!(Number(this.modelDissCoefficient)>-1000)) { 
+      } else if(illegal) {
+        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('contain_special_character') + '!';
+      } else {
+        msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
+      }
+    } else if(!calculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
+      pass = false;
+      if (!(Number(this.modelDissCoefficient)>-1000)) { 
         msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_than') + '-1000';
       } else if(this.modelDissCoefficient == null) { 
         msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('contain_special_character') + '!';
@@ -7303,29 +7349,125 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('contain_special_character') + '!';
       } else if(Number(this.modelfieldLoss>1000)) { 
         msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_less_than') + '1000';
-      } else if(illegal) {
-        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('contain_special_character') + '!';
-      } else {
-        msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
       }
+    }
+
+    if (msg != ""){
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
+
     return pass
   }
+
+  /** 依照匯入的觀測點建立無線模型 */
+  async calculatePathlossModel(){
+    if(this.checkModelForm(true,false,true)){
+      let url_add = `${this.authService.API_URL}/calculatePathLossModel/${this.authService.userToken}`;
+      let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+      let url_poll = `${this.authService.API_URL}/pollingPathLossModel/${this.authService.userToken}`;
+      let formData = new FormData();
+      let hash = await this.hashfile(this.file).then(res => res.toString());
+      let posResult;
+      formData.append('file', this.file);
+      formData.append('name', this.modelName);
+      formData.append('sha256sum', hash);
+      formData.append('property','customized');
+      try {
+        posResult = await this.postRequest(url_add, formData);
+        let body = [{"id": posResult['id']}];
+        let status = await this.postRequest(url_poll, JSON.stringify(body));
+        console.log(status);
+        while(status[0]['status'] == 503){
+          console.log("computing",status);
+            status = await this.postRequest(url_poll, JSON.stringify(body));
+            // await this.delay(1000);
+        }
+        if (status[0]['status'] == 200) {
+          console.log(posResult['id'],'done');
+          let getResult:any = await this.getRequest(url_get);
+          console.log("getResult",getResult);
+          this.modelList.push(getResult[(getResult.length-1)]);
+          for (let i = 0;i < this.modelList.length;i++) {
+            let id = this.modelList[i]['id'];
+            this.modelIdToIndex[id]=i;
+          }
+          // this.calculateForm.pathLossModelId = getResult[(getResult.length-1)]['id'];
+          // console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
+          console.log('new model id',getResult[(getResult.length-1)]['id']);
+          console.log(this.modelList);
+          this.modelName = "";
+          this.modelDissCoefficient = 0.1;
+          this.modelfieldLoss = 0.1;
+          this.modelFileName = "";
+          this.matDialog.closeAll();
+        }
+      } catch (error) {
+        console.log('error',error);
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant(error.error.msg)
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+    }
+  }
+
+  /** error handle */
+  async handleError(error: any): Promise<any> {
+    console.log('An error occurred in MyService', error);
+    return Promise.reject(error.message || error);
+  }
+
+  /** http post request */
+  postRequest(url,data){
+    return this.http.post(url, data)
+        .toPromise()
+        /*
+        .then(response => 
+          ... 
+        })  
+         */
+        // .catch(this.handleError);
+        // .catch(error => {
+        //   console.log('error',error);
+        //   console.log("error.error",error.error);
+        //   console.log("error.status",error.status);
+        //   this.errMsg = error.error;
+        //   this.statusCode = error.status;
+        // });
+  }
+
+  /** http get request */
+  getRequest(url){
+    return this.http.get(url).
+    toPromise();
+    // .catch(this.handleError);
+  }
+
+  /** close all Dialog */
   selectAndClose(){
     this.matDialog.closeAll();
-    
   }
+
+  /** open delete material dialog */
   deleteMaterialDialog(){
     this.matDialog.open(this.confirmDeleteMaterial);
   }
+
+  /** open delete model dialog */
   deleteModelDialog(){
     this.matDialog.open(this.confirmDeleteModel);
   }
+
+  /**
+   * 刪除材質
+   * @param flag 是否確認刪除
+   */
   deleteMaterial(flag){
     this.matDialog.closeAll();
     if(flag) {
@@ -7363,6 +7505,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(this.materialCustomizeModal);
     }
   }
+
+  /** 
+   * 刪除模型
+   * @param flag 確認是否刪除
+   */
   deleteModel(flag){
     this.matDialog.closeAll();
     if(flag) {
@@ -7411,6 +7558,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(this.modelCustomizeModal);
     }
   }
+
+  /** 檢查目前語言是否為中文 */
   checkIfChinese(){
     if (this.authService.lang == 'zh-TW') {
       return true;
@@ -7418,6 +7567,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       return false;
     }
   }
+
+  /** 根據場域長寬建立解析度list */
   createResolutionList(){
     let resolution = 2;
     while((this.calculateForm.width / resolution >=6) && (this.calculateForm.height /resolution >= 6) && resolution <= 10){
@@ -7425,9 +7576,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       resolution += 2;
     }
   }
+
+  /** 座標軸說明視窗 */
   coordinateInfo(){
     this.matDialog.open(this.coordinateInfoModal);
   }
+
+  /** 
+   * 天線製造商filter
+   * @param svgid 既有基站的id
+   */
   manufactorChange(svgid){
     // svgid ==> deafault, else ==> candidate
     if (svgid != null){
@@ -7454,6 +7612,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.antennaChangeCheck(svgid);
     }
   }
+
+  /**
+   * 根據檢查天線相關欄位
+   * @param svgid 既有基站的id
+   */
   antennaChangeCheck(svgid){
     let thershold = 100;
     let error = false;
@@ -7542,6 +7705,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
   }
+
+  /**
+   * 檢查theta改變後是否超出範圍
+   * @param svgId 既有基站的id
+   * @param isCandidate 
+   */
   changeTheta(svgId, isCandidate){
     let msg = '';
     if (isCandidate) {
@@ -7564,6 +7733,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // return;
     }
   }
+
+  /**
+   * 檢查phi改變後是否超出範圍
+   * @param svgId 既有基站的id
+   * @param isCandidate 
+   */
   changePhi(svgId, isCandidate){
     let msg = '';
     if (isCandidate) {
@@ -7586,6 +7761,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // return;
     }
   }
+
+  /** 將天線類型轉換為全向性 */
   changeAntennaToOmidirectial(){
     this.manufactor = "All";
     this.manufactorCal = "All";
@@ -7593,5 +7770,69 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.bsListRfParam[svgid].AntennaId = 1;
     }
     this.tempCalParamSet.AntennaId = 1;
+  }
+
+  /**
+   * 上傳檔案
+   * @param event 
+   * @returns 無上傳檔案則終止
+   */
+  async uploadFile(event) {
+    const file = event.target.files[0];
+    event.target.value = null;
+    if (file == undefined){
+      return;
+    }
+    this.file = file;
+    this.modelDissCoefficient = null;
+    this.modelfieldLoss = null;
+    this.modelFileName = this.showPartName(file.name);
+  }
+
+  /**
+   * 當字元長度超過25僅顯示前後10字元
+   * @param name 
+   * @returns 
+   */
+  showPartName(name){
+    if( name.length > 25){
+      return name.slice(0,10)+'...'+name.slice(-10);
+    } else {
+      return name;
+    }
+  }
+
+  /** 清除新增無線模型相關欄位資料 */
+  cleanData(){
+    this.file= null;
+    this.modelName = "";
+    this.modelDissCoefficient = 0.1;
+    this.modelfieldLoss = 0.1;
+    this.modelFileName = "";
+  }
+
+  /**
+   * SHA256 hash
+   * @param file 
+   * @returns 
+   */
+  hashfile(file) {
+   return new Promise((resolve) => {
+      var reader = new FileReader();
+      var hash = '';
+      reader.readAsArrayBuffer(file);
+      reader.onload = function () {
+          var wordArray = CryptoJS.lib.WordArray.create(reader.result);
+          hash = CryptoJS.SHA256(wordArray).toString();
+          resolve(hash.toString());
+      }
+    });
+  }
+  
+  /**
+   * delay ms second
+   */
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
   }
 }
