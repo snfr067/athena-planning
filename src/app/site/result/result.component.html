@@ -92,10 +92,10 @@
 							<input type="number" *ngIf="showUlThroughputMap || showDlThroughputMap" class="scaleMaxMin" style="width:100px;" [(ngModel)]="scaleMin" (change)="checkMaxMinValue(true)">
 							<label style="margin-left:.5rem;">{{ 'scaleMax' | translate }}</label>
 							<input type="number" class="scaleMaxMin" style="width:100px;" [(ngModel)]="scaleMax" (change)="checkMaxMinValue(false)">
-							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showQuality" class="scaleMaxMin" style="vertical-align: inherit; height:1.75em ;" (click)="drawQuality(true)" >{{ 'planning.ok' | translate }}</mat-button-toggle>
-							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showStrength" class="scaleMaxMin" style="vertical-align: inherit; height:1.75em ;" (click)="drawStrength(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
-							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showUlThroughputMap" class="scaleMaxMin" style="vertical-align: inherit; height:1.75em ;" (click)="drawUlThroughputMap(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
-							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showDlThroughputMap" class="scaleMaxMin" style="vertical-align: inherit; height:1.75em ;" (click)="drawDlThroughputMap(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
+							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showQuality" class="scaleMaxMin" style="vertical-align: inherit; height:2em ;" (click)="drawQuality(true)" >{{ 'planning.ok' | translate }}</mat-button-toggle>
+							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showStrength" class="scaleMaxMin" style="vertical-align: inherit; height:2em ;" (click)="drawStrength(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
+							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showUlThroughputMap" class="scaleMaxMin" style="vertical-align: inherit; height:2em ;" (click)="drawUlThroughputMap(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
+							<mat-button-toggle [disabled]="scaleInputError" *ngIf="showDlThroughputMap" class="scaleMaxMin" style="vertical-align: inherit; height:2em ;" (click)="drawDlThroughputMap(true)">{{ 'planning.ok' | translate }}</mat-button-toggle>
 							<span class="scaleMaxMin" *ngIf="scaleInputError" style="color: red; position: absolute; margin-left: 0.5rem; padding:.3rem;">{{ 'numeric.enter' | translate }}</span>
 						</ng-container>  
 

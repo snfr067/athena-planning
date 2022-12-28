@@ -7063,7 +7063,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           'property': this.materialProperty
       }
       console.log(JSON.stringify(data));
-      if(this.checkMaterialForm(false)){
+      let isDefault = this.materialProperty == 'default' ? true : false;
+      if(this.checkMaterialForm(false,isDefault)){
         this.http.post(url, JSON.stringify(data)).subscribe(
           res => {
             console.log(res);
@@ -7155,7 +7156,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   createNewMaterial(){
     // console.log("createNewMaterial",this.materialName,this.materialLossCoefficient);
     // console.log("this.materialName.length",String(this.materialName).length);
-    if(this.checkMaterialForm(true)){
+    if(this.checkMaterialForm(true,false)){
       // 新增材質到後端
       let url = `${this.authService.API_URL}/addObstacle/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
@@ -7202,8 +7203,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 
    * 檢查材質相關欄位
    * @param create 新增或編輯
+   * @param isDefault 預設或自訂
   */
-  checkMaterialForm(create){
+  checkMaterialForm(isCreate,isDefault){
     let pass = true; 
     let duplicate = false;
     let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
@@ -7213,8 +7215,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
     // format checking 包含特殊字元 || 不是英文中文數字
     let illegal = ((reg_spc.test(this.materialName) || reg_tch.test(this.materialName)) || (!(reg_ch.test(this.materialName)) && !(reg_en.test(this.materialName)) && !(reg_num.test(this.materialName))));
+    if (isDefault) { illegal=false; }
     // 檢查現有材質名稱是否已存在
-    if(create){
+    if(isCreate){
       for (let i = 0; i < this.materialList.length; i++) {
         if(this.materialName == this.materialList[i]['name'] || this.materialName == this.materialList[i]['chineseName']){
           console.log("duplicate by",this.materialName);
@@ -7300,11 +7303,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   
   /** 
    * 檢查PathLossModel相關欄位
-   * @param create 新增或編輯
-   * @param deafult 預設或自訂
-   * @param calculate 是否為PathLossModel校正
+   * @param isCreate 新增或編輯
+   * @param isDefault 預設或自訂
+   * @param isCalculate 是否為PathLossModel校正
   */
-  checkModelForm(create,deafult,calculate){
+  checkModelForm(isCreate,isDefault,isCalculate){
     let pass = true; 
     let duplicate = false;
     let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
@@ -7315,9 +7318,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let msg = "";
     // format checking 包含特殊字元 || 不是英文中文數字
     let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
-    if (deafult) { illegal=false; }
+    if (isDefault) { illegal=false; }
     // 檢查現有模型名稱是否已存在
-    if (create || calculate){
+    if (isCreate || isCalculate){
       for (let i = 0; i < this.modelList.length; i++) {
         if(this.modelName == this.modelList[i]['name'] || this.modelName == this.modelList[i]['chineseName']){
           console.log("duplicate by",this.modelName);
@@ -7335,7 +7338,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else {
         msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
       }
-    } else if(!calculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
+    } else if(!isCalculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
       pass = false;
       if (!(Number(this.modelDissCoefficient)>-1000)) { 
         msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_than') + '-1000';
