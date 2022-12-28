@@ -1581,7 +1581,9 @@
           <td>{{ 'altitude.setting' | translate }}</td>
           <td>
             <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
-              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">{{ 'meter' | translate }}
+              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" 
+              (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">
+              {{ 'meter' | translate }}
             </ng-container>
             <ng-container *ngIf="dragObject[svgId].type === 'UE'">
               <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
@@ -1598,7 +1600,7 @@
             [(ngModel)]="dragObject[svgId].z" 
             (select)="tempParamStorage(dragObject[svgId].z)"
             (click)="tempParamStorage(dragObject[svgId].z)"
-            (change)="changeZvalue(svgId)">
+            (change)="changeZvalue(svgId)" style="width:auto ;">
             {{ 'meter' | translate }}
           </td>
         </tr>
@@ -1608,7 +1610,7 @@
             [(ngModel)]="dragObject[svgId].altitude" 
             (select)="tempParamStorage(dragObject[svgId].altitude)"
             (click)="tempParamStorage(dragObject[svgId].altitude)"
-            (change)="changeSize(svgId, 'altitude',true)">
+            (change)="changeSize(svgId, 'altitude',true)" style="width:auto ;">
             {{ 'meter' | translate }}</td>
         </tr>
       </ng-container>

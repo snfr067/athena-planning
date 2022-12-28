@@ -7056,14 +7056,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let url = `${this.authService.API_URL}/updateObstacle/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
       // console.log("----update",url);
+      let isDefault = this.materialProperty == 'default' ? true : false;
+      let chName = isDefault ? this.materialList[this.materialIdToIndex[this.materialId]]['chineseName'] : this.materialName;
+      let materialName = isDefault? this.materialList[this.materialIdToIndex[this.materialId]]['name'] : this.materialName;
       let data = {
           'id': Number(this.materialId),
-          'name': this.materialName,
+          'name': materialName,
+          'chineseName': chName,
           'decayCoefficient': this.materialLossCoefficient,
           'property': this.materialProperty
       }
       console.log(JSON.stringify(data));
-      let isDefault = this.materialProperty == 'default' ? true : false;
+      
       if(this.checkMaterialForm(false,isDefault)){
         this.http.post(url, JSON.stringify(data)).subscribe(
           res => {
@@ -7105,15 +7109,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let url_update = `${this.authService.API_URL}/updatePathLossModel/${this.authService.userToken}`;
       let url_get = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
       // console.log("----update",url_update);
+      let isDefault = this.modelProperty == 'default' ? true : false;
+      let chName = isDefault ? this.modelList[this.modelIdToIndex[Number(this.calculateForm.pathLossModelId)]]['chineseName'] : this.modelName;
+      let modelName = isDefault ? this.modelList[this.modelIdToIndex[Number(this.calculateForm.pathLossModelId)]]['name'] : this.modelName;
       let data = {
           'id': Number(this.calculateForm.pathLossModelId),
-          'name': this.modelName,
+          'name': modelName,
+          'chineseName': chName,
           'distancePowerLoss': this.modelDissCoefficient,
           'fieldLoss': this.modelfieldLoss,
           'property': this.modelProperty
       }
       console.log(JSON.stringify(data));
-      let isDefault = this.modelProperty == 'default' ? true : false;
+      
       console.log("isDefault",isDefault);
       if(this.checkModelForm(false,isDefault,false)){
         this.http.post(url_update, JSON.stringify(data)).subscribe(
@@ -7336,7 +7344,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else if(illegal) {
         msg += this.translateService.instant('planning.model.name') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else {
-        msg += this.translateService.instant('planning.model.name') +' :'+ this.modelName +' '+ this.translateService.instant('alreadyexist') + '!'
+        msg += this.translateService.instant('planning.model.name') +': '+ this.modelName +' '+ this.translateService.instant('alreadyexist') + '!'
       }
     } else if(!isCalculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
       pass = false;
