@@ -3267,7 +3267,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         msg = this.translateService.instant('availableNewBsNumber.gen');
       }
       if (this.candidateList.length < this.calculateForm.availableNewBsNumber) {
-        msg += ' ' + this.translateService.instant('must_less_then') + this.candidateList.length;
+        msg += ' ' + this.translateService.instant('must_less_than_candidateBs') + this.candidateList.length;
       } else { 
         msg += ' ' + this.translateService.instant('must_greater_than') + '0';
       }
@@ -7231,17 +7231,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       pass = false;
       let msg = "";
       if (!this.materialName) {
-        msg += this.translateService.instant('material.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_than') + '0' ;
+        msg += this.translateService.instant('material.name') +' '+ this.translateService.instant('length') +' '+ this.translateService.instant('must_greater_than') + ' 0' ;
       } else if(!(Number(this.materialLossCoefficient)>-1000)) { 
-        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_greater_than') + '-1000';
+        msg += this.translateService.instant('material.loss.coefficient') +' '+ this.translateService.instant('must_greater_than') + ' -1000';
       } else if(Number(this.materialLossCoefficient)>1000) { 
-        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('must_less_than') + '1000';
+        msg += this.translateService.instant('material.loss.coefficient') +' '+ this.translateService.instant('must_less_than') + ' 1000';
       } else if(this.materialLossCoefficient == null){ 
-        msg += this.translateService.instant('material.loss.coefficient') + this.translateService.instant('contain_special_character') + '!';
+        msg += this.translateService.instant('material.loss.coefficient') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else if(illegal){
-        msg += this.translateService.instant('material.name') + this.translateService.instant('contain_special_character') + '!';
+        msg += this.translateService.instant('material.name') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else {
-        msg += this.translateService.instant('material.name') +':'+ this.materialName + this.translateService.instant('alreadyexist') + '!'
+        msg += this.translateService.instant('material.name') +': '+ this.materialName +' '+this.translateService.instant('alreadyexist') + '!'
       } 
       this.msgDialogConfig.data = {
         type: 'error',
@@ -7332,26 +7332,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(!this.modelName || duplicate || illegal ){
       pass = false;
       if (!this.modelName) {
-        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('length') + this.translateService.instant('must_greater_than') + '0' ;
+        msg += this.translateService.instant('planning.model.name') +' '+ this.translateService.instant('length') +' '+ this.translateService.instant('must_greater_than') + '0' ;
       } else if(illegal) {
-        msg += this.translateService.instant('planning.model.name') + this.translateService.instant('contain_special_character') + '!';
+        msg += this.translateService.instant('planning.model.name') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else {
-        msg += this.translateService.instant('planning.model.name') +':'+ this.modelName + this.translateService.instant('alreadyexist') + '!'
+        msg += this.translateService.instant('planning.model.name') +' :'+ this.modelName +' '+ this.translateService.instant('alreadyexist') + '!'
       }
     } else if(!isCalculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
       pass = false;
       if (!(Number(this.modelDissCoefficient)>-1000)) { 
-        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_greater_than') + '-1000';
+        msg += this.translateService.instant('planning.model.disscoefficient') +' '+ this.translateService.instant('must_greater_than') + ' -1000';
       } else if(this.modelDissCoefficient == null) { 
-        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('contain_special_character') + '!';
+        msg += this.translateService.instant('planning.model.disscoefficient') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else if(Number(this.modelDissCoefficient>1000)) { 
-        msg += this.translateService.instant('planning.model.disscoefficient') + this.translateService.instant('must_less_than') + '1000';
+        msg += this.translateService.instant('planning.model.disscoefficient') +' '+ this.translateService.instant('must_less_than') + ' 1000';
       } else if(!(Number(this.modelfieldLoss)>-1000)) { 
-        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_greater_than') + '-1000';
+        msg += this.translateService.instant('planning.model.fieldLoss') +' '+ this.translateService.instant('must_greater_than') + ' -1000';
       } else if(this.modelfieldLoss == null) { 
-        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('contain_special_character') + '!';
+        msg += this.translateService.instant('planning.model.fieldLoss') +' '+ this.translateService.instant('contain_special_character') + '!';
       } else if(Number(this.modelfieldLoss>1000)) { 
-        msg += this.translateService.instant('planning.model.fieldLoss') + this.translateService.instant('must_less_than') + '1000';
+        msg += this.translateService.instant('planning.model.fieldLoss') +' '+ this.translateService.instant('must_less_than') + ' 1000';
       }
     }
 

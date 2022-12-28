@@ -303,7 +303,7 @@ export class WirelessListComponent implements OnInit, OnDestroy {
    */
   delete(item, type) {
     const data = {
-      infoMessage: `${this.translateService.instant('confirm.delete')}${item.taskName}?`
+      infoMessage: `${this.translateService.instant('confirm.delete')} ${item.taskName}?`
     };
     // confirm delete
     this.confirmDialogConfig.data = data;
