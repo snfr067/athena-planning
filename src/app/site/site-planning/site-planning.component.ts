@@ -125,9 +125,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   modelName: string = null;
   modelDissCoefficient: number = 0.1;
   modelfieldLoss: number = 0.1;
+  calModelDissCoefficient: number = 0.1;
+  calModelfieldLoss: number = 0.1;
   modelProperty: string = null;
   modelIdToIndex = {};
   modelFileName = '';
+  createMethod = 'formula';
   /** upload image src */
   imageSrc;
   file;
@@ -381,6 +384,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
   @ViewChild('confirmDeleteMaterial') confirmDeleteMaterial: TemplateRef<any>;
   @ViewChild('confirmDeleteModel') confirmDeleteModel: TemplateRef<any>;
+  @ViewChild('createModelSuccessModal') createModelSuccessModal: TemplateRef<any>;
+  @ViewChild('createMaterialSuccessModal') createMaterialSuccessModal: TemplateRef<any>;
+  @ViewChild('calculateModelSuccessModal') calculateModelSuccessModal: TemplateRef<any>;
   @ViewChild('coordinateInfoModal') coordinateInfoModal: TemplateRef<any>;
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
@@ -1873,11 +1879,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     */
       let index = this.materialIdToIndex[Number(this.dragObject[id].material)];
       title += `${this.translateService.instant('material')}: `;
-      if(this.materialList[index]['property'] == "default"){
-        title += `${this.dragObject[id].materialName}`;
-      } else {
-        title += `${this.translateService.instant('customize')}_${this.dragObject[id].materialName}`;
-      }
+      // if(this.materialList[index]['property'] == "default"){
+      title += `${this.dragObject[id].materialName}`;
+      // } else {
+      //   title += `${this.translateService.instant('customize')}_${this.dragObject[id].materialName}`;
+      // }
       
     } else if (this.dragObject[id].type != 'subField') {
       title += `Z: ${this.dragObject[id].altitude}<br>`;
@@ -7021,7 +7027,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.materialLossCoefficient = 0.1;
       this.materialProperty = "customized";
     }
-    this.matDialog.open(this.materialCustomizeModal);
+    this.matDialog.open(this.materialCustomizeModal,{autoFocus: false});
   }
 
   /**
@@ -7047,7 +7053,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.modelfieldLoss = 0.1;
       this.modelProperty = "customized";
     }
-    this.matDialog.open(this.modelCustomizeModal);
+    this.matDialog.open(this.modelCustomizeModal,{autoFocus: false});
   }
 
   /** 發送post requset 編輯材質 */
@@ -7188,16 +7194,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   let id = this.materialList[i]['id'];
                   this.materialIdToIndex[id]=i;
                 }
-                this.materialId = result[(result.length-1)]['id'];
+                // this.materialId = result[(result.length-1)]['id'];
               },
               err => {
                 console.log(err);
               }
             );
-            
             this.materialName = "";
             this.materialLossCoefficient = 0.1;
-            this.matDialog.closeAll();
+            this.createMaterialSuccessDialog();
+            // this.matDialog.closeAll();
             // this.ngOnInit();
           },
           err => {
@@ -7287,7 +7293,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   let id = this.modelList[i]['id'];
                   this.modelIdToIndex[id]=i;
                 }
-                this.calculateForm.pathLossModelId = result[(result.length-1)]['id'];
+                // this.calculateForm.pathLossModelId = result[(result.length-1)]['id'];
                 console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
                 console.log('this.modelList.push',this.modelList);
               },
@@ -7295,10 +7301,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 console.log(err);
               }
             );
-            this.modelName = "";
-            this.modelDissCoefficient = 0.1;
-            this.modelfieldLoss = 0.1;
-            this.matDialog.closeAll();
+            this.createModelSuccessDialog();
+            // this.modelName = "";
+            // this.modelDissCoefficient = 0.1;
+            // this.modelfieldLoss = 0.1;
+            // this.matDialog.closeAll();
             // this.ngOnInit();
           },
           err => {
@@ -7324,6 +7331,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let reg_num = new RegExp('[\0-9]+');
     let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
     let msg = "";
+    let noFile = false;
     // format checking 包含特殊字元 || 不是英文中文數字
     let illegal = ((reg_spc.test(this.modelName) || reg_tch.test(this.modelName)) || (!(reg_ch.test(this.modelName)) && !(reg_en.test(this.modelName)) && !(reg_num.test(this.modelName))));
     if (isDefault) { illegal=false; }
@@ -7337,14 +7345,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     }
-    if(!this.modelName || duplicate || illegal ){
+    if(isCalculate){
+      if(this.modelFileName == ''){
+        console.log('empty!');
+        noFile = true;
+      }
+    }
+    if(!this.modelName || duplicate || illegal || noFile){
       pass = false;
       if (!this.modelName) {
         msg += this.translateService.instant('planning.model.name') +' '+ this.translateService.instant('length') +' '+ this.translateService.instant('must_greater_than') + '0' ;
       } else if(illegal) {
         msg += this.translateService.instant('planning.model.name') +' '+ this.translateService.instant('contain_special_character') + '!';
-      } else {
+      } else if(duplicate){
         msg += this.translateService.instant('planning.model.name') +': '+ this.modelName +' '+ this.translateService.instant('alreadyexist') + '!'
+      } else {
+        msg += this.translateService.instant('plz_import') +' '+ this.translateService.instant('antennaFieldData');
       }
     } else if(!isCalculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
       pass = false;
@@ -7399,6 +7415,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
         if (status[0]['status'] == 200) {
           console.log(posResult['id'],'done');
+          this.calModelDissCoefficient = status[0]['distancePowerLoss'];
+          this.calModelfieldLoss = status[0]['fieldLoss'];
           let getResult:any = await this.getRequest(url_get);
           console.log("getResult",getResult);
           this.modelList.push(getResult[(getResult.length-1)]);
@@ -7410,11 +7428,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // console.log('this.calculateForm.pathLossModelId',this.calculateForm.pathLossModelId);
           console.log('new model id',getResult[(getResult.length-1)]['id']);
           console.log(this.modelList);
-          this.modelName = "";
-          this.modelDissCoefficient = 0.1;
-          this.modelfieldLoss = 0.1;
-          this.modelFileName = "";
-          this.matDialog.closeAll();
+          this.calculateSuccessDialog();
+          this.createMethod = 'formula';
+          // this.modelName = "";
+          // this.modelDissCoefficient = 0.1;
+          // this.modelfieldLoss = 0.1;
+          // this.modelFileName = "";
+          // this.matDialog.closeAll();
         }
       } catch (error) {
         console.log('error',error);
@@ -7437,26 +7457,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http post request */
   postRequest(url,data){
     return this.http.post(url, data)
-        .toPromise()
-        /*
-        .then(response => 
-          ... 
-        })  
-         */
-        // .catch(this.handleError);
-        // .catch(error => {
-        //   console.log('error',error);
-        //   console.log("error.error",error.error);
-        //   console.log("error.status",error.status);
-        //   this.errMsg = error.error;
-        //   this.statusCode = error.status;
-        // });
+      .toPromise()
+      /*
+      .then(response => 
+        ... 
+      })  
+        */
+      // .catch(this.handleError);
+      // .catch(error => {
+      //   console.log('error',error);
+      //   console.log("error.error",error.error);
+      //   console.log("error.status",error.status);
+      //   this.errMsg = error.error;
+      //   this.statusCode = error.status;
+      // });
   }
 
   /** http get request */
   getRequest(url){
-    return this.http.get(url).
-    toPromise();
+    return this.http.get(url)
+      .toPromise();
     // .catch(this.handleError);
   }
 
@@ -7474,6 +7494,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   deleteModelDialog(){
     this.matDialog.open(this.confirmDeleteModel);
   }
+
+  /** open create model success modal */
+  createModelSuccessDialog(){
+    this.matDialog.open(this.createModelSuccessModal);
+  }
+
+  /** open create material success modal */
+  createMaterialSuccessDialog(){
+    this.matDialog.open(this.createMaterialSuccessModal);
+  }
+
+  /** open complate calculate model success modal */
+  calculateSuccessDialog(){
+    this.matDialog.open(this.calculateModelSuccessModal);
+  }
+  
 
   /**
    * 刪除材質
@@ -7502,7 +7538,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               else if( !(Number(obj.material) in this.materialIdToIndex) || this.deleteMaterialList.includes(Number(obj.material))){
                 // console.log("replace:",this.dragObject[this.obstacleList[i]]);
                 this.dragObject[this.obstacleList[i]].material = this.materialList[0]['id'];
-                this.dragObject[this.obstacleList[i]].materialName = this.materialList[0]['name'];
+                this.dragObject[this.obstacleList[i]].materialName = (this.checkIfChinese()) ? this.materialList[0]['chineseName'] : this.materialList[0]['name'];
+                // this.dragObject[this.obstacleList[i]].materialName = this.materialList[0]['name'];
               }
             }
           },
@@ -7795,8 +7832,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       return;
     }
     this.file = file;
-    this.modelDissCoefficient = null;
-    this.modelfieldLoss = null;
     this.modelFileName = this.showPartName(file.name);
   }
 
@@ -7817,8 +7852,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   cleanData(){
     this.file= null;
     this.modelName = "";
-    this.modelDissCoefficient = 0.1;
-    this.modelfieldLoss = 0.1;
+    this.modelDissCoefficient = null;
+    this.modelfieldLoss = null;
     this.modelFileName = "";
   }
 
@@ -7845,5 +7880,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  /** change create pathLossModel method */
+  changeCreateMethod(){
+    console.log('change',this.createMethod);
+    if(this.createMethod == 'importFile'){
+      this.modelDissCoefficient = null;
+      this.modelfieldLoss = null;
+    }else{
+      this.modelDissCoefficient = 0.1;
+      this.modelfieldLoss = 0.1;
+    }
   }
 }

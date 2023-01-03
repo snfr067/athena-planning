@@ -998,7 +998,7 @@
                       <input type="number" class="inputNum" step="1"
                       [(ngModel)]="calculateForm.width" 
                       (click)="tempParamStorage(calculateForm.width)"
-                      (change)="checkFieldWidHei('width')" disabled>
+                      (change)="checkFieldWidHei('width')">
                       <!-- (change)="initData(false, false, 'width')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
@@ -1007,7 +1007,7 @@
                       <input type="number" class="inputNum" step="1"
                       [(ngModel)]="calculateForm.height" 
                       (click)="tempParamStorage(calculateForm.height)"
-                      (change)="checkFieldWidHei('height')" disabled>
+                      (change)="checkFieldWidHei('height')">
                       <!-- (change)="initData(false, false, 'height')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
@@ -1600,7 +1600,7 @@
             [(ngModel)]="dragObject[svgId].z" 
             (select)="tempParamStorage(dragObject[svgId].z)"
             (click)="tempParamStorage(dragObject[svgId].z)"
-            (change)="changeZvalue(svgId)" style="width:auto ;">
+            (change)="changeZvalue(svgId)">
             {{ 'meter' | translate }}
           </td>
         </tr>
@@ -1610,7 +1610,7 @@
             [(ngModel)]="dragObject[svgId].altitude" 
             (select)="tempParamStorage(dragObject[svgId].altitude)"
             (click)="tempParamStorage(dragObject[svgId].altitude)"
-            (change)="changeSize(svgId, 'altitude',true)" style="width:auto ;">
+            (change)="changeSize(svgId, 'altitude',true)">
             {{ 'meter' | translate }}</td>
         </tr>
       </ng-container>
@@ -1643,7 +1643,6 @@
             <option value="8">{{ 'material.flameproof' | translate }}</option>
             <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
             <option value="10">{{ 'material.cabinet' | translate }}</option> -->
-
           </select>
         </td>
       </tr>
@@ -1715,6 +1714,60 @@
   </div>
 </ng-template>
 
+<ng-template #createModelSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createModelSuccess' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose();cleanData()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #createMaterialSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createMaterialSuccess' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #calculateModelSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createModelSuccess' | translate }}{{ 'modelCalculateResult' | translate }}</p>
+    <div style="text-align:center; margin-bottom:1em;; font-size:110%">
+      <span style="font-style: italic;">L<sub>total</sub> =</span>
+      <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
+      <span>20 log<sub>10</sub>&#402;</span>
+      <span *ngIf="modelDissCoefficient >= 0"> + {{calModelDissCoefficient}}</span>
+      <span *ngIf="modelDissCoefficient < 0"> + ({{calModelDissCoefficient}})</span>
+      <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+      <span> log<sub>10</sub></span>
+      <span style="font-style: italic;"> d</span>
+      <span *ngIf="modelfieldLoss >= 0"> + {{calModelfieldLoss}}</span>
+      <span *ngIf="modelfieldLoss < 0"> + ({{calModelfieldLoss}})</span>
+      <!-- <span style="font-style: italic;">L<sub>&#402;</sub></span> -->
+      <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+      <span> - 28</span>
+    </div>
+    <div style="text-align:right; margin-bottom:1em; font-size:70%">
+      <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
+      <br>
+      <span style="font-style: italic;">d</span>
+      <span>: {{ 'planning.model.distenceBsUe' | translate }} ({{ 'meter' | translate }})</span>
+      <br>
+      <span>{{ 'note' | translate }}: {{ 'assume' | translate }}{{ 'planning.model.freeSpaceProp' | translate }} = </span>
+      <span>20 log<sub>10</sub>&#402; -28 </span>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose();cleanData()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
 <ng-template #coordinateInfoModal>
   <h5 mat-dialog-title>{{ 'CoordinateDescription' | translate }}</h5>
   <div mat-dialog-content>
@@ -1734,13 +1787,13 @@
     <span>20 log<sub>10</sub>&#402;</span>
     <span *ngIf="modelDissCoefficient >= 0"> + {{modelDissCoefficient}}</span>
     <span *ngIf="modelDissCoefficient < 0"> + ({{modelDissCoefficient}})</span>
-    <span *ngIf="modelDissCoefficient == null && modelFileName != '' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+    <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
     <span> log<sub>10</sub></span>
     <span style="font-style: italic;"> d</span>
     <span *ngIf="modelfieldLoss >= 0"> + {{modelfieldLoss}}</span>
     <span *ngIf="modelfieldLoss < 0"> + ({{modelfieldLoss}})</span>
     <!-- <span style="font-style: italic;">L<sub>&#402;</sub></span> -->
-    <span *ngIf="modelfieldLoss == null && modelFileName != '' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+    <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
     <span> - 28</span>
   </div>
   <div style="text-align:right; margin-bottom:1em; font-size:70%">
@@ -1754,7 +1807,16 @@
   </div>
   <table class="altParamTable">
     <tbody>
-      <tr style="border-top: 1px solid #ddd;" *ngIf="calculateForm.pathLossModelId == 999">
+      <tr *ngIf="calculateForm.pathLossModelId == 999">
+        <td>{{ 'createMethod' | translate }}</td>
+        <td>
+          <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeCreateMethod()" [(ngModel)]="createMethod">
+            <mat-radio-button value="formula" style="margin-right: 15px;" >{{ 'enterFormula' | translate }}</mat-radio-button>
+            <mat-radio-button value="importFile" >{{ 'importFile' | translate }}</mat-radio-button>
+          </mat-radio-group>
+        </td>
+      </tr>
+      <tr style="border-top: 1px solid #ddd;" *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'importFile'">
         <td>{{ 'antennaFieldData' | translate }}
           (<a href="../../assets/file/ITRI_pathlossmodel_template.xlsx">{{ 'download' | translate }}</a>)
         </td>
@@ -1763,8 +1825,8 @@
             <input type="file" #modelfile (change)="uploadFile($event)" style="display: none; width: 0%;" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" >
             <span *ngIf="modelFileName != ''" >&ensp;{{ modelFileName }}</span>
             <span *ngIf="modelFileName == ''" >&ensp;{{ 'nofile' | translate }}</span>
-          </td>
-        </tr>
+        </td>
+      </tr>
       <tr>
         <td>{{ 'planning.model.name' | translate }}</td>
         <td>
@@ -1778,18 +1840,18 @@
       </tr>
       <tr>
        <td>{{ 'planning.model.disscoefficient' | translate }}
-        <span *ngIf="modelDissCoefficient == null && modelFileName != '' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
-      </td>
+        <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+       </td>
        <td>
-          <input [disabled]="modelFileName != '' && calculateForm.pathLossModelId == 999" type="number" step="0.1" min="0" [(ngModel)]="modelDissCoefficient" >
+          <input [disabled]="createMethod == 'importFile' && calculateForm.pathLossModelId == 999"  type="number" step="0.1" min="0" [(ngModel)]="modelDissCoefficient" >
        </td>
       </tr>
       <tr>
         <td>{{ 'planning.model.fieldLoss' | translate }}
-          <span *ngIf="modelfieldLoss == null && modelFileName != '' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+          <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
         </td>
         <td>
-           <input [disabled]="modelFileName != '' && calculateForm.pathLossModelId == 999" type="number" step="0.1" min="0" [(ngModel)]="modelfieldLoss" >
+           <input [disabled]="createMethod == 'importFile' && calculateForm.pathLossModelId == 999"  type="number" step="0.1" min="0" [(ngModel)]="modelfieldLoss" >
         </td>
        </tr>
     </tbody>
@@ -1799,14 +1861,14 @@
     <ng-container *ngIf="calculateForm.pathLossModelId != 999">
       <a href="javascript:void(0)" (click)="pathLossCustomize()">{{ 'planning.submit' | translate }}</a>
     </ng-container>
-    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && modelFileName == ''">
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'formula'">
       <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.submit' | translate }}</a>
     </ng-container>
     <ng-container *ngIf="calculateForm.pathLossModelId != 999 && modelProperty == 'customized'">
       <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <a href="javascript:void(0)" (click)="deleteModelDialog()">{{ 'planning.delete.model' | translate }}</a>
     </ng-container>
-    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && modelFileName != ''">
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'importFile'">
       <a href="javascript:void(0)" (click)="calculatePathlossModel()">{{ 'planning.submit' | translate }}</a>
       <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <a href="javascript:void(0)" (click)="cleanData()">{{ 'planning.delete.data' | translate }}</a>

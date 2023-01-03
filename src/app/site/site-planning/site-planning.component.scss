@@ -416,7 +416,7 @@ ul {
     tr td{
         // border-bottom: 1.5px solid #5aa5e2;
         line-height: 1.1;
-        // width: 100%;
+        width: 100%;
         white-space:nowrap;
     }
     tr td:first-child {
@@ -429,9 +429,9 @@ ul {
     select{
         width: 200px;
     }
-    input{
-        width: 100%;
-    }
+    // input{
+    //     width: 100%;
+    // }
     span{
         font-size: 90%
     }
