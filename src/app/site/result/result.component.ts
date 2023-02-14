@@ -248,7 +248,15 @@ export class ResultComponent implements OnInit {
           console.log(this.calculateForm);
           let i = 0;
           const defaultBs = this.calculateForm.defaultBs.split('|');
-          const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+          const defaultBsLen = defaultBs.length;
+          var defaultAnt = [];
+          if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
+            defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+          } else {
+            for (let i = 0; i < defaultBsLen; i++) {
+              defaultAnt.push("[1,0,0,0]");
+            }
+          }
           let unsorttxpower = [];
           let unsortbeamid = [];
           let txpower = [];
@@ -635,7 +643,14 @@ export class ResultComponent implements OnInit {
 
     if (!this.authService.isEmpty(this.calculateForm.candidateBs)) {
       candidateBs = this.calculateForm.candidateBs.split('|');
-      candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+      const candidateLen = candidateBs.length;
+      if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
+        candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+      } else {
+        for (let i = 0; i < candidateLen; i++) {
+          candidateAnt.push("[1,0,0,0]");
+        }
+      }
       for (let i = 0; i < candidateBs.length; i++) {
         const candidate = JSON.parse(candidateBs[i]);
         numMap[candidate] = index;

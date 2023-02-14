@@ -749,8 +749,29 @@ export class PdfComponent implements OnInit {
     // console.log(this.result);
     if (this.calculateForm.duplex == 'tdd') {
       const defaultBs = this.calculateForm.defaultBs.split('|');
-      const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-      const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+      const defaultBsLen = defaultBs.length;
+      var defaultAnt = [];
+      // 填舊版無天線功能的欄位
+      if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
+        defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+      } else {
+        for (let i = 0; i < defaultBsLen; i++) {
+          defaultAnt.push("[1,0,0,0]");
+        }
+      }
+      let candidateLen = this.result['candidateIdx'].length;
+      var candidateAnt = [];
+      if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
+        let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+        let candidateindex = this.result['candidateIdx'];
+        for (let i = 0; i < candidateLen; i++) {
+          candidateAnt.push(candidateAntList[candidateindex[i]]);
+        }
+      } else {
+        for (let i = 0; i < candidateLen; i++) {
+          candidateAnt.push("[1,0,0,0]");
+        }
+      }
       let ulmsc = this.calculateForm.ulMcsTable;
       let dlmsc = this.calculateForm.dlMcsTable;
       let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
@@ -763,7 +784,6 @@ export class PdfComponent implements OnInit {
       tableTitle2 = ['#','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure','Antenna','Theta','Phi','Txgain'];
       // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
       // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
-      let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         const antObj = JSON.parse(candidateAnt[i]);
         specData.push([
@@ -783,11 +803,15 @@ export class PdfComponent implements OnInit {
         } else {
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
         }
+        let bsNoiseFigure = 0;
+        if (this.calculateForm.bsNoiseFigure != ""){
+          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+        }
         specData2.push([
           `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
+          `${bsNoiseFigure}`,
           `${antennaName}`,
           `${antObj[1]}`,
           `${antObj[2]}`,
@@ -842,11 +866,15 @@ export class PdfComponent implements OnInit {
         } else {
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
         }
+        let bsNoiseFigure = 0;
+        if (this.calculateForm.bsNoiseFigure != ""){
+          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]
+        }
         specData2.push([
           `${this.translateService.instant('default')}${i+1}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
+          `${bsNoiseFigure}`,
           `${antennaName}`,
           `${antObj[1]}`,
           `${antObj[2]}`,
@@ -855,10 +883,33 @@ export class PdfComponent implements OnInit {
       }
     } else {
       let defaultBs = this.calculateForm.defaultBs.split('|');
-      const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-      const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+      // const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+      // const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
       if (defaultBs.length == 1 && defaultBs[0] == '') {
         defaultBs = [];
+      }
+      const defaultBsLen = defaultBs.length;
+      var defaultAnt = [];
+      // 填舊版無天線功能的欄位
+      if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
+        defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+      } else {
+        for (let i = 0; i < defaultBsLen; i++) {
+          defaultAnt.push("[1,0,0,0]");
+        }
+      }
+      let candidateLen = this.result['candidateIdx'].length;
+      var candidateAnt = [];
+      if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
+        let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+        let candidateindex = this.result['candidateIdx'];
+        for (let i = 0; i < candidateLen; i++) {
+          candidateAnt.push(candidateAntList[candidateindex[i]]);
+        }
+      } else {
+        for (let i = 0; i < candidateLen; i++) {
+          candidateAnt.push("[1,0,0,0]");
+        }
       }
       let ulmsc = this.calculateForm.ulMcsTable;
       let dlmsc = this.calculateForm.dlMcsTable;
@@ -876,7 +927,6 @@ export class PdfComponent implements OnInit {
       tableTitle = ['#','X/Y','dBm','UL Freq','DL Freq','UL Bandwidth','DL Bandwidth','UL MCStable','DL MCStable',];
       tableTitle2 = ['#','UL SCS(kHz)','DL SCS(kHz)','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure','Antenna','Theta','Phi','Txgain'];
       
-      let candidateLen = this.result['candidateIdx'].length;
       for (let i=0;i < candidateLen;i++) {
         const antObj = JSON.parse(candidateAnt[i]);
         specData.push([
@@ -897,13 +947,17 @@ export class PdfComponent implements OnInit {
         } else {
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
         }
+        let bsNoiseFigure = 0;
+        if (this.calculateForm.bsNoiseFigure != ""){
+          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+        }
         specData2.push([
           `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
           `${JSON.parse(this.calculateForm.ulScs)[0]}`,
           `${JSON.parse(this.calculateForm.dlScs)[0]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.bsNoiseFigure)[0]}`,
+          `${bsNoiseFigure}`,
           `${antennaName}`,
           `${antObj[1]}`,
           `${antObj[2]}`,
@@ -952,13 +1006,17 @@ export class PdfComponent implements OnInit {
         } else {
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
         }
+        let bsNoiseFigure = 0;
+        if (this.calculateForm.bsNoiseFigure != ""){
+          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length];
+        }
         specData2.push([
           `${this.translateService.instant('default')}${i+1}`,
           `${JSON.parse(this.calculateForm.ulScs)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlScs)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
           `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
+          `${bsNoiseFigure}`,
           `${antennaName}`,
           `${antObj[1]}`,
           `${antObj[2]}`,
@@ -1538,13 +1596,17 @@ export class PdfComponent implements OnInit {
       ueData.push([`${this.translateService.instant('result.propose.candidateBs')}${this.result['candidateIdx'][i]+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
         if (ueConInfo[k] == this.result['candidateIdx'][i]) {
+          let ueRxGain = 0;
+          if (this.calculateForm.ueRxGain != ""){
+            ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+          }
           ueData.push([
             (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
             , `${this.financial(this.result['ueRsrp'][k])} dBm`
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
-            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
+            , `${ueRxGain} dB`
           ]);
         }
       }
@@ -1555,13 +1617,17 @@ export class PdfComponent implements OnInit {
       ueData.push([`${this.translateService.instant('result.propose.defaultBs')}${i+1}`]);
       for (let k = 0; k < this.ueList.length; k++) {
         if (ueConInfo[k] == i+this.inputBsList.length) {
+          let ueRxGain = 0;
+          if (this.calculateForm.ueRxGain != ""){
+            ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+          }
           ueData.push([
             (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
             , `${this.financial(this.result['ueRsrp'][k])} dBm`
             , `${this.financial(this.result['ueSinr'][k])} dB`
             , `${this.financial(uedlTpt[k])} Mbps`
             , `${this.financial(ueulTpt[k])} Mbps`
-            , `${JSON.parse(this.calculateForm.ueRxGain)[k]} dB`
+            , `${ueRxGain} dB`
           ]);
         }
       }

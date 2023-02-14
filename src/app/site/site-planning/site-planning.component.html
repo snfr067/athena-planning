@@ -998,7 +998,7 @@
                       <input type="number" class="inputNum" step="1"
                       [(ngModel)]="calculateForm.width" 
                       (click)="tempParamStorage(calculateForm.width)"
-                      (change)="checkFieldWidHei('width')">
+                      (change)="checkFieldWidHei('width')" disabled>
                       <!-- (change)="initData(false, false, 'width')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
                     </li>
@@ -1007,7 +1007,7 @@
                       <input type="number" class="inputNum" step="1"
                       [(ngModel)]="calculateForm.height" 
                       (click)="tempParamStorage(calculateForm.height)"
-                      (change)="checkFieldWidHei('height')">
+                      (change)="checkFieldWidHei('height')" disabled>
                       <!-- (change)="initData(false, false, 'height')"> -->
                       <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
                     </li>
