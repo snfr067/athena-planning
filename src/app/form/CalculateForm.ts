@@ -43,6 +43,9 @@ export class CalculateForm {
   isAvgThroughput = false;
   throughputRatio: number = 5;
   isCoverage: boolean = false;
+  isSINR: boolean = false;
+  isRSRP: boolean = false;
+  isThroughput: boolean = false;
   coverageRatio: number = 0.95;
   //UE related target
   isUeCoverage = false;
@@ -105,6 +108,10 @@ export class CalculateForm {
   geographicalNorth: number = 0;
   candidateBsAnt: string = null;
   defaultBsAnt: string = null;
+  SINRSettingList = [{area: 0, condition: "MoreThan", sinr: 0}];
+  RSRPSettingList = [{area: 0, condition: "MoreThan", rsrp: 0}];
+  ThroughputSettingList = [{area: 0, ULCondition: "MoreThan", ULThroughput: 0, DLCondition: "MoreThan", DLThroughput: 0}];
+  UEThroughputSettingList = [{area: 0, ULCondition: "MoreThan", ULThroughput: 0, DLCondition: "MoreThan", DLThroughput: 0}];
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

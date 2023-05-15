@@ -369,6 +369,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http error */
   statusCode = "";
   errMsg = "";
+  SINRSettingList = [];
+  RSRPSettingList = [];
+  ThroughputSettingList = [];
+  UEThroughputSettingList = [];
+
   // useSmartAntenna = "false";
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
@@ -379,6 +384,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
   @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
+  @ViewChild('SINRModalTable') SINRModalTable: TemplateRef<any>;
+  @ViewChild('RSRPModalTable') RSRPModalTable: TemplateRef<any>;
+  @ViewChild('ThroughputModalTable') ThroughputModalTable: TemplateRef<any>;
+  @ViewChild('UEThroughputModalTable') UEThroughputModalTable: TemplateRef<any>;
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
@@ -2493,6 +2502,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.manufactor = 'All';
     this.matDialog.open(this.rfModalTable);
   }
+  /**
+   * 開啟多目標函數設定燈箱
+  */
+  openSINRSetting() {
+    if(this.SINRSettingList.length == 0)
+      this.addSINR();
+    this.matDialog.open(this.SINRModalTable);
+  }  
+  openRSRPSetting() {
+    if(this.RSRPSettingList.length == 0)
+      this.addRSRP();
+    this.matDialog.open(this.RSRPModalTable);
+  }  
+  openThroughputSetting() {
+    if(this.ThroughputSettingList.length == 0)
+      this.addThroughput();
+    this.matDialog.open(this.ThroughputModalTable);
+  }  
+  openUEThroughputSetting() {
+    if(this.UEThroughputSettingList.length == 0)
+      this.addUEThroughput();
+    this.matDialog.open(this.UEThroughputModalTable);
+  }
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
     if (isNav) { // 右方障礙物資訊id與左方平面圖障礙物id序號差1
@@ -3376,6 +3408,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;
     }
+
+    this.calculateForm.SINRSettingList = this.SINRSettingList;
+    this.calculateForm.RSRPSettingList = this.RSRPSettingList;
+    this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
+    this.calculateForm.UEThroughputSettingList = this.UEThroughputSettingList;
+
+
     // const planningObj = {
     //   isAverageSinr: this.calculateForm.isAverageSinr,
     //   isCoverage: this.calculateForm.isCoverage,
@@ -3772,16 +3811,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   changePlanningTarget(target) {
-    if (target == 'isCoverage') {
-      this.calculateForm.isUeAvgThroughput = false;
-      this.calculateForm.isUeCoverage = false;
-    } else if (target == 'isUeAvgThroughput') {
-      this.calculateForm.isCoverage = false;
-      this.calculateForm.isUeCoverage = false;
-    } else {
-      this.calculateForm.isCoverage = false;
-      this.calculateForm.isUeAvgThroughput = false;
-    }
+    // if (target == 'isCoverage') {
+    //   this.calculateForm.isUeAvgThroughput = false;
+    //   this.calculateForm.isUeCoverage = false;
+    // } else if (target == 'isUeAvgThroughput') {
+    //   this.calculateForm.isCoverage = false;
+    //   this.calculateForm.isUeCoverage = false;
+    // } else {
+    //   // this.calculateForm.isCoverage = false;
+    //   this.calculateForm.isUeAvgThroughput = false;
+    // }
   }
 
   /**
@@ -7892,5 +7931,65 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.modelDissCoefficient = 0.1;
       this.modelfieldLoss = 0.1;
     }
+  }
+
+  addSINR() {
+    
+    this.SINRSettingList.push(
+      {
+        area: 0, 
+        condition: "MoreThan",
+        sinr: 0
+      });
+  }
+
+  delSINR(index) {    
+    this.SINRSettingList.splice(index, 1);
+  }
+
+  addRSRP() {
+    
+    this.RSRPSettingList.push(
+    {
+      area: 0, 
+      condition: "MoreThan",
+      rsrp: 0
+    });
+  }
+
+  delRSRP(index) {    
+    this.RSRPSettingList.splice(index, 1);
+  }
+
+  addThroughput() {
+    
+    this.ThroughputSettingList.push(
+    {
+      area: 0, 
+      ULCondition: "MoreThan",
+      ULThroughput: 0,
+      DLCondition: "MoreThan",
+      DLThroughput: 0
+    });
+  }
+
+  delThroughput(index) {    
+    this.ThroughputSettingList.splice(index, 1);
+  }
+
+  addUEThroughput() {
+    
+    this.ThroughputSettingList.push(
+    {
+      area: 0, 
+      ULCondition: "MoreThan",
+      ULThroughput: 0,
+      DLCondition: "MoreThan",
+      DLThroughput: 0
+    });
+  }
+
+  delUEThroughput(index) {    
+    this.ThroughputSettingList.splice(index, 1);
   }
 }

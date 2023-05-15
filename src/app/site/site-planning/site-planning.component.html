@@ -394,6 +394,22 @@
             (change)="changePlanningTarget('isCoverage')">
               {{ 'isCoverage' | translate }}
             </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isSINR" matTooltip="{{ 'isSINR.tooltip' | translate }}"
+            (change)="changePlanningTarget('isSINR')">
+              {{ 'isSINR' | translate }}
+              <button value="SINRSetting" (click)="openSINRSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isRSRP" matTooltip="{{ 'isRSRP.tooltip' | translate }}"
+            (change)="changePlanningTarget('isRSRP')">
+              {{ 'isRSRP' | translate }}
+              <button value="RSRPSetting" (click)="openRSRPSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+
+            <mat-checkbox [(ngModel)]="calculateForm.isThroughput" matTooltip="{{ 'isThroughput.tooltip' | translate }}"
+            (change)="changePlanningTarget('isThroughput')">
+              {{ 'isThroughput' | translate }}
+              <button value="ThroughputSetting" (click)="openThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
               {{ 'isAverageThroughput' | translate }}
             </mat-checkbox> -->
@@ -412,6 +428,7 @@
             <mat-checkbox [(ngModel)]="calculateForm.isUeAvgThroughput" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}"
             (change)="changePlanningTarget('isUeAvgThroughput')">
               {{ 'isUeAvgThroughput' | translate }}
+              <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
             <mat-checkbox [(ngModel)]="calculateForm.isUeCoverage" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
             (change)="changePlanningTarget('isUeCoverage')">
@@ -1885,6 +1902,231 @@
         <td><input type="number" class="inputNum" step="0.1" style="width: 175px"
           [(ngModel)]="ueListParam[svgId].ueRxGain"
           tabindex="-1"></td> dB
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+
+<ng-template #SINRModalTable>
+  <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
+  <table>
+    <tbody>    
+      <tr>
+        <td>{{'AreaPercent' | translate}}</td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'SINR' | translate}}</td> 
+        <td> 
+          <button value="new" (click)="addSINR()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+        </td>  
+      </tr>
+      <tr>
+        <td>   
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="SINRSettingList[i].area">
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="SINRSettingList[i].condition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="SINRSettingList[i].sinr"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == SINRSettingList.length-1 && SINRSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #RSRPModalTable>
+  <h5 mat-dialog-title>{{ 'isRSRP.paramLink' | translate }}</h5>
+  <table>
+    <tbody>    
+      <tr>
+        <td>{{'AreaPercent' | translate}}</td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'RSRP' | translate}}</td> 
+        <td> 
+          <button value="new" (click)="addRSRP()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+        </td>     
+      </tr>
+      <tr>
+        <td>   
+          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="RSRPSettingList[i].area">
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="RSRPSettingList[i].condition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="RSRPSettingList[i].rsrp"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == RSRPSettingList.length-1 && RSRPSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #ThroughputModalTable>
+  <h5 mat-dialog-title>{{ 'isRSRP.paramLink' | translate }}</h5>
+  <table>
+    <tbody>    
+      <tr>
+        <td>{{'AreaPercent' | translate}}</td>
+        <td></td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'Throughput' | translate}}</td> 
+        <td></td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'Throughput' | translate}}</td> 
+        <td> 
+          <button value="new" (click)="addThroughput()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+        </td>     
+      </tr>
+      <tr>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].area">
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            {{'UL' | translate}}
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="ThroughputSettingList[i].ULCondition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            {{'DL' | translate}}
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="ThroughputSettingList[i].DLCondition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == ThroughputSettingList.length-1 && ThroughputSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #UEThroughputModalTable>
+  <h5 mat-dialog-title>{{ 'isUEAvgThroughtput.paramLink' | translate }}</h5>
+  <table>
+    <tbody>    
+      <tr>
+        <td>{{'AreaPercent' | translate}}</td>
+        <td></td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'Throughput' | translate}}</td> 
+        <td></td>
+        <td>{{'Condition' | translate}}</td>
+        <td>{{'Throughput' | translate}}</td> 
+        <td> 
+          <button value="new" (click)="addUEThroughput()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+        </td>     
+      </tr>
+      <tr>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area">
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            {{'UL' | translate}}
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="UEThroughputSettingList[i].ULCondition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            {{'DL' | translate}}
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <select step="2"
+              [(ngModel)]="UEThroughputSettingList[i].DLCondition">
+                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
+                <option value="LessThan"> {{'LessThan' | translate}} </option>
+            </select>
+          </div>
+        </td>        
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput"> 
+          </div>
+        </td>
+        <td>   
+          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == UEThroughputSettingList.length-1 && UEThroughputSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>
