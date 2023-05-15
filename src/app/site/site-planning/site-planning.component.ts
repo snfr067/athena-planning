@@ -7979,7 +7979,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   addUEThroughput() {
     
-    this.ThroughputSettingList.push(
+    this.UEThroughputSettingList.push(
     {
       area: 0, 
       ULCondition: "MoreThan",
@@ -7990,7 +7990,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }
 
   delUEThroughput(index) {    
-    this.ThroughputSettingList.splice(index, 1);
+    this.UEThroughputSettingList.splice(index, 1);
   }
 
   checkArea(area) {

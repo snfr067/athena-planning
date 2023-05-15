@@ -1917,7 +1917,7 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'SINR' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addSINR()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addSINR()" style="float:right, bottom" [disabled]="SINRSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>  
       </tr>
       <tr>
@@ -1959,7 +1959,7 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'RSRP' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addRSRP()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addRSRP()" style="float:right, bottom" [disabled]="RSRPSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
@@ -2005,7 +2005,7 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addThroughput()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addThroughput()" style="float:right, bottom" [disabled]="ThroughputSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
@@ -2075,7 +2075,7 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addUEThroughput()" style="float:right, bottom">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addUEThroughput()" style="float:right, bottom" [disabled]="UEThroughputSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
