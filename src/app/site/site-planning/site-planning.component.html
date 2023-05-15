@@ -1923,7 +1923,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="SINRSettingList[i].area">
+            <input type="text" [(ngModel)]="SINRSettingList[i].area" (change)="checkArea(SINRSettingList[i].area)">
           </div>
         </td>
         <td>   
@@ -1965,7 +1965,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="RSRPSettingList[i].area">
+            <input type="text" [(ngModel)]="RSRPSettingList[i].area" (change)="checkArea(RSRPSettingList[i].area)">
           </div>
         </td>
         <td>   
@@ -2011,7 +2011,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].area">
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].area" (change)="checkArea(ThroughputSettingList[i].area)">
           </div>
         </td>
         <td>   
@@ -2030,7 +2030,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput"> 
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput" (change)="checkThroughput(ThroughputSettingList[i].ULThroughput)"> 
           </div>
         </td>
         <td>   
@@ -2049,7 +2049,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput"> 
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput" (change)="checkThroughput(ThroughputSettingList[i].DLThroughput)"> 
           </div>
         </td>
         <td>   
@@ -2081,7 +2081,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area">
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area" (change)="checkArea(UEThroughputSettingList[i].area)">
           </div>
         </td>
         <td>   
@@ -2100,7 +2100,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"> 
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"  (change)="checkThroughput(UEThroughputSettingList[i].ULThroughput)"> 
           </div>
         </td>
         <td>   
@@ -2119,7 +2119,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput"> 
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput" (change)="checkThroughput(UEThroughputSettingList[i].DLThroughput)"> 
           </div>
         </td>
         <td>   

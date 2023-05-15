@@ -7992,4 +7992,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   delUEThroughput(index) {    
     this.ThroughputSettingList.splice(index, 1);
   }
+
+  checkArea(area) {
+    console.log('Check area:'+ area);
+    let msg = '';
+
+    if(area < 0 || area > 100)
+      msg = this.translateService.instant('area_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+
+  checkThroughput(throughput) {
+    console.log('Check throughput:'+ throughput);
+    let msg = '';
+
+    if(throughput < 0)
+      msg = this.translateService.instant('throughput_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
 }

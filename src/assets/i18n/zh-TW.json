@@ -442,6 +442,8 @@
 	"alt_greater_than_field": "不可大於場域高度",
 	"cant_get_result": "無法取得計算結果!",
 	"switch_duplex_hint": "切換雙工模式後請記得檢查是否填入基站RF參數",
+	"area_fault": "面積數值應在0~100之間",
+	"throughput_fault": "速率數值應不可小於0",
 
 	"default": "既有",
 	"candidate": "待選",
