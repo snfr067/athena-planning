@@ -1,0 +1,2767 @@
+<div class="tool">
+  <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('rect')">
+    <svg id="svg_01" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/>
+        <g id="canvasGrid" display="none">
+        <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+        </g>
+      </g>
+      <g>
+        <rect fill="#000000" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/>
+        <rect class="target" fill="#ffffff" stroke-width="1.5" x="0" y="0" width="30" height="30" id="svg_1"/>
+      </g>
+    </svg>
+  </span>
+  <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('ellipse')">
+    <svg id="svg_02" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+       <rect fill="none" id="canvas_background" height="32" width="20" y="-1" x="-1"/>
+       <g display="none" id="canvasGrid">
+        <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+       </g>
+      </g>
+      <g>
+       <rect stroke="#000" height="28" width="41" y="151" x="111" stroke-width="1.5" fill="#000000"/>
+       <ellipse class="target" ry="15" rx="15" id="svg_2" cy="15" cx="15" stroke-width="1.5" fill="#ffffff"/>
+      </g>
+     </svg>
+  </span>
+
+  <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('polygon')">
+    <svg id="svg_03" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+       <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="none"/>
+       <g id="canvasGrid" display="none">
+        <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+       </g>
+      </g>
+      <g>
+       <rect fill="#000000" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/>
+       <polygon class="target" points="15,0 30,30 0,30" fill="#ffffff" id="svg_3" />
+       <!-- <path class="target" fill="#ffffff" stroke-width="1.5" d="m1.75,28.69313l13.5,-25.625l13.5,25.625l-27,0z" id="svg_3"/> -->
+      </g>
+     </svg>
+  </span>
+  
+  <span class="svg" matTooltip="{{ 'obstacleInfo' | translate }}" (click)="addMoveable('trapezoid')" style="cursor:point; display:block;  text-align: center;  margin: .7em 0 1.2em;">
+    <svg id="svg_07" width="25" height="20px" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect x="-1" y="-1" height="20" width="25" fill="none" id="canvas_background"></rect>
+        <g id="canvasGrid" display="none">
+          <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"></rect>
+        </g>
+      </g>
+      <g>
+        <rect fill="none" stroke-width="1.5" x="50" y="0" width="25" height="20" stroke="none"></rect>
+        <path class="target" fill="#ffffff" stroke="null" id="svg_7" d="M5.4,0L0,16h22.9L17.3,0C17.3,0,5.3,0,5.4,0z"></path>
+      </g>
+    </svg>
+  </span>
+  
+  <hr>
+  <span class="svg" matTooltip="{{ 'defaultBs' | translate }}" (click)="addMoveable('defaultBS')" >
+    <svg id="svg_04" class="s" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1"/>
+      </g>
+      <g>
+        <path fill="none" d="m0,0l24,0l0,24l-24,0l0,-24z"/>
+        <path class="target" fill="#ffffff" stroke="null" id="svg_4" d="m27.1373,5.80872l1.19321,-1.19321c-2.08811,-2.08811 -4.77283,-3.13217 -7.45754,-3.13217s-5.36943,1.04406 -7.45754,3.13217l1.19321,1.19321c1.78981,-1.64066 4.02707,-2.53556 6.26434,-2.53556s4.47453,0.89491 6.26434,2.53556zm-1.34236,1.19321c-1.34236,-1.34236 -3.13217,-2.08811 -4.92198,-2.08811s-3.57962,0.74575 -4.92198,2.08811l1.19321,1.19321c1.04406,-1.04406 2.38641,-1.49151 3.72877,-1.49151c1.34236,0 2.68472,0.44745 3.72877,1.49151l1.19321,-1.19321zm-0.44745,9.39651l-2.98302,0l0,-5.96604l-2.98302,0l0,5.96604l-14.91509,0c-1.64066,0 -2.98302,1.34236 -2.98302,2.98302l0,5.96604c0,1.64066 1.34236,2.98302 2.98302,2.98302l20.88112,0c1.64066,0 2.98302,-1.34236 2.98302,-2.98302l0,-5.96604c0,-1.64066 -1.34236,-2.98302 -2.98302,-2.98302zm-16.4066,7.45754l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302zm5.22028,0l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302zm5.22028,0l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302z"/>
+      </g>
+     </svg>
+     
+  </span>
+
+  <span *ngIf="planningIndex !== '3'" class="svg" matTooltip="{{ 'candidateBs' | translate }}" (click)="addMoveable('candidate')" >
+    <svg id="svg_05" class="s" width="28" height="22" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <title>background</title>
+        <rect fill="none" id="canvas_background" height="20" width="30" y="-1" x="-1"/>
+        <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+         <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+        </g>
+       </g>
+       <g>
+        <title>Layer 1</title>
+        <rect stroke="#000" rx="3" id="svg_3" height="17.79447" width="27.84664" y="0.08384" x="0.08216" stroke-opacity="null" stroke-width="0" fill="#ffffff"/>
+        <text stroke="#000" transform="matrix(0.8532502651214598,0,0,0.8532502651214598,0.7290017828345299,0.38280437514185905) " font-style="normal" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="sans-serif" font-size="12" id="svg_7" y="14.00717" x="3.15093" stroke-opacity="null" stroke-width="0" fill="#000000">New</text>
+       </g>
+    </svg>
+  </span>
+  <hr>
+  <span class="svg" matTooltip="{{ 'new.ue' | translate }}" (click)="addMoveable('UE')" >
+    <!--<svg id="svg_06" class="s" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect fill="none" height="32" width="32" y="-1" x="-1"/>
+       </g>
+       <g>
+        <path class="target" fill="#ffffff" id="svg_6" d="m26.45453,3l-22.90908,0c-1.4,0 -2.54545,1.14545 -2.54545,2.54545l0,15.27272c0,1.4 1.14545,2.54545 2.54545,2.54545l8.90909,0l0,2.54545l-2.54545,0l0,2.54545l10.18181,0l0,-2.54545l-2.54545,0l0,-2.54545l8.90909,0c1.4,0 2.54545,-1.14545 2.54545,-2.54545l0,-15.27272c0,-1.4 -1.14545,-2.54545 -2.54545,-2.54545zm0,17.81817l-22.90908,0l0,-15.27272l22.90908,0l0,15.27272z"/>
+       </g>
+     </svg>-->
+     <svg id="svg_06" class="s" width="20" height="30" xmlns="http://www.w3.org/2000/svg">
+      <!--<g>
+        <rect fill="none" height="20" width="30" y="-1" x="-1"/>
+      </g>-->
+      <g>
+        <path class="target" fill="#ffffff" id="svg_6" d="M15.88,0H3.12C1.4,0,0,1.47,0,3.27v22.46C0,27.53,1.4,29,3.12,29h12.76C17.6,29,19,27.53,19,25.73V3.27
+        C19,1.47,17.6,0,15.88,0z M9.5,27.09c-0.48,0-0.86-0.41-0.86-0.91c0-0.5,0.39-0.91,0.86-0.91c0.48,0,0.86,0.41,0.86,0.91
+        C10.36,26.69,9.98,27.09,9.5,27.09z M16.71,21.99c0,0.77-0.59,1.39-1.32,1.39H3.61c-0.73,0-1.32-0.62-1.32-1.39V4.11
+        c0-0.77,0.59-1.39,1.32-1.39h11.77c0.73,0,1.32,0.62,1.32,1.39V21.99z"/>
+      </g>
+    </svg>
+  </span>
+  <hr>
+  <span class="svg" matTooltip="{{ 'subfield' | translate }}" (click)="addMoveable('subField')">
+    <svg id="svg_07" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect fill="#0d213a" stroke-width="2" x="5" y="5" width="20" height="20" stroke="#fff"/>
+        <rect fill="#0d213a" stroke-width="2" x="0" y="0" width="20" height="20" stroke="#fff"/>
+      </g>
+    </svg>
+  </span>
+    <!-- <div>
+      <label>
+        <input type="checkbox" name="" id="" class="checkbox">
+        <span class="btn-box">
+          <span class="btn"></span>      
+        </span>
+      </label>
+    </div> -->
+</div>
+
+<mat-sidenav-container class="example-container">
+  <mat-sidenav-content>
+    
+
+  <div id="d_area">
+    <div id="top_area">
+      <button class="toggle" mat-button (click)="sidenav.toggle()">
+        <span class="material-icons">swap_horiz</span>
+      </button>
+      <h2 class="inline-block">
+        {{ getTitle() }}(
+          <mat-form-field floatLabel="never" style="height: 45px;">
+            <input matInput [(ngModel)]="calculateForm.taskName" placeholder="{{ 'taskName' | translate }}" required>
+          </mat-form-field>
+        )
+      </h2>
+      <mat-button-toggle-group class="inline-block">
+        <mat-button-toggle value="import" (click)="file.click()">{{ 'import' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="export" (click)="export()">{{ 'tasklist.export' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+      <input type="file" #file style="display: none;" (change)="import($event)" multiple="false"/>
+
+      <mat-button-toggle-group class="inline-block ml_5">
+        <mat-button-toggle value="go" (click)="calculate()">{{ 'planning.calculate' | translate }}</mat-button-toggle>
+        <mat-button-toggle *ngIf="taskid !== ''" value="result" (click)="result()">{{ 'planning.result' | translate }}</mat-button-toggle>
+        <!-- <mat-button-toggle (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle> -->
+      </mat-button-toggle-group>
+      
+      <span style="margin-left: 5px; position: relative; bottom: 10px; line-height: 2.2">
+        <mat-checkbox [(ngModel)]="isShowSubField" >
+          {{ 'isShowSubField' | translate }}
+        </mat-checkbox>
+      </span>
+      
+    </div>
+    <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
+      
+    </div> -->
+    <div #chart id="chart" style="position: relative; overflow-x: auto">
+      <img id="north" src="assets/img/north.jpg" align="right" [ngStyle]="{'transform': 'rotate(' + calculateForm.geographicalNorth+ 'deg)'}">
+      <div #dragArea [ngStyle]="dragStyle">
+        <span *ngIf="isShowSubField">
+          <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+            <ng-container *ngIf="svgStyle[item]">
+              <svg *ngIf="dragObject[item].element === 'subField' || dragObject[item].element == '4'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
+                <!-- <g> -->
+                <!-- <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/> -->
+                <g id="canvasGrid" display="none">
+                  <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+                </g>
+                <!-- </g> -->
+                <g>
+                <!-- <rect fill="#ffffff" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#fff"/> -->
+                  <rect class="drag_rect" [ngStyle]="subFieldStyle[item]" stroke-width="1.5" x="0" y="0" />
+                </g>
+              </svg>
+            </ng-container>
+          </span>
+          <!-- <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+        </span> -->
+        </span>
+        <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
+        <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item)" (contextmenu)="onRightClick($event, item, i)" >
+          <ng-container *ngIf="svgStyle[item]">
+            <svg *ngIf="dragObject[item].element === 'rect' || dragObject[item].element == '0'" [attr.width]="svgStyle[item].width" [attr.height]="svgStyle[item].height" style="display: inherit;" xmlns="http://www.w3.org/2000/svg">
+              <g>
+              <rect x="-1" y="-1" width="32" height="32" id="canvas_background" fill="#fff"/>
+              <g id="canvasGrid" display="none">
+                <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+              </g>
+              </g>
+              <g>
+              <rect fill="#000000" stroke-width="1.5" x="111" y="151" width="41" height="28" stroke="#000"/>
+              <rect class="drag_rect" [ngStyle]="rectStyle[item]" stroke-width="1.5" x="0" y="0" />
+              </g>
+            </svg>
+
+            <svg *ngIf="dragObject[item].element === 'ellipse' || dragObject[item].element == '2'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
+              <g>
+              <rect fill="none" id="canvas_background" height="32" width="20" y="-1" x="-1"/>
+              <g display="none" id="canvasGrid">
+                <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+              </g>
+              </g>
+              <g>
+              <rect stroke="#fff" height="28" width="41" y="151" x="111" stroke-width="1.5" fill="#fff"/>
+              <ellipse class="drag_rect" [ngStyle]="ellipseStyle[item]" stroke-width="1.5" fill="#ffffff"/>
+              </g>
+            </svg>
+  
+            <svg *ngIf="dragObject[item].element === 'polygon' || dragObject[item].element == '1'" [ngStyle]="svgStyle[item]" xmlns="http://www.w3.org/2000/svg">
+              <g>
+              <rect x="-1" y="-1" width="32" height="32" fill="none"/>
+              <g id="canvasGrid" display="none">
+                <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="none"/>
+              </g>
+              </g>
+              <g>
+              <rect fill="rgba(0,0,0,0)" stroke-width="1.5" x="111" y="151" width="41" height="28" />
+              <polygon class="drag_rect" [ngStyle]="polygonStyle[item]" [attr.points]="polygonStyle[item].points" />
+              </g>
+            </svg>
+  
+            <svg *ngIf="dragObject[item].element === 'trapezoid' || dragObject[item].element == '3'" [ngStyle]="svgStyle[item]" viewBox="0 0 30 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <rect x="-1" y="-1" height="20" width="25" fill="none" id="canvas_background2"></rect>
+                <g id="canvasGrid" display="none">
+                  <rect width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"></rect>
+                </g>
+              </g>
+              <g>
+                <rect fill="none" stroke-width="1.5" x="50" y="0" width="25" height="20" stroke="none"></rect>
+                <path class="drag_rect" [ngStyle]="trapezoidStyle[item]" stroke="null" id="svg_7" d="M8,0L0,30h30L22,0C22,0,5.3,0,8,0z"></path>
+              </g>
+            </svg>
+          </ng-container>
+        </span>
+        
+        <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="defaultBS" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+          <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1"/>
+            </g>
+            <g>
+              <path fill="none" d="m0,0l24,0l0,24l-24,0l0,-24z"/>
+              <path class="drag_rect" [ngStyle]="pathStyle[item]" stroke="null" d="m27.1373,5.80872l1.19321,-1.19321c-2.08811,-2.08811 -4.77283,-3.13217 -7.45754,-3.13217s-5.36943,1.04406 -7.45754,3.13217l1.19321,1.19321c1.78981,-1.64066 4.02707,-2.53556 6.26434,-2.53556s4.47453,0.89491 6.26434,2.53556zm-1.34236,1.19321c-1.34236,-1.34236 -3.13217,-2.08811 -4.92198,-2.08811s-3.57962,0.74575 -4.92198,2.08811l1.19321,1.19321c1.04406,-1.04406 2.38641,-1.49151 3.72877,-1.49151c1.34236,0 2.68472,0.44745 3.72877,1.49151l1.19321,-1.19321zm-0.44745,9.39651l-2.98302,0l0,-5.96604l-2.98302,0l0,5.96604l-14.91509,0c-1.64066,0 -2.98302,1.34236 -2.98302,2.98302l0,5.96604c0,1.64066 1.34236,2.98302 2.98302,2.98302l20.88112,0c1.64066,0 2.98302,-1.34236 2.98302,-2.98302l0,-5.96604c0,-1.64066 -1.34236,-2.98302 -2.98302,-2.98302zm-16.4066,7.45754l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302zm5.22028,0l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302zm5.22028,0l-2.98302,0l0,-2.98302l2.98302,0l0,2.98302z"/>
+            </g>
+          </svg>
+        </span>
+        <span *ngFor="let item of defaultBSList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle blue_circle" >{{ (i + 1) }}</span>
+        <span *ngFor="let item of candidateList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="candidate" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+          <svg [ngStyle]="svgStyle[item]" class="s" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect fill="none" id="canvas_background" height="3" width="25" y="-1" x="-1"/>
+            </g>
+            <g>
+              <g>
+                <rect  x="0" width="24" height="15" fill="none"/>
+              </g>
+              <g>
+                <g stroke="null">
+                  <g stroke="null">
+                    <!--<path class="drag_rect" [ngStyle]="pathStyle[item]" stroke="null" d="m26.60334,2.83059l-23.16898,0c-1.60735,0 -2.88164,1.28877 -2.88164,2.89612l-0.01448,17.37673c0,1.60735 1.28877,2.89612 2.89612,2.89612l23.16898,0c1.60735,0 2.89612,-1.28877 2.89612,-2.89612l0,-17.37673c0,-1.60735 -1.28877,-2.89612 -2.89612,-2.89612zm-16.6527,15.92867l-1.73767,0l-3.69256,-5.06821l0,5.06821l-1.81008,0l0,-8.68837l1.81008,0l3.62015,5.06821l0,-5.06821l1.81008,0l0,8.68837zm7.2403,-6.86381l-3.62015,0l0,1.62183l3.62015,0l0,1.82456l-3.62015,0l0,1.60735l3.62015,0l0,1.81008l-5.79224,0l0,-8.68837l5.79224,0l0,1.82456zm10.13643,5.41575c0,0.79643 -0.65163,1.44806 -1.44806,1.44806l-5.79224,0c-0.79643,0 -1.44806,-0.65163 -1.44806,-1.44806l0,-7.2403l1.81008,0l0,6.53075l1.63631,0l0,-5.09717l1.81008,0l0,5.08269l1.62183,0l0,-6.51627l1.81008,0l0,7.2403z"/>-->
+                    <rect stroke="#000" rx="3" id="svg_3" height="17.79447" width="27.84664" y="0.08384" x="0.08216" stroke-opacity="null" stroke-width="0" fill="#000"/>
+                    <text stroke="#fff" transform="matrix(0.8532502651214598,0,0,0.8532502651214598,0.7290017828345299,0.38280437514185905) " font-style="normal" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="sans-serif" font-size="12" id="svg_7" y="14.00717" x="3.15093" stroke-opacity="null" stroke-width="0" fill="#fff">New</text>                  
+                  </g>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </span>
+        <span *ngFor="let item of candidateList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle pink_circle" >{{ (i + 1) }}</span>
+        <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
+          <svg class="s_ue" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect fill="none" height="10" width="29" y="-1" x="-1"/>
+            </g>
+            <g>
+              <path class="drag_rect" [ngStyle]="pathStyle[item]" d="M15.88,0H3.12C1.4,0,0,1.47,0,3.27v22.46C0,27.53,1.4,29,3.12,29h12.76C17.6,29,19,27.53,19,25.73V3.27
+              C19,1.47,17.6,0,15.88,0z M9.5,27.09c-0.48,0-0.86-0.41-0.86-0.91c0-0.5,0.39-0.91,0.86-0.91c0.48,0,0.86,0.41,0.86,0.91
+              C10.36,26.69,9.98,27.09,9.5,27.09z M16.71,21.99c0,0.77-0.59,1.39-1.32,1.39H3.61c-0.73,0-1.32-0.62-1.32-1.39V4.11
+              c0-0.77,0.59-1.39,1.32-1.39h11.77c0.73,0,1.32,0.62,1.32,1.39V21.99z"/>
+            </g>
+          </svg>
+        </span>
+        
+      </div>
+    </div>
+  </div>
+
+  <ngx-moveable
+    #moveable
+    [target]="target"
+    [draggable]="true"
+    [origin]="true"
+    [rotatable]="true"
+    [pinchable]="true"
+    [scalable]="false"
+    [resizable]="resizable"
+    [warpable]="false"
+    [keepRatio]="false"
+    [snappable]="true"
+    [bounds]="bounds"
+    [snapCenter]="false"
+    [throttleDrag]="1"
+    [throttleScale]="0.01"
+    [throttleRotate]="0.2"
+    [throttleResize]="1"
+    (drag)="onDrag($event)"
+    (resize)="onResize($event)"
+    (rotate)="onRotate($event)"
+    (dragStart)="dragStart($event)"
+    (dragEnd)="onEnd()"
+    (resizeEnd)="resizeEnd();onEnd();"
+    (rotateEnd)="onEnd()"
+  ></ngx-moveable>
+
+  <!-- an hidden div is created to set the position of appearance of the menu-->
+  <div style="visibility: hidden; position: fixed;"
+    [ngStyle]="menuTopLeftStyle"
+    [matMenuTriggerFor]="rightMenu"></div>
+
+  <!-- standard material menu -->
+  <mat-menu #rightMenu="matMenu" id="rightMenu">
+    <ng-template matMenuContent>
+      <button class="rightClickBtnGroup" >No. {{ this.svgNum }}</button>
+      <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
+      <button class="rightClickBtnGroup" 
+        *ngIf="dragObject[svgId].type === 'obstacle';"
+        (click)="$event.stopPropagation()" 
+        [(colorPicker)]="color" 
+        (colorPickerChange)="colorChange()">{{ 'planning.changeColor' | translate }}</button>
+      <button class="rightClickBtnGroup" (click)="openHeightSetting()" *ngIf="dragObject[svgId].type !== 'subField'">
+        <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
+          {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
+        </ng-container>
+        <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
+      </button>
+      <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
+      <button *ngIf="dragObject[svgId].type === 'UE'" class="rightClickBtnGroup" (click)="openUEParamSetting(svgId, svgNum, false)">{{ 'ueParamLink' | translate }}</button>
+      <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
+    </ng-template>
+  </mat-menu>
+   <mat-menu #mater="matMenu">
+    <ng-template matMenuContent>
+      <button mat-menu-item (click)="materialChange('1')" [class]="(dragObject[svgId].material === '1' ? 'text-white bg-primary' : '')">木頭</button>
+      <button mat-menu-item (click)="materialChange('2')" [class]="(dragObject[svgId].material === '2' ? 'text-white bg-primary' : '')">水泥</button>
+      <button mat-menu-item (click)="materialChange('3')" [class]="(dragObject[svgId].material === '3' ? 'text-white bg-primary' : '')">輕鋼架</button>
+      <button mat-menu-item (click)="materialChange('4')" [class]="(dragObject[svgId].material === '4' ? 'text-white bg-primary' : '')">玻璃</button>
+    </ng-template>
+  </mat-menu> 
+
+  
+
+
+  </mat-sidenav-content>
+  <mat-sidenav #sidenav mode="side" position="end" [(opened)]="opened" >
+    <mat-accordion>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ 'planning.target' | translate }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel_content">
+          <!-- Add simulation button -->
+          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
+            <mat-radio-button class="block" value="3" matTooltip="{{ 'simulation' | translate }}">
+              {{ 'simulation' | translate }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <!-- --- -->
+          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
+            <mat-radio-button class="block" value="1" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
+              {{ 'planning.layered' | translate }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="planningIndex == '1'" class="subTarget">
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}"
+            (change)="selected = 1;calculateForm.isAverageSinr = true">
+              {{ 'isAverageSinr' | translate }}
+            </mat-checkbox> -->
+            <mat-checkbox [(ngModel)]="calculateForm.isCoverage" matTooltip="{{ 'isCoverage.tooltip' | translate }}"
+            (change)="changePlanningTarget('isCoverage')">
+              {{ 'isCoverage' | translate }}
+            </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isSINR" matTooltip="{{ 'isSINR.tooltip' | translate }}"
+            (change)="changePlanningTarget('isSINR')">
+              {{ 'isSINR' | translate }}
+              <button value="SINRSetting" (click)="openSINRSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isRSRP" matTooltip="{{ 'isRSRP.tooltip' | translate }}"
+            (change)="changePlanningTarget('isRSRP')">
+              {{ 'isRSRP' | translate }}
+              <button value="RSRPSetting" (click)="openRSRPSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+
+            <mat-checkbox [(ngModel)]="calculateForm.isThroughput" matTooltip="{{ 'isThroughput.tooltip' | translate }}"
+            (change)="changePlanningTarget('isThroughput')">
+              {{ 'isThroughput' | translate }}
+              <button value="ThroughputSetting" (click)="openThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
+              {{ 'isAverageThroughput' | translate }}
+            </mat-checkbox> -->
+          </div>
+
+          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
+            <mat-radio-button class="block" value="2" matTooltip="{{ 'planning.ue.tooltip' | translate }}">
+              {{ 'planning.ue' | translate }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div *ngIf="planningIndex == '2'" class="subTarget">
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}" 
+            [checked]="selected === 3" (change)="selected = 3">
+              {{ 'isUeAvgSinr' | translate }}
+            </mat-checkbox> -->
+            <mat-checkbox [(ngModel)]="calculateForm.isUeAvgThroughput" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}"
+            (change)="changePlanningTarget('isUeAvgThroughput')">
+              {{ 'isUeAvgThroughput' | translate }}
+              <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+            </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isUeCoverage" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
+            (change)="changePlanningTarget('isUeCoverage')">
+              {{ 'isUeCoverage' | translate }}
+            </mat-checkbox>
+            <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeTpByDistance" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
+              {{ 'isUeTpByDistance' | translate }}
+            </mat-checkbox>
+            <mat-checkbox [(ngModel)]="calculateForm.isUeTpByRsrp" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
+              {{ 'isUeTpByRsrp' | translate }}
+            </mat-checkbox> -->
+          </div>
+
+          <p class="sub_title inline-block mt-2" *ngIf="planningIndex !== '3'">
+            <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
+            <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
+          </p>
+          <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
+            <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
+          </div>
+          <p class="sub_title inline-block">
+            <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp2">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
+            <ng-template #oTemp2>{{ 'maxConnectionNum' | translate }}</ng-template>
+          </p>
+          <div class="sub_content inline-block">
+            <input type="number" class="inputNum" [(ngModel)]="calculateForm.maxConnectionNum">
+          </div>
+
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'tdd'">4G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '0' && duplexMode === 'fdd'">4G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '1' && duplexMode === 'tdd'">5G TDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '1' && duplexMode === 'fdd'">5G FDD {{ 'parameterSetting' | translate }}</p>
+          <p class="block" *ngIf="planningIndex !== '3' && calculateForm.objectiveIndex == '2'">{{ 'wifiParam' | translate }}</p>
+          <table *ngIf="planningIndex !== '3'" class="tempCalParamTable">
+            <tbody>
+              <tr>
+                <td>{{ 'planning.net' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
+                    <!-- <option value="0">4G</option> -->
+                    <option value="1">5G</option>
+                    <!-- <option value="2">WiFi</option> -->
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex != '2'">
+                <td>{{ 'duplex' | translate }}</td>
+                <td>
+                  <mat-radio-group [(ngModel)]="duplexMode">
+                  <!-- <mat-radio-group [(ngModel)]="duplexMode"> -->
+                    <!-- <mat-radio-button value="tdd">TDD</mat-radio-button> -->
+                    <mat-radio-button value="tdd" (click)="changeProtoOrDuplex()">TDD</mat-radio-button>
+                    <mat-radio-button value="fdd" (click)="changeProtoOrDuplex()">FDD</mat-radio-button>
+                  </mat-radio-group>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'upDownRatio' | translate }}</td>
+                <td>
+                  {{ 'dlRatio' | translate }}<input type="number" class="inputNum" max=100 min=0 [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                </td>
+              </tr>
+              <tr>
+                <td>{{ 'powerRange' | translate }}</td>
+                <td>
+                  <input type="number" class="inputNumPower" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
+                  ~
+                  <input [(ngModel)]="calculateForm.powerMaxRange" type="number" class="inputNumPower" placeholder="{{ 'powerMaxRange' | translate }}">dBm
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'tddfrequency' | translate }}</td>
+                <td>
+                  <input type="number" step="5" class="inputNum" max="10000" min="0"
+                  [(ngModel)]="tempCalParamSet.tddfrequency"
+                  (select)="tempParamStorage(tempCalParamSet.tddfrequency)"
+                  (click)="tempParamStorage(tempCalParamSet.tddfrequency)"
+                  (change)="changeFrequency(svgId, '', true)">MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'scalingFactor' | translate }}</td>
+                <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="scalingFactor"></td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '2'">
+                <td>{{ 'tddfrequency' | translate }}</td>
+                <td *ngIf="tempCalParamSet.wifiProtocol != 'wifi5'">
+                  <select type="number" class="inputNum"
+                  [(ngModel)]="tempCalParamSet.wifiFrequency">
+                    <option *ngFor="let band of wifiFreqList2_4g" [ngValue]="band">{{band}}</option>
+                    <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
+                  </select>
+                </td>
+                <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi5'">
+                  <select type="number" class="inputNum"
+                  [(ngModel)]="tempCalParamSet.wifiFrequency">
+                    <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '2'">
+                <td>{{ 'wifiProtocol' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.wifiProtocol" 
+                  (change)="changeWifiProtocol(tempCalParamSet.wifiProtocol,true)">
+                    <option value="wifi4">WiFi4</option>
+                    <option value="wifi5">WiFi5</option>
+                    <option value="wifi6">WiFi6</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '2'">
+                <td>{{ 'tddBandwidth' | translate }}</td>
+                <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi4'">
+                  <select type="number" class="inputNum" step="5"
+                  [(ngModel)]="tempCalParamSet.wifiBandwidth"
+                  (change)="changeBandwidth('', true)">
+                    <option value="20">20</option>
+                    <option value="40">40</option>
+                  </select>MHz
+                </td>
+                <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi5'">
+                  <select type="number" class="inputNum" step="5"
+                  [(ngModel)]="tempCalParamSet.wifiBandwidth"
+                  (change)="changeBandwidth('', true)">
+                  <option value="40">40</option>
+                  <option value="80">80</option>
+                  <option value="160">160</option>
+                  </select>MHz
+                </td>
+                <td *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'">
+                  <select type="number" class="inputNum" step="5"
+                  [(ngModel)]="tempCalParamSet.wifiBandwidth"
+                  (change)="changeBandwidth('', true)">
+                  <option value="20">20</option>
+                  <option value="40">40</option>
+                  <option value="80">80</option>
+                  <option value="160">160</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '2'">
+                <td>{{ 'guardInterval' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.guardInterval">
+                    <option *ngIf="tempCalParamSet.wifiProtocol != 'wifi6'" value="400ns">400ns</option>
+                    <option value="800ns">800ns</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'" value="1600ns">1600ns</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol == 'wifi6'" value="3200ns">3200ns</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '2'">
+                <td>{{ 'wifiMimo' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.wifiMimo">
+                    <!-- <option value="1x1">1x1</option> -->
+                    <option value="2x2">2x2</option>
+                    <option value="3x3">3x3</option>
+                    <option value="4x4">4x4</option>
+                    <option *ngIf="tempCalParamSet.wifiProtocol != 'wifi4'" value="8x8">8x8</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'tddBandwidth' | translate }}</td>
+                <td>
+                  <select type="number" class="inputNum" step="5"
+                  [(ngModel)]="tempCalParamSet.tddbandwidth"
+                  (change)="changeBandwidth('', true)">
+                    <option value="1.4">1.4</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'uplink.frequency' | translate }}</td>
+                <td>
+                  <input type="number" class="inputNumFreq" step="5" max="10000" min="0"
+                  [(ngModel)]="tempCalParamSet.fddUlFrequency"
+                  (select)="tempParamStorage(tempCalParamSet.fddUlFrequency)"
+                  (click)="tempParamStorage(tempCalParamSet.fddUlFrequency)"
+                  (change)="changeFrequency(svgId, 'ul', true)"
+                  >MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex != '2'">
+                <td>{{ 'downlink.frequency' | translate }}</td>
+                <td><input type="number" class="inputNumFreq" step="5" max="10000" min="0"
+                  [(ngModel)]="tempCalParamSet.fddDlFrequency"
+                  (select)="tempParamStorage(tempCalParamSet.fddDlFrequency)"
+                  (click)="tempParamStorage(tempCalParamSet.fddDlFrequency)"
+                  (change)="changeFrequency(svgId, 'dl', true)"
+                  >MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'ulBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth" 
+                  (change)="changeBandwidth('ul', true)"
+                  >
+                    <option value="1.4">1.4</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+                <td>{{ 'dlBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth"
+                  (change)="changeBandwidth('dl', true)"
+                  >
+                    <option value="1.4">1.4</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '0'">
+                <td>{{ 'mimoNum' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.mimoNumber4G">
+                    <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                      <option value=3>3</option>
+                      <option value=4>4</option>
+                    </ng-container>
+                    <ng-template #otherMimoNumber4G>
+                      <option value=1>1</option>
+                      <option value=2>2</option>
+                      <option value=4>4</option>
+                      <option value=8>8</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'subcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.tddscs" 
+                  (change) = "changeScs(tempCalParamSet.tddscs, 'tdd', true)" >
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                  </select>kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'scsBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth"
+                  (change)="changeBandwidth('', true)" *ngIf="tempCalParamSet.tddscs == '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth"
+                  (change)="changeBandwidth('', true)" *ngIf="tempCalParamSet.tddscs == '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.tddbandwidth"
+                  (change)="changeBandwidth('', true)"
+                  *ngIf="tempCalParamSet.tddscs == '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulMimolayer' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulMimoLayer">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlMimolayer' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlMimoLayer">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                  </select>
+                </td>
+              </tr>
+              
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulSubcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulScs" 
+                  (change) = "changeScs(tempCalParamSet.ulScs, 'ul', true)" >
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                  </select>kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ulBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth"
+                  (change)="changeBandwidth('ul', true)"
+                  *ngIf="tempCalParamSet.ulScs == '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth"
+                  (change)="changeBandwidth('ul', true)"
+                  *ngIf="tempCalParamSet.ulScs == '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.ulBandwidth"
+                  (change)="changeBandwidth('ul', true)"
+                  *ngIf="tempCalParamSet.ulScs == '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlSubcarrier' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlScs" 
+                  (change) = "changeScs(tempCalParamSet.dlScs, 'dl', true)">
+                    <option value=15>15</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                  </select>kHz
+                </td>
+              </tr>
+              <tr *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '1'">
+                <td>{{ 'dlBandwidth' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth"
+                  (change)="changeBandwidth('dl', true)"
+                  *ngIf="tempCalParamSet.dlScs == '15'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth"
+                  (change)="changeBandwidth('dl', true)"
+                  *ngIf="tempCalParamSet.dlScs == '30'">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>
+                  <select [(ngModel)]="tempCalParamSet.dlBandwidth"
+                  (change)="changeBandwidth('dl', true)"
+                  *ngIf="tempCalParamSet.dlScs == '60'">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                    <option value="60">60</option>
+                    <option value="70">70</option>
+                    <option value="80">80</option>
+                    <option value="90">90</option>
+                    <option value="100">100</option>
+                  </select>MHz
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'ULModulationCodingScheme' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.ulModulationCodScheme" style="width: 150px;" >
+                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-container>
+                    <ng-template #othterUlModulationCodScheme>
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <tr *ngIf="calculateForm.objectiveIndex == '1'">
+                <td>{{ 'DLModulationCodingScheme' | translate }}</td>
+                <td>
+                  <select [(ngModel)]="tempCalParamSet.dlModulationCodScheme" style="width: 150px;" >
+                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-Low-SE">64QAM-Low-SE</option>
+                    </ng-container>
+                    <ng-template #othterUlModulationCodScheme>
+                      <option value="64QAM-table">64QAM-table</option>
+                      <option value="256QAM-table">256QAM-table</option>
+                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+                    </ng-template>
+                  </select>
+                </td>
+              </tr>
+              <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
+                <tr>
+                  <td>{{ 'noise' | translate }}</td>
+                  <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsNoiseFigure">dB</td>
+                </tr>
+                <tr>
+                  <td>{{ 'manufactor' | translate }}</td>
+                  <td>
+                    <select  style="width: 150px;" [(ngModel)]="manufactorCal" (change)="manufactorChange(null)" [disabled]="planningIndex != '3'">
+                      <option value="All">{{ 'notSpecify' | translate }}</option>
+                      <option value={{item}} *ngFor="let item of AntennaManufactorList">
+                        {{item}}
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{ 'antenna' | translate }}</td>
+                  <td>
+                    <select style="width: 165px;" [(ngModel)]="tempCalParamSet.AntennaId" (change)="antennaChangeCheck(null)" [disabled]="planningIndex != '3'">
+                      <ng-container *ngFor="let item of antennaList;">
+                        <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+                        <option *ngIf="item.manufactor == manufactorCal || manufactorCal == 'All'" value={{item.antenna_id}}>
+                            <ng-container *ngIf="item.property == 'default'">
+                              <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                            </ng-container>       
+                            <ng-container *ngIf="item.property == 'customized' "> 
+                              <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                            </ng-container> 
+                        </option> 
+                      </ng-container>
+                    </select>
+                  </td>
+                </tr>
+                <ng-container *ngIf="antennaList[AntennaIdToIndex[tempCalParamSet.AntennaId]]['antenna_type'] == 'Directional'  ; else txGainColumnCalculation">
+                  <tr>
+                    <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}</td>
+                    <td><input type="number" class="inputNum" step="1" 
+                      [(ngModel)]="tempCalParamSet.theta"
+                      (select)="tempParamStorage(tempCalParamSet.theta)"
+                      (click)="tempParamStorage(tempCalParamSet.theta)"
+                      (change)="changeTheta(svgId, true)">{{ 'angle' | translate }}
+                      (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}</td>
+                    <td><input type="number" class="inputNum" step="1" 
+                      [(ngModel)]="tempCalParamSet.phi"
+                      (select)="tempParamStorage(tempCalParamSet.phi)"
+                      (click)="tempParamStorage(tempCalParamSet.phi)"
+                      (change)="changePhi(svgId, true)">{{ 'angle' | translate }}
+                      (<a href="javascript:void(0)" style="color: white;" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+                    </td>
+                  </tr> 
+                </ng-container>
+                <ng-template #txGainColumnCalculation>
+                  <tr>
+                    <td>{{ 'TxGain' | translate }}</td>
+                    <td><input type="number" step="0.1" min="0" max="1" class="inputNum" [(ngModel)]="tempCalParamSet.bsTxGain">dB</td>
+                  </tr>
+                </ng-template>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </mat-expansion-panel>
+      
+      <mat-expansion-panel (opened)="panelOpenState = true"
+      (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+        <mat-panel-title>{{ 'planning.setting' | translate }}</mat-panel-title>
+        </mat-expansion-panel-header>
+          <div class="areaSetting">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ 'planning.info' | translate }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <ul>
+                <li>
+                  <p>{{ 'taskName' | translate }}</p>
+                  <input type="text" [(ngModel)]="calculateForm.taskName" class="w18">
+                </li>
+                <li>
+                  <p style="margin-right: 5px;">{{ 'planning.upload' | translate }}</p>
+                  <label id="uploadFileLabel" for="upload-file">{{ 'planning.file.upload' | translate }}
+                  <input type="file" id="upload-file" (change)="fileChange($event)" title="" hidden="hidden"></label>
+                  <span style="margin-left: 2em;" *ngIf="showFileName">{{ calculateForm.mapName }}</span>
+                </li>
+                <li>
+                  <p>{{ 'planning.size' | translate }}</p>
+                  <ul class="inline-block">
+                    <li class="inline-block">
+                      <label>{{ 'width' | translate }}</label>
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.width" 
+                      (click)="tempParamStorage(calculateForm.width)"
+                      (change)="checkFieldWidHei('width')" disabled>
+                      <!-- (change)="initData(false, false, 'width')"> -->
+                      <!-- <input type="text" [(ngModel)]="calculateForm.width" (change)="initData(false, false)"> -->
+                    </li>
+                    <li class="inline-block">
+                      <label>{{ 'height' | translate }}</label>
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.height" 
+                      (click)="tempParamStorage(calculateForm.height)"
+                      (change)="checkFieldWidHei('height')" disabled>
+                      <!-- (change)="initData(false, false, 'height')"> -->
+                      <!-- <input type="text" [(ngModel)]="calculateForm.height" (change)="initData(false, false)"> -->
+                    </li>
+                    <li class="inline-block">
+                      <label>{{ 'altitude' | translate }}</label>
+                      <input type="number" class="inputNum" step="1"
+                      [(ngModel)]="calculateForm.altitude" 
+                      (click)="tempParamStorage(calculateForm.altitude)"
+                      (change)="initData(false, false, 'altitude')">
+                      <!-- <input type="text" [(ngModel)]="calculateForm.altitude" (change)="initData(false, false)"> -->
+                    </li>
+                  </ul>
+                </li>
+                <li *ngIf="planningIndex == '3'">
+                  <p>{{ 'planning.net' | translate }}	</p>
+                  <select [(ngModel)]="calculateForm.objectiveIndex" (change)="protocolSwitchWarning()">
+                    <!-- <option value="0">4G</option> -->
+                    <option value="1">5G</option>
+                    <!-- <option value="2">WiFi</option> -->
+                  </select>
+                </li>
+                <!-- <ng-container *ngIf="calculateForm.objectiveIndex == '1'">
+                  <li>
+                    <p>{{ 'subcarrier' | translate }}	</p>
+                    <select [(ngModel)]="subcarrier">
+                      <option value="15">15</option>
+                      <option value="30">30</option>
+                      <option value="60">60</option>
+                      <option value="120">120</option>
+                    </select>
+                  </li>
+                </ng-container> -->
+
+                <li *ngIf="calculateForm.objectiveIndex != '2' && planningIndex == '3'">
+                  <p>{{ 'duplex' | translate }}	</p>
+                  <!-- <mat-radio-group [(ngModel)]="duplexMode"> -->
+                  <mat-radio-group [(ngModel)]="duplexMode">
+                    <!-- <mat-radio-button value="tdd">TDD</mat-radio-button> -->
+                    <mat-radio-button value="tdd" (click)="changeProtoOrDuplex()">TDD</mat-radio-button>
+                    <mat-radio-button value="fdd" (click)="changeProtoOrDuplex()">FDD</mat-radio-button>
+                  </mat-radio-group>
+                </li>
+
+                <!-- <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'wifiProtocol' | translate }}	</p>
+                  <mat-radio-group [(ngModel)]="wifiProtocol">
+                    <mat-radio-button value="0">{{ 'wifi4' | translate }}</mat-radio-button>
+                    <mat-radio-button value="1">{{ 'wifi5' | translate }}</mat-radio-button>
+                  </mat-radio-group>
+                </li> -->
+
+                <!-- <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'guardInterval' | translate }}	</p>
+                  <mat-radio-group [(ngModel)]="guardInterval">
+                    <mat-radio-button value="0">400ns</mat-radio-button>
+                    <mat-radio-button value="1">800ns</mat-radio-button>
+                  </mat-radio-group>
+                </li> -->
+
+                <!-- <li>
+                  <p>{{ 'mimoNum' | translate }}	</p>
+                  <select [(ngModel)]="mimoNum" style="width: 100px;" >
+                    <option value="0">1x1</option>
+                    <option value="1">2x2</option>
+                    <option value="2">3x3</option>
+                  </select>
+                </li> -->
+
+                <li *ngIf="calculateForm.objectiveIndex != '2' && duplexMode === 'tdd' && planningIndex == '3'">
+                  <p>{{ 'upDownRatio' | translate }}	</p>
+                  {{ 'dlRatio' | translate }}<input type="number" max=100 min=0 [(ngModel)]="dlRatio">% ({{ 'ulRatio' | translate }}{{ 100 - dlRatio}}%)
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex == '1' && planningIndex == '3'">
+                  <p>{{ 'scalingFactor' | translate }}	</p>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="scalingFactor">
+                </li>
+
+                <!-- <li *ngIf="calculateForm.objectiveIndex != '2' && planningIndex == '3'">
+                  <p>Smart Antenna</p>
+                  <mat-radio-group [(ngModel)]="useSmartAntenna">
+                    <mat-radio-button value="true" (click)="test()">啟用</mat-radio-button>
+                    <mat-radio-button value="false" (click)="test()">停用</mat-radio-button>
+                  </mat-radio-group>
+                </li> -->
+
+                <li>
+                  <p>{{ 'rsrp_coverage_th' | translate }}	</p>
+                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="rsrpThreshold" (change)="changeRsrpThreshold()">dbm
+                </li>
+
+                <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
+                  <p>{{ 'uplink.frequency' | translate }}</p>
+                  <span>
+                    <input type="text" [(ngModel)]="ulFrequency">
+                  </span>
+                  <p>{{ 'downlink.frequency' | translate }}</p>
+                  <span>
+                    <input type="text" [(ngModel)]="dlFrequency">
+                  </span>
+                </li> -->
+                
+                <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'wifiFrequency' | translate }}</p>
+                  <select [(ngModel)]="wifiFrequency" (change)="changeWifiFrequency()">
+                    <option value="0">sub-1GHz</option>
+                    <option value="1">2.4GHz</option>
+                    <option value="2">5GHz</option>
+                  </select>
+                </li>
+
+                <li *ngIf="calculateForm.objectiveIndex == '2'">
+                  <p>{{ 'powerRange' | translate }}</p>
+                  <span>
+                    <input type="number" class="inputNum" step="1" [(ngModel)]="calculateForm.powerMinRange" placeholder="{{ 'powerMinRange' | translate }}">
+                    ~
+                    <input [(ngModel)]="calculateForm.powerMaxRange" type="number" class="inputNum" step="1" placeholder="{{ 'powerMaxRange' | translate }}">dBm
+                  </span>
+                </li>
+                
+                <li>
+                  <p style="display: block;">{{ 'z.height' | translate }}<span> {{ 'z.height.note' | translate }} </span></p>
+                  <ol class="inline-block">
+                    <li><input type="number" class="inputNum" [(ngModel)]="zValues[0]" (change)="checkHeiWidAlt('0',zValues[0],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[1]" (change)="checkHeiWidAlt('1',zValues[1],zValues)"></li>
+                    <li><input type="number" class="inputNum"  [(ngModel)]="zValues[2]" (change)="checkHeiWidAlt('2',zValues[2],zValues)"></li>
+                  </ol>
+                </li>
+
+                <li>  <!-- 右方場域基本資訊新增材質列表 -->
+                  <p> {{ 'materialList' | translate }} </p>
+                    <span class="inline-block">
+                      <select style="width: 12em;" (change)="materialCustomizeDialog($event.target.value)" [(ngModel)]="materialId">
+                        <ng-container *ngFor="let item of materialList;">
+                          <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                          <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                              <ng-container *ngIf="item.property == 'default'">
+                                <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                                <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                              </ng-container>       
+                              <ng-container *ngIf="item.property == 'customized' "> 
+                                <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                                <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                              </ng-container> 
+                          </option> 
+                        </ng-container>
+                          <!-- <option value="1">{{ 'material.wood' | translate }}</option>
+                          <option value="2">{{ 'material.cement' | translate }}</option>
+                          <option value="3">{{ 'material.light_steel_frame' | translate }}</option>
+                          <option value="4">{{ 'material.glass' | translate }}</option>
+                          <option value="5">{{ 'material.stainless' | translate }}</option>
+                          <option value="6">{{ 'material.fireproof' | translate }}</option>
+                          <option value="7">{{ 'material.fireSoundproof' | translate }}</option>
+                          <option value="8">{{ 'material.whiteBrick' | translate }}</option>
+                           -->
+                           <option value=999>【{{ 'material.customize' | translate }}】</option>
+                        </select>
+                    </span>
+                </li>
+                <li>
+                  <p> {{ 'resolution' | translate }} </p>
+                  <span class="inline-block">
+                    <select style="width: 13.21em;" [(ngModel)]="calculateForm.resolution">
+                      <option *ngFor="let item of resolutionList" [value]="item">
+                        {{ item }} x {{ item }} ({{ 'meter' | translate }})</option>
+                        <!-- <option value="1">1 x 1 ({{ 'meter' | translate }})</option>
+                        <option value="2">2 x 2 ({{ 'meter' | translate }})</option>
+                        <option value="4">4 x 4 ({{ 'meter' | translate }})</option>
+                        <option value="6">6 x 6 ({{ 'meter' | translate }})</option>
+                        <option value="8">8 x 8 ({{ 'meter' | translate }})</option>
+                        <option value="10">10 x 10 ({{ 'meter' | translate }})</option> -->
+                    </select>
+                  </span>
+                </li>
+                <li>
+                  <p>{{ 'compassDirection' | translate }}</p>
+                  <input type="number" class="inputNum" step="1" min="0" max="360" [(ngModel)]="calculateForm.geographicalNorth">
+                  {{ 'angle' | translate }}
+                </li>
+              </ul>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title [class]="subitemClass['obstacle']">{{ 'planning.obstacleInfo' | translate }}
+                  <label class="matBadge">{{ obstacleList.length }}</label>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span *ngIf="obstacleList.length > 0" class="clearAll" (click)="clearAll('obstacle')">
+                <span class="material-icons">clear</span>Clear All
+              </span>
+              <ol>
+                <li *ngFor="let item of obstacleList">
+                  <span>
+                    <label>X</label>
+                    <input type="text" [(ngModel)]="dragObject[item].x" 
+                    (select)="tempParamStorage(dragObject[item].x)"
+                    (click)="tempParamStorage(dragObject[item].x);"
+                    (change)="changePosition('x',item)">
+                  </span>
+                  <span>
+                    <label>Y</label>
+                    <input type="text" [(ngModel)]="dragObject[item].y" 
+                    (select)="tempParamStorage(dragObject[item].y)"
+                    (click)="tempParamStorage(dragObject[item].y)"
+                    (change)="changePosition('y',item)">
+                  </span>
+                  <br>
+                  <span>
+                    <label>{{ 'altitude.start' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" 
+                    (select)="tempParamStorage(dragObject[item].z)"
+                    (click)="tempParamStorage(dragObject[item].z)"
+                    (change)="changeZvalue(item)">
+                  </span>
+                  <span>
+                    <label>{{ 'altitude.obstacle' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].altitude"
+                    (select)="tempParamStorage(dragObject[item].altitude)"
+                    (click)="tempParamStorage(dragObject[item].altitude)"
+                    (change)="changeSize(item, 'altitude',true)">
+                    <!-- <input type="text" [(ngModel)]="dragObject[item].altitude" (change)="checkAltitude(dragObject[item].altitude,null)"> -->
+                  </span>
+                  <br>              
+                  <span>
+                    <label>{{ 'width' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].width"
+                    (select)="tempParamStorage(dragObject[item].width)"
+                    (click)="tempParamStorage(dragObject[item].width)"
+                    (change)="changeSize(item, 'width', true)">
+                  </span>
+                  <span>
+                    <label>{{ 'height' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].height"
+                    (select)="tempParamStorage(dragObject[item].height)"
+                    (click)="tempParamStorage(dragObject[item].height)"
+                    (change)="changeSize(item, 'height',true)">
+                  </span>
+                  <span>
+                    <label>{{ 'rotate' | translate }}</label>
+                    <input type="text" [(ngModel)]="dragObject[item].rotate"
+                    (select)="tempParamStorage(dragObject[item].rotate)"
+                    (click)="tempParamStorage(dragObject[item].rotate)"
+                    (change)="changeRotate(item)"
+                    [attr.disabled]="item.split('_')[0] == 'ellipse' ? true : null" >
+                  </span>
+                  <span> <!-- 右方場域障礙物資訊 -->
+                    <label>{{ 'material' | translate }}</label>
+                    <select class="w7em" [(ngModel)]="dragObject[item].material" (change)="setMaterialName(item,dragObject[item].material);">
+                    <ng-container *ngFor="let item of materialList;">
+                      <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+                      <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                        <ng-container *ngIf="item.property == 'default'">
+                          <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                          <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                        </ng-container>       
+                        <ng-container *ngIf="item.property == 'customized' "> 
+                          <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                          <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                        </ng-container> 
+                      </option> 
+                    </ng-container>
+                     <!-- <option value="0">{{ 'material.wood' | translate }}</option>
+                      <option value="1">{{ 'material.cement' | translate }}</option>
+                      <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
+                      <option value="3">{{ 'material.glass' | translate }}</option>
+                      <option value="4">{{ 'material.stainless' | translate }}</option>
+                      <option value="5">{{ 'material.fireproof' | translate }}</option>
+                      <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
+<<<<<<< HEAD
+                      <option value="7">{{ 'material.whiteBrick' | translate }}</option>
+                      <option value="8">{{ 'material.flameproof' | translate }}</option>
+                      <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
+                      <option value="10">{{ 'material.cabinet' | translate }}</option>
+=======
+                      <option value="7">{{ 'material.whiteBrick' | translate }}</option>-->
+>>>>>>> custimize
+                    </select>
+                  </span>
+                  <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
+                    <span class="material-icons">clear</span>
+                  </span>
+                </li>
+              </ol>
+            </mat-expansion-panel>
+            
+            <mat-expansion-panel *ngIf="planningIndex === '3'">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ 'planning.defaultBs.info' | translate }}
+                  <label class="matBadge">{{ defaultBSList.length }}</label>
+                  
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span *ngIf="defaultBSList.length > 0" class="clearAll" (click)="clearAll('defaultBS')">
+                <span class="material-icons">clear</span>Clear All
+              </span>
+              <ul>
+                <li>
+                  <ol>
+                    <li *ngFor="let item of defaultBSList; let i = index;">
+                      <span>
+                        <label>X</label>
+                        <input type="text" [(ngModel)]="dragObject[item].x" 
+                        (select)="tempParamStorage(dragObject[item].x)"
+                        (click)="tempParamStorage(dragObject[item].x)"
+                        (change)="changePosition('x',item)">
+                      </span>
+                      <span>
+                        <label>Y</label>
+                        <input type="text" [(ngModel)]="dragObject[item].y"
+                        (select)="tempParamStorage(dragObject[item].y)"
+                        (click)="tempParamStorage(dragObject[item].y)"
+                        (change)="changePosition('y',item)">
+                      </span>
+                      <span>
+                        <label>Z</label>
+                        <input type="text" [(ngModel)]="dragObject[item].altitude" >
+                      </span>
+                      <!-- <span>
+                        <label>Txpower</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].txpower" (change)="changeTxBfFreq(item)">
+                      </span>
+                      <span>
+                        <label>Beam</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].beampattern" (change)="changeTxBfFreq(item)">
+                      </span>
+                      <span>
+                        <label>Frequency</label>
+                        <input type="text" [(ngModel)]="bsListRfParam[item].frequency" (change)="changeTxBfFreq(item)">
+                      </span> -->
+                      <!-- <span (click)="openRfParamSetting(item)">
+                        <span class="material-icons">{{ 'rfParamLink' | translate }}</span>
+                      </span> -->
+                      <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
+                        <span class="material-icons">clear</span>
+                      </span>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfParamLink' | translate }}</button>
+                    </li>
+                  </ol>
+                </li>
+              </ul>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel *ngIf="planningIndex !== '3'">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ 'planning.candidateBs.info' | translate }}
+                  <label class="matBadge">{{ candidateList.length }}</label>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span *ngIf="candidateList.length > 0" class="clearAll" (click)="clearAll('candidate')">
+                <span class="material-icons">clear</span>Clear All
+              </span>
+              <ol>
+                <li *ngFor="let item of candidateList">
+                  <span>
+                    <label>X</label>
+                    <input type="text" [(ngModel)]="dragObject[item].x"
+                    (select)="tempParamStorage(dragObject[item].x)"
+                    (click)="tempParamStorage(dragObject[item].x)"
+                    (change)="changePosition('x',item)">
+                  </span>
+                  <span>
+                    <label>Y</label>
+                    <input type="text" [(ngModel)]="dragObject[item].y"
+                    (select)="tempParamStorage(dragObject[item].y)"
+                    (click)="tempParamStorage(dragObject[item].y)"
+                    (change)="changePosition('y',item)">
+                  </span>
+                  <span>
+                    <label>Z</label>
+                    <input type="text" [(ngModel)]="dragObject[item].z" >
+                  </span>
+                  <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
+                    <span class="material-icons">clear</span>
+                  </span>
+                </li>
+              </ol>
+            </mat-expansion-panel>
+      
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title [class]="subitemClass['ue']">{{ 'planning.ue.info' | translate }}
+                  <label class="matBadge">{{ ueList.length }}</label>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <span *ngIf="ueList.length > 0" class="clearAll" (click)="clearAll('UE')">
+                <span class="material-icons">clear</span>Clear All
+              </span>
+              <ul>
+                <li>
+                  <ol>
+                    <li *ngFor="let item of ueList; let i = index;">
+                      <span>
+                        <label>X</label>
+                        <input type="text" [(ngModel)]="dragObject[item].x"
+                        (select)="tempParamStorage(dragObject[item].x)"
+                        (click)="tempParamStorage(dragObject[item].x)"
+                        (change)="changePosition('x',item)">
+                      </span>
+                      <span>
+                        <label>Y</label>
+                        <input type="text" [(ngModel)]="dragObject[item].y"
+                        (select)="tempParamStorage(dragObject[item].y)"
+                        (click)="tempParamStorage(dragObject[item].y)"
+                        (change)="changePosition('y',item)">
+                      </span>
+                      <span>
+                        <label>Z</label>
+                        <select class="zAxis" [(ngModel)]="dragObject[item].z">
+                          <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
+                        </select>
+                      </span>
+                      <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
+                        <span class="material-icons">clear</span>
+                      </span>
+                      <br>
+                      <button class="rfBtns" mat-stroked-button color="primary" (click)="openUEParamSetting(item, i, true)">{{ 'ueParamLink' | translate }}</button>
+                    </li>
+                  </ol>
+                </li>
+              </ul>
+            </mat-expansion-panel>
+      
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ 'planning.model' | translate }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <ul>
+                <li>
+                  <p>
+                    <label>{{ 'pathLossModelId' | translate }}</label>
+                    <span>
+                      <select style="min-width: 16em;" (change)="pathLossCustomizeDialog($event.target.value)" [(ngModel)]="calculateForm.pathLossModelId">
+                        <ng-container *ngIf="calculateForm.objectiveIndex == '2'; else pathLossModelIdTemp">
+                          <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
+                        </ng-container>
+                        <ng-template #pathLossModelIdTemp>
+                          <option value={{item.id}} *ngFor="let item of modelList;">
+                            <ng-container *ngIf="item.property == 'default'">
+                              <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                            </ng-container>       
+                            <ng-container *ngIf="item.property == 'customized' "> 
+                              <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                              <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                            </ng-container> 
+                          </option>
+                          <!-- <option value="0">{{ 'planning.itri.51' | translate }}</option>
+                          <option value="1">{{ 'planning.taichung' | translate }}</option>
+                          <option value="2">ITU office 900MHz</option>
+                          <option value="3">ITU office 1.2~1.3GHz</option>
+                          <option value="4">ITU office 1.8~2, 2.4GHz</option>
+                          <option value="5">ITU office 3.5GHz</option>
+                          <option value="12">{{ 'planning.4.7G.Office' | translate }}</option>
+                          <option value="11">ITU office 5.2GHz</option>
+                          <option value="7">ITU commercial 900MHz</option>
+                          <option value="8">ITU commercial 1.2~1.3, 1.8~2.4GHz</option>
+                          <option value="6">ITU residential 1.8~2, 2.4GHz</option>                     
+                          <option value="9">{{ 'planning.algorithm.model' | translate }}</option>
+                          <option value="10">{{ 'planning.algorithm.model.pegatron' | translate }}</option> -->
+                          <option value="999">【{{ 'planning.user_define' | translate }}】</option>
+                        </ng-template>
+                      </select>
+                    </span>
+                  </p>
+                </li>
+                <!-- <li>
+                  <label>自訂無線模型(@jane要再給)</label>
+                  <span class="block spCell">
+                    a<input type="text" [(ngModel)]="calculateForm.modelname">
+                    b<input type="text" [(ngModel)]="calculateForm.distanceFactor">
+                    c<input type="text" [(ngModel)]="calculateForm.contantFactor">
+                  </span>
+                </li> -->
+                
+              </ul>
+            </mat-expansion-panel>
+        </div>        
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ 'planning.algorithm' | translate }}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel_content algorithm">
+        <ul>
+          <li>
+            <span>{{ 'mctsC' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsC">
+          </li>
+          <li>
+            <span>{{ 'mctsMimo' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsMimo">
+          </li>
+          <li>
+            <span>{{ 'mctsTemperature' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsTemperature">
+          </li> 
+          <li>
+            <span>{{ 'mctsTime' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsTime">
+          </li> 
+          <li>
+            <span>{{ 'mctsTestTime' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsTestTime">
+          </li>
+          <li>
+            <span>{{ 'mctsTotalTime' | translate }}</span>
+            <input type="text" [(ngModel)]="calculateForm.mctsTotalTime">
+          </li>
+        </ul>
+      </div>
+      </mat-expansion-panel>
+ 
+    </mat-accordion>    
+  </mat-sidenav>
+</mat-sidenav-container>
+
+<ng-template #materialModal>
+  <h5 *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp" mat-dialog-title>{{ 'altitude.setting' | translate }} / {{ 'material.setting' | translate }} </h5>
+  <ng-template #otherTypeTemp>
+    <h5 mat-dialog-title>{{ 'altitude.setting' | translate }}</h5>
+  </ng-template>  
+  <div mat-dialog-content>
+    <ul>
+      <li class="highset">
+        {{ 'altitude.setting' | translate }}
+        <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
+          <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'meter' | translate }}
+        </ng-container>
+        <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
+          <input type="text" [(ngModel)]="dragObject[svgId].altitude">{{ 'cm' | translate }}
+        </ng-container>
+        <ng-container *ngIf="dragObject[svgId].type === 'UE'">
+          <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
+            <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
+          </select>
+        </ng-container>
+      </li>
+      <li class="mt-2" *ngIf="dragObject[svgId].type === 'obstacle'">
+        <mat-label>{{ 'material.setting' | translate }}</mat-label>
+        <mat-radio-group [(ngModel)]="dragObject[svgId].material" aria-label="Select an option">
+          <mat-radio-button value="0">{{ 'material.wood' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="1">{{ 'material.cement' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="2">{{ 'material.light_steel_frame' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="3">{{ 'material.glass' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="4">{{ 'material.stainless' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="5">{{ 'material.fireproof' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="6">{{ 'material.fireSoundproof' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="7">{{ 'material.whiteBrick' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="8">{{ 'material.flameproof' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="9">{{ 'material.flameSoundproof' | translate }}</mat-radio-button>
+          <mat-radio-button class="ml-2" value="10">{{ 'material.cabinet' | translate }}</mat-radio-button>
+          
+        </mat-radio-group>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+<ng-template #materialModal2>
+  <h5 *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp" mat-dialog-title>{{ 'altitude.setting' | translate }} / {{ 'material.setting' | translate }} </h5>
+  <ng-template #otherTypeTemp>
+    <h5 *ngIf="dragObject[svgId].type === 'obstacle' || dragObject[svgId].type === 'UE'" mat-dialog-title>{{ 'altitude.setting' | translate }}</h5>
+    <h5 *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" mat-dialog-title>BS {{svgNum}}{{'for' | translate}} {{ 'altitude.setting' | translate }}</h5>
+  </ng-template>
+  <table class="altParamTable">
+    <tbody>
+      <ng-container *ngIf="dragObject[svgId].type != 'obstacle'">
+        <tr>
+          <td>{{ 'altitude.setting' | translate }}</td>
+          <td>
+            <ng-container *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'">
+              <input type="number" step="0.1" max="calculateForm.altitude" min="0" [(ngModel)]="dragObject[svgId].altitude" 
+              (change)="checkHeiWidAlt(svgId,dragObject[svgId].altitude,null)">
+              {{ 'meter' | translate }}
+            </ng-container>
+            <ng-container *ngIf="dragObject[svgId].type === 'UE'">
+              <select class="zAxis" [(ngModel)]="dragObject[svgId].z">
+                <option *ngFor="let z of zValues" [value]="z">{{ z }}</option>
+              </select>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="dragObject[svgId].type === 'obstacle'">
+        <tr>
+          <td>{{ 'altitude.start' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].z" 
+            (select)="tempParamStorage(dragObject[svgId].z)"
+            (click)="tempParamStorage(dragObject[svgId].z)"
+            (change)="changeZvalue(svgId)">
+            {{ 'meter' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ 'altitude.obstacle' | translate }}</td>
+          <td><input type="number" step="0.1" max="calculateForm.altitude" min="0" 
+            [(ngModel)]="dragObject[svgId].altitude" 
+            (select)="tempParamStorage(dragObject[svgId].altitude)"
+            (click)="tempParamStorage(dragObject[svgId].altitude)"
+            (change)="changeSize(svgId, 'altitude',true)">
+            {{ 'meter' | translate }}</td>
+        </tr>
+      </ng-container>
+      
+      <tr *ngIf="dragObject[svgId].type === 'obstacle'">
+        <td>{{ 'material.setting' | translate }}</td>
+        <td> <!-- 右鍵高度/材質設定 -->
+          <select [(ngModel)]="dragObject[svgId].material" (change)="setMaterialName(svgId,dragObject[svgId].material)">
+            <ng-container *ngFor="let item of materialList;">
+              <!-- <option value={{item.id}} *ngFor="let item of materialList"> -->
+              <option *ngIf="deleteMaterialList.includes(item.id) == false" value={{item.id}}>
+                <ng-container *ngIf="item.property == 'default'">
+                  <ng-container *ngIf="checkIfChinese() == true">{{ item.chineseName }}</ng-container>
+                  <ng-container *ngIf="checkIfChinese() == false">{{ item.name }}</ng-container>
+                </ng-container>       
+                <ng-container *ngIf="item.property == 'customized' "> 
+                  <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chineseName }}</ng-container>
+                  <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.name }}</ng-container>
+                </ng-container> 
+              </option> 
+            </ng-container>
+            <!-- <option value="0">{{ 'material.wood' | translate }}</option>
+            <option value="1">{{ 'material.cement' | translate }}</option>
+            <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
+            <option value="3">{{ 'material.glass' | translate }}</option>
+            <option value="4">{{ 'material.stainless' | translate }}</option>
+            <option value="5">{{ 'material.fireproof' | translate }}</option>
+            <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
+            <option value="7">{{ 'material.whiteBrick' | translate }}</option>
+            <option value="8">{{ 'material.flameproof' | translate }}</option>
+            <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
+            <option value="10">{{ 'material.cabinet' | translate }}</option> -->
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #materialCustomizeModal>
+  <h5 *ngIf="materialId == 999 ; else editMaterialTemp">{{ 'material.customize' | translate }} </h5>
+  <ng-template #editMaterialTemp>
+    <h5>{{ 'material.edit' | translate }}</h5>
+  </ng-template>
+  <table class="altParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'material.name' | translate }}</td>
+        <td>
+          <ng-container *ngIf="materialProperty == 'default'">
+            <span>{{materialName}}</span>
+          </ng-container>
+          <ng-container *ngIf="materialProperty == 'customized'">
+            <input type="text" [(ngModel)]="materialName">
+          </ng-container>
+       </td>
+      </tr>
+      <tr>
+      <tr>
+       <td>{{ 'material.loss.coefficient' | translate }}</td>
+       <td>
+          <input type="number" step="0.1" min="-1000" [(ngModel)]="materialLossCoefficient" >
+       </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="modalFooter" style="padding-top:0.8em;"> <!-- 0.8em -->
+    <ng-container *ngIf="materialId == 999">
+      <a href="javascript:void(0)" (click)="createNewMaterial()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999">
+      <a href="javascript:void(0)" (click)="materialCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="materialId != 999 && materialProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteMaterialDialog()">{{ 'planning.delete.material' | translate }}</a>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteMaterial>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteMaterial' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteMaterial(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteMaterial(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #confirmDeleteModel>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'confirmDeleteModel' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="deleteModel(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="deleteModel(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #createModelSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createModelSuccess' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose();cleanData()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #createMaterialSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createMaterialSuccess' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #calculateModelSuccessModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'createModelSuccess' | translate }}{{ 'modelCalculateResult' | translate }}</p>
+    <div style="text-align:center; margin-bottom:1em;; font-size:110%">
+      <span style="font-style: italic;">L<sub>total</sub> =</span>
+      <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
+      <span>20 log<sub>10</sub>&#402;</span>
+      <span *ngIf="modelDissCoefficient >= 0"> + {{calModelDissCoefficient}}</span>
+      <span *ngIf="modelDissCoefficient < 0"> + ({{calModelDissCoefficient}})</span>
+      <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+      <span> log<sub>10</sub></span>
+      <span style="font-style: italic;"> d</span>
+      <span *ngIf="modelfieldLoss >= 0"> + {{calModelfieldLoss}}</span>
+      <span *ngIf="modelfieldLoss < 0"> + ({{calModelfieldLoss}})</span>
+      <!-- <span style="font-style: italic;">L<sub>&#402;</sub></span> -->
+      <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+      <span> - 28</span>
+    </div>
+    <div style="text-align:right; margin-bottom:1em; font-size:70%">
+      <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
+      <br>
+      <span style="font-style: italic;">d</span>
+      <span>: {{ 'planning.model.distenceBsUe' | translate }} ({{ 'meter' | translate }})</span>
+      <br>
+      <span>{{ 'note' | translate }}: {{ 'assume' | translate }}{{ 'planning.model.freeSpaceProp' | translate }} = </span>
+      <span>20 log<sub>10</sub>&#402; -28 </span>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="selectAndClose();cleanData()" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #coordinateInfoModal>
+  <h5 mat-dialog-title>{{ 'CoordinateDescription' | translate }}</h5>
+  <div mat-dialog-content>
+    <img *ngIf="checkIfChinese() == true" src="assets/img/coordinate-rotation.png">
+    <img *ngIf="checkIfChinese() == false" src="assets/img/coordinate-rotation-en.png">
+  </div>
+</ng-template>
+
+<ng-template #modelCustomizeModal>
+  <h5 *ngIf="calculateForm.pathLossModelId == 999 ; else editModelTemp">{{ 'planning.user_define' | translate }} </h5>
+  <ng-template #editModelTemp>
+    <h5>{{ 'planning.edit' | translate }}</h5>
+  </ng-template>
+  <div style="text-align:center; margin-bottom:1em;; font-size:110%">
+    <span style="font-style: italic;">L<sub>total</sub> =</span>
+    <!-- <span>20 * log<sub>10</sub>f + N * log<sub>10</sub>(d) + L<sub>f</sub>(n) - 28</span> -->
+    <span>20 log<sub>10</sub>&#402;</span>
+    <span *ngIf="modelDissCoefficient >= 0"> + {{modelDissCoefficient}}</span>
+    <span *ngIf="modelDissCoefficient < 0"> + ({{modelDissCoefficient}})</span>
+    <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+    <span> log<sub>10</sub></span>
+    <span style="font-style: italic;"> d</span>
+    <span *ngIf="modelfieldLoss >= 0"> + {{modelfieldLoss}}</span>
+    <span *ngIf="modelfieldLoss < 0"> + ({{modelfieldLoss}})</span>
+    <!-- <span style="font-style: italic;">L<sub>&#402;</sub></span> -->
+    <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+    <span> - 28</span>
+  </div>
+  <div style="text-align:right; margin-bottom:1em; font-size:70%">
+    <span style="text-align:right;">&#402;: {{ 'planning.model.frequency' | translate }} (MHz), </span>
+    <br>
+    <span style="font-style: italic;">d</span>
+    <span>: {{ 'planning.model.distenceBsUe' | translate }} ({{ 'meter' | translate }})</span>
+    <br>
+    <span>{{ 'note' | translate }}: {{ 'assume' | translate }}{{ 'planning.model.freeSpaceProp' | translate }} = </span>
+    <span>20 log<sub>10</sub>&#402; -28 </span>
+  </div>
+  <table class="altParamTable">
+    <tbody>
+      <tr *ngIf="calculateForm.pathLossModelId == 999">
+        <td>{{ 'createMethod' | translate }}</td>
+        <td>
+          <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeCreateMethod()" [(ngModel)]="createMethod">
+            <mat-radio-button value="formula" style="margin-right: 15px;" >{{ 'enterFormula' | translate }}</mat-radio-button>
+            <mat-radio-button value="importFile" >{{ 'importFile' | translate }}</mat-radio-button>
+          </mat-radio-group>
+        </td>
+      </tr>
+      <tr style="border-top: 1px solid #ddd;" *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'importFile'">
+        <td>{{ 'antennaFieldData' | translate }}
+          (<a href="../../assets/file/ITRI_pathlossmodel_template.xlsx">{{ 'download' | translate }}</a>)
+        </td>
+        <td>
+          <button mat-stroked-button id="uploadBt" tabindex="-1" (click)="modelfile.click();">{{ 'file' | translate }}</button>
+            <input type="file" #modelfile (change)="uploadFile($event)" style="display: none; width: 0%;" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" >
+            <span *ngIf="modelFileName != ''" >&ensp;{{ modelFileName }}</span>
+            <span *ngIf="modelFileName == ''" >&ensp;{{ 'nofile' | translate }}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'planning.model.name' | translate }}</td>
+        <td>
+          <ng-container *ngIf="modelProperty == 'default'">
+            <span>{{modelName}}</span>
+          </ng-container>
+          <ng-container *ngIf="modelProperty == 'customized'">
+            <input  type="text" [(ngModel)]="modelName">
+          </ng-container>
+       </td>
+      </tr>
+      <tr>
+       <td>{{ 'planning.model.disscoefficient' | translate }}
+        <span *ngIf="modelDissCoefficient == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">N</span>
+       </td>
+       <td>
+          <input [disabled]="createMethod == 'importFile' && calculateForm.pathLossModelId == 999"  type="number" step="0.1" min="0" [(ngModel)]="modelDissCoefficient" >
+       </td>
+      </tr>
+      <tr>
+        <td>{{ 'planning.model.fieldLoss' | translate }}
+          <span *ngIf="modelfieldLoss == null && createMethod == 'importFile' && calculateForm.pathLossModelId == 999" style="font-style: italic;">L<sub>&#402;</sub></span>
+        </td>
+        <td>
+           <input [disabled]="createMethod == 'importFile' && calculateForm.pathLossModelId == 999"  type="number" step="0.1" min="0" [(ngModel)]="modelfieldLoss" >
+        </td>
+       </tr>
+    </tbody>
+  </table>
+  <div class="modalFooter" style="padding-top:0.8em;">
+    
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999">
+      <a href="javascript:void(0)" (click)="pathLossCustomize()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'formula'">
+      <a href="javascript:void(0)" (click)="createNewModel()">{{ 'planning.submit' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId != 999 && modelProperty == 'customized'">
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="deleteModelDialog()">{{ 'planning.delete.model' | translate }}</a>
+    </ng-container>
+    <ng-container *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'importFile'">
+      <a href="javascript:void(0)" (click)="calculatePathlossModel()">{{ 'planning.submit' | translate }}</a>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <a href="javascript:void(0)" (click)="cleanData()">{{ 'planning.delete.data' | translate }}</a>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #UeModalTable>
+  <h5 mat-dialog-title>UE{{svgNum}}{{'for' | translate}}{{ 'ueParamLink' | translate }}</h5>
+  <table class="rfParamTable">
+    <tbody>
+      <tr>
+        <td>{{ 'RxGain' | translate }}</td>
+        <td><input type="number" class="inputNum" step="0.1" style="width: 175px"
+          [(ngModel)]="ueListParam[svgId].ueRxGain"
+          tabindex="-1"></td> dB
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #RfModalTable>
+  <h5 mat-dialog-title>BS{{svgNum}}{{'for' | translate}}{{ 'rfparam.setting' | translate }}</h5>
+  <table class="rfParamTable">
+    <!------------------------------>
+    <!--   TDD              4G    -->
+    <!------------------------------>
+    <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '0'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>TxPower</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          tabindex="-1"></td>dbm
+      </tr>
+      <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].beampattern" ></td>
+      </tr>
+      <tr>
+        <td>{{ 'tddfrequency' | translate }}</td>
+        <td>
+          <input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].tddfrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (change)="changeFrequency(svgId, '', false)"
+          tabindex="-1"
+          >
+        </td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'tddBandwidth' | translate }}</td>
+        <td>
+          <select type="number" class="inputNum" step="5"
+          [(ngModel)]="bsListRfParam[svgId].tddbandwidth"
+          (change)="changeBandwidth('', false)"
+          >
+            <option value="1.4">1.4</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'mimoNum' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G">
+            <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+            </ng-container>
+            <ng-template #otherMimoNumber4G>
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=4>4</option>
+              <option value=8>8</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+    <!------------------------------>
+    <!--   FDD              4G    -->
+    <!------------------------------>
+    <tbody *ngIf="duplexMode === 'fdd' && calculateForm.objectiveIndex == '0'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>TxPower</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          tabindex="-1"
+          ></td>dbm
+      </tr>
+      <!-- <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text"
+          [(ngModel)]="bsListRfParam[svgId].beampattern"
+          tabindex="-1"
+          ></td>
+      </tr> -->
+      <tr>
+        <td>{{ 'uplink.frequency' | translate }}</td>
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (change)="changeFrequency(svgId, 'ul', false)"
+          tabindex="-1"
+          ></td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'downlink.frequency' | translate }}</td>
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (change)="changeFrequency(svgId, 'dl', false)"
+          tabindex="-1"
+          ></td>MHz
+      </tr>
+      <tr>
+        <td>{{ 'ulBandwidth' | translate }}</td>
+        <td>
+          <select 
+          [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
+          (change)="changeBandwidth('ul', false)"
+          style="width: 100px;">MHz
+            <option value="1.4">1.4</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlBandwidth' | translate }}</td>
+        <td>
+          <select 
+          [(ngModel)]="bsListRfParam[svgId].dlBandwidth" 
+          (change)="changeBandwidth('dl', false)"
+          style="width: 100px;">
+            <option value="1.4">1.4</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'mimoNum' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].mimoNumber4G" style="width: 100px;">
+            <ng-container *ngIf="planningIndex == '3' ; else otherMimoNumber4G">
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+            </ng-container>
+            <ng-template #otherMimoNumber4G>
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=4>4</option>
+              <option value=8>8</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+    <!------------------------------>
+    <!--   TDD              5G    -->
+    <!------------------------------>
+    <tbody *ngIf="duplexMode === 'tdd' && calculateForm.objectiveIndex == '1'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>{{ 'txpower' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          tabindex="-1"> dbm
+        </td>
+      </tr>
+      <!-- <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text"
+          [(ngModel)]="bsListRfParam[svgId].beampattern"
+          tabindex="-1"
+          ></td>
+      </tr> -->
+      <tr>
+        <td>{{ 'tddfrequency' | translate }}</td>
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].tddfrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].tddfrequency)"
+          (change)="changeFrequency(svgId, '', false)"
+          tabindex="-1"> MHz
+        </td>
+      </tr>
+      <!-- <tr>
+        <td>{{ 'tddBandwidth' | translate }}</td>
+        <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>
+      </tr> -->
+      <tr>
+        <td>{{ 'subcarrier' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].tddscs" 
+          (change) = "changeScs(bsListRfParam[svgId].tddscs, 'tdd', false)"
+          style="width: 175px;" >
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=60>60</option>
+          </select> kHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'scsBandwidth' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth"
+          (change)="changeBandwidth('', false)"
+          style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs == '15'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth"
+          (change)="changeBandwidth('', false)"
+          style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs == '30'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].tddbandwidth"
+          (change)="changeBandwidth('', false)"
+          style="width: 175px;" *ngIf="bsListRfParam[svgId].tddscs == '60'">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select> MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'ulMimolayer' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 175px;" >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlMimolayer' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 175px;" >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'ULModulationCodingScheme' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 175px;" >
+            <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+              <option value="64QAM-table">64QAM</option>
+              <option value="256QAM-table">256QAM</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-container>
+            <ng-template #othterUlModulationCodScheme>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'DLModulationCodingScheme' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 175px;" >
+            <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+              <option value="64QAM-table">64QAM</option>
+              <option value="256QAM-table">256QAM</option>
+              <option value="64QAM-Low-SE">64QAM-Low-SE</option>
+            </ng-container>
+            <ng-template #othterUlModulationCodScheme>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'noise' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
+          tabindex="-1"> dB
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'manufactor' | translate }}</td>
+        <td>
+          <select style="width: 175px;" [(ngModel)]="manufactor" (change)="manufactorChange(svgId)" [disabled]="planningIndex != '3'">
+            <option value="All">{{ 'notSpecify' | translate }}</option>
+            <option value={{item}} *ngFor="let item of AntennaManufactorList">
+              {{item}}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'antenna' | translate }}</td>
+        <td>
+          <select style="width: 15em;" (change)="antennaChangeCheck(svgId)" [(ngModel)]="bsListRfParam[svgId].AntennaId" [disabled]="planningIndex != '3'">
+            <ng-container *ngFor="let item of antennaList;">
+              <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+              <option *ngIf="item.manufactor == manufactor || manufactor == 'All'" value={{item.antenna_id}}>
+                  <ng-container *ngIf="item.property == 'default'">
+                    <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                  </ng-container>       
+                  <ng-container *ngIf="item.property == 'customized' "> 
+                    <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                  </ng-container> 
+              </option> 
+            </ng-container>
+          </select>
+        </td>
+      </tr>
+      <ng-container *ngIf="antennaList[AntennaIdToIndex[bsListRfParam[svgId].AntennaId]]['antenna_type'] == 'Directional' ; else txGainColumnTDD">
+        <tr>
+          <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].theta"
+            (select)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (click)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (change)="changeTheta(svgId, false)"> {{ 'angle' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].phi"
+            (select)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (click)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (change)="changePhi(svgId, false)"
+            tabindex="-1"> {{ 'angle' | translate }}
+          </td>
+        </tr> 
+      </ng-container>
+      <ng-template #txGainColumnTDD>
+        <tr>
+          <td>{{ 'TxGain' | translate }}</td>
+          <td><input type="number" class="inputNum" step="1"
+            [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+            tabindex="-1"> dB
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+    <!------------------------------>
+    <!--   FDD              5G    -->
+    <!------------------------------>
+    <tbody *ngIf="duplexMode == 'fdd' && calculateForm.objectiveIndex == '1'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>{{ 'txpower' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          tabindex="-1"> dbm
+        </td>
+      </tr>
+      <!-- <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text"
+          [(ngModel)]="bsListRfParam[svgId].beampattern"
+          tabindex="-1"
+          ></td>
+      </tr> -->
+      <tr>
+        <td>{{ 'uplink.frequency' | translate }}</td>
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddUlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddUlFrequency)"
+          (change)="changeFrequency(svgId, 'ul', false)"
+          tabindex="-1"> MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'downlink.frequency' | translate }}</td>
+        <td><input type="number" class="inputNumFreq" step="5"
+          [(ngModel)]="bsListRfParam[svgId].fddDlFrequency"
+          (select)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (click)="tempParamStorage(bsListRfParam[svgId].fddDlFrequency)"
+          (change)="changeFrequency(svgId, 'dl', false)"
+          tabindex="-1"> MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'ulMimolayer' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulMimoLayer" style="width: 100px;" >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlMimolayer' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlMimoLayer" style="width: 100px;" >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'ULModulationCodingScheme' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 150px;" >
+            <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+              <option value="64QAM-table">64QAM</option>
+              <option value="256QAM-table">256QAM</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-container>
+            <ng-template #othterUlModulationCodScheme>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'DLModulationCodingScheme' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 150px;" >
+            <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
+              <option value="64QAM-table">64QAM</option>
+              <option value="256QAM-table">256QAM</option>
+              <option value="64QAM-Low-SE">64QAM-Low-SE</option>
+            </ng-container>
+            <ng-template #othterUlModulationCodScheme>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
+            </ng-template>
+          </select>
+        </td>
+      </tr>
+      <!-- <tr>
+        <td>{{ 'subcarrier' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].tddscs" style="width: 100px;" >
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=60>60</option>
+            <option value=120>120</option>
+          </select>
+        </td>
+      </tr> -->
+      <tr>
+        <td>{{ 'ulSubcarrier' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulScs" 
+          (change) = "changeScs(bsListRfParam[svgId].ulScs, 'ul', false)"
+          style="width: 100px;" >
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=60>60</option>
+          </select> kHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'ulBandwidth' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
+          (change)="changeBandwidth('ul', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '15'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
+          (change)="changeBandwidth('ul', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '30'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].ulBandwidth"
+          (change)="changeBandwidth('ul', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].ulScs == '60'">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select> MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlSubcarrier' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlScs" 
+          (change) = "changeScs(bsListRfParam[svgId].dlScs, 'dl',false)"
+          style="width: 100px;" >
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=60>60</option>
+          </select> kHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'dlBandwidth' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
+          (change)="changeBandwidth('dl', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '15'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
+          (change)="changeBandwidth('dl', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '30'">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+          <select [(ngModel)]="bsListRfParam[svgId].dlBandwidth"
+          (change)="changeBandwidth('dl', false)"
+          style="width: 100px;" *ngIf="bsListRfParam[svgId].dlScs == '60'">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select> MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'noise' | translate }}</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].bsNoiseFigure"
+          tabindex="-1"> dB
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'manufactor' | translate }}</td>
+        <td>
+          <select  style="width: 175px;" [(ngModel)]="manufactor" (change)="manufactorChange(svgId)" [disabled]="planningIndex != '3'">
+            <option value="All">{{ 'notSpecify' | translate }}</option>
+            <option value={{item}} *ngFor="let item of AntennaManufactorList">
+              {{item}}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'antenna' | translate }}</td>
+        <td>
+          <select style="width: 12em;" [disabled]="planningIndex != '3'" (change)="antennaChangeCheck(svgId)" [(ngModel)]="bsListRfParam[svgId].AntennaId" [disabled]="planningIndex != '3'">
+            <ng-container *ngFor="let item of antennaList;">
+              <!-- <option value={{item.antenna_id}} *ngFor="let item of antennaList"> -->
+              <option *ngIf="item.manufactor == manufactor || manufactor == 'All'" value={{item.antenna_id}} >
+                  <ng-container *ngIf="item.property == 'default'">
+                    <ng-container *ngIf="checkIfChinese() == true">{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ item.antenna_name }}</ng-container>
+                  </ng-container>       
+                  <ng-container *ngIf="item.property == 'customized' "> 
+                    <ng-container *ngIf="checkIfChinese() == true">{{ 'customize' | translate }}_{{ item.chinese_name }}</ng-container>
+                    <ng-container *ngIf="checkIfChinese() == false">{{ 'customize' | translate }}_{{ item.antenna_name }}</ng-container>
+                  </ng-container> 
+              </option> 
+            </ng-container>
+          </select>
+        </td>
+      </tr>
+      <ng-container *ngIf="antennaList[AntennaIdToIndex[bsListRfParam[svgId].AntennaId]]['antenna_type'] == 'Directional' ; else txGainColumnFDD">
+        <tr>
+          <td>{{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].theta"
+            (select)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (click)="tempParamStorage(bsListRfParam[svgId].theta)"
+            (change)="changeTheta(svgId, false)"
+            tabindex="-1"> {{ 'angle' | translate }}
+          </td>
+        </tr>
+        <tr>
+          <td>{{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
+            (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
+          </td>
+          <td><input type="number" class="inputNum" step="1" 
+            [(ngModel)]="bsListRfParam[svgId].phi"
+            (select)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (click)="tempParamStorage(bsListRfParam[svgId].phi)"
+            (change)="changePhi(svgId, false)"
+            tabindex="-1"> {{ 'angle' | translate }}
+          </td>
+        </tr> 
+      </ng-container>
+      <ng-template #txGainColumnFDD>
+        <tr>
+          <td>{{ 'TxGain' | translate }}</td>
+          <td><input type="number" class="inputNum" step="1"
+            [(ngModel)]="bsListRfParam[svgId].bsTxGain"
+            tabindex="-1"> dB
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+    <!------------------------------>
+    <!--   WiFi                   -->
+    <!------------------------------>
+    <tbody *ngIf="calculateForm.objectiveIndex == '2'">
+      <tr *ngIf="planningIndex == '3'">
+        <td>TxPower</td>
+        <td><input type="number" class="inputNum" step="1"
+          [(ngModel)]="bsListRfParam[svgId].txpower"
+          tabindex="-1"
+          >dbm</td>
+      </tr>
+      <!-- <tr *ngIf="planningIndex == '3'">
+        <td>BeamId</td>
+        <td><input type="text"
+          [(ngModel)]="bsListRfParam[svgId].beampattern"
+          tabindex="-1"
+          ></td>
+      </tr> -->
+      <tr>
+        <td>{{ 'tddfrequency' | translate }}</td>
+        <td *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi5'">
+          <select type="number" class="inputNum"
+          [(ngModel)]="bsListRfParam[svgId].wifiFrequency"
+          style="width: 100px;">
+          <option *ngFor="let band of wifiFreqList2_4g" [ngValue]="band">{{band}}</option>
+          <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
+          </select>
+        </td>
+        <td *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi5'">
+          <select type="number" class="inputNum"
+          [(ngModel)]="bsListRfParam[svgId].wifiFrequency"
+          style="width: 100px;">
+            <option *ngFor="let band of wifiFreqList5g" [ngValue]="band">{{band}}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'wifiProtocol' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].wifiProtocol" 
+          (change)="changeWifiProtocol(bsListRfParam[svgId].wifiProtocol,false)"
+          style="width: 100px;">
+            <option value="wifi4">WiFi4</option>
+            <option value="wifi5">WiFi5</option>
+            <option value="wifi6">WiFi6</option>
+          </select>
+        </td>
+      </tr>
+      <tr *ngIf="calculateForm.objectiveIndex == '2'">
+        <td>{{ 'tddBandwidth' | translate }}</td>
+        <td *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi4'">
+          <select type="number" class="inputNum" step="5"
+          [(ngModel)]="bsListRfParam[svgId].wifiBandwidth"
+          (change)="changeBandwidth('', true)"
+          style="width: 100px;">
+            <option value="20">20</option>
+            <option value="40">40</option>
+          </select>MHz
+        </td>
+        <td *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi5'">
+          <select type="number" class="inputNum" step="5"
+          [(ngModel)]="bsListRfParam[svgId].wifiBandwidth"
+          (change)="changeBandwidth('', true)"
+          style="width: 100px;">
+          <option value="40">40</option>
+          <option value="80">80</option>
+          <option value="160">160</option>
+          </select>MHz
+        </td>
+        <td *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi6'">
+          <select type="number" class="inputNum" step="5"
+          [(ngModel)]="bsListRfParam[svgId].wifiBandwidth"
+          (change)="changeBandwidth('', true)"
+          style="width: 100px;">
+          <option value="20">20</option>
+          <option value="40">40</option>
+          <option value="80">80</option>
+          <option value="160">160</option>
+          </select>MHz
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'guardInterval' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].guardInterval" style="width: 100px;">
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi6'" value="400ns">400ns</option>
+            <option value="800ns">800ns</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi6'" value="1600ns">1600ns</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol == 'wifi6'" value="3200ns">3200ns</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'wifiMimo' | translate }}</td>
+        <td>
+          <select [(ngModel)]="bsListRfParam[svgId].wifiMimo" style="width: 100px;">
+            <!-- <option value="1x1">1x1</option> -->
+            <option value="2x2">2x2</option>
+            <option value="3x3">3x3</option>
+            <option value="4x4">4x4</option>
+            <option *ngIf="bsListRfParam[svgId].wifiProtocol != 'wifi4'" value="8x8">8x8</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #deleteModal>
+  <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p *ngIf="dragObject[svgId].type == 'defaultBS'">{{ 'deletePara' | translate }} {{ 'defaultBs' | translate }}{{ svgNum }}?</p>
+    <p *ngIf="dragObject[svgId].type == 'candidate'">{{ 'deletePara' | translate }} {{ 'result.propose.candidateBs' | translate }}{{ svgNum }}?</p>
+    <p *ngIf="dragObject[svgId].type !== 'defaultBS' && dragObject[svgId].type !== 'candidate'">{{ 'deletePara' | translate }}?</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
+    <button *ngIf="deleteList.length == 0" mat-button (click)="delete(false)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal2>
+  <h5 mat-dialog-title>{{ 'deleteTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'deleteExceedField' | translate }}</p>
+    <!-- <p>我們將刪掉座標大於場域長寬的障礙物，基地台，UE，您同意嗎?</p> -->
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notDelete()">{{ 'deleteCancel' | translate }}</button>
+    <button *ngIf="deleteList.length != 0" mat-button (click)="delete(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #changeToSimulationModal>
+  <h5 mat-dialog-title>{{ 'changeToSimulationTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'changeToSimulationText' | translate }}?</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="changeToSimulation(false)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="changeToSimulation(true)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<!-- <ng-template #deleteModal3>
+  <h5 mat-dialog-title>{{ 'applyTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'applyAllSameBandwidth' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notApplySameBandwidth(modalParam.dir, modalParam.isCandidate)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="applyAllSameBandwidth(modalParam.dir, modalParam.isCandidate)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal4>
+  <h5 mat-dialog-title>{{ 'applyTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'applyAllSameFrequency' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notApplyAllSameFrequency(modalParam.dir, modalParam.isCandidate)">{{ 'deleteCancel' | translate }}</button>
+    <button mat-button (click)="applyAllSameFrequency(modalParam.dir, modalParam.isCandidate)" cdkFocusInitial>{{ 'deleteSure' | translate }}</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal5>
+  <h5 mat-dialog-title>{{ 'applyTitle' | translate }}</h5>
+  <div mat-dialog-content>
+    <p>{{ 'modifedBandOverlapDLUL' | translate }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="notApplySameBandwidth(modalParam.dir, modalParam.isCandidate)">{{ 'OK' | translate }}</button>
+  </div>
+</ng-template> -->
+
+<div [ngStyle]="bgdivStyle"></div>
