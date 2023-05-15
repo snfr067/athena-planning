@@ -674,36 +674,49 @@ export class PdfComponent implements OnInit {
     var condition = "";
     var ULcondition = "";
     var DLcondition = "";
+	
+	var targetLine = 0;
 
     if (this.calculateForm.isCoverage) 
     {
-      coverageTarget = this.translateService.instant('isCoverage') + "\n";
+      coverageTarget = this.translateService.instant('isCoverage') + "\n\n";
+	  targetLine += 2;
     }
     if (this.calculateForm.isSINR) 
     {
       SINRTarget = this.translateService.instant('isSINR') + "\n";
+	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.SINRSettingList.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.SINRSettingList[x].condition);
         SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.SINRSettingList[x].area + "% " + 
         condition + " " + this.calculateForm.SINRSettingList[x].sinr + "dB\n";
+		targetLine++;
       }
+	  SINRContent += "\n";
+	  targetLine++;
     }
     if (this.calculateForm.isRSRP) 
     {
       RSRPTarget = this.translateService.instant('isRSRP') + "\n";
+	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.RSRPSettingList.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.RSRPSettingList[x].condition);
         RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.RSRPSettingList[x].area + "% " + 
         condition + " " + this.calculateForm.RSRPSettingList[x].rsrp + "dB\n";
+		targetLine++;
       }
+	  
+	  RSRPContent += "\n";
+	  targetLine++;
     }
     if (this.calculateForm.isThroughput) 
     {
       throughputTarget = this.translateService.instant('isThroughput') + "\n";
+	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.ThroughputSettingList.length; x++)
       {
@@ -712,15 +725,21 @@ export class PdfComponent implements OnInit {
         throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.ThroughputSettingList[x].area + "% UL " + 
         ULcondition + " " + this.calculateForm.ThroughputSettingList[x].ULThroughput + "Mbps"+
         "; DL " + DLcondition + this.calculateForm.ThroughputSettingList[x].DLThroughput + "Mbps\n";
+		targetLine++;
       }
+	  
+	  throughputContent += "\n";
+	  targetLine++;
     }
     if (this.calculateForm.isUeCoverage) 
     {
-      UEcoverageTarget = this.translateService.instant('isUeCoverage') + "\n";
+      UEcoverageTarget = this.translateService.instant('isUeCoverage') + "\n\n";
+	  targetLine += 2;
     }
     if (this.calculateForm.isUeAvgThroughput) 
     {
       UEThroughtpuTarget = this.translateService.instant('isUeAvgThroughput') + "\n";
+	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.UEThroughputSettingList.length; x++)
       {
@@ -729,7 +748,10 @@ export class PdfComponent implements OnInit {
         UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.UEThroughputSettingList[x].area + "% UL " + 
         ULcondition + " " + this.calculateForm.UEThroughputSettingList[x].ULThroughput + "Mbps"+
         "; DL " + DLcondition + this.calculateForm.UEThroughputSettingList[x].DLThroughput + "Mbps\n";
+		targetLine++;
       }
+	  UEThroughputContent += "\n";
+	  targetLine++;
     }
 
     let target = coverageTarget + 
@@ -765,7 +787,7 @@ export class PdfComponent implements OnInit {
       }
     });
 
-    pos+=85;
+    pos+= 85 + targetLine*7.5;
 
     let statistics;
     if (this.calculateForm.isSimulation) {
