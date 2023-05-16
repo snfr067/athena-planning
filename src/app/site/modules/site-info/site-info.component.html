@@ -19,40 +19,44 @@
       <span *ngIf="this.inputBsListCount !== 0">
         <label>{{ 'planning.target' | translate }}</label>
         <div *ngIf="calculateForm.isCoverage">{{ 'isCoverage' | translate }}</div>
-        <div *ngIf="calculateForm.isSINR">{{ 'isSINR' | translate }}</div>
-        <div *ngFor="let setting of calculateForm.SINRSettingList; let i=index">
-          {{i+1}}. {{ 'FieldArea' | translate }}
-          {{calculateForm.SINRSettingList[i].area}}%
-          {{calculateForm.SINRSettingList[i].condition | translate }}
-          {{calculateForm.SINRSettingList[i].sinr}}dB
-        </div>
-        <div *ngIf="calculateForm.isRSRP">{{ 'isRSRP' | translate }}</div>
-        <div *ngFor="let setting of calculateForm.RSRPSettingList; let i=index">
-          {{i+1}}. {{ 'FieldArea' | translate }}
-          {{calculateForm.RSRPSettingList[i].area}}%
-          {{calculateForm.RSRPSettingList[i].condition | translate }}
-          {{calculateForm.RSRPSettingList[i].rsrp}}dB
-        </div>
-        <div *ngIf="calculateForm.isThroughput">{{ 'isThroughput' | translate }}</div>
-        <div *ngFor="let setting of calculateForm.ThroughputSettingList; let i=index">
-          {{i+1}}. {{ 'FieldArea' | translate }}
-          {{calculateForm.ThroughputSettingList[i].area}}% UL 
-          {{calculateForm.ThroughputSettingList[i].ULCondition | translate }}
-          {{calculateForm.ThroughputSettingList[i].ULThroughput}}Mbps;&ensp;&ensp;
-          DL 
-          {{calculateForm.ThroughputSettingList[i].DLCondition | translate }}
-          {{calculateForm.ThroughputSettingList[i].DLThroughput}}Mbps
-        </div>
-        <div *ngIf="calculateForm.isUeAvgThroughput">{{ 'isUeAvgThroughput' | translate }}</div>
-        <div *ngFor="let setting of calculateForm.UEThroughputSettingList; let i=index">
-          {{i+1}}. {{ 'ue' | translate }}
-          {{calculateForm.UEThroughputSettingList[i].area}}% UL 
-          {{calculateForm.UEThroughputSettingList[i].ULCondition | translate }}
-          {{calculateForm.UEThroughputSettingList[i].ULThroughput}}Mbps;&ensp;&ensp;
-          DL 
-          {{calculateForm.UEThroughputSettingList[i].DLCondition | translate }}
-          {{calculateForm.UEThroughputSettingList[i].DLThroughput}}Mbps
-        </div>
+        <div *ngIf="calculateForm.isSINR">{{ 'isSINR' | translate }}
+			<div *ngFor="let setting of calculateForm.SINRSettingList; let i=index">
+			  {{i+1}}. {{ 'FieldArea' | translate }}
+			  {{calculateForm.SINRSettingList[i].area}}%
+			  {{calculateForm.SINRSettingList[i].condition | translate }}
+			  {{calculateForm.SINRSettingList[i].sinr}}dB
+			</div>
+		</div>
+        <div *ngIf="calculateForm.isRSRP">{{ 'isRSRP' | translate }}
+			<div *ngFor="let setting of calculateForm.RSRPSettingList; let i=index">
+			  {{i+1}}. {{ 'FieldArea' | translate }}
+			  {{calculateForm.RSRPSettingList[i].area}}%
+			  {{calculateForm.RSRPSettingList[i].condition | translate }}
+			  {{calculateForm.RSRPSettingList[i].rsrp}}dB
+			</div>
+		</div>
+        <div *ngIf="calculateForm.isThroughput">{{ 'isThroughput' | translate }}
+			<div *ngFor="let setting of calculateForm.ThroughputSettingList; let i=index">
+			  {{i+1}}. {{ 'FieldArea' | translate }}
+			  {{calculateForm.ThroughputSettingList[i].area}}% UL 
+			  {{calculateForm.ThroughputSettingList[i].ULCondition | translate }}
+			  {{calculateForm.ThroughputSettingList[i].ULThroughput}}Mbps;&ensp;&ensp;
+			  DL 
+			  {{calculateForm.ThroughputSettingList[i].DLCondition | translate }}
+			  {{calculateForm.ThroughputSettingList[i].DLThroughput}}Mbps
+			</div>
+		</div>
+        <div *ngIf="calculateForm.isUeAvgThroughput">{{ 'isUeAvgThroughput' | translate }}
+			<div *ngFor="let setting of calculateForm.UEThroughputSettingList; let i=index">
+			  {{i+1}}. {{ 'ue' | translate }}
+			  {{calculateForm.UEThroughputSettingList[i].area}}% UL 
+			  {{calculateForm.UEThroughputSettingList[i].ULCondition | translate }}
+			  {{calculateForm.UEThroughputSettingList[i].ULThroughput}}Mbps;&ensp;&ensp;
+			  DL 
+			  {{calculateForm.UEThroughputSettingList[i].DLCondition | translate }}
+			  {{calculateForm.UEThroughputSettingList[i].DLThroughput}}Mbps
+			</div>
+		</div>
         <div *ngIf="calculateForm.isUeCoverage">{{ 'isUeCoverage' | translate }}</div>
       </span>
     </li>
