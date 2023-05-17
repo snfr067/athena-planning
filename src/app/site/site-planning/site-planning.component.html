@@ -1828,7 +1828,7 @@
         <td>{{ 'createMethod' | translate }}</td>
         <td>
           <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeCreateMethod()" [(ngModel)]="createMethod">
-            <mat-radio-button value="formula" style="margin-right: 15px;" >{{ 'enterFormula' | translate }}</mat-radio-button>
+            <mat-radio-button value="formula" style="margin-right: 150px;" >{{ 'enterFormula' | translate }}</mat-radio-button>
             <mat-radio-button value="importFile" >{{ 'importFile' | translate }}</mat-radio-button>
           </mat-radio-group>
         </td>
@@ -1911,19 +1911,16 @@
 <ng-template #SINRModalTable>
   <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
   <table>
-	<tbody>
+    <tbody>    
 	  <tr>
 		<td>{{'target.setting.mode' | translate}}</td>
 		<td>
 		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeSINRSetting()" [(ngModel)]="isDefaultSINRSetting">
-            <mat-radio-button value="default" style="margin-right: 15px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
             <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
           </mat-radio-group>
 		</td>
 	  </tr>
-	</tbody>
-    <tbody>    
-
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td>{{'Condition' | translate}}</td>
@@ -1966,24 +1963,33 @@
   <h5 mat-dialog-title>{{ 'isRSRP.paramLink' | translate }}</h5>
   <table>
     <tbody>    
+	  <tr>
+		<td>{{'target.setting.mode' | translate}}</td>
+		<td>
+		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeRSRPSetting()" [(ngModel)]="isDefaultRSRPSetting">
+            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
+          </mat-radio-group>
+		</td>
+	  </tr>
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td>{{'Condition' | translate}}</td>
         <td>{{'RSRP' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addRSRP()" style="float:right, bottom" [disabled]="RSRPSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addRSRP()" style="float:right, bottom" [disabled]="RSRPSettingList.length >= 3 || isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
           <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="RSRPSettingList[i].area" (change)="checkArea(RSRPSettingList[i].area)">
+            <input type="text" [(ngModel)]="RSRPSettingList[i].area" (change)="checkArea(RSRPSettingList[i].area)" [disabled]="isDefaultRSRPSetting == 'default'">
           </div>
         </td>
         <td>   
           <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="RSRPSettingList[i].condition">
+              [(ngModel)]="RSRPSettingList[i].condition" [disabled]="isDefaultRSRPSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
@@ -1991,12 +1997,12 @@
         </td>        
         <td>   
           <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="RSRPSettingList[i].rsrp"> 
+            <input type="text" [(ngModel)]="RSRPSettingList[i].rsrp" [disabled]="isDefaultRSRPSetting == 'default'"> 
           </div>
         </td>
         <td>   
           <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == RSRPSettingList.length-1 && RSRPSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == RSRPSettingList.length-1 && RSRPSettingList.length != 1" [disabled]="isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2007,7 +2013,16 @@
 <ng-template #ThroughputModalTable>
   <h5 mat-dialog-title>{{ 'isThroughput.paramLink' | translate }}</h5>
   <table>
-    <tbody>    
+    <tbody> 
+	  <tr>
+		<td>{{'target.setting.mode' | translate}}</td>
+		<td>
+		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeThroughputSetting()" [(ngModel)]="isDefaultThroughputSetting">
+            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
+          </mat-radio-group>
+		</td>
+	  </tr>	
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td></td>
@@ -2017,13 +2032,13 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addThroughput()" style="float:right, bottom" [disabled]="ThroughputSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addThroughput()" style="float:right, bottom" [disabled]="ThroughputSettingList.length >= 3 || isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].area" (change)="checkArea(ThroughputSettingList[i].area)">
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].area" (change)="checkArea(ThroughputSettingList[i].area)" [disabled]="isDefaultThroughputSetting == 'default'">
           </div>
         </td>
         <td>   
@@ -2034,7 +2049,7 @@
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="ThroughputSettingList[i].ULCondition">
+              [(ngModel)]="ThroughputSettingList[i].ULCondition" [disabled]="isDefaultThroughputSetting == 'default'>
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
@@ -2042,7 +2057,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput" (change)="checkThroughput(ThroughputSettingList[i].ULThroughput)"> 
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput" (change)="checkThroughput(ThroughputSettingList[i].ULThroughput)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2053,7 +2068,7 @@
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="ThroughputSettingList[i].DLCondition">
+              [(ngModel)]="ThroughputSettingList[i].DLCondition" [disabled]="isDefaultThroughputSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
@@ -2061,12 +2076,12 @@
         </td>        
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput" (change)="checkThroughput(ThroughputSettingList[i].DLThroughput)"> 
+            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput" (change)="checkThroughput(ThroughputSettingList[i].DLThroughput)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == ThroughputSettingList.length-1 && ThroughputSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == ThroughputSettingList.length-1 && ThroughputSettingList.length != 1" [disabled]="isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2077,7 +2092,16 @@
 <ng-template #UEThroughputModalTable>
   <h5 mat-dialog-title>{{ 'isUeAvgThroughput.paramLink' | translate }}</h5>
   <table>
-    <tbody>    
+    <tbody>
+	  <tr>
+		<td>{{'target.setting.mode' | translate}}</td>
+		<td>
+		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeUEThroughputSetting()" [(ngModel)]="isDefaultUEThroughputSetting">
+            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
+          </mat-radio-group>
+		</td>
+	  </tr>    
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td></td>
@@ -2087,13 +2111,13 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addUEThroughput()" style="float:right, bottom" [disabled]="UEThroughputSettingList.length >= 3">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addUEThroughput()" style="float:right, bottom" [disabled]="UEThroughputSettingList.length >= 3 || isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area" (change)="checkArea(UEThroughputSettingList[i].area)">
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area" (change)="checkArea(UEThroughputSettingList[i].area)" [disabled]="isDefaultUEThroughputSetting == 'default'">
           </div>
         </td>
         <td>   
@@ -2104,7 +2128,7 @@
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="UEThroughputSettingList[i].ULCondition">
+              [(ngModel)]="UEThroughputSettingList[i].ULCondition" [disabled]="isDefaultUEThroughputSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
@@ -2112,7 +2136,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"  (change)="checkThroughput(UEThroughputSettingList[i].ULThroughput)"> 
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"  (change)="checkThroughput(UEThroughputSettingList[i].ULThroughput)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2123,7 +2147,7 @@
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="UEThroughputSettingList[i].DLCondition">
+              [(ngModel)]="UEThroughputSettingList[i].DLCondition" [disabled]="isDefaultUEThroughputSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
@@ -2131,12 +2155,12 @@
         </td>        
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput" (change)="checkThroughput(UEThroughputSettingList[i].DLThroughput)"> 
+            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput" (change)="checkThroughput(UEThroughputSettingList[i].DLThroughput)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
           <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == UEThroughputSettingList.length-1 && UEThroughputSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == UEThroughputSettingList.length-1 && UEThroughputSettingList.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>

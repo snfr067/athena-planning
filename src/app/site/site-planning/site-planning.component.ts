@@ -377,6 +377,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   isDefaultRSRPSetting = "default";
   isDefaultThroughputSetting = "default";
   isDefaultUEThroughputSetting = "default";
+  defaultArea = 95;
+  defaultSINRSetting = 20;
+  defaultRSRPSetting = 20;
+  defaultThroughputSetting = 900;
+  defaultUEThroughputSetting = 900;
 
   // useSmartAntenna = "false";
   /** 畫圖物件 */
@@ -7941,9 +7946,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     this.SINRSettingList.push(
       {
-        area: 0, 
+        area: this.defaultArea, 
         condition: "MoreThan",
-        sinr: 0
+        sinr: this.defaultSINRSetting
       });
   }
 
@@ -7955,9 +7960,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     this.RSRPSettingList.push(
     {
-      area: 0, 
+      area: this.defaultArea, 
       condition: "MoreThan",
-      rsrp: 0
+      rsrp: this.defaultRSRPSetting
     });
   }
 
@@ -7969,11 +7974,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     this.ThroughputSettingList.push(
     {
-      area: 0, 
+      area: this.defaultArea, 
       ULCondition: "MoreThan",
-      ULThroughput: 0,
+      ULThroughput:  this.defaultThroughputSetting,
       DLCondition: "MoreThan",
-      DLThroughput: 0
+      DLThroughput:  this.defaultThroughputSetting
     });
   }
 
@@ -7985,11 +7990,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     this.UEThroughputSettingList.push(
     {
-      area: 0, 
+      area: this.defaultArea, 
       ULCondition: "MoreThan",
-      ULThroughput: 0,
+      ULThroughput: this.defaultThroughputSetting,
       DLCondition: "MoreThan",
-      DLThroughput: 0
+      DLThroughput: this.defaultThroughputSetting
     });
   }
 
@@ -8001,7 +8006,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check area:'+ area);
     let msg = '';
 
-    if(area < 0 || area > 100)
+    if(area <= 0 || area > 100)
       msg = this.translateService.instant('area_fault');
 
     if (msg != '') {
@@ -8031,15 +8036,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   
   changeSINRSetting()
   {
-	  if(isDefaultSINRSetting == "default")
+	  if(this.isDefaultSINRSetting == 'default')
 	  {
 		  this.SINRSettingList = [];
-		  this.SINRSettingList.push(
-		  {
-			area: 95, 
-			condition: "MoreThan",
-			sinr: 10
-		  });
+		  addSINR();
+	  }
+  }
+  
+  changeRSRPSetting()
+  {
+	  if(this.isDefaultRSRPSetting == 'default')
+	  {
+		  this.RSRPSettingList = [];
+		  addRSRP();
+	  }
+  }
+  
+  changeThroughputSetting()
+  {
+	  if(this.isDefaultThroughputSetting == 'default')
+	  {
+		  this.ThroughputRSettingList = [];
+		  addThroughput();
+	  }
+  }
+  
+  changeUEThroughputSetting()
+  {
+	  if(this.isDefaultUEThroughputSetting == 'default')
+	  {
+		  this.UEThroughputSettingList = [];
+		  addUEThroughput();
 	  }
   }
 }
