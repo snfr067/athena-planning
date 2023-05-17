@@ -373,6 +373,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   RSRPSettingList = [];
   ThroughputSettingList = [];
   UEThroughputSettingList = [];
+  isDefaultSINRSetting = true;
+  isDefaultRSRPSetting = true;
+  isDefaultThroughputSetting = true;
+  isDefaultUEThroughputSetting = true;
 
   // useSmartAntenna = "false";
   /** 畫圖物件 */
@@ -8023,5 +8027,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     }
+  }
+  
+  changeSINRSetting()
+  {
+	  if(isDefaultSINRSetting === 'default')
+	  {
+		  this.SINRSettingList = [];
+		  this.SINRSettingList.push(
+		  {
+			area: 95, 
+			condition: "MoreThan",
+			sinr: 10
+		  });
+	  }
   }
 }
