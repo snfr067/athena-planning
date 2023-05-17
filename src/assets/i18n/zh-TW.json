@@ -482,6 +482,10 @@
 	"subfield.strength": "平均訊號強度",
 	"subfield.quality": "平均訊號品質",
 	"subfield.dltpt": "下行傳輸速率",
-	"subfield.ultpt": "上行傳輸速率"
+	"subfield.ultpt": "上行傳輸速率",
+	
+	"target.setting.mode": "設定模式",
+	"default.target": "預設目標",
+	"custom.target": "自訂目標"
 
 }

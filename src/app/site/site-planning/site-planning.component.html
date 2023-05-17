@@ -1911,9 +1911,9 @@
 <ng-template #SINRModalTable>
   <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
   <table>
-    <tbody>    
+	<tbody>
 	  <tr>
-		<td>{{'AreaPercent' | translate}}</td>
+		<td>{{'target.setting.mode' | translate}}</td>
 		<td>
 		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeSINRSetting()" [(ngModel)]="isDefaultSINRSetting">
             <mat-radio-button value="default" style="margin-right: 15px;" >{{ 'default.target' | translate }}</mat-radio-button>
@@ -1921,6 +1921,9 @@
           </mat-radio-group>
 		</td>
 	  </tr>
+	</tbody>
+    <tbody>    
+
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td>{{'Condition' | translate}}</td>
@@ -1936,22 +1939,22 @@
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px" [disabled]="isDefaultSINRSetting == 'default'">
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="SINRSettingList[i].condition">
+              [(ngModel)]="SINRSettingList[i].condition" [disabled]="isDefaultSINRSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px" [disabled]="isDefaultSINRSetting == 'default'">
-            <input type="text" [(ngModel)]="SINRSettingList[i].sinr"> 
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="SINRSettingList[i].sinr" [disabled]="isDefaultSINRSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px" [disabled]="isDefaultSINRSetting == 'default'">
-            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == SINRSettingList.length-1 && SINRSettingList.length != 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == SINRSettingList.length-1 && SINRSettingList.length != 1" [disabled]="isDefaultSINRSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
