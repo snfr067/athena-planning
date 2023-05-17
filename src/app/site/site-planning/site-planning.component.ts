@@ -373,10 +373,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   RSRPSettingList = [];
   ThroughputSettingList = [];
   UEThroughputSettingList = [];
-  isDefaultSINRSetting = true;
-  isDefaultRSRPSetting = true;
-  isDefaultThroughputSetting = true;
-  isDefaultUEThroughputSetting = true;
+  isDefaultSINRSetting = "default";
+  isDefaultRSRPSetting = "default";
+  isDefaultThroughputSetting = "default";
+  isDefaultUEThroughputSetting = "default";
 
   // useSmartAntenna = "false";
   /** 畫圖物件 */
@@ -8031,7 +8031,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   
   changeSINRSetting()
   {
-	  if(isDefaultSINRSetting === 'default')
+	  if(isDefaultSINRSetting == "default")
 	  {
 		  this.SINRSettingList = [];
 		  this.SINRSettingList.push(
