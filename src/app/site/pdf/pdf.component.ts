@@ -787,7 +787,9 @@ export class PdfComponent implements OnInit {
       }
     });
 
-    pos+= 85 + targetLine*7;
+    //pos+= 85 + targetLine*7;
+	pos = 10;
+    pdf.addPage();
 
     let statistics;
     if (this.calculateForm.isSimulation) {
