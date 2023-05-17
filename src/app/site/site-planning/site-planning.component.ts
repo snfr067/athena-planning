@@ -8039,7 +8039,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 	  if(this.isDefaultSINRSetting == 'default')
 	  {
 		  this.SINRSettingList = [];
-		  addSINR();
+		  this.addSINR();
 	  }
   }
   
@@ -8048,7 +8048,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 	  if(this.isDefaultRSRPSetting == 'default')
 	  {
 		  this.RSRPSettingList = [];
-		  addRSRP();
+		  this.addRSRP();
 	  }
   }
   
@@ -8056,8 +8056,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 	  if(this.isDefaultThroughputSetting == 'default')
 	  {
-		  this.ThroughputRSettingList = [];
-		  addThroughput();
+		  this.ThroughputSettingList = [];
+		  this.addThroughput();
 	  }
   }
   
@@ -8066,7 +8066,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 	  if(this.isDefaultUEThroughputSetting == 'default')
 	  {
 		  this.UEThroughputSettingList = [];
-		  addUEThroughput();
+		  this.addUEThroughput();
 	  }
   }
 }
