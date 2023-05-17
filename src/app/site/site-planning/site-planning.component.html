@@ -2049,7 +2049,7 @@
         <td>   
           <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="ThroughputSettingList[i].ULCondition" [disabled]="isDefaultThroughputSetting == 'default'>
+              [(ngModel)]="ThroughputSettingList[i].ULCondition" [disabled]="isDefaultThroughputSetting == 'default'">
                 <option value="MoreThan"> {{'MoreThan' | translate}} </option>
                 <option value="LessThan"> {{'LessThan' | translate}} </option>
             </select>
