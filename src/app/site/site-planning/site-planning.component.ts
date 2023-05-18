@@ -3385,7 +3385,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         url = `${this.authService.API_URL}/simulation`;
       }
       let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
+	  
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
+	  apiBody.isBsNumberOptimization = false;
+	  
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
 
