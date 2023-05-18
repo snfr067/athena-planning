@@ -14,11 +14,11 @@ export class FieldForm
 
 export class UEForm 
 {
-    sinr: SINRForm = null;
-    throughput: ThroughputForm = null;
+    sinr: SINRForm = new SINRForm();
+    throughput: ThroughputForm = new ThroughputForm();
     throughputByRsrp: ThroughputForm = new ThroughputForm();
     coverage: CoverageForm = new CoverageForm();
-    throughputByDistance: CoverageForm = null;
+    throughputByDistance: CoverageForm = new CoverageForm();
 }
 
 export class SINRForm 
