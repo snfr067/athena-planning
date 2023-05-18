@@ -5,6 +5,7 @@ import { NgxMoveableComponent } from 'ngx-moveable';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ConfirmDailogComponent } from '../../utility/confirm-dailog/confirm-dailog.component';
 import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
 import { EvaluationFuncForm, RatioForm } from '../../form/EvaluationFuncForm';
@@ -3774,20 +3775,77 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         console.log(res);
 
         if (res['progress'] === 1) {
-          // done
-          this.authService.spinnerHide();
-          // 儲存
-          // this.save();
-          window.clearInterval(this.pgInterval);
-          for (let i = 0; i < this.pgInterval; i++) {
-            window.clearInterval(i);
-          }
-          sessionStorage.removeItem('calculateForm');
-          sessionStorage.removeItem('importFile');
-          sessionStorage.removeItem('taskName');
-          this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
-            // location.reload();
-          });;
+
+          const resultUrl = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
+          this.http.get(resultUrl).subscribe(
+            resCalcResult => {
+
+              this.calculateForm.isFieldSINRGoal = resCalcResult['evaluategoal_field_sinr'] != "unachieved";
+              this.calculateForm.isFieldRSRPGoal = resCalcResult['evaluategoal_field_rsrp'] != "unachieved";
+              this.calculateForm.isFieldThroughputGoal = resCalcResult['evaluategoal_field_throughput'] != "unachieved";
+              this.calculateForm.isFieldCoverageGoal = resCalcResult['evaluategoal_field_coverage'] != "unachieved";
+              this.calculateForm.isUEThroughputGoal = resCalcResult['evaluategoal_ue_throughputbyrsrp'] != "unachieved";
+              this.calculateForm.isUECoverageGoal = resCalcResult['evaluategoal_ue_coverage'] != "unachieved";
+
+              var achieved = this.calculateForm.isFieldSINRGoal && this.calculateForm.isFieldRSRPGoal &&
+              this.calculateForm.isFieldThroughputGoal && this.calculateForm.isFieldCoverageGoal &&
+              this.calculateForm.isUEThroughputGoal && this.calculateForm.isUECoverageGoal;
+
+              if(!achieved)
+              {
+                var msg = this.translateService.instant('target.unachieved');
+                this.msgDialogConfig.data = {
+                  infoMessage: msg
+                };
+                const dialogRef = this.matDialog.open(ConfirmDailogComponent, this.msgDialogConfig);
+                
+                dialogRef.componentInstance.onOK.subscribe(() => {
+                                    // done
+                  this.authService.spinnerHide();
+                  // 儲存
+                  // this.save();
+                  window.clearInterval(this.pgInterval);
+                  for (let i = 0; i < this.pgInterval; i++) {
+                    window.clearInterval(i);
+                  }
+                  sessionStorage.removeItem('calculateForm');
+                  sessionStorage.removeItem('importFile');
+                  sessionStorage.removeItem('taskName');
+                  this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
+                    // location.reload();
+                  });;
+                });
+              }
+              else{
+
+                // done
+                this.authService.spinnerHide();
+                // 儲存
+                // this.save();
+                window.clearInterval(this.pgInterval);
+                for (let i = 0; i < this.pgInterval; i++) {
+                  window.clearInterval(i);
+                }
+                sessionStorage.removeItem('calculateForm');
+                sessionStorage.removeItem('importFile');
+                sessionStorage.removeItem('taskName');
+                this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
+                  // location.reload();
+                });;
+              }
+              
+            },
+            errCalcResult => {
+              let msg = this.translateService.instant('cant_get_result');
+              this.msgDialogConfig.data = {
+                type: 'error',
+                infoMessage: msg
+              };
+              this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+            }
+          );
+
+
           
         } else {
           // query again
