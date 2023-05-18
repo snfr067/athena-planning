@@ -1,3 +1,5 @@
+import { EvaluationFuncForm } from "./EvaluationFuncForm";
+
 /**
  * 場域form
  */
@@ -108,10 +110,11 @@ export class CalculateForm {
   geographicalNorth: number = 0;
   candidateBsAnt: string = null;
   defaultBsAnt: string = null;
-  SINRSettingList = [{area: 0, condition: "MoreThan", sinr: 0}];
-  RSRPSettingList = [{area: 0, condition: "MoreThan", rsrp: 0}];
-  ThroughputSettingList = [{area: 0, ULCondition: "MoreThan", ULThroughput: 0, DLCondition: "MoreThan", DLThroughput: 0}];
-  UEThroughputSettingList = [{area: 0, ULCondition: "MoreThan", ULThroughput: 0, DLCondition: "MoreThan", DLThroughput: 0}];
+  evaluationFunc: EvaluationFuncForm = null;
+  // SINRSettingList = [{area: 0, condition: "moreThan", sinr: 0}];
+  // RSRPSettingList = [{area: 0, condition: "moreThan", rsrp: 0}];
+  // ThroughputSettingList = [{area: 0, ULCondition: "moreThan", ULThroughput: 0, DLCondition: "moreThan", DLThroughput: 0}];
+  // UEThroughputSettingList = [{area: 0, ULCondition: "moreThan", ULThroughput: 0, DLCondition: "moreThan", DLThroughput: 0}];
   // constructor(options: {
   //   sessionid?: string,
   //   taskName?: string,

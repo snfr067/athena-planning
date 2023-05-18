@@ -7,6 +7,7 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
+import { EvaluationFuncForm, RatioForm } from '../../form/EvaluationFuncForm';
 import * as _ from 'lodash';
 import { MatMenuTrigger } from '@angular/material/menu';
 import html2canvas from 'html2canvas';
@@ -109,6 +110,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   live = false;
   /** calculate form */
   calculateForm: CalculateForm = new CalculateForm();
+  /** evaluationFunc form  */
+  evaluationFuncForm: EvaluationFuncForm = new EvaluationFuncForm();
   /** material list */
   materialList = [];
   /** model list */
@@ -369,10 +372,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http error */
   statusCode = "";
   errMsg = "";
-  SINRSettingList = [];
-  RSRPSettingList = [];
-  ThroughputSettingList = [];
-  UEThroughputSettingList = [];
   isDefaultSINRSetting = "default";
   isDefaultRSRPSetting = "default";
   isDefaultThroughputSetting = "default";
@@ -2515,22 +2514,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 開啟多目標函數設定燈箱
   */
   openSINRSetting() {
-    if(this.SINRSettingList.length == 0)
+    if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
     this.matDialog.open(this.SINRModalTable);
   }  
   openRSRPSetting() {
-    if(this.RSRPSettingList.length == 0)
+    if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
     this.matDialog.open(this.RSRPModalTable);
   }  
   openThroughputSetting() {
-    if(this.ThroughputSettingList.length == 0)
+    if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
       this.addThroughput();
     this.matDialog.open(this.ThroughputModalTable);
   }  
   openUEThroughputSetting() {
-    if(this.UEThroughputSettingList.length == 0)
+    if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
     this.matDialog.open(this.UEThroughputModalTable);
   }
@@ -3387,7 +3386,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
-
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
 
@@ -3418,10 +3416,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isCoverage = false;
     }
 
-    this.calculateForm.SINRSettingList = this.SINRSettingList;
-    this.calculateForm.RSRPSettingList = this.RSRPSettingList;
-    this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
-    this.calculateForm.UEThroughputSettingList = this.UEThroughputSettingList;
+    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+    //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
+    // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
+    // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
+    // this.calculateForm.UEThroughputSettingList = this.UEThroughputSettingList;
 
 
     // const planningObj = {
@@ -3769,7 +3768,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         for (let i = 0; i < this.progressInterval; i++) {
           window.clearInterval(i);
         }
-        
+        console.log(res);
+
         if (res['progress'] === 1) {
           // done
           this.authService.spinnerHide();
@@ -7944,62 +7944,60 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   addSINR() {
     
-    this.SINRSettingList.push(
+    this.evaluationFuncForm.field.sinr.ratio.push(
       {
-        area: this.defaultArea, 
-        condition: "MoreThan",
-        sinr: this.defaultSINRSetting
+        "areaRatio": this.defaultArea, 
+        "compliance": "moreThan",
+        "value": this.defaultSINRSetting
       });
   }
 
   delSINR(index) {    
-    this.SINRSettingList.splice(index, 1);
+    this.evaluationFuncForm.field.sinr.ratio.splice(index, 1);
   }
 
   addRSRP() {
     
-    this.RSRPSettingList.push(
+    this.evaluationFuncForm.field.rsrp.ratio.push(
     {
-      area: this.defaultArea, 
-      condition: "MoreThan",
-      rsrp: this.defaultRSRPSetting
+      "areaRatio": this.defaultArea, 
+      "compliance": "moreThan",
+      "value": this.defaultRSRPSetting
     });
   }
 
   delRSRP(index) {    
-    this.RSRPSettingList.splice(index, 1);
+    this.evaluationFuncForm.field.rsrp.ratio.splice(index, 1);
   }
 
   addThroughput() {
     
-    this.ThroughputSettingList.push(
+    this.evaluationFuncForm.field.throughput.ratio.push(
     {
-      area: this.defaultArea, 
-      ULCondition: "MoreThan",
-      ULThroughput:  this.defaultThroughputSetting,
-      DLCondition: "MoreThan",
-      DLThroughput:  this.defaultThroughputSetting
+      "areaRatio": this.defaultArea, 
+      "compliance": "moreThan",
+      "ULValue":  this.defaultThroughputSetting,
+      "DLValue":  this.defaultThroughputSetting
     });
   }
 
   delThroughput(index) {    
-    this.ThroughputSettingList.splice(index, 1);
+    this.evaluationFuncForm.field.throughput.ratio.splice(index, 1);
   }
 
   addUEThroughput() {
     
-    this.UEThroughputSettingList.push(
+    this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
     {
-      area: this.defaultArea, 
-      ULCondition: "MoreThan",
-      ULThroughput: this.defaultThroughputSetting,
-      DLCondition: "MoreThan",
-      DLThroughput: this.defaultThroughputSetting
+      "areaRatio": this.defaultArea, 
+      "compliance": "moreThan",
+      "ULValue":  this.defaultThroughputSetting,
+      "DLValue":  this.defaultThroughputSetting
     });
   }
 
   delUEThroughput(index) {    
-    this.UEThroughputSettingList.splice(index, 1);
+    this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(index, 1);
   }
 
   checkArea(area) {
@@ -8007,7 +8005,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let msg = '';
 
     if(area <= 0 || area > 100)
+    {
       msg = this.translateService.instant('area_fault');
+    }
+    else
+    {
+      area = area / 100;
+    }
 
     if (msg != '') {
       this.msgDialogConfig.data = {
@@ -8038,7 +8042,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 	  if(this.isDefaultSINRSetting == 'default')
 	  {
-		  this.SINRSettingList = [];
+		  this.evaluationFuncForm.field.sinr.ratio = [];
 		  this.addSINR();
 	  }
   }
@@ -8047,7 +8051,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 	  if(this.isDefaultRSRPSetting == 'default')
 	  {
-		  this.RSRPSettingList = [];
+		  this.evaluationFuncForm.field.rsrp.ratio = [];
 		  this.addRSRP();
 	  }
   }
@@ -8056,7 +8060,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 	  if(this.isDefaultThroughputSetting == 'default')
 	  {
-		  this.ThroughputSettingList = [];
+		  this.evaluationFuncForm.field.throughput.ratio = [];
 		  this.addThroughput();
 	  }
   }
@@ -8065,7 +8069,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 	  if(this.isDefaultUEThroughputSetting == 'default')
 	  {
-		  this.UEThroughputSettingList = [];
+		  this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
 		  this.addUEThroughput();
 	  }
   }

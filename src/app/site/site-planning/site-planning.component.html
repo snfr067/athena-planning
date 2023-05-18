@@ -390,23 +390,19 @@
             (change)="selected = 1;calculateForm.isAverageSinr = true">
               {{ 'isAverageSinr' | translate }}
             </mat-checkbox> -->
-            <mat-checkbox [(ngModel)]="calculateForm.isCoverage" matTooltip="{{ 'isCoverage.tooltip' | translate }}"
-            (change)="changePlanningTarget('isCoverage')">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.coverage.activate" matTooltip="{{ 'isCoverage.tooltip' | translate }}">
               {{ 'isCoverage' | translate }}
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isSINR" matTooltip="{{ 'isSINR.tooltip' | translate }}"
-            (change)="changePlanningTarget('isSINR')">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.sinr.activate" matTooltip="{{ 'isSINR.tooltip' | translate }}">
               {{ 'isSINR' | translate }}
               <button value="SINRSetting" (click)="openSINRSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isRSRP" matTooltip="{{ 'isRSRP.tooltip' | translate }}"
-            (change)="changePlanningTarget('isRSRP')">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.rsrp.activate" matTooltip="{{ 'isRSRP.tooltip' | translate }}">
               {{ 'isRSRP' | translate }}
               <button value="RSRPSetting" (click)="openRSRPSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
 
-            <mat-checkbox [(ngModel)]="calculateForm.isThroughput" matTooltip="{{ 'isThroughput.tooltip' | translate }}"
-            (change)="changePlanningTarget('isThroughput')">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.throughput.activate" matTooltip="{{ 'isThroughput.tooltip' | translate }}">
               {{ 'isThroughput' | translate }}
               <button value="ThroughputSetting" (click)="openThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
@@ -425,12 +421,11 @@
             [checked]="selected === 3" (change)="selected = 3">
               {{ 'isUeAvgSinr' | translate }}
             </mat-checkbox> -->
-            <mat-checkbox [(ngModel)]="calculateForm.isUeAvgThroughput" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}"
-            (change)="changePlanningTarget('isUeAvgThroughput')">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}">
               {{ 'isUeAvgThroughput' | translate }}
               <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isUeCoverage" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
             (change)="changePlanningTarget('isUeCoverage')">
               {{ 'isUeCoverage' | translate }}
             </mat-checkbox>
@@ -1287,21 +1282,18 @@
                         </ng-container> 
                       </option> 
                     </ng-container>
-                     <!-- <option value="0">{{ 'material.wood' | translate }}</option>
+                      <!-- <option value="0">{{ 'material.wood' | translate }}</option>
                       <option value="1">{{ 'material.cement' | translate }}</option>
                       <option value="2">{{ 'material.light_steel_frame' | translate }}</option>
                       <option value="3">{{ 'material.glass' | translate }}</option>
                       <option value="4">{{ 'material.stainless' | translate }}</option>
                       <option value="5">{{ 'material.fireproof' | translate }}</option>
                       <option value="6">{{ 'material.fireSoundproof' | translate }}</option>
-<<<<<<< HEAD
                       <option value="7">{{ 'material.whiteBrick' | translate }}</option>
                       <option value="8">{{ 'material.flameproof' | translate }}</option>
                       <option value="9">{{ 'material.flameSoundproof' | translate }}</option>
                       <option value="10">{{ 'material.cabinet' | translate }}</option>
-=======
                       <option value="7">{{ 'material.whiteBrick' | translate }}</option>-->
->>>>>>> custimize
                     </select>
                   </span>
                   <span class="clearAll clearOne ml-3" (click)="removeObj(item)">
@@ -1926,32 +1918,32 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'SINR' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addSINR()" style="float:right, bottom" [disabled]="SINRSettingList.length >= 3 || isDefaultSINRSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addSINR()" style="float:right, bottom" [disabled]="evaluationFuncForm.field.sinr.ratio.length >= 3 || isDefaultSINRSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>  
       </tr>
       <tr>
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="SINRSettingList[i].area" (change)="checkArea(SINRSettingList[i].area)" [disabled]="isDefaultSINRSetting == 'default'">
+          <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.sinr.ratio[i].areaRatio)" [disabled]="isDefaultSINRSetting == 'default'">
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="SINRSettingList[i].condition" [disabled]="isDefaultSINRSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
+              [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].compliance" [disabled]="isDefaultSINRSetting == 'default'">
+                <option value="moreThan"> {{'moreThan' | translate}} </option>
+                <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="SINRSettingList[i].sinr" [disabled]="isDefaultSINRSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].value" [disabled]="isDefaultSINRSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of SINRSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == SINRSettingList.length-1 && SINRSettingList.length != 1" [disabled]="isDefaultSINRSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.sinr.ratio.length-1 && evaluationFuncForm.field.sinr.ratio.length != 1" [disabled]="isDefaultSINRSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -1977,32 +1969,32 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'RSRP' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addRSRP()" style="float:right, bottom" [disabled]="RSRPSettingList.length >= 3 || isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addRSRP()" style="float:right, bottom" [disabled]="evaluationFuncForm.field.rsrp.ratio.length >= 3 || isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
-          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="RSRPSettingList[i].area" (change)="checkArea(RSRPSettingList[i].area)" [disabled]="isDefaultRSRPSetting == 'default'">
+          <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.rsrp.ratio[i].areaRatio)" [disabled]="isDefaultRSRPSetting == 'default'">
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="RSRPSettingList[i].condition" [disabled]="isDefaultRSRPSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
+              [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].compliance" [disabled]="isDefaultRSRPSetting == 'default'">
+                <option value="moreThan"> {{'moreThan' | translate}} </option>
+                <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="RSRPSettingList[i].rsrp" [disabled]="isDefaultRSRPSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].value" [disabled]="isDefaultRSRPSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of RSRPSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == RSRPSettingList.length-1 && RSRPSettingList.length != 1" [disabled]="isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.rsrp.ratio.length-1 && evaluationFuncForm.field.rsrp.ratio.length != 1" [disabled]="isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2018,7 +2010,7 @@
 		<td>{{'target.setting.mode' | translate}}</td>
 		<td colspan="7">
 		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeThroughputSetting()" [(ngModel)]="isDefaultThroughputSetting">
-            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="default" style="margin-right: 400px;" >{{ 'default.target' | translate }}</mat-radio-button>
             <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
           </mat-radio-group>
 		</td>
@@ -2032,56 +2024,52 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addThroughput()" style="float:right, bottom" [disabled]="ThroughputSettingList.length >= 3 || isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addThroughput()" style="float:right, bottom" [disabled]="evaluationFuncForm.field.throughput.ratio.length >= 3 || isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].area" (change)="checkArea(ThroughputSettingList[i].area)" [disabled]="isDefaultThroughputSetting == 'default'">
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.throughput.ratio[i].areaRatio)" [disabled]="isDefaultThroughputSetting == 'default'">
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
             {{'UL' | translate}}
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="ThroughputSettingList[i].ULCondition" [disabled]="isDefaultThroughputSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
+              [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].compliance" [disabled]="isDefaultThroughputSetting == 'default'">
+                <option value="moreThan"> {{'moreThan' | translate}} </option>
+                <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].ULThroughput" (change)="checkThroughput(ThroughputSettingList[i].ULThroughput)" [disabled]="isDefaultThroughputSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].ULValue" (change)="checkThroughput(evaluationFuncForm.field.throughput.ratio[i].ULValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
             {{'DL' | translate}}
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <select step="2"
-              [(ngModel)]="ThroughputSettingList[i].DLCondition" [disabled]="isDefaultThroughputSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
-            </select>
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
+            {{evaluationFuncForm.field.throughput.ratio[i].compliance | translate}}
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="ThroughputSettingList[i].DLThroughput" (change)="checkThroughput(ThroughputSettingList[i].DLThroughput)" [disabled]="isDefaultThroughputSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].DLValue" (change)="checkThroughput(evaluationFuncForm.field.throughput.ratio[i].DLValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of ThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == ThroughputSettingList.length-1 && ThroughputSettingList.length != 1" [disabled]="isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.throughput.ratio.length-1 && evaluationFuncForm.field.throughput.ratio.length != 1" [disabled]="isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2097,7 +2085,7 @@
 		<td>{{'target.setting.mode' | translate}}</td>
 		<td colspan="7">
 		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeUEThroughputSetting()" [(ngModel)]="isDefaultUEThroughputSetting">
-            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
+            <mat-radio-button value="default" style="margin-right: 400px;" >{{ 'default.target' | translate }}</mat-radio-button>
             <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
           </mat-radio-group>
 		</td>
@@ -2111,56 +2099,52 @@
         <td>{{'Condition' | translate}}</td>
         <td>{{'Throughput' | translate}}</td> 
         <td> 
-          <button value="new" (click)="addUEThroughput()" style="float:right, bottom" [disabled]="UEThroughputSettingList.length >= 3 || isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
+          <button value="new" (click)="addUEThroughput()" style="float:right, bottom" [disabled]="evaluationFuncForm.ue.throughputByRsrp.ratio.length >= 3 || isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionNewCondition' | translate }}</button>  
         </td>     
       </tr>
       <tr>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].area" (change)="checkArea(UEThroughputSettingList[i].area)" [disabled]="isDefaultUEThroughputSetting == 'default'">
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio)" [disabled]="isDefaultUEThroughputSetting == 'default'">
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             {{'UL' | translate}}
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="UEThroughputSettingList[i].ULCondition" [disabled]="isDefaultUEThroughputSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
+              [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance" [disabled]="isDefaultUEThroughputSetting == 'default'">
+                <option value="moreThan"> {{'moreThan' | translate}} </option>
+                <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].ULThroughput"  (change)="checkThroughput(UEThroughputSettingList[i].ULThroughput)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue"  (change)="checkThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             {{'DL' | translate}}
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <select step="2"
-              [(ngModel)]="UEThroughputSettingList[i].DLCondition" [disabled]="isDefaultUEThroughputSetting == 'default'">
-                <option value="MoreThan"> {{'MoreThan' | translate}} </option>
-                <option value="LessThan"> {{'LessThan' | translate}} </option>
-            </select>
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            {{evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance | translate}}
           </div>
         </td>        
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="UEThroughputSettingList[i].DLThroughput" (change)="checkThroughput(UEThroughputSettingList[i].DLThroughput)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue" (change)="checkThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
-          <div *ngFor="let setting of UEThroughputSettingList; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == UEThroughputSettingList.length-1 && UEThroughputSettingList.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+          <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
+            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.ue.throughputByRsrp.ratio.length-1 && evaluationFuncForm.ue.throughputByRsrp.ratio.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>

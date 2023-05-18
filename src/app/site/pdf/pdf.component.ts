@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/
 import { AuthService } from '../../service/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
+import { EvaluationFuncForm, RatioForm } from '../../form/EvaluationFuncForm';
 import html2canvas from 'html2canvas';
 import * as jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -682,16 +683,16 @@ export class PdfComponent implements OnInit {
       coverageTarget = this.translateService.instant('isCoverage') + "\n\n";
 	  targetLine += 2;
     }
-    if (this.calculateForm.isSINR) 
+    if (this.calculateForm.evaluationFunc.field.sinr.activate) 
     {
       SINRTarget = this.translateService.instant('isSINR') + "\n";
 	  targetLine++;
 
-      for(var x = 0; x < this.calculateForm.SINRSettingList.length; x++)
+      for(var x = 0; x < this.calculateForm.evaluationFunc.field.sinr.ratio.length; x++)
       {
-        condition = this.translateService.instant(this.calculateForm.SINRSettingList[x].condition);
-        SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.SINRSettingList[x].area + "% " + 
-        condition + " " + this.calculateForm.SINRSettingList[x].sinr + "dB\n";
+        condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.sinr.ratio[x].compliance);
+        SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio + "% " + 
+        condition + " " + this.calculateForm.evaluationFunc.field.sinr.ratio[x].value + "dB\n";
 		targetLine++;
       }
 	  SINRContent += "\n";
@@ -702,11 +703,11 @@ export class PdfComponent implements OnInit {
       RSRPTarget = this.translateService.instant('isRSRP') + "\n";
 	  targetLine++;
 
-      for(var x = 0; x < this.calculateForm.RSRPSettingList.length; x++)
+      for(var x = 0; x < this.calculateForm.evaluationFunc.field.rsrp.ratio.length; x++)
       {
-        condition = this.translateService.instant(this.calculateForm.RSRPSettingList[x].condition);
-        RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.RSRPSettingList[x].area + "% " + 
-        condition + " " + this.calculateForm.RSRPSettingList[x].rsrp + "dB\n";
+        condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.rsrp.ratio[x].compliance);
+        RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio + "% " + 
+        condition + " " + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].value + "dB\n";
 		targetLine++;
       }
 	  
@@ -718,13 +719,13 @@ export class PdfComponent implements OnInit {
       throughputTarget = this.translateService.instant('isThroughput') + "\n";
 	  targetLine++;
 
-      for(var x = 0; x < this.calculateForm.ThroughputSettingList.length; x++)
+      for(var x = 0; x < this.calculateForm.evaluationFunc.field.throughput.ratio.length; x++)
       {
-        ULcondition = this.translateService.instant(this.calculateForm.ThroughputSettingList[x].ULCondition);
-        DLcondition = this.translateService.instant(this.calculateForm.ThroughputSettingList[x].DLCondition);
-        throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.ThroughputSettingList[x].area + "% UL " + 
-        ULcondition + " " + this.calculateForm.ThroughputSettingList[x].ULThroughput + "Mbps"+
-        "; DL " + DLcondition + this.calculateForm.ThroughputSettingList[x].DLThroughput + "Mbps\n";
+        ULcondition = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
+        DLcondition = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
+        throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% UL " + 
+        ULcondition + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n"+
+        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
 		targetLine++;
       }
 	  
@@ -741,13 +742,13 @@ export class PdfComponent implements OnInit {
       UEThroughtpuTarget = this.translateService.instant('isUeAvgThroughput') + "\n";
 	  targetLine++;
 
-      for(var x = 0; x < this.calculateForm.UEThroughputSettingList.length; x++)
+      for(var x = 0; x < this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio.length; x++)
       {
-        ULcondition = this.translateService.instant(this.calculateForm.UEThroughputSettingList[x].ULCondition);
-        DLcondition = this.translateService.instant(this.calculateForm.UEThroughputSettingList[x].DLCondition);
-        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.UEThroughputSettingList[x].area + "% UL " + 
-        ULcondition + " " + this.calculateForm.UEThroughputSettingList[x].ULThroughput + "Mbps"+
-        "; DL " + DLcondition + this.calculateForm.UEThroughputSettingList[x].DLThroughput + "Mbps\n";
+        ULcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
+        DLcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
+        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% UL " + 
+        ULcondition + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
+        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
 		targetLine++;
       }
 	  UEThroughputContent += "\n";
@@ -788,7 +789,7 @@ export class PdfComponent implements OnInit {
     });
 
     //pos+= 85 + targetLine*7;
-	pos = 10;
+	  pos = 10;
     pdf.addPage();
 
     let statistics;
