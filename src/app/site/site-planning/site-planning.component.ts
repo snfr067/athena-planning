@@ -3843,10 +3843,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               unAchievedObj.isUEThroughputByRsrpUnAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
               unAchievedObj.isUECoverageUnAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
               
-              console.log(resCalcResult['output'].evaluationGoal.field.sinr);
-              console.log(this.calculateForm.evaluationFunc.field.sinr.unAchieved);
-              console.log(resCalcResult['output'].evaluationGoal.field.rsrp);
-              console.log(this.calculateForm.evaluationFunc.field.rsrp.unAchieved);
 
               var unAchieved = unAchievedObj.isFieldSINRUnAchieved || unAchievedObj.isFieldRSRPUnAchieved ||
               unAchievedObj.isFieldThroughputUnAchieved || unAchievedObj.isFieldCoverageUnAchieved ||
