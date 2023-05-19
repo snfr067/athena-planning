@@ -676,48 +676,39 @@ export class PdfComponent implements OnInit {
     var ULcondition = "";
     var DLcondition = "";
 	
-	var targetLine = 0;
 
-    if (this.calculateForm.isCoverage) 
+    if (this.calculateForm.evaluationFunc.field.coverage.activate) 
     {
       coverageTarget = this.translateService.instant('isCoverage') + "\n\n";
-	  targetLine += 2;
     }
     if (this.calculateForm.evaluationFunc.field.sinr.activate) 
     {
       SINRTarget = this.translateService.instant('isSINR') + "\n";
-	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.sinr.ratio.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.sinr.ratio[x].compliance);
         SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio + "% " + 
         condition + " " + this.calculateForm.evaluationFunc.field.sinr.ratio[x].value + "dB\n";
-		targetLine++;
       }
-	  SINRContent += "\n";
-	  targetLine++;
+	    SINRContent += "\n";
     }
-    if (this.calculateForm.isRSRP) 
+    if (this.calculateForm.evaluationFunc.field.rsrp.activate) 
     {
       RSRPTarget = this.translateService.instant('isRSRP') + "\n";
-	  targetLine++;
-
+	  
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.rsrp.ratio.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.rsrp.ratio[x].compliance);
         RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio + "% " + 
         condition + " " + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].value + "dB\n";
-		targetLine++;
       }
 	  
-	  RSRPContent += "\n";
-	  targetLine++;
+	    RSRPContent += "\n";
     }
-    if (this.calculateForm.isThroughput) 
+    if (this.calculateForm.evaluationFunc.field.throughput.activate) 
     {
       throughputTarget = this.translateService.instant('isThroughput') + "\n";
-	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.throughput.ratio.length; x++)
       {
@@ -726,21 +717,17 @@ export class PdfComponent implements OnInit {
         throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% UL " + 
         ULcondition + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n"+
         this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
-		targetLine++;
-      }
+		  }
 	  
-	  throughputContent += "\n";
-	  targetLine++;
+	    throughputContent += "\n";
     }
-    if (this.calculateForm.isUeCoverage) 
+    if (this.calculateForm.evaluationFunc.ue.coverage.activate) 
     {
       UEcoverageTarget = this.translateService.instant('isUeCoverage') + "\n\n";
-	  targetLine += 2;
     }
-    if (this.calculateForm.isUeAvgThroughput) 
+    if (this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate) 
     {
       UEThroughtpuTarget = this.translateService.instant('isUeAvgThroughput') + "\n";
-	  targetLine++;
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio.length; x++)
       {
@@ -749,10 +736,8 @@ export class PdfComponent implements OnInit {
         UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% UL " + 
         ULcondition + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
         this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
-		targetLine++;
       }
-	  UEThroughputContent += "\n";
-	  targetLine++;
+	    UEThroughputContent += "\n";
     }
 
     let target = coverageTarget + 
