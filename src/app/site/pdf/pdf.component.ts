@@ -688,7 +688,7 @@ export class PdfComponent implements OnInit {
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.sinr.ratio.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.sinr.ratio[x].compliance);
-        SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio + "% " + 
+        SINRContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio*100 + "% " + 
         condition + " " + this.calculateForm.evaluationFunc.field.sinr.ratio[x].value + "dB\n";
       }
 	    SINRContent += "\n";
@@ -700,7 +700,7 @@ export class PdfComponent implements OnInit {
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.rsrp.ratio.length; x++)
       {
         condition = this.translateService.instant(this.calculateForm.evaluationFunc.field.rsrp.ratio[x].compliance);
-        RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio + "% " + 
+        RSRPContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio*100 + "% " + 
         condition + " " + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].value + "dB\n";
       }
 	  
@@ -714,9 +714,9 @@ export class PdfComponent implements OnInit {
       {
         ULcondition = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
         DLcondition = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
-        throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% UL " + 
+        throughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100 + "% UL " + 
         ULcondition + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n"+
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
+        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100 + "% DL " + DLcondition + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
 		  }
 	  
 	    throughputContent += "\n";
@@ -733,9 +733,9 @@ export class PdfComponent implements OnInit {
       {
         ULcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
         DLcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
-        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% UL " + 
+        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio*100 + "% UL " + 
         ULcondition + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio + "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio*100 + "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
       }
 	    UEThroughputContent += "\n";
     }
