@@ -3415,9 +3415,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
       this.calculateForm.isUeCoverage = false;
+
+      this.evaluationFuncForm.ue.coverage.activate = false;
+      this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
     } else {
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;
+
+      this.evaluationFuncForm.field.coverage.activate = false;
+      this.evaluationFuncForm.field.throughput.activate = false;
+      this.evaluationFuncForm.field.sinr.activate = false;
+      this.evaluationFuncForm.field.rsrp.activate = false;
     }
 
     this.calculateForm.evaluationFunc = this.evaluationFuncForm;
@@ -3782,12 +3790,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               console.log(resCalcResult);
 
-              this.calculateForm.isFieldSINRUnAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
-              this.calculateForm.isFieldRSRPUnAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
-              this.calculateForm.isFieldThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
-              this.calculateForm.isFieldCoverageUnAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
-              this.calculateForm.isUEThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
-              this.calculateForm.isUECoverageUnAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
+              this.calculateForm.evaluationFunc.field.sinr.unAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
+              this.calculateForm.evaluationFunc.field.rsrp.unAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
+              this.calculateForm.evaluationFunc.field.throughput.unAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
+              this.calculateForm.evaluationFunc.field.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
+              this.calculateForm.evaluationFunc.ue.throughputByRsrp.unAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
+              this.calculateForm.evaluationFunc.ue.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
+
+              this.calculateForm.test = 200;
 
               console.log(resCalcResult['output'].evaluationGoal.field.sinr);
               console.log(this.calculateForm.isFieldSINRUnAchieved);

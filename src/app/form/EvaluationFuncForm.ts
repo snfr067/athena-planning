@@ -24,24 +24,28 @@ export class UEForm
 export class SINRForm 
 {
     activate: boolean = false;
+    unAchieved: boolean = false;
     ratio: RatioForm[] = [];    
 }
 
 export class RSRPForm 
 {
     activate: boolean = false;
+    unAchieved: boolean = false;
     ratio: RatioForm[] = [];    
 }
 
 export class ThroughputForm 
 {
     activate: boolean = false;
+    unAchieved: boolean = false;
     ratio: ThroughputRatioForm[] = [];    
 }
 
 export class CoverageForm 
 {
     activate: boolean = false;
+    unAchieved: boolean = false;
 	ratio: number = 0.95;
 }
 
