@@ -3804,11 +3804,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               console.log(resCalcResult['output'].evaluationGoal.field.rsrp);
               console.log(this.calculateForm.isFieldRSRPUnAchieved);
 
-              var achieved = this.calculateForm.isFieldSINRUnAchieved && this.calculateForm.isFieldRSRPUnAchieved &&
-              this.calculateForm.isFieldThroughputUnAchieved && this.calculateForm.isFieldCoverageUnAchieved &&
-              this.calculateForm.isUEThroughputUnAchieved && this.calculateForm.isUECoverageUnAchieved;
+              var unAchieved = this.calculateForm.isFieldSINRUnAchieved || this.calculateForm.isFieldRSRPUnAchieved ||
+              this.calculateForm.isFieldThroughputUnAchieved || this.calculateForm.isFieldCoverageUnAchieved ||
+              this.calculateForm.isUEThroughputUnAchieved || this.calculateForm.isUECoverageUnAchieved;
 
-              if(!achieved)
+              if(unAchieved)
               {
                 this.authService.spinnerHide();
 
