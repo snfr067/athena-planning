@@ -3790,23 +3790,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               console.log(resCalcResult);
 
-              this.calculateForm.evaluationFunc.field.sinr.unAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
-              this.calculateForm.evaluationFunc.field.rsrp.unAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
-              this.calculateForm.evaluationFunc.field.throughput.unAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
-              this.calculateForm.evaluationFunc.field.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
-              this.calculateForm.evaluationFunc.ue.throughputByRsrp.unAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
-              this.calculateForm.evaluationFunc.ue.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
-
-              this.calculateForm.test = 200;
+              this.evaluationFuncForm.field.sinr.unAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
+              this.evaluationFuncForm.field.rsrp.unAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
+              this.evaluationFuncForm.field.throughput.unAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
+              this.evaluationFuncForm.field.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
+              this.evaluationFuncForm.ue.throughputByRsrp.unAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
+              this.evaluationFuncForm.ue.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
 
               console.log(resCalcResult['output'].evaluationGoal.field.sinr);
-              console.log(this.calculateForm.isFieldSINRUnAchieved);
+              console.log(this.evaluationFuncForm.field.sinr.unAchieved);
               console.log(resCalcResult['output'].evaluationGoal.field.rsrp);
-              console.log(this.calculateForm.isFieldRSRPUnAchieved);
+              console.log(this.evaluationFuncForm.field.rsrp.unAchieved);
 
-              var unAchieved = this.calculateForm.isFieldSINRUnAchieved || this.calculateForm.isFieldRSRPUnAchieved ||
-              this.calculateForm.isFieldThroughputUnAchieved || this.calculateForm.isFieldCoverageUnAchieved ||
-              this.calculateForm.isUEThroughputUnAchieved || this.calculateForm.isUECoverageUnAchieved;
+              this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+
+              var unAchieved = this.calculateForm.evaluationFunc.field.sinr.unAchieved || this.calculateForm.evaluationFunc.field.rsrp.unAchieved ||
+              this.calculateForm.evaluationFunc.field.throughput.unAchieved || this.calculateForm.evaluationFunc.field.coverage.unAchieved ||
+              this.calculateForm.evaluationFunc.ue.throughputByRsrp.unAchieved || this.calculateForm.evaluationFunc.ue.coverage.unAchieved;
 
               if(unAchieved)
               {
@@ -3827,7 +3827,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   for (let i = 0; i < this.pgInterval; i++) {
                     window.clearInterval(i);
                   }
-                  sessionStorage.removeItem('calculateForm');
+                  localStorage.setItem(`calculateForm`, JSON.stringify(this.calculateForm));
                   sessionStorage.removeItem('importFile');
                   sessionStorage.removeItem('taskName');
                   this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
@@ -3845,7 +3845,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 for (let i = 0; i < this.pgInterval; i++) {
                   window.clearInterval(i);
                 }
-                sessionStorage.removeItem('calculateForm');
                 sessionStorage.removeItem('importFile');
                 sessionStorage.removeItem('taskName');
                 this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {

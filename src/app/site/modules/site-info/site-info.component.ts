@@ -43,6 +43,11 @@ export class SiteInfoComponent implements OnInit {
     // }
     // console.log(this.result);
     // setInterval(()=> {console.log(this.calculateForm);},10000);
+
+    if (localStorage.getItem(`calculateForm`) != null) {
+      this.calculateForm = JSON.parse(localStorage.getItem(`calculateForm`));
+    }
+    console.log(this.calculateForm);
   }
 
   /** parse 網路種類 */

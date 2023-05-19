@@ -67,7 +67,7 @@
 			  {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps
 			</div>
 		</div>
-        <div *ngIf="calculateForm.isUeCoverage">{{ 'isUeCoverage' | translate }}
+        <div *ngIf="calculateForm.evaluationFunc.ue.coverage.activate">{{ 'isUeCoverage' | translate }}
           <font color="red" *ngIf="calculateForm.evaluationFunc.ue.coverage.unAchieved">{{ 'unachieved' | translate }}</font>
         </div>
       </span>
