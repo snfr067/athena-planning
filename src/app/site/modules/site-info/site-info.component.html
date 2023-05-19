@@ -23,15 +23,15 @@
           <font color="red" *ngIf="calculateForm.isFieldCoverageUnAchieved">{{ 'unachieved' | translate }}</font>
         </div>
         <div *ngIf="calculateForm.evaluationFunc.field.sinr.activate">
-          {{ 'isSINR' | translate }}          
+          {{ 'isSINR' | translate }}             
           <font color="red" *ngIf="calculateForm.isFieldSINRUnAchieved">{{ 'unachieved' | translate }}</font>
-        <div *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
-          {{i+1}}. {{ 'FieldArea' | translate }}
-          {{calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio}}%
-          {{calculateForm.evaluationFunc.field.sinr.ratio[i].compliance | translate }}
-          {{calculateForm.evaluationFunc.field.sinr.ratio[i].value}}dB
-        </div>
-		</div>
+          <div *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
+            {{i+1}}. {{ 'FieldArea' | translate }}
+            {{calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio}}%
+            {{calculateForm.evaluationFunc.field.sinr.ratio[i].compliance | translate }}
+            {{calculateForm.evaluationFunc.field.sinr.ratio[i].value}}dB
+          </div>
+		    </div>
         <div *ngIf="calculateForm.evaluationFunc.field.rsrp.activate">{{ 'isRSRP' | translate }}
           <font color="red" *ngIf="calculateForm.isFieldRSRPUnAchieved">{{ 'unachieved' | translate }}</font>
 			<div *ngFor="let setting of calculateForm.evaluationFunc.field.rsrp.ratio; let i=index">
