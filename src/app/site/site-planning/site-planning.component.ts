@@ -373,6 +373,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http error */
   statusCode = "";
   errMsg = "";
+  isBsNumberOptimization = "default";
   isDefaultSINRSetting = "default";
   isDefaultRSRPSetting = "default";
   isDefaultThroughputSetting = "default";
@@ -3427,7 +3428,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
 	  
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
-	  apiBody.isBsNumberOptimization = false;
+	    apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
 	  
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();

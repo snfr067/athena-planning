@@ -443,7 +443,11 @@
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
           <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
-            <input type="number" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber">
+            <mat-radio-group class="inline-block" style="display: flex; width: 170px" [(ngModel)]="isBsNumberOptimization">
+              <mat-radio-button value="default" style="margin-right: 50px;" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
+              <mat-radio-button value="custom" >{{ 'custom.BsNumberOptimization' | translate }}</mat-radio-button>
+            </mat-radio-group>
+            <input type="number" style="float:center" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
           </div>
           <p class="sub_title inline-block">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp2">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
@@ -1911,7 +1915,7 @@
 		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeSINRSetting()" [(ngModel)]="isDefaultSINRSetting">
             <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
             <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
-          </mat-radio-group>
+      </mat-radio-group>
 		</td>
 	  </tr>
       <tr>
