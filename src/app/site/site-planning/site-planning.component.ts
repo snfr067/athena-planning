@@ -599,6 +599,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     });
+
+    
+    if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
+      this.addSINR();
+   
+    if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
+      this.addRSRP();
+    
+    if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
+      this.addThroughput();
+   
+    if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+      this.addUEThroughput();
+
     //取得材質列表
     const promise = new Promise((resolve, reject) => {
       let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;

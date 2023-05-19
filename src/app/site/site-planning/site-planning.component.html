@@ -421,7 +421,8 @@
             [checked]="selected === 3" (change)="selected = 3">
               {{ 'isUeAvgSinr' | translate }}
             </mat-checkbox> -->
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}" 
+            (change)="changePlanningTarget('isUeCoverage')">
               {{ 'isUeAvgThroughput' | translate }}
               <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
@@ -1943,7 +1944,7 @@
         </td>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.sinr.ratio.length-1 && evaluationFuncForm.field.sinr.ratio.length != 1" [disabled]="isDefaultSINRSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delSINR(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.sinr.ratio.length-1 && evaluationFuncForm.field.sinr.ratio.length != 1" [disabled]="isDefaultSINRSetting == 'default' || evaluationFuncForm.field.sinr.ratio.length == 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -1994,7 +1995,7 @@
         </td>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.rsrp.ratio.length-1 && evaluationFuncForm.field.rsrp.ratio.length != 1" [disabled]="isDefaultRSRPSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delRSRP(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.rsrp.ratio.length-1 && evaluationFuncForm.field.rsrp.ratio.length != 1" [disabled]="isDefaultRSRPSetting == 'default' || evaluationFuncForm.field.rsrp.ratio.length == 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2069,7 +2070,7 @@
         </td>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.throughput.ratio.length-1 && evaluationFuncForm.field.throughput.ratio.length != 1" [disabled]="isDefaultThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.field.throughput.ratio.length-1 && evaluationFuncForm.field.throughput.ratio.length != 1" [disabled]="isDefaultThroughputSetting == 'default' || evaluationFuncForm.field.throughput.ratio.length == 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
@@ -2144,7 +2145,7 @@
         </td>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.ue.throughputByRsrp.ratio.length-1 && evaluationFuncForm.ue.throughputByRsrp.ratio.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default'">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
+            <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.ue.throughputByRsrp.ratio.length-1 && evaluationFuncForm.ue.throughputByRsrp.ratio.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default' || evaluationFuncForm.ue.throughputByRsrp.ratio.length == 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
         </td>
       </tr>
