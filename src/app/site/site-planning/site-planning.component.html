@@ -1938,7 +1938,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].value" [disabled]="isDefaultSINRSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].value" (change)="checkSINR(evaluationFuncForm.field.sinr.ratio[i].value)" [disabled]="isDefaultSINRSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -1989,7 +1989,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].value" [disabled]="isDefaultRSRPSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].value" (change)="checkRSRP(evaluationFuncForm.field.rsrp.ratio[i].value)" [disabled]="isDefaultRSRPSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2049,7 +2049,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].ULValue" (change)="checkThroughput(evaluationFuncForm.field.throughput.ratio[i].ULValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].ULValue" (change)="checkULThroughput(evaluationFuncForm.field.throughput.ratio[i].ULValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2064,7 +2064,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].DLValue" (change)="checkThroughput(evaluationFuncForm.field.throughput.ratio[i].DLValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].DLValue" (change)="checkDLThroughput(evaluationFuncForm.field.throughput.ratio[i].DLValue)" [disabled]="isDefaultThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2124,7 +2124,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue"  (change)="checkThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue"  (change)="checkULThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   
@@ -2139,7 +2139,7 @@
         </td>        
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue" (change)="checkThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue" (change)="checkDLThroughput(evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)" [disabled]="isDefaultUEThroughputSetting == 'default'"> 
           </div>
         </td>
         <td>   

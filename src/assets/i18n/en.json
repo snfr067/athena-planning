@@ -443,7 +443,10 @@
 	"cant_get_result": "Can't get calculation result!",
 	"switch_duplex_hint": "After switching the duplex mode, please remember to check whether the BS RF parameters are filled in",
 	"area_fault": "Area should be between 1 and 100",
-	"throughput_fault": "Rate should be larger than 0",
+	"ulthroughput_fault": "Rate should be between 0 and 1800",
+	"dlthroughput_fault": "Rate should be between 0 and 800",
+	"sinr_fault": "sinr should be between-23 and 40",
+	"rsrp_fault": "rsrp should be between-44 and -140",
 
 	"default": "D",
 	"candidate": "C",

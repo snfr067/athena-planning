@@ -34,6 +34,14 @@ export class SiteInfoComponent implements OnInit {
     isUeAvgThroughput: false,
     isUeCoverage: false
   };
+  unAchievedObj = {    
+    isFieldSINRUnAchieved: false,
+    isFieldRSRPUnAchieved: false,
+    isFieldThroughputUnAchieved: false,
+    isFieldCoverageUnAchieved: false,
+    isUEThroughputByRsrpUnAchieved: false,
+    isUECoverageUnAchieved: false
+  }
 
   ngOnInit(): void {
     // console.log(sessionStorage.getItem('planningObj'));
@@ -44,10 +52,12 @@ export class SiteInfoComponent implements OnInit {
     // console.log(this.result);
     // setInterval(()=> {console.log(this.calculateForm);},10000);
 
-    if (localStorage.getItem(`calculateForm`) != null) {
-      this.calculateForm = JSON.parse(localStorage.getItem(`calculateForm`));
+    if (localStorage.getItem(`unAchievedObj`) != null) {
+      this.unAchievedObj = JSON.parse(localStorage.getItem(`unAchievedObj`));
+      localStorage.removeItem(`unAchievedObj`)
     }
     console.log(this.calculateForm);
+    console.log(this.unAchievedObj);
   }
 
   /** parse 網路種類 */

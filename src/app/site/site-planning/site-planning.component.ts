@@ -378,10 +378,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   isDefaultThroughputSetting = "default";
   isDefaultUEThroughputSetting = "default";
   defaultArea = 95;
-  defaultSINRSetting = 20;
-  defaultRSRPSetting = 20;
-  defaultThroughputSetting = 900;
-  defaultUEThroughputSetting = 900;
+  defaultSINRSetting = 8.5;
+  sinrUpperLimit = 40;
+  sinrLowerLimit = -23;
+  defaultRSRPSetting = -92;
+  rsrpUpperLimit = -44;
+  rsrpLowerLimit = -140;
+  defaultULThroughputSetting = 900;
+  ulThroughputUpperLimit = 1800;
+  ulThroughputLowerLimit = 0;
+  defaultDLThroughputSetting = 400;
+  dlThroughputUpperLimit = 800;
+  dlThroughputLowerLimit = 0;
 
   // useSmartAntenna = "false";
   /** 畫圖物件 */
@@ -3428,6 +3436,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.field.rsrp.activate = false;
     }
 
+    if(this.evaluationFuncForm.field.sinr.activate)
+    {
+      for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
+      {
+        this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio/100;
+      }
+    }
+    if(this.evaluationFuncForm.field.rsrp.activate)
+    {
+      for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
+      {
+        this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio/100;
+      }
+    }
+    if(this.evaluationFuncForm.field.throughput.activate)
+    {
+      for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
+      {
+        this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100;
+      }
+    }
+    if(this.evaluationFuncForm.ue.throughputByRsrp.activate)
+    {
+      for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio/100;
+      }
+    }
+
     this.calculateForm.evaluationFunc = this.evaluationFuncForm;
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
@@ -3790,23 +3827,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               console.log(resCalcResult);
 
-              this.evaluationFuncForm.field.sinr.unAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
-              this.evaluationFuncForm.field.rsrp.unAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
-              this.evaluationFuncForm.field.throughput.unAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
-              this.evaluationFuncForm.field.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
-              this.evaluationFuncForm.ue.throughputByRsrp.unAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
-              this.evaluationFuncForm.ue.coverage.unAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
+              var unAchievedObj = {
+                isFieldSINRUnAchieved: false,
+                isFieldRSRPUnAchieved: false,
+                isFieldThroughputUnAchieved: false,
+                isFieldCoverageUnAchieved: false,
+                isUEThroughputByRsrpUnAchieved: false,
+                isUECoverageUnAchieved: false
+              };
 
+              unAchievedObj.isFieldSINRUnAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
+              unAchievedObj.isFieldRSRPUnAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
+              unAchievedObj.isFieldThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
+              unAchievedObj.isFieldCoverageUnAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
+              unAchievedObj.isUEThroughputByRsrpUnAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
+              unAchievedObj.isUECoverageUnAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
+              
               console.log(resCalcResult['output'].evaluationGoal.field.sinr);
-              console.log(this.evaluationFuncForm.field.sinr.unAchieved);
+              console.log(this.calculateForm.evaluationFunc.field.sinr.unAchieved);
               console.log(resCalcResult['output'].evaluationGoal.field.rsrp);
-              console.log(this.evaluationFuncForm.field.rsrp.unAchieved);
+              console.log(this.calculateForm.evaluationFunc.field.rsrp.unAchieved);
 
-              this.calculateForm.evaluationFunc = this.evaluationFuncForm;
-
-              var unAchieved = this.calculateForm.evaluationFunc.field.sinr.unAchieved || this.calculateForm.evaluationFunc.field.rsrp.unAchieved ||
-              this.calculateForm.evaluationFunc.field.throughput.unAchieved || this.calculateForm.evaluationFunc.field.coverage.unAchieved ||
-              this.calculateForm.evaluationFunc.ue.throughputByRsrp.unAchieved || this.calculateForm.evaluationFunc.ue.coverage.unAchieved;
+              var unAchieved = unAchievedObj.isFieldSINRUnAchieved || unAchievedObj.isFieldRSRPUnAchieved ||
+              unAchievedObj.isFieldThroughputUnAchieved || unAchievedObj.isFieldCoverageUnAchieved ||
+              unAchievedObj.isUEThroughputByRsrpUnAchieved || unAchievedObj.isUECoverageUnAchieved;
 
               if(unAchieved)
               {
@@ -3827,7 +3871,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   for (let i = 0; i < this.pgInterval; i++) {
                     window.clearInterval(i);
                   }
-                  localStorage.setItem(`calculateForm`, JSON.stringify(this.calculateForm));
+                  localStorage.setItem(`unAchievedObj`, JSON.stringify(unAchievedObj));
                   sessionStorage.removeItem('importFile');
                   sessionStorage.removeItem('taskName');
                   this.router.navigate(['/site/result'], { queryParams: { taskId: this.taskid }}).then(() => {
@@ -8055,8 +8099,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       "areaRatio": this.defaultArea, 
       "compliance": "moreThan",
-      "ULValue":  this.defaultThroughputSetting,
-      "DLValue":  this.defaultThroughputSetting
+      "ULValue":  this.defaultULThroughputSetting,
+      "DLValue":  this.defaultDLThroughputSetting
     });
   }
 
@@ -8070,8 +8114,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       "areaRatio": this.defaultArea, 
       "compliance": "moreThan",
-      "ULValue":  this.defaultThroughputSetting,
-      "DLValue":  this.defaultThroughputSetting
+      "ULValue":  this.defaultULThroughputSetting,
+      "DLValue":  this.defaultDLThroughputSetting
     });
   }
 
@@ -8087,10 +8131,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       msg = this.translateService.instant('area_fault');
     }
-    else
-    {
-      area = area / 100;
-    }
 
     if (msg != '') {
       this.msgDialogConfig.data = {
@@ -8101,12 +8141,60 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  checkThroughput(throughput) {
+  checkSINR(sinr) {
+    console.log('Check sinr:'+ sinr);
+    let msg = '';
+
+    if(sinr < this.sinrLowerLimit || sinr > this.sinrUpperLimit)
+      msg = this.translateService.instant('sinr_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+
+  checkRSRP(rsrp) {
+    console.log('Check rsrp:'+ rsrp);
+    let msg = '';
+
+    if(rsrp < this.rsrpLowerLimit || rsrp > this.rsrpUpperLimit)
+      msg = this.translateService.instant('rsrp_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+
+  checkULThroughput(throughput) {
     console.log('Check throughput:'+ throughput);
     let msg = '';
 
-    if(throughput < 0)
-      msg = this.translateService.instant('throughput_fault');
+    if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit)
+      msg = this.translateService.instant('ulthroughput_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+  }
+
+  checkDLThroughput(throughput) {
+    console.log('Check throughput:'+ throughput);
+    let msg = '';
+
+    if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit)
+      msg = this.translateService.instant('dlthroughput_fault');
 
     if (msg != '') {
       this.msgDialogConfig.data = {
