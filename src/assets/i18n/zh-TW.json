@@ -447,6 +447,7 @@
 	"dlthroughput_fault": "速率數值應在0~800之間",
 	"sinr_fault": "sinr數值應在-23~40之間",
 	"rsrp_fault": "rsrp數值應在-44~-140之間",
+	"no_target_fault": "請至少選擇一個目標函數",
 
 	"default": "既有",
 	"candidate": "待選",

@@ -3373,6 +3373,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    } else if (this.planningIndex === '1' && !this.evaluationFuncForm.field.coverage.activate && 
+    !this.evaluationFuncForm.field.rsrp.activate && !this.evaluationFuncForm.field.sinr.activate && 
+    !this.evaluationFuncForm.field.throughput.activate) {
+      let msg = this.translateService.instant('no_target_fault');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    } else if (this.planningIndex === '2' && !this.evaluationFuncForm.ue.coverage.activate && 
+    !this.evaluationFuncForm.ue.throughputByRsrp.activate) {
+      let msg = this.translateService.instant('no_target_fault');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
     } else {
       this.progressNum = 0;
       // console.log(this.calculateForm.bandwidth);

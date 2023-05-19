@@ -447,6 +447,7 @@
 	"dlthroughput_fault": "Rate should be between 0 and 800",
 	"sinr_fault": "sinr should be between-23 and 40",
 	"rsrp_fault": "rsrp should be between-44 and -140",
+	"no_target_fault": "Please choose at least one target",
 
 	"default": "D",
 	"candidate": "C",
