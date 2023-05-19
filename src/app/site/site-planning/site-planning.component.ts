@@ -3782,12 +3782,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               console.log(resCalcResult);
 
-              this.calculateForm.isFieldSINRGoal = resCalcResult['evaluategoal_field_sinr'] != "unachieved";
-              this.calculateForm.isFieldRSRPGoal = resCalcResult['evaluategoal_field_rsrp'] != "unachieved";
-              this.calculateForm.isFieldThroughputGoal = resCalcResult['evaluategoal_field_throughput'] != "unachieved";
-              this.calculateForm.isFieldCoverageGoal = resCalcResult['evaluategoal_field_coverage'] != "unachieved";
-              this.calculateForm.isUEThroughputGoal = resCalcResult['evaluategoal_ue_throughputbyrsrp'] != "unachieved";
-              this.calculateForm.isUECoverageGoal = resCalcResult['evaluategoal_ue_coverage'] != "unachieved";
+              this.calculateForm.isFieldSINRGoal = resCalcResult['output'].evaluationGoal.field.sinr != "unachieved";
+              this.calculateForm.isFieldRSRPGoal = resCalcResult['output'].evaluationGoal.field.rsrp != "unachieved";
+              this.calculateForm.isFieldThroughputGoal = resCalcResult['output'].evaluationGoal.field.throughput != "unachieved";
+              this.calculateForm.isFieldCoverageGoal = resCalcResult['output'].evaluationGoal.field.coverage != "unachieved";
+              this.calculateForm.isUEThroughputGoal = resCalcResult['output'].evaluationGoal.ue.throughputByRsrp != "unachieved";
+              this.calculateForm.isUECoverageGoal = resCalcResult['output'].evaluationGoal.ue.coverage != "unachieved";
+
+              console.log(resCalcResult['output'].evaluationGoal.field.sinr);
+              console.log(resCalcResult['output'].evaluationGoal.ue.coverage);
 
               var achieved = this.calculateForm.isFieldSINRGoal && this.calculateForm.isFieldRSRPGoal &&
               this.calculateForm.isFieldThroughputGoal && this.calculateForm.isFieldCoverageGoal &&
