@@ -491,6 +491,8 @@
 	"target.setting.mode": "設定模式",
 	"default.target": "預設目標",
 	"custom.target": "自訂目標",
+	"default.BsNumberOptimization": "預設",
+	"custom.BsNumberOptimization": "自訂",
 
 	"target.unachieved": "計算結果未能滿足您所設定的目標函數，是否仍要顯示計算結果?",
 	"unachieved": "(未達標)"
