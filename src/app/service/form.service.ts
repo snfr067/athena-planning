@@ -87,11 +87,11 @@ export class FormService {
     calculateForm.ueRxGain = result['uerxgain'];
     calculateForm.beamMaxId = result['beammaxid'];
     calculateForm.createTime = result['createtime'];
-    calculateForm.isUeAvgSinr = JSON.parse(result['isueavgsinr']);
-    calculateForm.isUeAvgThroughput = JSON.parse(result['isueavgthroughput']);
-    calculateForm.isUeCoverage = JSON.parse(result['isuecoverage']);
-    calculateForm.isCoverage = JSON.parse(result['iscoverage']);
-    calculateForm.isAverageSinr = JSON.parse(result['isaveragesinr']);
+    calculateForm.isUeAvgSinr = result['output'].evaluationGoal.ue.sinr.activate;
+    calculateForm.isUeAvgThroughput = result['output'].evaluationGoal.ue.throughputByRsrp.activate;
+    calculateForm.isUeCoverage = result['output'].evaluationGoal.ue.coverage.activate;
+    calculateForm.isCoverage = result['output'].evaluationGoal.field.coverage.activate;
+    calculateForm.isAverageSinr = result['output'].evaluationGoal.field.sinr.activate;
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
