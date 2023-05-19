@@ -723,7 +723,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 const output = this.formService.setHstOutputToResultOutput(result['output']);
                 // delete result['output'];
                 // 大小寫不同，各自塞回form
-                // console.log(result);
+                 console.log(result);
                 // console.log(output);
                 this.dlRatio = result['tddframeratio'];
                 this.calculateForm = this.formService.setHstToForm(result);
