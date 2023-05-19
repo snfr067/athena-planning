@@ -23,7 +23,7 @@
           <font color="red" *ngIf="calculateForm.evaluationFunc.field.coverage.unAchieved">{{ 'unachieved' | translate }}</font>
         </div>
         <div *ngIf="calculateForm.evaluationFunc.field.sinr.activate">
-          {{ 'isSINR' | translate }}      {{ calculateForm.test | translate }}            
+          {{ 'isSINR' | translate }}      {{ calculateForm.test}}            
           <font color="red" *ngIf="calculateForm.evaluationFunc.field.sinr.unAchieved">{{ 'unachieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
             {{i+1}}. {{ 'FieldArea' | translate }}
