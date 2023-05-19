@@ -3780,6 +3780,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.http.get(resultUrl).subscribe(
             resCalcResult => {
 
+              console.log(resCalcResult);
+
               this.calculateForm.isFieldSINRGoal = resCalcResult['evaluategoal_field_sinr'] != "unachieved";
               this.calculateForm.isFieldRSRPGoal = resCalcResult['evaluategoal_field_rsrp'] != "unachieved";
               this.calculateForm.isFieldThroughputGoal = resCalcResult['evaluategoal_field_throughput'] != "unachieved";
