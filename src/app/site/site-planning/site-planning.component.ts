@@ -3782,19 +3782,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               console.log(resCalcResult);
 
-              this.calculateForm.isFieldSINRGoal = resCalcResult['output'].evaluationGoal.field.sinr != "unachieved";
-              this.calculateForm.isFieldRSRPGoal = resCalcResult['output'].evaluationGoal.field.rsrp != "unachieved";
-              this.calculateForm.isFieldThroughputGoal = resCalcResult['output'].evaluationGoal.field.throughput != "unachieved";
-              this.calculateForm.isFieldCoverageGoal = resCalcResult['output'].evaluationGoal.field.coverage != "unachieved";
-              this.calculateForm.isUEThroughputGoal = resCalcResult['output'].evaluationGoal.ue.throughputByRsrp != "unachieved";
-              this.calculateForm.isUECoverageGoal = resCalcResult['output'].evaluationGoal.ue.coverage != "unachieved";
+              this.calculateForm.isFieldSINRUnAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
+              this.calculateForm.isFieldRSRPUnAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
+              this.calculateForm.isFieldThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
+              this.calculateForm.isFieldCoverageUnAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
+              this.calculateForm.isUEThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
+              this.calculateForm.isUECoverageUnAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
 
               console.log(resCalcResult['output'].evaluationGoal.field.sinr);
-              console.log(resCalcResult['output'].evaluationGoal.ue.coverage);
+              console.log(this.calculateForm.isFieldSINRUnAchieved);
+              console.log(resCalcResult['output'].evaluationGoal.field.rsrp);
+              console.log(this.calculateForm.isFieldRSRPUnAchieved);
 
-              var achieved = this.calculateForm.isFieldSINRGoal && this.calculateForm.isFieldRSRPGoal &&
-              this.calculateForm.isFieldThroughputGoal && this.calculateForm.isFieldCoverageGoal &&
-              this.calculateForm.isUEThroughputGoal && this.calculateForm.isUECoverageGoal;
+              var achieved = this.calculateForm.isFieldSINRUnAchieved && this.calculateForm.isFieldRSRPUnAchieved &&
+              this.calculateForm.isFieldThroughputUnAchieved && this.calculateForm.isFieldCoverageUnAchieved &&
+              this.calculateForm.isUEThroughputUnAchieved && this.calculateForm.isUECoverageUnAchieved;
 
               if(!achieved)
               {
