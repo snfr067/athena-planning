@@ -3798,6 +3798,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
               if(!achieved)
               {
+                this.authService.spinnerHide();
+
                 var msg = this.translateService.instant('target.unachieved');
                 this.msgDialogConfig.data = {
                   infoMessage: msg
