@@ -111,12 +111,12 @@ export class CalculateForm {
   candidateBsAnt: string = null;
   defaultBsAnt: string = null;
   evaluationFunc: EvaluationFuncForm = null;
-  isFieldSINRUnAchieved: boolean = false;
-  isFieldRSRPUnAchieved: boolean = false;
-  isFieldThroughputUnAchieved: boolean = false;
-  isFieldCoverageUnAchieved: boolean = false;
-  isUEThroughputUnAchieved: boolean = false;
-  isUECoverageUnAchieved: boolean = false;
+  isFieldSINRUnAchieved: boolean;
+  isFieldRSRPUnAchieved: boolean;
+  isFieldThroughputUnAchieved: boolean;
+  isFieldCoverageUnAchieved: boolean;
+  isUEThroughputUnAchieved: boolean;
+  isUECoverageUnAchieved: boolean;
   // SINRSettingList = [{area: 0, condition: "moreThan", sinr: 0}];
   // RSRPSettingList = [{area: 0, condition: "moreThan", rsrp: 0}];
   // ThroughputSettingList = [{area: 0, ULCondition: "moreThan", ULThroughput: 0, DLCondition: "moreThan", DLThroughput: 0}];
