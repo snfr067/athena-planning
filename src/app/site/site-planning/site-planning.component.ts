@@ -374,10 +374,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   statusCode = "";
   errMsg = "";
   isBsNumberOptimization = "default";
-  isDefaultSINRSetting = "default";
-  isDefaultRSRPSetting = "default";
-  isDefaultThroughputSetting = "default";
-  isDefaultUEThroughputSetting = "default";
+  isDefaultSINRSetting = "custom";
+  isDefaultRSRPSetting = "custom";
+  isDefaultThroughputSetting = "custom";
+  isDefaultUEThroughputSetting = "custom";
   defaultArea = 95;
   defaultSINRSetting = 8.5;
   sinrUpperLimit = 40;
@@ -8156,7 +8156,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check area:'+ area);
     let msg = '';
 
-    if(area <= 0 || area > 100)
+    if(area <= 0 || area > 100 || isNaN(Number(area)))
     {
       msg = this.translateService.instant('area_fault');
     }
@@ -8174,7 +8174,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check sinr:'+ sinr);
     let msg = '';
 
-    if(sinr < this.sinrLowerLimit || sinr > this.sinrUpperLimit)
+    if(sinr < this.sinrLowerLimit || sinr > this.sinrUpperLimit || isNaN(Number(sinr)))
       msg = this.translateService.instant('sinr_fault');
 
     if (msg != '') {
@@ -8190,7 +8190,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check rsrp:'+ rsrp);
     let msg = '';
 
-    if(rsrp < this.rsrpLowerLimit || rsrp > this.rsrpUpperLimit)
+    if(rsrp < this.rsrpLowerLimit || rsrp > this.rsrpUpperLimit || isNaN(Number(rsrp)))
       msg = this.translateService.instant('rsrp_fault');
 
     if (msg != '') {
@@ -8206,7 +8206,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check throughput:'+ throughput);
     let msg = '';
 
-    if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit)
+    if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
       msg = this.translateService.instant('ulthroughput_fault');
 
     if (msg != '') {
@@ -8222,7 +8222,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check throughput:'+ throughput);
     let msg = '';
 
-    if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit)
+    if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
       msg = this.translateService.instant('dlthroughput_fault');
 
     if (msg != '') {
