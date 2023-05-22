@@ -61,6 +61,7 @@
 	"MutilFunctionNewCondition": "New",
 	"MutilFunctionDelCondition": "Delete",
 	"AreaPercent": "Area Ratio(%)",
+	"CountPercent": "Count Ratio(%)",
 	"Condition": "compliance",
 	"moreThan": ">=",
 	"lessThan": "<=",

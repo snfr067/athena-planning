@@ -61,6 +61,7 @@
 	"MutilFunctionNewCondition": "新增",
 	"MutilFunctionDelCondition": "刪除",
 	"AreaPercent": "目標面積比(%)",
+	"CountPercent": "目標數量比(%)",
 	"Condition": "條件",
 	"moreThan": ">=",
 	"lessThan": "<=",
