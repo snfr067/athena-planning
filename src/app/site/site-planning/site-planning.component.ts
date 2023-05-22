@@ -3428,7 +3428,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
 	  
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
-	    apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
+	    // apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
 	  
       console.log(this.calculateForm);
       this.authService.spinnerShowAsHome();
@@ -3498,6 +3498,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
 
     this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+    this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
     // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
