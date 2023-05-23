@@ -48,7 +48,7 @@ export class UEThroughputForm
 export class CoverageForm 
 {
     activate: boolean = false;
-	ratio: number = 0.95;
+	ratio: number = 95;
 }
 
 export class RatioForm 

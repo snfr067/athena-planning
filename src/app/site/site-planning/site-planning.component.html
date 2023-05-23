@@ -392,6 +392,7 @@
             </mat-checkbox> -->
             <mat-checkbox [(ngModel)]="evaluationFuncForm.field.coverage.activate" matTooltip="{{ 'isCoverage.tooltip' | translate }}">
               {{ 'isCoverage' | translate }}
+              <button value="CoverageSetting" (click)="openFieldCoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
             <mat-checkbox [(ngModel)]="evaluationFuncForm.field.sinr.activate" matTooltip="{{ 'isSINR.tooltip' | translate }}">
               {{ 'isSINR' | translate }}
@@ -429,6 +430,7 @@
             <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
             (change)="changePlanningTarget('isUeCoverage')">
               {{ 'isUeCoverage' | translate }}
+              <button value="CoverageSetting" (click)="openUECoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>              
             </mat-checkbox>
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeTpByDistance" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
               {{ 'isUeTpByDistance' | translate }}
@@ -1904,6 +1906,21 @@
   </table>
 </ng-template>
 
+<ng-template #FieldCoverageModalTable>
+  <h5 mat-dialog-title>{{ 'isCoverage.paramLink' | translate }}</h5>
+  <table>
+    <tbody>  
+      <tr>
+        <td>   
+          {{'CoveragePercent' | translate}}
+        </td>        
+        <td>   
+          <input type="text" [(ngModel)]="evaluationFuncForm.field.coverage.ratio" (change)="checkPercent(evaluationFuncForm.field.coverage.ratio)">          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
 
 <ng-template #SINRModalTable>
   <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
@@ -2151,6 +2168,22 @@
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <button value="del" (click)="delUEThroughput(i)" style="float:right, bottom" v-if="index == evaluationFuncForm.ue.throughputByRsrp.ratio.length-1 && evaluationFuncForm.ue.throughputByRsrp.ratio.length != 1" [disabled]="isDefaultUEThroughputSetting == 'default' || evaluationFuncForm.ue.throughputByRsrp.ratio.length == 1">{{ 'MutilFunctionDelCondition' | translate }}</button>                             
           </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #UECoverageModalTable>
+  <h5 mat-dialog-title>{{ 'isUeCoverage.paramLink' | translate }}</h5>
+  <table>
+    <tbody>  
+      <tr>
+        <td>   
+          {{'CoveragePercent' | translate}}
+        </td>        
+        <td>   
+          <input type="text" [(ngModel)]="evaluationFuncForm.ue.coverage.ratio" (change)="checkPercent(evaluationFuncForm.ue.coverage.ratio)">          
         </td>
       </tr>
     </tbody>

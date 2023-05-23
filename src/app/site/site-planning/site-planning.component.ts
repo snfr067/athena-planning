@@ -403,8 +403,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
   @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
   @ViewChild('SINRModalTable') SINRModalTable: TemplateRef<any>;
+  @ViewChild('FieldCoverageModalTable') FieldCoverageModalTable: TemplateRef<any>;
   @ViewChild('RSRPModalTable') RSRPModalTable: TemplateRef<any>;
   @ViewChild('ThroughputModalTable') ThroughputModalTable: TemplateRef<any>;
+  @ViewChild('UECoverageModalTable') UECoverageModalTable: TemplateRef<any>;
   @ViewChild('UEThroughputModalTable') UEThroughputModalTable: TemplateRef<any>;
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
@@ -2537,6 +2539,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * 開啟多目標函數設定燈箱
   */
+  openFieldCoverageSetting() {    
+    this.matDialog.open(this.FieldCoverageModalTable);    
+  }
   openSINRSetting() {
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
@@ -2556,6 +2561,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
     this.matDialog.open(this.UEThroughputModalTable);
+  }
+  openUECoverageSetting() {    
+    this.matDialog.open(this.UECoverageModalTable);    
   }
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
@@ -3467,7 +3475,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.field.sinr.activate = false;
       this.evaluationFuncForm.field.rsrp.activate = false;
     }
-
+    if(this.evaluationFuncForm.field.coverage.activate)
+    {
+      this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
+    }
     if(this.evaluationFuncForm.field.sinr.activate)
     {
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
@@ -3495,6 +3506,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       {
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100;
       }
+    }
+    if(this.evaluationFuncForm.ue.coverage.activate)
+    {
+      this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio / 100;
     }
 
     this.calculateForm.evaluationFunc = this.evaluationFuncForm;
