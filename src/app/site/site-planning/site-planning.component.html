@@ -1929,7 +1929,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.sinr.ratio[i].areaRatio)" [disabled]="isDefaultSINRSetting == 'default'">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].areaRatio" (change)="checkPercent(evaluationFuncForm.field.sinr.ratio[i].areaRatio)" [disabled]="isDefaultSINRSetting == 'default'">
           </div>
         </td>
         <td>   
@@ -1980,7 +1980,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.rsrp.ratio[i].areaRatio)" [disabled]="isDefaultRSRPSetting == 'default'">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].areaRatio" (change)="checkPercent(evaluationFuncForm.field.rsrp.ratio[i].areaRatio)" [disabled]="isDefaultRSRPSetting == 'default'">
           </div>
         </td>
         <td>   
@@ -2035,7 +2035,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.field.throughput.ratio[i].areaRatio)" [disabled]="isDefaultThroughputSetting == 'default'">
+            <input type="text" [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].areaRatio" (change)="checkPercent(evaluationFuncForm.field.throughput.ratio[i].areaRatio)" [disabled]="isDefaultThroughputSetting == 'default'">
           </div>
         </td>
         <td>   
@@ -2110,7 +2110,7 @@
       <tr>
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
-            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio" (change)="checkArea(evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio)" [disabled]="isDefaultUEThroughputSetting == 'default'">
+            <input type="text" [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio" (change)="checkPercent(evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio)" [disabled]="isDefaultUEThroughputSetting == 'default'">
           </div>
         </td>
         <td>   

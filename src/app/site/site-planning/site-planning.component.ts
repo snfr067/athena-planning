@@ -3493,7 +3493,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
       {
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].areaRatio/100;
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100;
       }
     }
 
@@ -8141,7 +8141,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
     {
-      "areaRatio": this.defaultArea, 
+      "countRatio": this.defaultArea, 
       "compliance": "moreThan",
       "ULValue":  this.defaultULThroughputSetting,
       "DLValue":  this.defaultDLThroughputSetting
@@ -8152,7 +8152,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(index, 1);
   }
 
-  checkArea(area) {
+  checkPercent(area) {
     console.log('Check area:'+ area);
     let msg = '';
 

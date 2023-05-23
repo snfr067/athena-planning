@@ -16,7 +16,7 @@ export class UEForm
 {
     sinr: SINRForm = new SINRForm();
     throughput: ThroughputForm = new ThroughputForm();
-    throughputByRsrp: ThroughputForm = new ThroughputForm();
+    throughputByRsrp: UEThroughputForm = new UEThroughputForm();
     coverage: CoverageForm = new CoverageForm();
     throughputByDistance: CoverageForm = new CoverageForm();
 }
@@ -39,6 +39,12 @@ export class ThroughputForm
     ratio: ThroughputRatioForm[] = [];    
 }
 
+export class UEThroughputForm 
+{
+    activate: boolean = false;
+    ratio: UEThroughputRatioForm[] = [];    
+}
+
 export class CoverageForm 
 {
     activate: boolean = false;
@@ -56,6 +62,14 @@ export class ThroughputRatioForm
 {
     compliance: string = "moreThan";
     areaRatio: number = 0.0;
+    ULValue: number = 0;
+    DLValue: number = 0;
+}
+
+export class UEThroughputRatioForm 
+{
+    compliance: string = "moreThan";
+    countRatio: number = 0.0;
     ULValue: number = 0;
     DLValue: number = 0;
 }
