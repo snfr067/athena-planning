@@ -8173,7 +8173,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     if(area <= 0 || area > 100 || isNaN(Number(area)))
     {
-      msg = this.translateService.instant('area_fault');
+      msg = this.translateService.instant('percent_fault');
     }
 
     if (msg != '') {
