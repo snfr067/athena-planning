@@ -385,11 +385,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   defaultRSRPSetting = -92;
   rsrpUpperLimit = -44;
   rsrpLowerLimit = -140;
-  defaultULThroughputSetting = 900;
-  ulThroughputUpperLimit = 1800;
+  defaultULThroughputSetting = 400;
+  ulThroughputUpperLimit = 800;
   ulThroughputLowerLimit = 0;
-  defaultDLThroughputSetting = 400;
-  dlThroughputUpperLimit = 800;
+  defaultDLThroughputSetting = 900;
+  dlThroughputUpperLimit = 1800;
   dlThroughputLowerLimit = 0;
 
   // useSmartAntenna = "false";
