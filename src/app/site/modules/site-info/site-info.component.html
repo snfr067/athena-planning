@@ -58,11 +58,11 @@
           <font color="red" *ngIf="unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'unachieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{i+1}}. {{ 'ue' | translate }}
-            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].areaRatio * 100}}% UL 
+            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
             {{ 'ue' | translate }}
-            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].areaRatio * 100}}% DL 
+            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% DL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps
           </div>
