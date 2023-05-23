@@ -733,9 +733,11 @@ export class PdfComponent implements OnInit {
       {
         ULcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
         DLcondition = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
-        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio*100 + "% UL " + 
+        UEThroughputContent += (x+1) + ". " + this.translateService.instant('FieldArea') + 
+        this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100 + "% UL " + 
         ULcondition + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].areaRatio*100 + "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100 + 
+        "% DL " + DLcondition + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
       }
 	    UEThroughputContent += "\n";
     }
