@@ -3475,45 +3475,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.field.sinr.activate = false;
       this.evaluationFuncForm.field.rsrp.activate = false;
     }
+
+
+    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+    this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     if(this.evaluationFuncForm.field.coverage.activate)
     {
-      this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
+      this.calculateForm.evaluationFunc.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
     }
     if(this.evaluationFuncForm.field.sinr.activate)
     {
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
       {
-        this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio/100;
+        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio/100;
       }
     }
     if(this.evaluationFuncForm.field.rsrp.activate)
     {
       for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
       {
-        this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio/100;
+        this.calculateForm.evaluationFunc.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio/100;
       }
     }
     if(this.evaluationFuncForm.field.throughput.activate)
     {
       for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
       {
-        this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100;
+        this.calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100;
       }
     }
     if(this.evaluationFuncForm.ue.throughputByRsrp.activate)
     {
       for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
       {
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100;
+        this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100;
       }
     }
     if(this.evaluationFuncForm.ue.coverage.activate)
     {
-      this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio / 100;
+      this.calculateForm.evaluationFunc.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio / 100;
     }
-
-    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
-    this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
     // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
