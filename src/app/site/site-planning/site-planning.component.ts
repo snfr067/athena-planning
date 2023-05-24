@@ -3299,6 +3299,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.moveable.destroy();
     } catch (error) {}
 
+
+    console.log(this.evaluationFuncForm);
+
     // 檢查既有基地台是否有參數未被填入
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return; }
     // 檢查待選基地台參數 Todo
@@ -3417,7 +3420,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.progressNum = 0;
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
+
+    console.log(this.evaluationFuncForm);
       this.setForm();
+
+    console.log(this.evaluationFuncForm);
       // 規劃目標
       this.setPlanningObj();
 
