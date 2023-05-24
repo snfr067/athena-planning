@@ -3515,6 +3515,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.calculateForm.evaluationFunc.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio / 100;
     }
+    console.log(this.evaluationFuncForm);
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
     // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;

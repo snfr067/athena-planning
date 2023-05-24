@@ -499,6 +499,7 @@
 	"custom.BsNumberOptimization": "自訂",
 
 	"target.unachieved": "計算結果未能滿足您所設定的目標函數，是否仍要顯示計算結果?",
-	"unachieved": "(未達標)"
+	"unachieved": "(未達標)",
+	"achieved": "(達標)"
 
 }

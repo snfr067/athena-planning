@@ -21,10 +21,12 @@
         <div *ngIf="calculateForm.evaluationFunc.field.coverage.activate">
           {{ 'isCoverage' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldCoverageUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isFieldCoverageUnAchieved">{{ 'achieved' | translate }}</font>
         </div>
         <div *ngIf="calculateForm.evaluationFunc.field.sinr.activate">
           {{ 'isSINR' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldSINRUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isFieldSINRUnAchieved">{{ 'achieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
             {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio * 100}}%
@@ -34,6 +36,7 @@
 		    </div>
         <div *ngIf="calculateForm.evaluationFunc.field.rsrp.activate">{{ 'isRSRP' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldRSRPUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isFieldRSRPUnAchieved">{{ 'achieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.field.rsrp.ratio; let i=index">
             {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].areaRatio * 100}}%
@@ -43,6 +46,7 @@
 		    </div>
         <div *ngIf="calculateForm.evaluationFunc.field.throughput.activate">{{ 'isThroughput' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldThroughputUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isFieldThroughputUnAchieved">{{ 'achieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
             {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% UL 
@@ -56,6 +60,7 @@
 		    </div>
         <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.activate">{{ 'isUeAvgThroughput' | translate }}
           <font color="red" *ngIf="unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'achieved' | translate }}</font>
           <div *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{i+1}}. {{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
@@ -69,6 +74,7 @@
         </div>
         <div *ngIf="calculateForm.evaluationFunc.ue.coverage.activate">{{ 'isUeCoverage' | translate }}
           <font color="red" *ngIf="unAchievedObj.isUECoverageUnAchieved">{{ 'unachieved' | translate }}</font>
+          <font color="green" *ngIf="!unAchievedObj.isUECoverageUnAchieved">{{ 'achieved' | translate }}</font>
         </div>
       </span>
     </li>

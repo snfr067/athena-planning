@@ -500,5 +500,6 @@
 	"custom.BsNumberOptimization": "Custom",
 
 	"target.unachieved": "The function targets are unachieved, do you still want to show result?",
-	"unachieved": "(Unachieved)"
+	"unachieved": "(Unachieved)",
+	"achieved": "(Achieved)"
 }
