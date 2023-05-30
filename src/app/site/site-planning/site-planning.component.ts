@@ -2569,7 +2569,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
     }
     this.matDialog.open(this.SINRModalTable);
-    this.planningIndex = '2';
     console.log("this.planningIndex = " + this.planningIndex);
   }  
   openRSRPSetting() {
@@ -8531,16 +8530,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   formatPlanningIndex(index)
   {
-
-    console.log("Number(index)  = ["+Number(index) +"]");
-    if(Number(index) == 1)
+    // console.log("Number(index)  = ["+Number(index) +"]");
+    // if(Number(index) == 1)
+    //   return '1';
+    // else if(Number(index) == 2)
+    //   return '2';
+    // else if(Number(index) == 3)
+    //   return '3';
+    // else
       return '1';
-    else if(Number(index) == 2)
-      return '2';
-    else if(Number(index) == 3)
-      return '3';
-    else
-      return '3';
   }
   
   changeSINRSetting()
