@@ -8533,8 +8533,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
 
     console.log("Number(index)  = ["+Number(index) +"]");
-    if(Number(index) == 4)
-      return '4';
+    if(Number(index) == 1)
+      return '1';
     else if(Number(index) == 2)
       return '2';
     else if(Number(index) == 3)
