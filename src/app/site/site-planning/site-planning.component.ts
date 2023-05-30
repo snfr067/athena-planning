@@ -8538,7 +8538,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // else if(Number(index) == 3)
     //   return '3';
     // else
-      return '1';
+    return '2';
   }
   
   changeSINRSetting()
