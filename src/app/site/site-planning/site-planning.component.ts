@@ -609,7 +609,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
       window.sessionStorage.removeItem(`evaluationFuncForm`);
     }
-
+    if(window.sessionStorage.getItem(`planningIndex`) != null)
+    {
+      this.planningIndex = window.sessionStorage.getItem(`planningIndex`);
+      window.sessionStorage.removeItem(`planningIndex`);
+    }
     
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
@@ -3452,10 +3456,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
 
-    console.log(this.evaluationFuncForm);
-      this.setForm();
+      console.log(this.evaluationFuncForm);
+        this.setForm();
 
-    console.log(this.evaluationFuncForm);
+      console.log(this.evaluationFuncForm);
       // 規劃目標
       this.setPlanningObj();
 
@@ -3472,13 +3476,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         url = `${this.authService.API_URL}/simulation`;
       }
       let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
-	  
+    
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
-	    // apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
-	  
+      // apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
+    
       console.log(this.calculateForm);
 
       window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
 
 
       this.authService.spinnerShowAsHome();
@@ -5649,6 +5654,89 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     ];
     const objectiveWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(objectiveData);
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
+
+    // MutilFunction Setting
+    const mutilFunctionSettingData = [['PlanningIndex',	
+    'Field.coverage.active', 'Field.sinr.active',	'Field.rsrp.active', 'Field.throughput.active',	
+    'ue.coverage.active',	'ue.throughputbyrsrp.active',	
+    'Field.sinr.length', 'Field.rsrp.length',	'Field.throughput.length', 
+    'ue.throughputbyrsrp.length']];
+    mutilFunctionSettingData.push([
+      this.planningIndex,
+      String(this.evaluationFuncForm.field.coverage.activate),
+      String(this.evaluationFuncForm.field.sinr.activate),
+      String(this.evaluationFuncForm.field.rsrp.activate),
+      String(this.evaluationFuncForm.field.throughput.activate),
+      String(this.evaluationFuncForm.ue.coverage.activate),
+      String(this.evaluationFuncForm.ue.throughputByRsrp.activate),
+      String(this.evaluationFuncForm.field.sinr.ratio.length),
+      String(this.evaluationFuncForm.field.rsrp.ratio.length),
+      String(this.evaluationFuncForm.field.throughput.ratio.length),
+      String(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length),
+    ]);    
+    const mutilFunctionSettingWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionSettingData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionSettingWS, 'mutil function setting');
+
+    // MutilFunction Coverage
+    const mutilFunctionCoverageData = [['Field.coverage.ratio']];
+    mutilFunctionCoverageData.push([String(this.evaluationFuncForm.field.coverage.ratio)]);    
+    const mutilFunctionCoverageWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionCoverageData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionCoverageWS, 'mutil function coverage');
+
+    // MutilFunction SINR
+    const mutilFunctionSINRData = [['Field.sinr.areaRatio', 'Field.sinr.compliance', 'Field.sinr.value']];
+    for (var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++) {
+      mutilFunctionSINRData.push([
+        String(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio),
+        String(this.evaluationFuncForm.field.sinr.ratio[i].compliance),
+        String(this.evaluationFuncForm.field.sinr.ratio[i].value)]);   
+    } 
+    const mutilFunctionSINRWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionSINRData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionSINRWS, 'mutil function sinr');
+
+    // MutilFunction RSRP
+    const mutilFunctionRSRPData = [['Field.rsrp.areaRatio', 'Field.rsrp.compliance', 'Field.rsrp.value']];
+    for (var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++) {
+      mutilFunctionRSRPData.push([
+        String(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio),
+        String(this.evaluationFuncForm.field.rsrp.ratio[i].compliance),
+        String(this.evaluationFuncForm.field.rsrp.ratio[i].value)]);   
+    } 
+    const mutilFunctionRSRPWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionRSRPData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionRSRPWS, 'mutil function rsrp');
+
+    // MutilFunction Throughput
+    const mutilFunctionThroughputData = [['Field.throughput.areaRatio', 'Field.throughput.compliance', 'Field.throughput.value']];
+    for (var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++) {
+      mutilFunctionThroughputData.push([
+        String(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio),
+        String(this.evaluationFuncForm.field.throughput.ratio[i].compliance),
+        String(this.evaluationFuncForm.field.throughput.ratio[i].ULValue),
+        String(this.evaluationFuncForm.field.throughput.ratio[i].DLValue)]);   
+    } 
+    const mutilFunctionThroughputWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionThroughputData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionThroughputWS, 'mutil function throughput');    
+
+    // MutilFunction UE Coverage
+    const mutilFunctionUECoverageData = [['ue.coverage.ratio']];
+    mutilFunctionUECoverageData.push([
+        String(this.evaluationFuncForm.ue.coverage.ratio)]);   
+    
+    const mutilFunctionUECoverageWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionUECoverageData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionUECoverageWS, 'mutil function UE coverage');
+
+    // MutilFunction UE Throughput
+    const mutilFunctionUEThroughputData = [['ue.throughputbyrsrp.areaRatio', 'ue.throughputbyrsrp.compliance', 'ue.throughputbyrsrp.value']];
+    for (var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++) {
+      mutilFunctionThroughputData.push([
+        String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio),
+        String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance),
+        String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue),
+        String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)]);   
+    } 
+    const mutilFunctionUEThroughputWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionUEThroughputData);
+    XLSX.utils.book_append_sheet(wb, mutilFunctionUEThroughputWS, 'mutil function UE throughput');  
+
     // console.log(wb);
     /* save to file */
     XLSX.writeFile(wb, `${this.calculateForm.taskName}`);
