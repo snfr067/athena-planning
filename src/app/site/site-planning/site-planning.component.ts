@@ -603,6 +603,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
 
+
+    if(window.sessionStorage.getItem(`evaluationFuncForm`) != null)
+    {
+      this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
+      window.sessionStorage.removeItem(`evaluationFuncForm`);
+    }
+
     
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
@@ -2541,29 +2548,53 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   */
   openFieldCoverageSetting() {    
     this.matDialog.open(this.FieldCoverageModalTable);    
+    if(this.evaluationFuncForm.field.coverage.ratio < 1)
+    this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
   }
   openSINRSetting() {
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
+    for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio < 1)
+        this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
+    }
     this.matDialog.open(this.SINRModalTable);
   }  
   openRSRPSetting() {
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
+    for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio < 1)
+        this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
+    }
     this.matDialog.open(this.RSRPModalTable);
   }  
   openThroughputSetting() {
     if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
       this.addThroughput();
+    for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio < 1)
+        this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
+    }
     this.matDialog.open(this.ThroughputModalTable);
   }  
   openUEThroughputSetting() {
     if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
+    for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio < 1)
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
+    }      
     this.matDialog.open(this.UEThroughputModalTable);
   }
   openUECoverageSetting() {    
     this.matDialog.open(this.UECoverageModalTable);    
+    if(this.evaluationFuncForm.ue.coverage.ratio < 1)
+      this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
   }
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
@@ -3446,6 +3477,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 	    // apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
 	  
       console.log(this.calculateForm);
+
+      window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+
+
       this.authService.spinnerShowAsHome();
 
       window.setTimeout(() => {
@@ -3466,6 +3501,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 設定規劃目標  */
   setPlanningObj() {
     var ratioTemp = 0;
+    var a,b,c;
     // check規劃目標
     if (this.planningIndex === '1') {
       this.calculateForm.isUeAvgSinr = false;
@@ -3484,9 +3520,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.field.rsrp.activate = false;
     }
 
-
     console.log(this.evaluationFuncForm);
-    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
     this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     if(this.evaluationFuncForm.field.coverage.activate)
     {
@@ -3498,7 +3532,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
       {
         ratioTemp = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio;
-        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = ratioTemp/100;
+        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = 55/100;
       }
     }
     if(this.evaluationFuncForm.field.rsrp.activate)
@@ -3530,6 +3564,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       ratioTemp = this.evaluationFuncForm.ue.coverage.ratio;
       this.calculateForm.evaluationFunc.ue.coverage.ratio = ratioTemp / 100;
     }
+    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
     console.log(this.evaluationFuncForm);
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
@@ -8188,7 +8223,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check area:'+ area);
     let msg = '';
 
-    if(area <= 0 || area > 100 || isNaN(Number(area)))
+    if(area <= 1 || area > 100 || isNaN(Number(area)))
     {
       msg = this.translateService.instant('percent_fault');
     }
