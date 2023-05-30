@@ -8530,14 +8530,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   formatPlanningIndex(index)
   {
-    // console.log("Number(index)  = ["+Number(index) +"]");
-    // if(Number(index) == 1)
-    //   return '1';
-    // else if(Number(index) == 2)
-    //   return '2';
-    // else if(Number(index) == 3)
-    //   return '3';
-    // else
+    console.log("Number(index)  = ["+Number(index) +"]");
+    if(Number(index) == 1)
+      return '1';
+    else if(Number(index) == 2)
+      return '2';
+    else if(Number(index) == 3)
+      return '3';
+    else
     return '2';
   }
   
