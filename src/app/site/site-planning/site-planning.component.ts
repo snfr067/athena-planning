@@ -322,7 +322,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 避免跑版的暫存sapn style */
   ognSpanStyle;
   /** 1: 以整體場域為主進行規劃, 2: 以行動終端為主進行規劃 3:場域模擬*/
-  planningIndex = '3';
+  planningIndex = '1';
   /** 障礙物預設顏色 */
   OBSTACLE_COLOR = '#73805c';
   /** defaultBs預設顏色 */
@@ -610,7 +610,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if(window.sessionStorage.getItem(`planningIndex`) != null)
     {
-      this.planningIndex = window.sessionStorage.getItem(`planningIndex`);
+      this.planningIndex = this.formatPlanningIndex(window.sessionStorage.getItem(`planningIndex`));
       console.log("this.planningIndex = "+this.planningIndex);
     }
     else
@@ -1175,6 +1175,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   initData(isImportXls, isImportImg, isHWAChange) {
     // console.log('--initData.');
+
     console.log(this.defaultBSList);
     this.createResolutionList();
     //檢查有沒有場域長寬高被改成負數
@@ -2568,6 +2569,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
     }
     this.matDialog.open(this.SINRModalTable);
+    this.planningIndex = '2';
+    console.log("this.planningIndex = " + this.planningIndex);
   }  
   openRSRPSetting() {
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
@@ -7212,6 +7215,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             height: res[1]
           };
           // resize layout
+    this.planningIndex = this.formatPlanningIndex(this.planningIndex);
+    console.log("this.planningIndex = ["+this.planningIndex+"]");
           console.log(layoutOption);
           Plotly.relayout('chart', layoutOption).then((gd2) => {
             window.setTimeout(() => {
@@ -8522,6 +8527,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     else{      
       this.changeEvaluationFuncForm();
     }
+  }
+
+  formatPlanningIndex(index)
+  {
+
+    console.log("Number(index)  = ["+Number(index) +"]");
+    if(Number(index) == 4)
+      return '4';
+    else if(Number(index) == 2)
+      return '2';
+    else if(Number(index) == 3)
+      return '3';
+    else
+      return '3';
   }
   
   changeSINRSetting()

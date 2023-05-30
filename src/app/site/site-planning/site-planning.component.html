@@ -378,14 +378,13 @@
             <mat-radio-button class="block" value="3" matTooltip="{{ 'simulation' | translate }}">
               {{ 'simulation' | translate }}
             </mat-radio-button>
-          </mat-radio-group>
+          
           <!-- --- -->
-          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
-            <mat-radio-button class="block" value="1" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
+            <mat-radio-button class="block" value="4" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
               {{ 'planning.layered' | translate }}
             </mat-radio-button>
-          </mat-radio-group>
-          <div *ngIf="planningIndex == '1'" class="subTarget">
+          
+            <div *ngIf="planningIndex == '1'" class="subTarget">
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}"
             (change)="selected = 1;calculateForm.isAverageSinr = true">
               {{ 'isAverageSinr' | translate }}
@@ -410,47 +409,55 @@
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAvgThroughput" matTooltip="{{ 'isAverageThroughput.tooltip' | translate }}">
               {{ 'isAverageThroughput' | translate }}
             </mat-checkbox> -->
-          </div>
+            </div>
 
-          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
             <mat-radio-button class="block" value="2" matTooltip="{{ 'planning.ue.tooltip' | translate }}">
               {{ 'planning.ue' | translate }}
             </mat-radio-button>
+            <div *ngIf="planningIndex == '2'" class="subTarget">
+              <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}" 
+              [checked]="selected === 3" (change)="selected = 3">
+                {{ 'isUeAvgSinr' | translate }}
+              </mat-checkbox> -->
+              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}" 
+              (change)="changePlanningTarget('isUeCoverage')">
+                {{ 'isUeAvgThroughput' | translate }}
+                <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
+              </mat-checkbox>
+              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
+              (change)="changePlanningTarget('isUeCoverage')">
+                {{ 'isUeCoverage' | translate }}
+                <button value="CoverageSetting" (click)="openUECoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>              
+              </mat-checkbox>
+              <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeTpByDistance" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
+                {{ 'isUeTpByDistance' | translate }}
+              </mat-checkbox>
+              <mat-checkbox [(ngModel)]="calculateForm.isUeTpByRsrp" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
+                {{ 'isUeTpByRsrp' | translate }}
+              </mat-checkbox> -->
+            </div>
+
           </mat-radio-group>
-          <div *ngIf="planningIndex == '2'" class="subTarget">
-            <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}" 
-            [checked]="selected === 3" (change)="selected = 3">
-              {{ 'isUeAvgSinr' | translate }}
-            </mat-checkbox> -->
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}" 
-            (change)="changePlanningTarget('isUeCoverage')">
-              {{ 'isUeAvgThroughput' | translate }}
-              <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
-            </mat-checkbox>
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
-            (change)="changePlanningTarget('isUeCoverage')">
-              {{ 'isUeCoverage' | translate }}
-              <button value="CoverageSetting" (click)="openUECoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>              
-            </mat-checkbox>
-            <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeTpByDistance" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
-              {{ 'isUeTpByDistance' | translate }}
-            </mat-checkbox>
-            <mat-checkbox [(ngModel)]="calculateForm.isUeTpByRsrp" matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}">
-              {{ 'isUeTpByRsrp' | translate }}
-            </mat-checkbox> -->
-          </div>
 
           <p class="sub_title inline-block mt-2" *ngIf="planningIndex !== '3'">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
             <ng-template #oTemp>{{ 'availableNewBsNumber.gen' | translate }}</ng-template>
           </p>
-          <div class="sub_content inline-block" *ngIf="planningIndex !== '3'">
-            <mat-radio-group class="inline-block" style="display: flex; width: 170px" [(ngModel)]="isBsNumberOptimization">
-              <mat-radio-button value="default" style="margin-right: 50px;" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
-              <mat-radio-button value="custom" >{{ 'custom.BsNumberOptimization' | translate }}</mat-radio-button>
-            </mat-radio-group>
-            <input type="number" style="float:center" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
-          </div>
+          <table class="sub_content inline-block" *ngIf="planningIndex !== '3'" style="height: 30px">
+            <tbody>
+              <mat-radio-group class="inline-block" style="display: flex" [(ngModel)]="isBsNumberOptimization">
+                  <td>
+                    <mat-radio-button value="custom" >{{ 'custom.BsNumberOptimization' | translate }}</mat-radio-button>
+                  </td>
+                  <td>
+                    <input type="number" style="float:center" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
+                  </td>
+                  <td>
+                    <mat-radio-button value="default" style="margin-right: 50px;" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
+                  </td>              
+                </mat-radio-group>  
+            </tbody>      
+          </table>
           <p class="sub_title inline-block">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp2">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>
             <ng-template #oTemp2>{{ 'maxConnectionNum' | translate }}</ng-template>
