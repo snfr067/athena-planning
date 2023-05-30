@@ -5706,7 +5706,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     XLSX.utils.book_append_sheet(wb, mutilFunctionRSRPWS, 'mutil function rsrp');
 
     // MutilFunction Throughput
-    const mutilFunctionThroughputData = [['Field.throughput.areaRatio', 'Field.throughput.compliance', 'Field.throughput.value']];
+    const mutilFunctionThroughputData = [['Field.throughput.areaRatio', 'Field.throughput.compliance', 'Field.throughput.ULValue', 'Field.throughput.DLValue']];
     for (var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++) {
       mutilFunctionThroughputData.push([
         String(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio),
@@ -5726,9 +5726,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     XLSX.utils.book_append_sheet(wb, mutilFunctionUECoverageWS, 'mutil function UE coverage');
 
     // MutilFunction UE Throughput
-    const mutilFunctionUEThroughputData = [['ue.throughputbyrsrp.areaRatio', 'ue.throughputbyrsrp.compliance', 'ue.throughputbyrsrp.value']];
-    for (var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++) {
-      mutilFunctionThroughputData.push([
+    const mutilFunctionUEThroughputData = [['ue.throughputbyrsrp.countRatio', 'ue.throughputbyrsrp.compliance', 'ue.throughputbyrsrp.value']];
+    for (var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++) {
+      mutilFunctionUEThroughputData.push([
         String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio),
         String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance),
         String(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue),
@@ -6300,6 +6300,106 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     this.ognSpanStyle = _.cloneDeep(this.spanStyle);
     this.ognDragObject = _.cloneDeep(this.dragObject);
+
+    /* Mutil Function sheets */
+    if(this.wb.SheetNames.length >= 9)    // new format
+    {
+      const mutilFunctionSetting: string = this.wb.SheetNames[sheetNameIndex['mutil function setting']];
+      const mutilFunctionSettingWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSetting];
+      const mutilFunctionSettingData = (XLSX.utils.sheet_to_json(mutilFunctionSettingWS, {header: 1}));
+      if (mutilFunctionSettingData.length > 1) 
+      {
+        this.planningIndex = mutilFunctionSettingData[1][0];
+        this.evaluationFuncForm.field.coverage.activate = Boolean(mutilFunctionSettingData[1][1]);
+        this.evaluationFuncForm.field.sinr.activate = Boolean(mutilFunctionSettingData[1][2]);
+        this.evaluationFuncForm.field.rsrp.activate = Boolean(mutilFunctionSettingData[1][3]);
+        this.evaluationFuncForm.field.throughput.activate = Boolean(mutilFunctionSettingData[1][4]);
+        this.evaluationFuncForm.ue.coverage.activate = Boolean(mutilFunctionSettingData[1][5]);
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = Boolean(mutilFunctionSettingData[1][6]);
+        var fieldSINRLen = Number(mutilFunctionSettingData[1][7]);
+        var fieldRSRPLen = Number(mutilFunctionSettingData[1][8]);
+        var fieldThroughputLen = Number(mutilFunctionSettingData[1][9]);
+        var ueThroughputLen = Number(mutilFunctionSettingData[1][10]);
+      }
+
+      const mutilFunctionCoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function coverage']];
+      const mutilFunctionCoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionCoverage];
+      const mutilFunctionCoverageData = (XLSX.utils.sheet_to_json(mutilFunctionCoverageWS, {header: 1}));
+      if (mutilFunctionCoverageData.length > 1) 
+      {
+        this.evaluationFuncForm.field.coverage.ratio = Number(mutilFunctionCoverageData[1][0]);
+      }
+
+      const mutilFunctionSINR: string = this.wb.SheetNames[sheetNameIndex['mutil function sinr']];
+      const mutilFunctionSINRWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSINR];
+      const mutilFunctionSINRData = (XLSX.utils.sheet_to_json(mutilFunctionSINRWS, {header: 1}));
+      this.evaluationFuncForm.field.sinr.ratio = [];
+      for(var i = 0; i < fieldSINRLen; i++)
+      {
+        this.evaluationFuncForm.field.sinr.ratio.push(
+          {
+            "areaRatio": Number(mutilFunctionSINRData[1][0]),
+            "compliance": mutilFunctionSINRData[1][1],
+            "value": Number(mutilFunctionSINRData[1][2])
+          }
+        );
+      }
+
+      const mutilFunctionRSRP: string = this.wb.SheetNames[sheetNameIndex['mutil function rsrp']];
+      const mutilFunctionRSRPWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionRSRP];
+      const mutilFunctionRSRPData = (XLSX.utils.sheet_to_json(mutilFunctionRSRPWS, {header: 1}));
+      this.evaluationFuncForm.field.rsrp.ratio = [];
+      for(var i = 0; i < fieldRSRPLen; i++)
+      {
+        this.evaluationFuncForm.field.rsrp.ratio.push(
+          {
+            "areaRatio": Number(mutilFunctionRSRPData[1][0]),
+            "compliance": mutilFunctionRSRPData[1][1],
+            "value": Number(mutilFunctionRSRPData[1][2])
+          }
+        );
+      }
+
+      const mutilFunctionThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function throughput']];
+      const mutilFunctionThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionThroughput];
+      const mutilFunctionThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionThroughputWS, {header: 1}));
+      this.evaluationFuncForm.field.throughput.ratio = [];
+      for(var i = 0; i < fieldThroughputLen; i++)
+      {
+        this.evaluationFuncForm.field.throughput.ratio.push(
+          {
+            "areaRatio": Number(mutilFunctionThroughputData[1][0]),
+            "compliance": mutilFunctionThroughputData[1][1],
+            "ULValue": Number(mutilFunctionThroughputData[1][2]),
+            "DLValue": Number(mutilFunctionThroughputData[1][3])
+          }
+        );
+      } 
+
+      const mutilFunctionUECoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function UE coverage']];
+      const mutilFunctionUECoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUECoverage];
+      const mutilFunctionUECoverageData = (XLSX.utils.sheet_to_json(mutilFunctionUECoverageWS, {header: 1}));
+      if (mutilFunctionUECoverageData.length > 1) 
+      {
+        this.evaluationFuncForm.ue.coverage.ratio = Number(mutilFunctionUECoverageData[1][0]);
+      }
+      
+      const mutilFunctionUEThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function UE throughput']];
+      const mutilFunctionUEThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUEThroughput];
+      const mutilFunctionUEThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionUEThroughputWS, {header: 1}));
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
+      for(var i = 0; i < ueThroughputLen; i++)
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+          {
+            "countRatio": Number(mutilFunctionUEThroughputData[1][0]),
+            "compliance": mutilFunctionUEThroughputData[1][1],
+            "ULValue": Number(mutilFunctionUEThroughputData[1][2]),
+            "DLValue": Number(mutilFunctionUEThroughputData[1][3])
+          }
+        );
+      } 
+    }
 
   }
 
@@ -8305,7 +8405,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check area:'+ area);
     let msg = '';
 
-    if(area <= 1 || area > 100 || isNaN(Number(area)))
+    if(area < 1 || area > 100 || isNaN(Number(area)))
     {
       msg = this.translateService.instant('percent_fault');
     }
