@@ -92,12 +92,32 @@ export class FormService {
     calculateForm.isUeCoverage = result['output'].evaluatefunc_ue_coverage_activate;
     calculateForm.isCoverage = result['output'].evaluatefunc_field_coverage_activate;
     calculateForm.isAverageSinr = result['output'].evaluatefunc_field_sinr_activate;
+    calculateForm.evaluationFunc = result['evaluationFunc'];
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);
     calculateForm.resolution = Number(result['resolution']);
     console.log("calculateForm",calculateForm);
     return calculateForm;
+  }
+ 
+  /**
+   * write if unachieved in history to obj
+   * @param result 
+   */
+  setHstToUnAch(result)
+  {
+    const unAchievedObj = {    
+      isFieldSINRUnAchieved: false,
+      isFieldRSRPUnAchieved: false,
+      isFieldThroughputUnAchieved: false,
+      isFieldCoverageUnAchieved: false,
+      isUEThroughputByRsrpUnAchieved: false,
+      isUECoverageUnAchieved: false
+    };
+
+
+    return unAchievedObj;
   }
 
   /**

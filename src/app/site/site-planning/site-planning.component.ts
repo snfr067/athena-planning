@@ -611,6 +611,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(window.sessionStorage.getItem(`planningIndex`) != null)
     {
       this.planningIndex = window.sessionStorage.getItem(`planningIndex`);
+      console.log("this.planningIndex = "+this.planningIndex);
+    }
+    else
+    {
+      this.planningIndex = '1';
+      console.log("this.planningIndex = "+this.planningIndex);
     }
     
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
@@ -5868,7 +5874,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
     const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
     if (baseStationData.length > 1) {
-      this.planningIndex = '3';
+      // this.planningIndex = '3';
       for (let i = 1; i < baseStationData.length; i++) {
         const id = `defaultBS_${(i - 1)}`;
         // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
@@ -5955,7 +5961,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
     const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
     if (candidateData.length > 1) {
-      this.planningIndex = '1';
+      // this.planningIndex = '1';
       for (let i = 1; i < candidateData.length; i++) {
         const id = `candidate_${(i - 1)}`;
         this.candidateList.push(id);
@@ -6231,14 +6237,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.calculateForm.isUeAvgThroughput = false;
       }
       
-      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
-      // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
-        this.planningIndex = '1';
-      } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
-        this.planningIndex = '2';
-      } else {
-        this.planningIndex = '3';
-      }
+      // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
+      // // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
+      //   // this.planningIndex = '1';
+      // } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
+      //   // this.planningIndex = '2';
+      // } else {
+      //   // this.planningIndex = '3';
+      // }
       
       // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
       // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
@@ -6404,6 +6410,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         );
       } 
+
+
+      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
+      window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
     }
 
   }
@@ -7033,11 +7043,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeAvgThroughput = false;
       this.matDialog.closeAll();
     } else {
-      if (this.calculateForm.isCoverage) {
-        this.planningIndex = '1';
-      } else {
-        this.planningIndex = '2';
-      }
+      // if (this.calculateForm.isCoverage) {
+      //   this.planningIndex = '1';
+      // } else {
+      //   this.planningIndex = '2';
+      // }
       this.matDialog.closeAll();
     }
     

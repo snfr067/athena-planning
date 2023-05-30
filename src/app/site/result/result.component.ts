@@ -51,6 +51,14 @@ export class ResultComponent implements OnInit {
   result = {};
   /** 結果form */
   calculateForm: CalculateForm = new CalculateForm();
+  unAchievedObj = {    
+    isFieldSINRUnAchieved: false,
+    isFieldRSRPUnAchieved: false,
+    isFieldThroughputUnAchieved: false,
+    isFieldCoverageUnAchieved: false,
+    isUEThroughputByRsrpUnAchieved: false,
+    isUECoverageUnAchieved: false
+  }
   /** 畫圖layout參數 */
   plotLayout;
   /** 顯示訊號品質圖 */
@@ -218,6 +226,7 @@ export class ResultComponent implements OnInit {
           // 大小寫不同，各自塞回form
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
+          this.unAchievedObj = this.formService.setHstToUnAch(res);
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultidx'];
@@ -537,6 +546,7 @@ export class ResultComponent implements OnInit {
         this.siteInfo.planningObj.isUeAvgSinr = this.calculateForm.isUeAvgSinr;
         this.siteInfo.planningObj.isUeAvgThroughput = this.calculateForm.isUeAvgThroughput;
         this.siteInfo.planningObj.isUeCoverage = this.calculateForm.isUeCoverage;
+        this.siteInfo.unAchievedObj = this.unAchievedObj;
         console.log(this.siteInfo.calculateForm);
         this.siteInfo.result = this.result;
         window.setTimeout(() => {
