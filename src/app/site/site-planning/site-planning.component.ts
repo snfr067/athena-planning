@@ -3532,7 +3532,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
       {
         ratioTemp = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio;
-        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = 55/100;
+        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = ratioTemp/100;
       }
     }
     if(this.evaluationFuncForm.field.rsrp.activate)

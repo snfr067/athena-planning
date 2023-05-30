@@ -110,7 +110,7 @@ export class CalculateForm {
   geographicalNorth: number = 0;
   candidateBsAnt: string = null;
   defaultBsAnt: string = null;
-  evaluationFunc: EvaluationFuncForm = null;
+  evaluationFunc: EvaluationFuncForm = new EvaluationFuncForm();
   isBsNumberOptimization: boolean = false;
   // SINRSettingList = [{area: 0, condition: "moreThan", sinr: 0}];
   // RSRPSettingList = [{area: 0, condition: "moreThan", rsrp: 0}];
