@@ -1923,7 +1923,7 @@
   </table>
 </ng-template>
 
-<ng-template #SINRModalTable>
+<ng-template #SINRModalTable >
   <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
   <table>
     <tbody>    
@@ -1953,7 +1953,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].compliance" [disabled]="isDefaultSINRSetting == 'default'">
+              [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].compliance" [disabled]="isDefaultSINRSetting == 'default'" (change)="changeEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -2004,7 +2004,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].compliance" [disabled]="isDefaultRSRPSetting == 'default'">
+              [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].compliance" [disabled]="isDefaultRSRPSetting == 'default'" (change)="changeEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -2064,7 +2064,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].compliance" [disabled]="isDefaultThroughputSetting == 'default'">
+              [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].compliance" [disabled]="isDefaultThroughputSetting == 'default'" (change)="changeEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -2139,7 +2139,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance" [disabled]="isDefaultUEThroughputSetting == 'default'">
+              [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance" [disabled]="isDefaultUEThroughputSetting == 'default'" (change)="changeEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
