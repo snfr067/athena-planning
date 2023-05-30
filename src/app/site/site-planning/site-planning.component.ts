@@ -772,18 +772,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
                 if (this.calculateForm.isSimulation) {
-                  this.planningIndex = '3';
+                  // this.planningIndex = '3';
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    this.planningIndex = '1';
+                    // this.planningIndex = '1';
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isAverageSinr == true) {
                       this.calculateForm.isCoverage = true;
                       this.calculateForm.isAverageSinr = false;
                     }
                   } else {
-                    this.planningIndex = '2';
+                    // this.planningIndex = '2';
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isUeAvgSinr) {
                       this.calculateForm.isUeAvgThroughput = true;
@@ -857,13 +857,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.calculateForm = res['input'];
 
                 if (this.calculateForm.isSimulation) {
-                  this.planningIndex = '3';
+                  // this.planningIndex = '3';
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    this.planningIndex = '1';
+                    // this.planningIndex = '1';
                   } else {
-                    this.planningIndex = '2';
+                    // this.planningIndex = '2';
                   }
                 }
 
@@ -6312,15 +6312,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       {
         this.planningIndex = mutilFunctionSettingData[1][0];
         console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
-        console.log("b-mutilFunctionSettingData[1][1]: "+Boolean(mutilFunctionSettingData[1][1]));
-        this.evaluationFuncForm.field.coverage.activate = Boolean(mutilFunctionSettingData[1][1]);
-        this.evaluationFuncForm.field.sinr.activate = Boolean(mutilFunctionSettingData[1][2]);
-        this.evaluationFuncForm.field.rsrp.activate = Boolean(mutilFunctionSettingData[1][3]);
-        this.evaluationFuncForm.field.throughput.activate = Boolean(mutilFunctionSettingData[1][4]);
-        this.evaluationFuncForm.ue.coverage.activate = Boolean(mutilFunctionSettingData[1][5]);
+        console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
+        this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
+        this.evaluationFuncForm.field.sinr.activate = JSON.parse(mutilFunctionSettingData[1][2]);
+        this.evaluationFuncForm.field.rsrp.activate = JSON.parse(mutilFunctionSettingData[1][3]);
+        this.evaluationFuncForm.field.throughput.activate = JSON.parse(mutilFunctionSettingData[1][4]);
+        this.evaluationFuncForm.ue.coverage.activate = JSON.parse(mutilFunctionSettingData[1][5]);
         console.log("mutilFunctionSettingData[1][6]: "+mutilFunctionSettingData[1][6]);
-        console.log("b-mutilFunctionSettingData[1][6]: "+Boolean(mutilFunctionSettingData[1][6]));
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = Boolean(mutilFunctionSettingData[1][6]);
+        console.log("b-mutilFunctionSettingData[1][6]: "+JSON.parse(mutilFunctionSettingData[1][6]));
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = JSON.parse(mutilFunctionSettingData[1][6]);
         var fieldSINRLen = Number(mutilFunctionSettingData[1][7]);
         var fieldRSRPLen = Number(mutilFunctionSettingData[1][8]);
         var fieldThroughputLen = Number(mutilFunctionSettingData[1][9]);
