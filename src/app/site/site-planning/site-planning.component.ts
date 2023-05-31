@@ -6220,24 +6220,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.duplexMode = bsParametersData[1][3];
       this.dlRatio = Number(bsParametersData[1][4]);
       // this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
-      this.calculateForm.isAverageSinr = false;
-      this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
+      // this.calculateForm.isAverageSinr = false;
+      // this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
       // this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgSinr = false;
+      // this.calculateForm.isUeAvgSinr = false;
       // this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
-      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
+      // this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
+      // this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
 
-      if (this.calculateForm.isCoverage == true) {
-        this.calculateForm.isUeAvgThroughput = false;
-        this.calculateForm.isUeCoverage = false;
-      } else if (this.calculateForm.isUeAvgThroughput == true) {
-        this.calculateForm.isCoverage = false;
-        this.calculateForm.isUeCoverage = false;
-      } else {
-        this.calculateForm.isCoverage = false;
-        this.calculateForm.isUeAvgThroughput = false;
-      }
+      // if (this.calculateForm.isCoverage == true) {
+      //   this.calculateForm.isUeAvgThroughput = false;
+      //   this.calculateForm.isUeCoverage = false;
+      // } else if (this.calculateForm.isUeAvgThroughput == true) {
+      //   this.calculateForm.isCoverage = false;
+      //   this.calculateForm.isUeCoverage = false;
+      // } else {
+      //   this.calculateForm.isCoverage = false;
+      //   this.calculateForm.isUeAvgThroughput = false;
+      // }
       
       // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
       // // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
