@@ -3437,7 +3437,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    } else if (this.planningIndex === '1' && !this.evaluationFuncForm.field.coverage.activate && 
+    } else if (this.planningIndex === '0' && !this.evaluationFuncForm.field.coverage.activate && 
     !this.evaluationFuncForm.field.rsrp.activate && !this.evaluationFuncForm.field.sinr.activate && 
     !this.evaluationFuncForm.field.throughput.activate) {
       let msg = this.translateService.instant('no_target_fault');
@@ -3509,7 +3509,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     var ratioTemp = 0;
     var a,b,c;
     // check規劃目標
-    if (this.planningIndex === '1') {
+    if (this.planningIndex === '0') {
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
       this.calculateForm.isUeCoverage = false;
@@ -6997,7 +6997,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
 
-    if (this.planningIndex === '1') {
+    if (this.planningIndex === '0') {
       this.calculateForm.isSimulation = false;
       this.calculateForm.isCoverage = true;
       this.calculateForm.isUeCoverage = false;
