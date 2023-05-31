@@ -3939,12 +3939,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 isUECoverageUnAchieved: false
               };
 
-              unAchievedObj.isFieldSINRUnAchieved = (resCalcResult['output'].evaluationGoal.field.sinr == 'unachieved');
-              unAchievedObj.isFieldRSRPUnAchieved = (resCalcResult['output'].evaluationGoal.field.rsrp == 'unachieved');
-              unAchievedObj.isFieldThroughputUnAchieved = (resCalcResult['output'].evaluationGoal.field.throughput == 'unachieved');
-              unAchievedObj.isFieldCoverageUnAchieved = (resCalcResult['output'].evaluationGoal.field.coverage == 'unachieved');
-              unAchievedObj.isUEThroughputByRsrpUnAchieved = (resCalcResult['output'].evaluationGoal.ue.throughputByRsrp == 'unachieved');
-              unAchievedObj.isUECoverageUnAchieved = (resCalcResult['output'].evaluationGoal.ue.coverage == 'unachieved');
+              unAchievedObj.isFieldSINRUnAchieved = (resCalcResult['output'].evaluationResult.field.sinr.goal == 'unachieved');
+              unAchievedObj.isFieldRSRPUnAchieved = (resCalcResult['output'].evaluationResult.field.rsrp.goal == 'unachieved');
+              unAchievedObj.isFieldThroughputUnAchieved = (resCalcResult['output'].evaluationResult.field.throughput.goal == 'unachieved');
+              unAchievedObj.isFieldCoverageUnAchieved = (resCalcResult['output'].evaluationResult.field.coverage.goal == 'unachieved');
+              unAchievedObj.isUEThroughputByRsrpUnAchieved = (resCalcResult['output'].evaluationResult.ue.throughputByRsrp.goal == 'unachieved');
+              unAchievedObj.isUECoverageUnAchieved = (resCalcResult['output'].evaluationResult.ue.coverage.goal == 'unachieved');
               
 
               var unAchieved = unAchievedObj.isFieldSINRUnAchieved || unAchievedObj.isFieldRSRPUnAchieved ||
