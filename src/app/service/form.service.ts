@@ -138,7 +138,7 @@ export class FormService {
 
     for(var i = 0; i < result['output'].evaluationResult.field.coverage.ratio.length; i++)
     {
-      realRatio.push(result['output'].evaluationResult.field.coverage.ratio);
+      realRatio.push(result['output'].evaluationResult.field.coverage.ratio[i]);
     }
 
     return realRatio;
@@ -148,9 +148,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.field.sinr.ratio.length; i++)
+    if(result['output'].evaluationResult.field.sinr.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.field.sinr.ratio);
+      for(var i = 0; i < result['output'].evaluationResult.field.sinr.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.field.sinr.ratio[i]);
+      }
     }
 
     return realRatio;
@@ -160,11 +163,13 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
+    if(result['output'].evaluationResult.field.rsrp.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.field.rsrp.ratio);
+      for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.field.rsrp.ratio[i]);
+      }
     }
-
     return realRatio;
   }
 
@@ -172,9 +177,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+    if(result['output'].evaluationResult.field.throughput.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].ULValue);
+      for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].ULValue);
+      }
     }
 
     return realRatio;
@@ -184,9 +192,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+    if(result['output'].evaluationResult.field.throughput.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].DLValue);
+      for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].DLValue);
+      }
     }
 
     return realRatio;
@@ -196,9 +207,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
+    if(result['output'].evaluationResult.ue.coverage.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.field.rsrp.ratio);
+      for(var i = 0; i < result['output'].evaluationResult.ue.coverage.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.ue.coverage.ratio[i]);
+      }
     }
 
     return realRatio;
@@ -208,9 +222,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+    if(result['output'].evaluationResult.ue.throughputByRsrp.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue);
+      for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue);
+      }
     }
 
     return realRatio;
@@ -220,9 +237,12 @@ export class FormService {
   {    
     const realRatio = [];
 
-    for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+    if(result['output'].evaluationResult.ue.throughputByRsrp.ratio != null)
     {
-      realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue);
+      for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+      {
+        realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue);
+      }
     }
 
     return realRatio;
