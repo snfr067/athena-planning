@@ -93,7 +93,8 @@
             {{ 'setCondition' | translate }} {{i+1}}. {{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
+            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
+          </div>
           <div style="padding-left:5.5em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% DL 
