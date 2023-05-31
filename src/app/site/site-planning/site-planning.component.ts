@@ -3582,8 +3582,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             "areaRatio": this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100,
             "compliance": this.evaluationFuncForm.field.throughput.ratio[i].compliance,
-            "ULValue": this.evaluationFuncForm.field.throughput.ratio[i].ULValue,
-            "DLValue": this.evaluationFuncForm.field.throughput.ratio[i].DLValue
+            "ULValue": Number(this.evaluationFuncForm.field.throughput.ratio[i].ULValue),
+            "DLValue": Number(this.evaluationFuncForm.field.throughput.ratio[i].DLValue)
           }
         );
       }
@@ -3598,8 +3598,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             "countRatio": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100,
             "compliance": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance,
-            "ULValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue,
-            "DLValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue
+            "ULValue": Number(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue),
+            "DLValue": Number(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)
           }
         );
       }
