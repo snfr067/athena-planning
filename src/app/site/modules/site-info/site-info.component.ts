@@ -54,7 +54,6 @@ export class SiteInfoComponent implements OnInit {
 
     if (localStorage.getItem(`unAchievedObj`) != null) {
       this.unAchievedObj = JSON.parse(localStorage.getItem(`unAchievedObj`));
-      localStorage.removeItem(`unAchievedObj`)
     }
     console.log(this.calculateForm);
     console.log(this.unAchievedObj);
