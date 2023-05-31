@@ -238,6 +238,7 @@ export class ResultComponent implements OnInit {
         } else {
           this.calculateForm = res['input'];
           this.result = res['output'];
+          this.unAchievedObj = this.formService.setHstToUnAch(res);
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultIdx'];

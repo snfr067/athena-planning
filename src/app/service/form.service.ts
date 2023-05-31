@@ -118,7 +118,7 @@ export class FormService {
 
     unAchievedObj.isFieldCoverageUnAchieved = (result['output'].evaluationResult.field.coverage.goal == 'unachieved');
     unAchievedObj.isFieldSINRUnAchieved = (result['output'].evaluationResult.field.sinr.goal == 'unachieved');
-    unAchievedObj.isFieldRSRPUnAchieved = (result['output'].evaluationResult.rsrp.coverage.goal == 'unachieved');
+    unAchievedObj.isFieldRSRPUnAchieved = (result['output'].evaluationResult.field.rsrp.coverage.goal == 'unachieved');
     unAchievedObj.isFieldThroughputUnAchieved = (result['output'].evaluationResult.field.throughput.goal == 'unachieved');
     unAchievedObj.isUECoverageUnAchieved = (result['output'].evaluationResult.ue.coverage.goal == 'unachieved');
     unAchievedObj.isUEThroughputByRsrpUnAchieved = (result['output'].evaluationResult.ue.throughputByRsrp.goal == 'unachieved');
