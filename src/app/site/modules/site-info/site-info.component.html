@@ -68,37 +68,37 @@
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps  
             </div>         
-            <div style="padding-left:6.5em;" >
+            <div style="padding-left:5.5em;" >
               {{ 'FieldArea' | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% DL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps
-            </div>
+            </div>         
             <div>
               {{ 'realCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
               {{realFieldULThroughput[i] * 100}}% UL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps 
+            </div>  
+            <div style="padding-left:5.5em;" >       
               {{ 'FieldArea' | translate }}
-            </div>
-            <div style="padding-left:6.5em;" >
-              {{{realFieldDLThroughput[i] * 100}}% DL 
+              {{realFieldDLThroughput[i] * 100}}% DL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps
-            </div>
+            </div>         
           </div>
 		    </div>
         <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.activate">{{ 'isUeAvgThroughput' | translate }}
           <font color="red" *ngIf="unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'achieved' | translate }}</font>
           <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
-            <div>
+            <div>              
               {{ 'setCondition' | translate }} {{i+1}}. {{ 'ue' | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
             </div>
-            <div style="padding-left:6.5em;" >
+            <div style="padding-left:5.5em;">
               {{ 'ue' | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% DL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
@@ -110,7 +110,7 @@
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
             </div>
-            <div style="padding-left:6.5em;" >
+            <div style="padding-left:5.5em;">
               {{ 'ue' | translate }}
               {{realUEDLThroughput[i] * 100}}% DL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
