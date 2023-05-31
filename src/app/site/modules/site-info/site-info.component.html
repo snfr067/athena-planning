@@ -24,7 +24,7 @@
           <font color="green" *ngIf="!unAchievedObj.isFieldCoverageUnAchieved">{{ 'achieved' | translate }}</font>
           <div>
             {{1}}. {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
-            {{calculateForm.evaluationFunc.field.coverage.ratio}}%
+            {{calculateForm.evaluationFunc.field.coverage.ratio * 100}}%
           </div>
         </div>
         <div *ngIf="calculateForm.evaluationFunc.field.sinr.activate">
@@ -81,7 +81,7 @@
           <font color="green" *ngIf="!unAchievedObj.isUECoverageUnAchieved">{{ 'achieved' | translate }}</font>
           <div>
             {{1}}. {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
-            {{calculateForm.evaluationFunc.ue.coverage.ratio}}%
+            {{calculateForm.evaluationFunc.ue.coverage.ratio * 100}}%
           </div>
         </div>
       </span>

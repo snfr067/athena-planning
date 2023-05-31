@@ -699,7 +699,7 @@ export class PdfComponent implements OnInit {
       coverageTarget += "\n";
 
       coverageContent = "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
-        this.calculateForm.evaluationFunc.field.coverage.ratio + "%\n";
+        this.calculateForm.evaluationFunc.field.coverage.ratio*100 + "%\n";
     }
     if (this.calculateForm.evaluationFunc.field.sinr.activate) 
     {
@@ -766,7 +766,7 @@ export class PdfComponent implements OnInit {
       UEcoverageTarget += "\n";
       
       UEcoverageContent = "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
-        this.calculateForm.evaluationFunc.ue.coverage.ratio + "%\n";
+        this.calculateForm.evaluationFunc.ue.coverage.ratio*100 + "%\n";
     }
     if (this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate) 
     {
