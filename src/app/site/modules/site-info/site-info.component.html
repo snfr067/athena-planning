@@ -22,7 +22,7 @@
           {{ 'isCoverage' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldCoverageUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isFieldCoverageUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" >
+          <div style="padding-left:1em;" >
             {{ 'setCondition' | translate }} :   {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
             {{calculateForm.evaluationFunc.field.coverage.ratio * 100}}% <br />
             {{ 'realCondition' | translate }} :   {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
@@ -33,7 +33,7 @@
           {{ 'isSINR' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldSINRUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isFieldSINRUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.field.sinr.ratio; let i=index">
             {{ 'setCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio * 100}}%
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].compliance | translate }}
@@ -47,7 +47,7 @@
         <div *ngIf="calculateForm.evaluationFunc.field.rsrp.activate">{{ 'isRSRP' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldRSRPUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isFieldRSRPUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" *ngFor="let setting of calculateForm.evaluationFunc.field.rsrp.ratio; let i=index">
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.field.rsrp.ratio; let i=index">
             {{ 'setCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].areaRatio * 100}}%
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].compliance | translate }}
@@ -61,19 +61,25 @@
         <div *ngIf="calculateForm.evaluationFunc.field.throughput.activate">{{ 'isThroughput' | translate }}
           <font color="red" *ngIf="unAchievedObj.isFieldThroughputUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isFieldThroughputUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
             {{ 'setCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps <br />
-            &emsp;&emsp;&emsp;{{ 'FieldArea' | translate }}
+            {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps 
+          </div>
+          <div style="padding-left:5.5em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
+            {{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% DL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps <br />
+            {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps
+          </div>
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
             {{realFieldULThroughput[i] * 100}}% UL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps <br />
+            {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps 
+          </div>
+          <div style="padding-left:5.5em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
             {{ 'FieldArea' | translate }}
             {{realFieldDLThroughput[i] * 100}}% DL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
@@ -83,19 +89,24 @@
         <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.activate">{{ 'isUeAvgThroughput' | translate }}
           <font color="red" *ngIf="unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{ 'setCondition' | translate }} {{i+1}}. {{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
-            &emsp;&emsp;&emsp;{{ 'ue' | translate }}
+          <div style="padding-left:5.5em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
+            {{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% DL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps <br />
+            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps
+          </div>
+          <div style="padding-left:1em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'ue' | translate }}
             {{realUEULThroughput[i] * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
-            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
+            {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
+          </div>
+          <div style="padding-left:5.5em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
             {{ 'ue' | translate }}
             {{realUEDLThroughput[i] * 100}}% DL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
@@ -105,7 +116,7 @@
         <div *ngIf="calculateForm.evaluationFunc.ue.coverage.activate">{{ 'isUeCoverage' | translate }}
           <font color="red" *ngIf="unAchievedObj.isUECoverageUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isUECoverageUnAchieved">{{ 'achieved' | translate }}</font>
-          <div style="padding-left:3em;" >
+          <div style="padding-left:1em;" >
             {{ 'setCondition' | translate }} : {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
             {{calculateForm.evaluationFunc.ue.coverage.ratio * 100}}% <br />
             {{ 'realCondition' | translate }} : {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
