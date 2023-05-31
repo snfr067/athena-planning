@@ -45,6 +45,14 @@ export class PdfComponent implements OnInit {
   taskId = 'task_sel_365aa925-c004-443c-949d-a2eed2d9dd60_1';
   /** 結果form */
   calculateForm: CalculateForm = new CalculateForm();
+  unAchievedObj = {    
+    isFieldSINRUnAchieved: false,
+    isFieldRSRPUnAchieved: false,
+    isFieldThroughputUnAchieved: false,
+    isFieldCoverageUnAchieved: false,
+    isUEThroughputByRsrpUnAchieved: false,
+    isUECoverageUnAchieved: false
+  }
   /** 結果data */
   result = {};
   /** 高度 */
@@ -153,6 +161,7 @@ export class PdfComponent implements OnInit {
             const form = res;
             // delete form['output'];
             this.calculateForm = this.formService.setHstToForm(form);
+            this.unAchievedObj = this.formService.setHstToUnAch(form);
             this.result['inputWidth'] = this.calculateForm.width;
             this.result['inputHeight'] = this.calculateForm.height;
             console.log(this.calculateForm);
@@ -160,6 +169,7 @@ export class PdfComponent implements OnInit {
             this.isHst = false;
             this.calculateForm = res['input'];
             this.result = res['output'];
+            this.unAchievedObj = this.formService.setHstToUnAch(res);
           }
           // 現有基站
           let bs = [];
@@ -667,9 +677,11 @@ export class PdfComponent implements OnInit {
     let UEcoverageTarget = "";
     let UEThroughtpuTarget = "";
 
+    let coverageContent = "";
     let SINRContent = "";
     let RSRPContent = "";
     let throughputContent = "";
+    let UEcoverageContent = "";
     let UEThroughputContent = "";
 
     var condition = "";
@@ -679,11 +691,24 @@ export class PdfComponent implements OnInit {
 
     if (this.calculateForm.evaluationFunc.field.coverage.activate) 
     {
-      coverageTarget = this.translateService.instant('isCoverage') + "\n\n";
+      coverageTarget = this.translateService.instant('isCoverage');
+      if(this.unAchievedObj.isFieldCoverageUnAchieved)
+        coverageTarget += this.translateService.instant('unachieved');
+      else
+        coverageTarget += this.translateService.instant('achieved');
+      coverageTarget += "\n";
+
+      coverageContent = "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
+        this.calculateForm.evaluationFunc.field.coverage.ratio + "%\n";
     }
     if (this.calculateForm.evaluationFunc.field.sinr.activate) 
     {
-      SINRTarget = this.translateService.instant('isSINR') + "\n";
+      SINRTarget = this.translateService.instant('isSINR');
+      if(this.unAchievedObj.isFieldSINRUnAchieved)
+        SINRTarget += this.translateService.instant('unachieved');
+      else
+        SINRTarget += this.translateService.instant('achieved');
+      SINRTarget += "\n";
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.sinr.ratio.length; x++)
       {
@@ -695,7 +720,12 @@ export class PdfComponent implements OnInit {
     }
     if (this.calculateForm.evaluationFunc.field.rsrp.activate) 
     {
-      RSRPTarget = this.translateService.instant('isRSRP') + "\n";
+      RSRPTarget = this.translateService.instant('isRSRP');
+      if(this.unAchievedObj.isFieldRSRPUnAchieved)
+        RSRPTarget += this.translateService.instant('unachieved');
+      else
+        RSRPTarget += this.translateService.instant('achieved');
+      RSRPTarget += "\n"
 	  
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.rsrp.ratio.length; x++)
       {
@@ -708,7 +738,12 @@ export class PdfComponent implements OnInit {
     }
     if (this.calculateForm.evaluationFunc.field.throughput.activate) 
     {
-      throughputTarget = this.translateService.instant('isThroughput') + "\n";
+      throughputTarget = this.translateService.instant('isThroughput');
+      if(this.unAchievedObj.isFieldThroughputUnAchieved)
+        throughputTarget += this.translateService.instant('unachieved');
+      else
+        throughputTarget += this.translateService.instant('achieved');
+      throughputTarget += "\n"
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.throughput.ratio.length; x++)
       {
@@ -723,11 +758,24 @@ export class PdfComponent implements OnInit {
     }
     if (this.calculateForm.evaluationFunc.ue.coverage.activate) 
     {
-      UEcoverageTarget = this.translateService.instant('isUeCoverage') + "\n\n";
+      UEcoverageTarget = this.translateService.instant('isUeCoverage');
+      if(this.unAchievedObj.isUECoverageUnAchieved)
+        UEcoverageTarget += this.translateService.instant('unachieved');
+      else
+        UEcoverageTarget += this.translateService.instant('achieved');
+      UEcoverageTarget += "\n";
+      
+      UEcoverageContent = "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
+        this.calculateForm.evaluationFunc.ue.coverage.ratio + "%\n";
     }
     if (this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate) 
     {
-      UEThroughtpuTarget = this.translateService.instant('isUeAvgThroughput') + "\n";
+      UEThroughtpuTarget = this.translateService.instant('isUeAvgThroughput');
+      if(this.unAchievedObj.isUEThroughputByRsrpUnAchieved)
+        UEThroughtpuTarget += this.translateService.instant('unachieved');
+      else
+        UEThroughtpuTarget += this.translateService.instant('achieved');
+      UEThroughtpuTarget += "\n";
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio.length; x++)
       {
@@ -742,11 +790,11 @@ export class PdfComponent implements OnInit {
 	    UEThroughputContent += "\n";
     }
 
-    let target = coverageTarget + 
+    let target = coverageTarget + coverageContent + 
     SINRTarget + SINRContent + 
     RSRPTarget + RSRPContent + 
     throughputTarget + throughputContent + 
-    UEcoverageTarget +
+    UEcoverageTarget + UEcoverageContent + 
     UEThroughtpuTarget + UEThroughputContent;
 
 
