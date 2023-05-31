@@ -3531,24 +3531,19 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     // this.calculateForm.evaluationFunc = this.evaluationFuncForm;
 
-    this.bb = this.aa;
-    this.bb = this.bb * 10;
-    console.log("aa = "+this.aa);
-    console.log("bb = "+this.bb);
+    console.log("this.evaluationFuncForm.field.coverage.activate = "+this.evaluationFuncForm.field.coverage.activate);
+    console.log("this.evaluationFuncForm.field.sinr.activate = "+this.evaluationFuncForm.field.sinr.activate);
 
     this.calculateForm.evaluationFunc = new EvaluationFuncForm();
 
     if(this.evaluationFuncForm.field.coverage.activate)
     {
-      this.calculateForm.evaluationFunc.field = new FieldForm();
-      this.calculateForm.evaluationFunc.field.coverage = new CoverageForm();
       this.calculateForm.evaluationFunc.field.coverage.activate = true;
       this.calculateForm.evaluationFunc.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
+      console.log("this.calculateForm.evaluationFunc = "+this.calculateForm.evaluationFunc);
     }
     if(this.evaluationFuncForm.field.sinr.activate)
     {
-      this.calculateForm.evaluationFunc.field = new FieldForm();
-      this.calculateForm.evaluationFunc.field.sinr = new SINRForm();
       this.calculateForm.evaluationFunc.field.sinr.activate = true;
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
       {
@@ -3564,8 +3559,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if(this.evaluationFuncForm.field.rsrp.activate)
     {
-      this.calculateForm.evaluationFunc.field = new FieldForm();
-      this.calculateForm.evaluationFunc.field.rsrp = new RSRPForm();
       this.calculateForm.evaluationFunc.field.rsrp.activate = true;
       for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
       {
@@ -3581,8 +3574,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if(this.evaluationFuncForm.field.throughput.activate)
     {
-      this.calculateForm.evaluationFunc.field = new FieldForm();
-      this.calculateForm.evaluationFunc.field.throughput = new ThroughputForm();
       this.calculateForm.evaluationFunc.field.throughput.activate = true;
       for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
       {
@@ -3599,8 +3590,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if(this.evaluationFuncForm.ue.throughputByRsrp.activate)
     {
-      this.calculateForm.evaluationFunc.ue = new UEForm();
-      this.calculateForm.evaluationFunc.ue.throughputByRsrp = new UEThroughputForm();
       this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate = true;
       for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
       {
@@ -3617,8 +3606,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     if(this.evaluationFuncForm.ue.coverage.activate)
     {
-      this.calculateForm.evaluationFunc.ue = new UEForm();
-      this.calculateForm.evaluationFunc.ue.coverage = new CoverageForm();
       this.calculateForm.evaluationFunc.ue.coverage.activate = true;
       this.calculateForm.evaluationFunc.ue.coverage.ratio = 
       this.evaluationFuncForm.ue.coverage.ratio / 100;
