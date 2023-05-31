@@ -378,13 +378,16 @@
             <mat-radio-button class="block" value="3" matTooltip="{{ 'simulation' | translate }}">
               {{ 'simulation' | translate }}
             </mat-radio-button>
+          </mat-radio-group>
           
           <!-- --- -->
-            <mat-radio-button class="block" value="1" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
+          <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
+            <mat-radio-button class="block" value="0" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
               {{ 'planning.layered' | translate }}
             </mat-radio-button>
+          </mat-radio-group>
           
-            <div *ngIf="planningIndex == '1'" class="subTarget">
+            <div *ngIf="planningIndex == '0'" class="subTarget">
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}"
             (change)="selected = 1;calculateForm.isAverageSinr = true">
               {{ 'isAverageSinr' | translate }}
@@ -411,9 +414,11 @@
             </mat-checkbox> -->
             </div>
 
+            <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
             <mat-radio-button class="block" value="2" matTooltip="{{ 'planning.ue.tooltip' | translate }}">
               {{ 'planning.ue' | translate }}
             </mat-radio-button>
+          </mat-radio-group>
             <div *ngIf="planningIndex == '2'" class="subTarget">
               <!-- <mat-checkbox [(ngModel)]="calculateForm.isUeAvgSinr" matTooltip="{{ 'isUeAvgSinr.tooltip' | translate }}" 
               [checked]="selected === 3" (change)="selected = 3">
@@ -437,7 +442,6 @@
               </mat-checkbox> -->
             </div>
 
-          </mat-radio-group>
 
           <p class="sub_title inline-block mt-2" *ngIf="planningIndex !== '3'">
             <ng-container *ngIf="calculateForm.objectiveIndex == '2' ; else oTemp">{{ 'availableNewBsNumber.wifi' | translate }}</ng-container>

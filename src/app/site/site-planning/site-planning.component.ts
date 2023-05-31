@@ -608,16 +608,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
     }
-    if(window.sessionStorage.getItem(`planningIndex`) != null)
-    {
-      this.planningIndex = this.formatPlanningIndex(window.sessionStorage.getItem(`planningIndex`));
-      console.log("this.planningIndex = "+this.planningIndex);
-    }
-    else
-    {
-      this.planningIndex = '1';
-      console.log("this.planningIndex = "+this.planningIndex);
-    }
     
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
@@ -778,18 +768,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
                 if (this.calculateForm.isSimulation) {
-                  // this.planningIndex = '3';
+                  this.planningIndex = '0';
+                  // this.formatPlanningIndex();
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    // this.planningIndex = '1';
+                    this.planningIndex = '0';
+                    // this.formatPlanningIndex();
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isAverageSinr == true) {
                       this.calculateForm.isCoverage = true;
                       this.calculateForm.isAverageSinr = false;
                     }
                   } else {
-                    // this.planningIndex = '2';
+                    this.planningIndex = '0';
+                    // this.formatPlanningIndex();
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isUeAvgSinr) {
                       this.calculateForm.isUeAvgThroughput = true;
@@ -864,12 +857,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
                 if (this.calculateForm.isSimulation) {
                   // this.planningIndex = '3';
+                  this.formatPlanningIndex();
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
                     // this.planningIndex = '1';
+                    this.formatPlanningIndex();
                   } else {
                     // this.planningIndex = '2';
+                    this.formatPlanningIndex();
                   }
                 }
 
@@ -919,15 +915,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               this.calculateForm.pathLossModelId = this.modelList[0]['id'];
           }
         }
-        // setTimeout(()=> {
-        //   if (this.calculateForm.defaultBs !== "") {
-        //     this.planningIndex = '3';
-        //     console.log('Simulation')
-        //   } else {
-        //     this.planningIndex = '1';
-        //     console.log('Calculation')
-        //   }
-        // }, 1000);
+        setTimeout(()=> {
+          if (this.calculateForm.defaultBs !== "") {
+            // this.planningIndex = '3';
+            this.formatPlanningIndex();
+            console.log('Simulation')
+          } else {
+            // this.planningIndex = '1';
+            this.formatPlanningIndex();
+            console.log('Calculation')
+          }
+        }, 1000);
       }
     })
     .catch(err => console.log(err))
@@ -2569,7 +2567,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
     }
     this.matDialog.open(this.SINRModalTable);
-    console.log("this.planningIndex = " + this.planningIndex);
   }  
   openRSRPSetting() {
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
@@ -7045,11 +7042,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeAvgThroughput = false;
       this.matDialog.closeAll();
     } else {
-      // if (this.calculateForm.isCoverage) {
-      //   this.planningIndex = '1';
-      // } else {
-      //   this.planningIndex = '2';
-      // }
+      if (this.calculateForm.isCoverage) {
+        // this.planningIndex = '1';
+        this.formatPlanningIndex();
+      } else {
+        // this.planningIndex = '2';
+        this.formatPlanningIndex();
+      }
       this.matDialog.closeAll();
     }
     
@@ -7214,8 +7213,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             height: res[1]
           };
           // resize layout
-    this.planningIndex = this.formatPlanningIndex(this.planningIndex);
-    console.log("this.planningIndex = ["+this.planningIndex+"]");
           console.log(layoutOption);
           Plotly.relayout('chart', layoutOption).then((gd2) => {
             window.setTimeout(() => {
@@ -8528,17 +8525,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  formatPlanningIndex(index)
+  formatPlanningIndex()
   {
-    console.log("Number(index)  = ["+Number(index) +"]");
-    if(Number(index) == 1)
-      return '1';
-    else if(Number(index) == 2)
-      return '2';
-    else if(Number(index) == 3)
-      return '3';
+    if(window.sessionStorage.getItem(`planningIndex`) != null)
+    {
+      this.planningIndex = window.sessionStorage.getItem(`planningIndex`);
+      console.log("this.planningIndex = "+this.planningIndex);
+    }
     else
-    return '2';
+    {
+      this.planningIndex = '2';
+      console.log("this.planningIndex = "+this.planningIndex);
+    }
+
+    // console.log("Number(index)  = ["+Number(index) +"]");
+    // if(Number(index) == 1)
+    //   return '1';
+    // else if(Number(index) == 2)
+    //   return '2';
+    // else if(Number(index) == 3)
+    //   return '3';
+    // else
+    // return '2';
   }
   
   changeSINRSetting()
