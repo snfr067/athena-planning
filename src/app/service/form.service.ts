@@ -129,6 +129,33 @@ export class FormService {
   }
 
   /**
+   * write real ratio in history to obj
+   * @param result 
+   */
+  setHstToRatio(result)
+  {    
+    const realRatio = {
+      fieldCoverage: 0,
+      fieldSINR : 0,
+      fieldRSRP : 0,
+      fieldThroughput : 0,
+      ueCoverage : 0,
+      ueThroughput : 0,
+    };
+
+    realRatio.fieldCoverage = (result['output'].evaluationResult.field.coverage.ratio);
+    realRatio.fieldSINR = (result['output'].evaluationResult.field.sinr.ratio );
+    realRatio.fieldRSRP = (result['output'].evaluationResult.field.rsrp.ratio);
+    realRatio.fieldThroughput = (result['output'].evaluationResult.field.throughput.ratio);
+    realRatio.ueCoverage = (result['output'].evaluationResult.ue.coverage.ratio);
+    realRatio.ueThroughput = (result['output'].evaluationResult.ue.throughputByRsrp.ratio);
+    console.log("output = "+result['output']);
+    console.log("output.sinr.ratio = "+result['output'].evaluationResult.field.sinr.ratio);
+
+    return realRatio;
+  }
+
+  /**
    * 轉換跟結果一樣的key
    * @param result 
    */

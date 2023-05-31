@@ -376,7 +376,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http error */
   statusCode = "";
   errMsg = "";
-  isBsNumberOptimization = "default";
+  isBsNumberOptimization = "custom";
   isDefaultSINRSetting = "custom";
   isDefaultRSRPSetting = "custom";
   isDefaultThroughputSetting = "custom";

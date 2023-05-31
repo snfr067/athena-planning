@@ -65,6 +65,8 @@
 	"AreaPercent": "Area Ratio(%)",
 	"CountPercent": "Count Ratio(%)",
 	"Condition": "compliance",
+	"setCondition": "Setting Condition",
+	"realCondition": "Real Condition",
 	"moreThan": ">=",
 	"lessThan": "<=",
 	"CoveragePercent":"Coverage(%)",

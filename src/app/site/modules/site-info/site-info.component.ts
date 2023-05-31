@@ -41,7 +41,15 @@ export class SiteInfoComponent implements OnInit {
     isFieldCoverageUnAchieved: false,
     isUEThroughputByRsrpUnAchieved: false,
     isUECoverageUnAchieved: false
-  }
+  };
+  realRatio = {
+    fieldCoverage: 0,
+    fieldSINR : 0,
+    fieldRSRP : 0,
+    fieldThroughput : 0,
+    ueCoverage : 0,
+    ueThroughput : 0,
+  };
 
   ngOnInit(): void {
     // console.log(sessionStorage.getItem('planningObj'));
