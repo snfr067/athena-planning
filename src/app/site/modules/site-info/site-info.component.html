@@ -26,7 +26,7 @@
             {{ 'setCondition' | translate }} :   {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
             {{calculateForm.evaluationFunc.field.coverage.ratio * 100}}% <br />
             {{ 'realCondition' | translate }} :   {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
-            {{realRatio.fieldCoverage * 100}}% 
+            {{realFieldCoverage[0] * 100}}% 
           </div>
         </div>
         <div *ngIf="calculateForm.evaluationFunc.field.sinr.activate">
@@ -39,7 +39,7 @@
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].value}}dB <br />
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
-            {{realRatio.fieldSINR * 100}}%
+            {{realFieldSINR[i] * 100}}%
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.sinr.ratio[i].value}}dB 
           </div>
@@ -53,7 +53,7 @@
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].value}}dB <br />
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
-            {{realRatio.fieldRSRP * 100}}%
+            {{realFieldRSRP[i] * 100}}%
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.rsrp.ratio[i].value}}dB 
           </div>
@@ -66,16 +66,16 @@
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps <br />
-            {{ 'FieldArea' | translate }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ 'FieldArea' | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100}}% DL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps <br />
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'FieldArea' | translate }}
-            {{realRatio.fieldThroughput * 100}}% UL 
+            {{realFieldULThroughput[i] * 100}}% UL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps <br />
             {{ 'FieldArea' | translate }}
-            {{realRatio.fieldThroughput * 100}}% DL 
+            {{realFieldDLThroughput[i] * 100}}% DL 
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps <br />
           </div>
@@ -88,16 +88,16 @@
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
-            {{ 'ue' | translate }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ 'ue' | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100}}% DL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps <br />
             {{ 'realCondition' | translate }} {{i+1}}. {{ 'ue' | translate }}
-            {{realRatio.ueThroughput * 100}}% UL 
+            {{realUEULThroughput[i] * 100}}% UL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps; <br />
             {{ 'ue' | translate }}
-            {{realRatio.ueThroughput * 100}}% DL 
+            {{realUEDLThroughput[i] * 100}}% DL 
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
             {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps
           </div>
@@ -107,9 +107,9 @@
           <font color="green" *ngIf="!unAchievedObj.isUECoverageUnAchieved">{{ 'achieved' | translate }}</font>
           <div>
             {{ 'setCondition' | translate }} : {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
-            {{calculateForm.evaluationFunc.ue.coverage.ratio * 100}}%
+            {{calculateForm.evaluationFunc.ue.coverage.ratio * 100}}% <br />
             {{ 'realCondition' | translate }} : {{ 'subfield.coverage' | translate }} {{ 'moreThan' | translate }} 
-            {{realRatio.ueCoverage* 100}}%
+            {{realUECoverage[0] * 100}}%
           </div>
         </div>
       </span>

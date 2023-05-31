@@ -51,6 +51,16 @@ export class SiteInfoComponent implements OnInit {
     ueThroughput : 0,
   };
 
+  
+  realFieldCoverage = [];
+  realFieldSINR = [];
+  realFieldRSRP = [];
+  realFieldULThroughput = [];
+  realFieldDLThroughput = [];
+  realUECoverage = [];
+  realUEULThroughput = [];
+  realUEDLThroughput = [];
+
   ngOnInit(): void {
     // console.log(sessionStorage.getItem('planningObj'));
     // if (localStorage.getItem(`${this.authService.userToken}planningObj`) != null) {

@@ -69,6 +69,15 @@ export class ResultComponent implements OnInit {
     ueThroughput : 0,
   };
 
+  realFieldCoverage = [];
+  realFieldSINR = [];
+  realFieldRSRP = [];
+  realFieldULThroughput = [];
+  realFieldDLThroughput = [];
+  realUECoverage = [];
+  realUEULThroughput = [];
+  realUEDLThroughput = [];
+
   /** 畫圖layout參數 */
   plotLayout;
   /** 顯示訊號品質圖 */
@@ -237,7 +246,15 @@ export class ResultComponent implements OnInit {
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
           this.unAchievedObj = this.formService.setHstToUnAch(res);
-          this.realRatio = this.formService.setHstToRatio(res);
+          // this.realRatio = this.formService.setHstToRatio(res);
+          this.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
+          this.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
+          this.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);
+          this.realFieldULThroughput = this.formService.setHstToFieldULThroughputRatio(res);
+          this.realFieldDLThroughput = this.formService.setHstToFieldDLThroughputRatio(res);
+          this.realUECoverage = this.formService.setHstToUECoverageatio(res);
+          this.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
+          this.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultidx'];
@@ -250,7 +267,15 @@ export class ResultComponent implements OnInit {
           this.calculateForm = res['input'];
           this.result = res['output'];
           this.unAchievedObj = this.formService.setHstToUnAch(res);
-          this.realRatio = this.formService.setHstToRatio(res);
+          // this.realRatio = this.formService.setHstToRatio(res);
+          this.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
+          this.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
+          this.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);
+          this.realFieldULThroughput = this.formService.setHstToFieldULThroughputRatio(res);
+          this.realFieldDLThroughput = this.formService.setHstToFieldDLThroughputRatio(res);
+          this.realUECoverage = this.formService.setHstToUECoverageatio(res);
+          this.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
+          this.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultIdx'];
@@ -561,6 +586,14 @@ export class ResultComponent implements OnInit {
         this.siteInfo.planningObj.isUeCoverage = this.calculateForm.isUeCoverage;
         this.siteInfo.unAchievedObj = this.unAchievedObj;
         this.siteInfo.realRatio = this.realRatio;
+        this.siteInfo.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
+        this.siteInfo.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
+        this.siteInfo.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);
+        this.siteInfo.realFieldULThroughput = this.formService.setHstToFieldULThroughputRatio(res);
+        this.siteInfo.realFieldDLThroughput = this.formService.setHstToFieldDLThroughputRatio(res);
+        this.siteInfo.realUECoverage = this.formService.setHstToUECoverageatio(res);
+        this.siteInfo.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
+        this.siteInfo.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
         console.log(this.siteInfo.calculateForm);
         console.log(this.siteInfo.unAchievedObj);
         console.log(this.siteInfo.realRatio);

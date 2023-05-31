@@ -132,25 +132,98 @@ export class FormService {
    * write real ratio in history to obj
    * @param result 
    */
-  setHstToRatio(result)
+  setHstToFieldCoverageRatio(result)
   {    
-    const realRatio = {
-      fieldCoverage: 0,
-      fieldSINR : 0,
-      fieldRSRP : 0,
-      fieldThroughput : 0,
-      ueCoverage : 0,
-      ueThroughput : 0,
-    };
+    const realRatio = [];
 
-    realRatio.fieldCoverage = (result['output'].evaluationResult.field.coverage.ratio);
-    realRatio.fieldSINR = (result['output'].evaluationResult.field.sinr.ratio );
-    realRatio.fieldRSRP = (result['output'].evaluationResult.field.rsrp.ratio);
-    realRatio.fieldThroughput = (result['output'].evaluationResult.field.throughput.ratio);
-    realRatio.ueCoverage = (result['output'].evaluationResult.ue.coverage.ratio);
-    realRatio.ueThroughput = (result['output'].evaluationResult.ue.throughputByRsrp.ratio);
-    console.log("output = "+result['output']);
-    console.log("output.sinr.ratio = "+result['output'].evaluationResult.field.sinr.ratio);
+    for(var i = 0; i < result['output'].evaluationResult.field.coverage.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.coverage.ratio);
+    }
+
+    return realRatio;
+  }
+
+  setHstToFieldSINRRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.field.sinr.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.sinr.ratio);
+    }
+
+    return realRatio;
+  }
+
+  setHstToFieldRSRPRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.rsrp.ratio);
+    }
+
+    return realRatio;
+  }
+
+  setHstToFieldULThroughputRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].ULValue);
+    }
+
+    return realRatio;
+  }
+
+  setHstToFieldDLThroughputRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].DLValue);
+    }
+
+    return realRatio;
+  }
+
+  setHstToUECoverageatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.field.rsrp.ratio);
+    }
+
+    return realRatio;
+  }
+
+  setHstToUEULThroughputRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue);
+    }
+
+    return realRatio;
+  }
+
+  setHstToUEDLThroughputRatio(result)
+  {    
+    const realRatio = [];
+
+    for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
+    {
+      realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue);
+    }
 
     return realRatio;
   }
