@@ -548,6 +548,7 @@ export class ResultComponent implements OnInit {
         this.siteInfo.planningObj.isUeCoverage = this.calculateForm.isUeCoverage;
         this.siteInfo.unAchievedObj = this.unAchievedObj;
         console.log(this.siteInfo.calculateForm);
+        console.log(this.siteInfo.unAchievedObj);
         this.siteInfo.result = this.result;
         window.setTimeout(() => {
           this.siteInfo.inputBsListCount = candidateBs.length;
