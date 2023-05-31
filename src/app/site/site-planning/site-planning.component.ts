@@ -8,7 +8,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDailogComponent } from '../../utility/confirm-dailog/confirm-dailog.component';
 import { HttpClient } from '@angular/common/http';
 import { CalculateForm } from '../../form/CalculateForm';
-import { EvaluationFuncForm, RatioForm } from '../../form/EvaluationFuncForm';
+import { CoverageForm, EvaluationFuncForm, FieldForm, RatioForm, RSRPForm, SINRForm, ThroughputForm, UEForm, UEThroughputForm } from '../../form/EvaluationFuncForm';
 import * as _ from 'lodash';
 import { MatMenuTrigger } from '@angular/material/menu';
 import html2canvas from 'html2canvas';
@@ -113,6 +113,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   calculateForm: CalculateForm = new CalculateForm();
   /** evaluationFunc form  */
   evaluationFuncForm: EvaluationFuncForm = new EvaluationFuncForm();
+
+  aa = 10;
+  bb = 0;
   /** material list */
   materialList = [];
   /** model list */
@@ -2555,53 +2558,51 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   */
   openFieldCoverageSetting() {    
     this.matDialog.open(this.FieldCoverageModalTable);    
-    if(this.evaluationFuncForm.field.coverage.ratio < 1)
-    this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
   }
   openSINRSetting() {
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
-    for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
-    {
-      if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio < 1)
-        this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
-    }
+    // for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
+    // {
+    //   if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio < 1)
+    //     this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
+    // }
     this.matDialog.open(this.SINRModalTable);
   }  
   openRSRPSetting() {
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
-    for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
-    {
-      if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio < 1)
-        this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
-    }
+    // for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
+    // {
+    //   if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio < 1)
+    //     this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
+    // }
     this.matDialog.open(this.RSRPModalTable);
   }  
   openThroughputSetting() {
     if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
       this.addThroughput();
-    for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
-    {
-      if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio < 1)
-        this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
-    }
+    // for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
+    // {
+    //   if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio < 1)
+    //     this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
+    // }
     this.matDialog.open(this.ThroughputModalTable);
   }  
   openUEThroughputSetting() {
     if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
-    for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
-    {
-      if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio < 1)
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
-    }      
+    // for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
+    // {
+    //   if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio < 1)
+    //     this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
+    // }      
     this.matDialog.open(this.UEThroughputModalTable);
   }
   openUECoverageSetting() {    
     this.matDialog.open(this.UECoverageModalTable);    
-    if(this.evaluationFuncForm.ue.coverage.ratio < 1)
-      this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
+    // if(this.evaluationFuncForm.ue.coverage.ratio < 1)
+    //   this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
   }
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
@@ -3528,44 +3529,96 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     console.log(this.evaluationFuncForm);
     this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
-    this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+    // this.calculateForm.evaluationFunc = this.evaluationFuncForm;
+
+    this.bb = this.aa;
+    this.bb = this.bb * 10;
+    console.log("aa = "+this.aa);
+    console.log("bb = "+this.bb);
+
+    this.calculateForm.evaluationFunc = new EvaluationFuncForm();
+
     if(this.evaluationFuncForm.field.coverage.activate)
     {
-      this.calculateForm.evaluationFunc.field.coverage.ratio = this.calculateForm.evaluationFunc.field.coverage.ratio / 100;
+      this.calculateForm.evaluationFunc.field = new FieldForm();
+      this.calculateForm.evaluationFunc.field.coverage = new CoverageForm();
+      this.calculateForm.evaluationFunc.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
     }
     if(this.evaluationFuncForm.field.sinr.activate)
     {
+      this.calculateForm.evaluationFunc.field = new FieldForm();
+      this.calculateForm.evaluationFunc.field.sinr = new SINRForm();
       for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
       {
-        this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio = this.calculateForm.evaluationFunc.field.sinr.ratio[i].areaRatio/100;
+        this.calculateForm.evaluationFunc.field.sinr.ratio.push
+        (
+          {
+            "areaRatio": this.evaluationFuncForm.field.sinr.ratio[i].areaRatio/100,
+            "compliance": this.evaluationFuncForm.field.sinr.ratio[i].compliance,
+            "value": this.evaluationFuncForm.field.sinr.ratio[i].value
+          }
+        );
       }
     }
     if(this.evaluationFuncForm.field.rsrp.activate)
     {
+      this.calculateForm.evaluationFunc.field = new FieldForm();
+      this.calculateForm.evaluationFunc.field.rsrp = new RSRPForm();
       for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
       {
-        this.calculateForm.evaluationFunc.field.rsrp.ratio[i].areaRatio =  this.calculateForm.evaluationFunc.field.rsrp.ratio[i].areaRatio /100;
+        this.calculateForm.evaluationFunc.field.rsrp.ratio.push
+        (
+          {
+            "areaRatio": this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio/100,
+            "compliance": this.evaluationFuncForm.field.rsrp.ratio[i].compliance,
+            "value": this.evaluationFuncForm.field.rsrp.ratio[i].value
+          }
+        );
       }
     }
     if(this.evaluationFuncForm.field.throughput.activate)
     {
+      this.calculateForm.evaluationFunc.field = new FieldForm();
+      this.calculateForm.evaluationFunc.field.throughput = new ThroughputForm();
       for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
       {
-        this.calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio = this.calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio/100;
+        this.calculateForm.evaluationFunc.field.throughput.ratio.push
+        (
+          {
+            "areaRatio": this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100,
+            "compliance": this.evaluationFuncForm.field.throughput.ratio[i].compliance,
+            "ULValue": this.evaluationFuncForm.field.throughput.ratio[i].ULValue,
+            "DLValue": this.evaluationFuncForm.field.throughput.ratio[i].DLValue
+          }
+        );
       }
     }
     if(this.evaluationFuncForm.ue.throughputByRsrp.activate)
     {
+      this.calculateForm.evaluationFunc.ue = new UEForm();
+      this.calculateForm.evaluationFunc.ue.throughputByRsrp = new UEThroughputForm();
       for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
       {
-        this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio = this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio/100;
+        this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio.push
+        (
+          {
+            "countRatio": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100,
+            "compliance": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance,
+            "ULValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue,
+            "DLValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue
+          }
+        );
       }
     }
     if(this.evaluationFuncForm.ue.coverage.activate)
     {
-      this.calculateForm.evaluationFunc.ue.coverage.ratio = this.calculateForm.evaluationFunc.ue.coverage.ratio / 100;
+      this.calculateForm.evaluationFunc.ue = new UEForm();
+      this.calculateForm.evaluationFunc.ue.coverage = new CoverageForm();
+      this.calculateForm.evaluationFunc.ue.coverage.ratio = 
+      this.evaluationFuncForm.ue.coverage.ratio / 100;
     }
     console.log(this.evaluationFuncForm);
+    console.log(this.calculateForm);
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
     // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
     // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
