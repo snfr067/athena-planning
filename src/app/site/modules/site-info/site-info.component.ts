@@ -52,12 +52,12 @@ export class SiteInfoComponent implements OnInit {
   };
 
   
-  realFieldCoverage = [];
+  realFieldCoverage = 0;
   realFieldSINR = [];
   realFieldRSRP = [];
   realFieldULThroughput = [];
   realFieldDLThroughput = [];
-  realUECoverage = [];
+  realUECoverage = 0;
   realUEULThroughput = [];
   realUEDLThroughput = [];
 

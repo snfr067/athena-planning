@@ -69,12 +69,12 @@ export class ResultComponent implements OnInit {
     ueThroughput : 0,
   };
 
-  realFieldCoverage = [];
+  realFieldCoverage = 0;
   realFieldSINR = [];
   realFieldRSRP = [];
   realFieldULThroughput = [];
   realFieldDLThroughput = [];
-  realUECoverage = [];
+  realUECoverage = 0;
   realUEULThroughput = [];
   realUEDLThroughput = [];
 

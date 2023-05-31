@@ -134,12 +134,12 @@ export class FormService {
    */
   setHstToFieldCoverageRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = 0;
 
-    for(var i = 0; i < result['output'].evaluationResult.field.coverage.ratio.length; i++)
-    {
-      realRatio.push(result['output'].evaluationResult.field.coverage.ratio[i]);
-    }
+    if(result['output'].evaluationResult.field.coverage.ratio != null)   
+    {      
+      realRatio = (Math.round(result['output'].evaluationResult.field.coverage.ratio));  
+    }  
 
     return realRatio;
   }
@@ -152,7 +152,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.sinr.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.field.sinr.ratio[i]);
+        realRatio.push(Math.round(result['output'].evaluationResult.field.sinr.ratio[i]));
       }
     }
 
@@ -167,7 +167,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.rsrp.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.field.rsrp.ratio[i]);
+        realRatio.push(Math.round(result['output'].evaluationResult.field.rsrp.ratio[i]));
       }
     }
     return realRatio;
@@ -181,7 +181,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].ULValue);
+        realRatio.push(Math.round(result['output'].evaluationResult.field.throughput.ratio[i].ULValue));
       }
     }
 
@@ -196,7 +196,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.field.throughput.ratio[i].DLValue);
+        realRatio.push(Math.round(result['output'].evaluationResult.field.throughput.ratio[i].DLValue));
       }
     }
 
@@ -205,14 +205,11 @@ export class FormService {
 
   setHstToUECoverageatio(result)
   {    
-    const realRatio = [];
+    var realRatio = 0;
 
     if(result['output'].evaluationResult.ue.coverage.ratio != null)
     {
-      for(var i = 0; i < result['output'].evaluationResult.ue.coverage.ratio.length; i++)
-      {
-        realRatio.push(result['output'].evaluationResult.ue.coverage.ratio[i]);
-      }
+      realRatio = (Math.round(result['output'].evaluationResult.ue.coverage.ratio));      
     }
 
     return realRatio;
@@ -226,7 +223,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue);
+        realRatio.push(Math.round(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue));
       }
     }
 
@@ -241,7 +238,7 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
       {
-        realRatio.push(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue);
+        realRatio.push(Math.round(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue));
       }
     }
 
