@@ -146,7 +146,7 @@ export class FormService {
 
   setHstToFieldSINRRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.field.sinr.ratio != null)
     {
@@ -161,7 +161,7 @@ export class FormService {
 
   setHstToFieldRSRPRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.field.rsrp.ratio != null)
     {
@@ -175,7 +175,7 @@ export class FormService {
 
   setHstToFieldULThroughputRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.field.throughput.ratio != null)
     {
@@ -190,7 +190,7 @@ export class FormService {
 
   setHstToFieldDLThroughputRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.field.throughput.ratio != null)
     {
@@ -217,7 +217,7 @@ export class FormService {
 
   setHstToUEULThroughputRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.ue.throughputByRsrp.ratio != null)
     {
@@ -232,7 +232,7 @@ export class FormService {
 
   setHstToUEDLThroughputRatio(result)
   {    
-    const realRatio = [];
+    var realRatio = [];
 
     if(result['output'].evaluationResult.ue.throughputByRsrp.ratio != null)
     {

@@ -66,7 +66,7 @@
 	"CountPercent": "目標數量比(%)",
 	"Condition": "條件",
 	"setCondition": "設定條件",
-	"realCondition": "實際結果",
+	"realCondition": "規劃結果",
 	"moreThan": ">=",
 	"lessThan": "<=",
 	"CoveragePercent":"覆蓋率(%)",

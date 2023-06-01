@@ -594,6 +594,35 @@ export class ResultComponent implements OnInit {
         this.siteInfo.realUECoverage = this.formService.setHstToUECoverageatio(res);
         this.siteInfo.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
         this.siteInfo.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
+
+        this.siteInfo.realFieldCoverage = (Number(this.siteInfo.realFieldCoverage).toFixed(4));
+        var i = 0;
+        for(i = 0; i < this.siteInfo.realFieldSINR.length; i++)
+        {
+          this.siteInfo.realFieldSINR[i] = (Number(this.siteInfo.realFieldSINR[i]).toFixed(4));
+        }
+        for(i = 0; i < this.siteInfo.realFieldRSRP.length; i++)
+        {
+          this.siteInfo.realFieldRSRP[i] = (Number(this.siteInfo.realFieldRSRP[i]).toFixed(4));
+        }
+        for(i = 0; i < this.siteInfo.realFieldULThroughput.length; i++)
+        {
+          this.siteInfo.realFieldULThroughput[i] = (Number(this.siteInfo.realFieldULThroughput[i]).toFixed(4));
+        }
+        for(i = 0; i < this.siteInfo.realFieldDLThroughput.length; i++)
+        {
+          this.siteInfo.realFieldDLThroughput[i] = (Number(this.siteInfo.realFieldDLThroughput[i]).toFixed(4));
+        }
+        this.siteInfo.realUECoverage = (Number(this.siteInfo.realUECoverage).toFixed(4));        
+        for(i = 0; i < this.siteInfo.realUEULThroughput.length; i++)
+        {
+          this.siteInfo.realUEULThroughput[i] = (Number(this.siteInfo.realUEULThroughput[i]).toFixed(4));
+        }
+        for(i = 0; i < this.siteInfo.realUEULThroughput.length; i++)
+        {
+          this.siteInfo.realUEULThroughput[i] = (Number(this.siteInfo.realUEULThroughput[i]).toFixed(4));
+        }
+
         console.log(this.siteInfo.calculateForm);
         console.log(this.siteInfo.unAchievedObj);
         console.log(this.siteInfo.realRatio);

@@ -611,6 +611,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
     }
+    if(window.sessionStorage.getItem(`isBsNumberOptimization`) != null)
+    {
+      this.isBsNumberOptimization = window.sessionStorage.getItem(`isBsNumberOptimization`);
+    }
+    
     
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
@@ -4102,6 +4107,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
   }
 
+  changeBsNumOpti() {
+    window.sessionStorage.setItem(`isBsNumberOptimization`, this.isBsNumberOptimization);
+  }
+
   /**
    * 變更障礙物size
    * @param svgId 物件id 
@@ -5701,8 +5710,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     else if (this.calculateForm.objectiveIndex == '1') {spec = '5G'}
     else {spec = 'wifi'}
     const objectiveData = [
-      ['objective', 'objectiveStopCondition', 'newBsNum'],
-      [spec, '', this.calculateForm.availableNewBsNumber]
+      ['objective', 'objectiveStopCondition', 'newBsNum', 'isBsOptm'],
+      [spec, '', this.calculateForm.availableNewBsNumber, this.isBsNumberOptimization]
     ];
     const objectiveWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(objectiveData);
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
@@ -5813,6 +5822,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const name = file.name;
       sessionStorage.setItem('taskName', name);
       this.readXls(bstr);
+      
 
       event.target.value = ''; // 清空
     };
@@ -6338,6 +6348,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const objectiveParametersData = (XLSX.utils.sheet_to_json(objectiveParametersWS, {header: 1}));
     if (objectiveParametersData.length > 1) {
       this.calculateForm.availableNewBsNumber = Number(objectiveParametersData[1][2]);
+      this.isBsNumberOptimization = objectiveParametersData[1][3];
+      this.changeBsNumOpti();
     }
     if (this.calculateForm.objectiveIndex === '2') {
       // 切換到2.4Ghz

@@ -449,12 +449,12 @@
           </p>
           <table class="sub_content inline-block" *ngIf="planningIndex !== '3'" style="height: 30px">
             <tbody>
-              <mat-radio-group class="inline-block" style="display: flex" [(ngModel)]="isBsNumberOptimization">
+              <mat-radio-group class="inline-block" style="display: flex" (change)="changeBsNumOpti()"  [(ngModel)]="isBsNumberOptimization">
                   <td>
                     <mat-radio-button value="custom" >{{ 'custom.BsNumberOptimization' | translate }}</mat-radio-button>
                   </td>
                   <td>
-                    <input type="number" style="float:center" class="inputNum" [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
+                    <input type="number" style="float:center" class="inputNum" (change)="changeBsNumOpti()"  [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
                   </td>
                   <td>
                     <mat-radio-button value="default" style="margin-right: 50px;" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
