@@ -711,7 +711,7 @@ export class PdfComponent implements OnInit {
     var compliance = "";
     var tab = "";
 
-    for(var x = 0; x < 19; x ++)
+    for(var x = 0; x < 22; x ++)
       tab += " ";
 	
 
