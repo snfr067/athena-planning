@@ -85,6 +85,10 @@ export class SpinnerComponent implements OnInit {
     }
   }
 
+  finish() {
+    this.percentageVal = 100;
+  }
+
   /** show loading */
   show() {
     this.showCal = false;
@@ -113,6 +117,11 @@ export class SpinnerComponent implements OnInit {
     window.clearTimeout(this.time);
     this.addTime();
     this.spinner.show();
+  }
+
+  /** show finish, percentage = 100% */
+  showFinish() {
+    this.finish();
   }
 
   /** show loading, 有運算中 */

@@ -69,6 +69,7 @@
 	"realCondition": "規劃結果",
 	"moreThan": ">=",
 	"lessThan": "<=",
+	"equal": "=",
 	"CoveragePercent":"覆蓋率(%)",
 	"SINR": "訊號品質(dB)",
 	"RSRP": "訊號強度(dB)",
@@ -478,7 +479,10 @@
 	"pdf.obstacle.Info": "障礙物詳細資訊",
 	"pdf.ue.info": "行動終端詳細資訊",
 	"pdf.total.item": "項目",
+	"pdf.pathLossModel.item": "無線訊號衰減模型資訊",
 	"pdf.total": "總數",
+
+
 
 	"subfield": "自訂場域",
 	"subfield.z": "地圖切面(高度)",
@@ -497,7 +501,7 @@
 	"target.setting.mode": "設定模式",
 	"default.target": "預設目標",
 	"custom.target": "自訂目標",
-	"default.BsNumberOptimization": "基站數量最佳化",
+	"default.BsNumberOptimization": "系統建議",
 	"custom.BsNumberOptimization": "自訂",
 
 	"target.unachieved": "計算結果未能滿足您所設定的目標函數，是否仍要顯示計算結果?",

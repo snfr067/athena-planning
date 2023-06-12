@@ -69,6 +69,7 @@
 	"realCondition": "Real Condition",
 	"moreThan": ">=",
 	"lessThan": "<=",
+	"equal": "=",
 	"CoveragePercent":"Coverage(%)",
 	"SINR": "SINR(dB)",
 	"RSRP": "RSRP(dB)",
@@ -481,6 +482,7 @@
 	"pdf.obstacle.Info": "Detail of Obstacles",
 	"pdf.ue.info": "Detail of UE",
 	"pdf.total.item": "Item",
+	"pdf.pathLossModel.item": "PathLoss model information",
 	"pdf.total": "Number",
 
 	"subfield.num": "User Defined Field Number",
@@ -498,7 +500,7 @@
 	"target.setting.mode": "Mode",
 	"default.target": "Default Target",
 	"custom.target": "Custom Target",
-	"default.BsNumberOptimization": "Count of BS Optimization",
+	"default.BsNumberOptimization": "System Advice",
 	"custom.BsNumberOptimization": "Custom",
 
 	"target.unachieved": "The function targets are unachieved, do you still want to show result?",

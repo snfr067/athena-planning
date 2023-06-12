@@ -100,6 +100,22 @@ export class FormService {
     console.log("calculateForm",calculateForm);
     return calculateForm;
   }
+
+  /**
+   * write isBsNumberOptimization
+   * @param result 
+   */
+  setHstToBsNumOpt(result)
+  {
+    const isBsNumOpt = result['isBsNumberOptimization'];
+
+    if(isBsNumOpt == 'false' || !isBsNumOpt)
+      return "custom";
+    else if(isBsNumOpt == 'true' || isBsNumOpt)
+      return "default";
+    else
+      return "custom";
+  }
  
   /**
    * write if unachieved in history to obj

@@ -56,6 +56,12 @@ export class AppComponent {
     this.spinner.showAsHome();
   }
 
+  /** show finish, percentage = 100% */
+  showFinish() {
+    this.spinner.showFinish();
+  }
+
+
   /** show loading, 有home link */
   showResult() {
     this.spinner.showResult();

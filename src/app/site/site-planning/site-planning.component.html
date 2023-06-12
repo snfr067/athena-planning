@@ -382,30 +382,30 @@
           
           <!-- --- -->
           <mat-radio-group [(ngModel)]="planningIndex" (change)="changePlanningIndex()">
-            <mat-radio-button class="block" value="0" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
+            <mat-radio-button class="block" value="1" matTooltip="{{ 'planning.layered.tooltip' | translate }}">
               {{ 'planning.layered' | translate }}
             </mat-radio-button>
           </mat-radio-group>
           
-            <div *ngIf="planningIndex == '0'" class="subTarget">
+            <div *ngIf="planningIndex == '1'" class="subTarget">
             <!-- <mat-checkbox [(ngModel)]="calculateForm.isAverageSinr" matTooltip="{{ 'isAverageSinr.tooltip' | translate }}"
             (change)="selected = 1;calculateForm.isAverageSinr = true">
               {{ 'isAverageSinr' | translate }}
             </mat-checkbox> -->
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.coverage.activate"  (change)="changeEvaluationFuncForm()"  matTooltip="{{ 'isCoverage.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.coverage.activate"  (change)="setStorageEvaluationFuncForm()"  matTooltip="{{ 'isCoverage.tooltip' | translate }}">
               {{ 'isCoverage' | translate }}
               <button value="CoverageSetting" (click)="openFieldCoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.sinr.activate" (change)="changeEvaluationFuncForm()"  matTooltip="{{ 'isSINR.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.sinr.activate" (change)="setStorageEvaluationFuncForm()"  matTooltip="{{ 'isSINR.tooltip' | translate }}">
               {{ 'isSINR' | translate }}
               <button value="SINRSetting" (click)="openSINRSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.rsrp.activate" (change)="changeEvaluationFuncForm()"  matTooltip="{{ 'isRSRP.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.rsrp.activate" (change)="setStorageEvaluationFuncForm()"  matTooltip="{{ 'isRSRP.tooltip' | translate }}">
               {{ 'isRSRP' | translate }}
               <button value="RSRPSetting" (click)="openRSRPSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
 
-            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.throughput.activate" (change)="changeEvaluationFuncForm()"   matTooltip="{{ 'isThroughput.tooltip' | translate }}">
+            <mat-checkbox [(ngModel)]="evaluationFuncForm.field.throughput.activate" (change)="setStorageEvaluationFuncForm()"   matTooltip="{{ 'isThroughput.tooltip' | translate }}">
               {{ 'isThroughput' | translate }}
               <button value="ThroughputSetting" (click)="openThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
             </mat-checkbox>
@@ -424,12 +424,12 @@
               [checked]="selected === 3" (change)="selected = 3">
                 {{ 'isUeAvgSinr' | translate }}
               </mat-checkbox> -->
-              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" (change)="changeEvaluationFuncForm()"  matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}" 
+              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.activate" (change)="setStorageEvaluationFuncForm()"  matTooltip="{{ 'isUeAvgThroughput.tooltip' | translate }}" 
               (change)="changePlanningTarget('isUeCoverage')">
                 {{ 'isUeAvgThroughput' | translate }}
                 <button value="UeAvgThroughput" (click)="openUEThroughputSetting()">{{ 'MutilFunctionSetting' | translate }}</button>
               </mat-checkbox>
-              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" (change)="changeEvaluationFuncForm()"   matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
+              <mat-checkbox [(ngModel)]="evaluationFuncForm.ue.coverage.activate" (change)="setStorageEvaluationFuncForm()"   matTooltip="{{ 'isUeTpByDistance.tooltip' | translate }}"
               (change)="changePlanningTarget('isUeCoverage')">
                 {{ 'isUeCoverage' | translate }}
                 <button value="CoverageSetting" (click)="openUECoverageSetting()">{{ 'MutilFunctionSetting' | translate }}</button>              
@@ -454,10 +454,11 @@
                     <mat-radio-button value="custom" >{{ 'custom.BsNumberOptimization' | translate }}</mat-radio-button>
                   </td>
                   <td>
-                    <input type="number" style="float:center" class="inputNum" (change)="changeBsNumOpti()"  [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
+                    <input type="number" style="float:center" class="inputNum" (change)="changeBsNumOpti()"  
+                    [(ngModel)]="calculateForm.availableNewBsNumber" [disabled]="isBsNumberOptimization == 'default'">
                   </td>
                   <td>
-                    <mat-radio-button value="default" style="margin-right: 50px;" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
+                    <mat-radio-button value="default" >{{ 'default.BsNumberOptimization' | translate }}</mat-radio-button>
                   </td>              
                 </mat-radio-group>  
             </tbody>      
@@ -490,11 +491,11 @@
               <tr *ngIf="calculateForm.objectiveIndex != '2'">
                 <td>{{ 'duplex' | translate }}</td>
                 <td>
-                  <mat-radio-group [(ngModel)]="duplexMode">
+                  <mat-radio-group class="inline-block" [(ngModel)]="duplexMode">
                   <!-- <mat-radio-group [(ngModel)]="duplexMode"> -->
                     <!-- <mat-radio-button value="tdd">TDD</mat-radio-button> -->
-                    <mat-radio-button value="tdd" (click)="changeProtoOrDuplex()">TDD</mat-radio-button>
-                    <mat-radio-button value="fdd" (click)="changeProtoOrDuplex()">FDD</mat-radio-button>
+                    <mat-radio-button value="tdd" style="width: 100px;" (click)="changeProtoOrDuplex()">TDD</mat-radio-button>                    
+                    <mat-radio-button value="fdd" style="width: 100px;" (click)="changeProtoOrDuplex()">FDD</mat-radio-button>                    
                   </mat-radio-group>
                 </td>
               </tr>
@@ -1938,15 +1939,6 @@
   <h5 mat-dialog-title>{{ 'isSINR.paramLink' | translate }}</h5>
   <table>
     <tbody>    
-	  <!-- <tr>
-		<td>{{'target.setting.mode' | translate}}</td>
-		<td colspan="4">
-		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeSINRSetting()" [(ngModel)]="isDefaultSINRSetting">
-            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
-            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
-      </mat-radio-group>
-		</td>
-	  </tr> -->
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td>{{'Condition' | translate}}</td>
@@ -1964,7 +1956,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.sinr.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].compliance" [disabled]="isDefaultSINRSetting == 'default'" (change)="changeEvaluationFuncForm()">
+              [(ngModel)]="evaluationFuncForm.field.sinr.ratio[i].compliance" [disabled]="isDefaultSINRSetting == 'default'" (change)="setStorageEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -1988,16 +1980,7 @@
 <ng-template #RSRPModalTable>
   <h5 mat-dialog-title>{{ 'isRSRP.paramLink' | translate }}</h5>
   <table>
-    <tbody>    
-	  <!-- <tr>
-		<td>{{'target.setting.mode' | translate}}</td>
-		<td colspan="4">
-		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeRSRPSetting()" [(ngModel)]="isDefaultRSRPSetting">
-            <mat-radio-button value="default" style="margin-right: 150px;" >{{ 'default.target' | translate }}</mat-radio-button>
-            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
-          </mat-radio-group>
-		</td>
-	  </tr> -->
+    <tbody>  
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td>{{'Condition' | translate}}</td>
@@ -2015,7 +1998,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.rsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].compliance" [disabled]="isDefaultRSRPSetting == 'default'" (change)="changeEvaluationFuncForm()">
+              [(ngModel)]="evaluationFuncForm.field.rsrp.ratio[i].compliance" [disabled]="isDefaultRSRPSetting == 'default'" (change)="setStorageEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -2040,15 +2023,6 @@
   <h5 mat-dialog-title>{{ 'isThroughput.paramLink' | translate }}</h5>
   <table>
     <tbody> 
-	  <!-- <tr>
-		<td>{{'target.setting.mode' | translate}}</td>
-		<td colspan="7">
-		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeThroughputSetting()" [(ngModel)]="isDefaultThroughputSetting">
-            <mat-radio-button value="default" style="margin-right: 400px;" >{{ 'default.target' | translate }}</mat-radio-button>
-            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
-          </mat-radio-group>
-		</td>
-	  </tr>	 -->
       <tr>
         <td>{{'AreaPercent' | translate}}</td>
         <td></td>
@@ -2075,7 +2049,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.field.throughput.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].compliance" [disabled]="isDefaultThroughputSetting == 'default'" (change)="changeEvaluationFuncForm()">
+              [(ngModel)]="evaluationFuncForm.field.throughput.ratio[i].compliance" [disabled]="isDefaultThroughputSetting == 'default'" (change)="setStorageEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>
@@ -2115,15 +2089,6 @@
   <h5 mat-dialog-title>{{ 'isUeAvgThroughput.paramLink' | translate }}</h5>
   <table>
     <tbody>
-	  <!-- <tr>
-		<td>{{'target.setting.mode' | translate}}</td>
-		<td colspan="7">
-		  <mat-radio-group style="display: flex; margin-top: 0.5rem;" (change)="changeUEThroughputSetting()" [(ngModel)]="isDefaultUEThroughputSetting">
-            <mat-radio-button value="default" style="margin-right: 400px;" >{{ 'default.target' | translate }}</mat-radio-button>
-            <mat-radio-button value="custom" >{{ 'custom.target' | translate }}</mat-radio-button>
-          </mat-radio-group>
-		</td>
-	  </tr>     -->
       <tr>
         <td>{{'CountPercent' | translate}}</td>
         <td></td>
@@ -2150,7 +2115,7 @@
         <td>   
           <div *ngFor="let setting of evaluationFuncForm.ue.throughputByRsrp.ratio; let i=index" style="float:center" style="height: 60px">
             <select step="2"
-              [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance" [disabled]="isDefaultUEThroughputSetting == 'default'" (change)="changeEvaluationFuncForm()">
+              [(ngModel)]="evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance" [disabled]="isDefaultUEThroughputSetting == 'default'" (change)="setStorageEvaluationFuncForm()">
                 <option value="moreThan"> {{'moreThan' | translate}} </option>
                 <option value="lessThan"> {{'lessThan' | translate}} </option>
             </select>

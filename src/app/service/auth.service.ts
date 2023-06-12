@@ -96,6 +96,11 @@ export class AuthService {
     document.getElementById('ngxSpinnerShowAsHome').click();
   }
 
+  /** show finish, percentage = 100% */
+  showFinish() {
+    document.getElementById('ngxSpinnerFinish').click();
+  }
+
   /** show loading, 有home link */
   spinnerShowResult() {
     document.getElementById('ngxSpinnerShowResult').click();

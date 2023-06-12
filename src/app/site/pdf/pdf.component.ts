@@ -81,6 +81,8 @@ export class PdfComponent implements OnInit {
   /** 天線列表 */
   antennaList = [];
   AntennaIdToIndex = [];
+  /** 無線模型列表 */
+  pathLossModelList = [];
   /** 建議方案 Component */
   @ViewChild('propose') propose: ProposeComponent;
   /** 建議方案 Component */
@@ -138,8 +140,7 @@ export class PdfComponent implements OnInit {
   async export(taskId, isHst, scaleMinSQ, scaleMaxSQ, scaleMinST, scaleMaxST, scaleMinUL, scaleMaxUL, scaleMinDL, scaleMaxDL) {
     const ant = await this.getAntennaList();
     const obs = await this.getObstacleList();
-    console.log(ant);
-    console.log(obs);
+    const pml = await this.getPathLossModelList();
     // Initial
     this.defaultBs.length = 0;
     this.inputBsList.length = 0;
@@ -709,6 +710,7 @@ export class PdfComponent implements OnInit {
     let UEThroughputContent = "";
 
     var compliance = "";
+    var equal = "=";
     var tab = "";
 
     for(var x = 0; x < 22; x ++)
@@ -725,8 +727,8 @@ export class PdfComponent implements OnInit {
       coverageTarget += "\n";
 
       coverageContent = "  " + this.translateService.instant('setCondition') + "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
-        this.calculateForm.evaluationFunc.field.coverage.ratio*100 + "%" + "\n" + 
-        "  " + this.translateService.instant('realCondition') + "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
+        (this.calculateForm.evaluationFunc.field.coverage.ratio*100).toFixed(2) + "%" + "\n" + 
+        "  " + this.translateService.instant('realCondition') + "1. " + this.translateService.instant('subfield.coverage') + " " + equal + " " + 
         (this.realFieldCoverage*100).toFixed(2) + "%" + "\n\n";
     }
     if (this.calculateForm.evaluationFunc.field.sinr.activate) 
@@ -742,7 +744,7 @@ export class PdfComponent implements OnInit {
       {
         compliance = this.translateService.instant(this.calculateForm.evaluationFunc.field.sinr.ratio[x].compliance);
         SINRContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + 
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio*100 + "% " + 
+        this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.sinr.ratio[x].areaRatio*100).toFixed(2) + "% " + 
         compliance + " " + this.calculateForm.evaluationFunc.field.sinr.ratio[x].value + "dB" + "\n" + 
         "  " + this.translateService.instant('realCondition') + (x+1) + ". " + 
         this.translateService.instant('FieldArea') + (this.realFieldSINR[x] * 100).toFixed(2) + "% " + 
@@ -764,7 +766,7 @@ export class PdfComponent implements OnInit {
       {
         compliance = this.translateService.instant(this.calculateForm.evaluationFunc.field.rsrp.ratio[x].compliance);
         RSRPContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + 
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio*100 + "% " + 
+        this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.rsrp.ratio[x].areaRatio*100).toFixed(2) + "% " + 
         compliance + " " + this.calculateForm.evaluationFunc.field.rsrp.ratio[x].value + "dB" + "\n" + 
         "  " + this.translateService.instant('realCondition') + (x+1) + ". " + 
         this.translateService.instant('FieldArea') + (this.realFieldRSRP[x] * 100).toFixed(2) + "% " + 
@@ -787,9 +789,9 @@ export class PdfComponent implements OnInit {
       {
         compliance = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
         throughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + 
-        this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100 + "% " + 
+        this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100).toFixed(2) + "% " + 
         "UL " + compliance + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n" +
-        "  " + tab + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100 + "% " + 
+        "  " + tab + this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100).toFixed(2) + "% " + 
         "DL " + compliance + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n" + 
         "  " + this.translateService.instant('realCondition') + (x+1) + ". " + 
         this.translateService.instant('FieldArea') + (this.realFieldULThroughput[x] * 100).toFixed(2) + "% " + 
@@ -811,8 +813,8 @@ export class PdfComponent implements OnInit {
       UEcoverageTarget += "\n";
       
       UEcoverageContent = "  " + this.translateService.instant('setCondition') + "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
-        this.calculateForm.evaluationFunc.ue.coverage.ratio*100 + "%" + "\n" + 
-        "  " + this.translateService.instant('realCondition') + "1. " + this.translateService.instant('subfield.coverage') + " >= " + 
+        (this.calculateForm.evaluationFunc.ue.coverage.ratio*100).toFixed(2) + "%" + "\n" + 
+        "  " + this.translateService.instant('realCondition') + "1. " + this.translateService.instant('subfield.coverage') + " " + equal + " " + 
         (this.realUECoverage * 100).toFixed(2) + "%" + 
         "\n\n";
     }
@@ -829,9 +831,9 @@ export class PdfComponent implements OnInit {
       {
         compliance = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
         UEThroughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + this.translateService.instant('FieldArea') + 
-        this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100 + "% " + 
+        (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% " + 
         "UL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
-        "  " + tab + this.translateService.instant('FieldArea') + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100 + "% " + 
+        "  " + tab + this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% " + 
         "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n" + 
         "  " + this.translateService.instant('realCondition') + (x+1) + ". " + this.translateService.instant('FieldArea') + 
         (this.realUEULThroughput[x] * 100).toFixed(2) + "% " + 
@@ -863,6 +865,7 @@ export class PdfComponent implements OnInit {
       [this.translateService.instant('maxConnectionNum'),this.calculateForm['maxConnectionNum']],
       [this.translateService.instant('resolution'),this.calculateForm['resolution']+' x '+this.calculateForm['resolution']+'('+this.translateService.instant('meter')+')'],
       [this.translateService.instant('compassDirection'),this.calculateForm['geographicalNorth']+' '+this.translateService.instant('angle')],
+      // [this.translateService.instant('planning.model'),
     ]
     pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.content')], fieldParameter, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -876,8 +879,42 @@ export class PdfComponent implements OnInit {
       }
     });
 
-    //pos+= 85 + targetLine*7;
-	  pos = 10;
+    console.log("mutil function info over");
+
+    pos = 10;
+    pdf.addPage();
+    
+	  //無線模型資訊
+    let pathLossModel = this.pathLossModelList.find(item => item["id"] == this.calculateForm['pathLossModelId']);
+    let pathLossModelName = "";
+    if (this.authService.lang == 'zh-TW'){
+      pathLossModelName = "[" + pathLossModel['chineseName'] + "]";
+    } else {
+      pathLossModelName = "[" + pathLossModel['name'] + "]";
+    }
+    let pathLossModelInfo;
+
+    pathLossModelInfo = [
+      [this.translateService.instant('planning.model.name'),pathLossModelName],
+      [this.translateService.instant('planning.model.disscoefficient'),pathLossModel['distancePowerLoss']],
+      [this.translateService.instant('planning.model.fieldLoss'),pathLossModel['fieldLoss']]
+    ];
+
+    pdf.autoTable([this.translateService.instant('pdf.pathLossModel.item'),this.translateService.instant('pdf.content')], pathLossModelInfo, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      beforePageContent: specDataHeader,
+      startY: pos,
+      halign: 'center',
+      columnStyles: {
+        0: {cellWidth: 90},
+        1: {cellWidth: 90},
+      }
+    });
+
+    console.log("pathLossModel info over: "+pathLossModelName);
+
+    pos = 10;
     pdf.addPage();
 
     let statistics;
@@ -1715,6 +1752,7 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.num'),
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
+      this.translateService.instant('rotate'),
       this.translateService.instant('altitude.start'),
       `${this.translateService.instant('altitude.obstacle')}(${this.translateService.instant('meter')})`,
       `${this.translateService.instant('result.pdf.width')}(${this.translateService.instant('meter')})`,
@@ -1724,8 +1762,8 @@ export class PdfComponent implements OnInit {
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
-      console.log(item);
-      obstacleData.push([(k + 1), item.x, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
+      console.log("-----item------",item);
+      obstacleData.push([(k + 1), item.x, item.rotate, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -1909,6 +1947,23 @@ export class PdfComponent implements OnInit {
           this.materialIdToIndex[id]=i;
         }
         console.log(result);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+    return result;
+  }
+
+  async getPathLossModelList() {
+    let url_plm = `${this.authService.API_URL}/getPathLossModel/${this.authService.userToken}`;
+    let result;
+    this.http.get(url_plm).subscribe(
+      res => {
+        result = res;
+        this.pathLossModelList = Object.values(result);
+        console.log("****getPathLossModelList",result);
+        console.log("****getPathLossModelList",this.pathLossModelList);
       },
       err => {
         console.log(err);

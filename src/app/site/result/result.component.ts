@@ -58,16 +58,7 @@ export class ResultComponent implements OnInit {
     isFieldCoverageUnAchieved: false,
     isUEThroughputByRsrpUnAchieved: false,
     isUECoverageUnAchieved: false
-  };
-  
-  realRatio = {
-    fieldCoverage: 0,
-    fieldSINR : 0,
-    fieldRSRP : 0,
-    fieldThroughput : 0,
-    ueCoverage : 0,
-    ueThroughput : 0,
-  };
+  };  
 
   realFieldCoverage = 0;
   realFieldSINR = [];
@@ -246,7 +237,6 @@ export class ResultComponent implements OnInit {
           this.result = this.formService.setHstOutputToResultOutput(res['output']);
           this.calculateForm = this.formService.setHstToForm(res);
           this.unAchievedObj = this.formService.setHstToUnAch(res);
-          // this.realRatio = this.formService.setHstToRatio(res);
           this.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
           this.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
           this.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);
@@ -267,7 +257,6 @@ export class ResultComponent implements OnInit {
           this.calculateForm = res['input'];
           this.result = res['output'];
           this.unAchievedObj = this.formService.setHstToUnAch(res);
-          // this.realRatio = this.formService.setHstToRatio(res);
           this.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
           this.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
           this.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);
@@ -585,7 +574,6 @@ export class ResultComponent implements OnInit {
         this.siteInfo.planningObj.isUeAvgThroughput = this.calculateForm.isUeAvgThroughput;
         this.siteInfo.planningObj.isUeCoverage = this.calculateForm.isUeCoverage;
         this.siteInfo.unAchievedObj = this.unAchievedObj;
-        this.siteInfo.realRatio = this.realRatio;
         this.siteInfo.realFieldCoverage = this.formService.setHstToFieldCoverageRatio(res);
         this.siteInfo.realFieldSINR = this.formService.setHstToFieldSINRRatio(res);
         this.siteInfo.realFieldRSRP = this.formService.setHstToFieldRSRPRatio(res);

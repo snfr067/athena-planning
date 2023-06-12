@@ -113,9 +113,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   calculateForm: CalculateForm = new CalculateForm();
   /** evaluationFunc form  */
   evaluationFuncForm: EvaluationFuncForm = new EvaluationFuncForm();
-
-  aa = 10;
-  bb = 0;
   /** material list */
   materialList = [];
   /** model list */
@@ -325,7 +322,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 避免跑版的暫存sapn style */
   ognSpanStyle;
   /** 1: 以整體場域為主進行規劃, 2: 以行動終端為主進行規劃 3:場域模擬*/
-  planningIndex = '1';
+  planningIndex = '3';
   /** 障礙物預設顏色 */
   OBSTACLE_COLOR = '#73805c';
   /** defaultBs預設顏色 */
@@ -382,18 +379,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   isDefaultThroughputSetting = "custom";
   isDefaultUEThroughputSetting = "custom";
   defaultArea = 95;
-  defaultSINRSetting = 8.5;
+  defaultSINRSetting = 15;
   sinrUpperLimit = 40;
   sinrLowerLimit = -23;
-  defaultRSRPSetting = -92;
+  defaultRSRPSetting = -110;
   rsrpUpperLimit = -44;
   rsrpLowerLimit = -140;
-  defaultULThroughputSetting = 400;
+  defaultULThroughputSetting = 250;
   ulThroughputUpperLimit = 800;
   ulThroughputLowerLimit = 0;
-  defaultDLThroughputSetting = 900;
+  defaultDLThroughputSetting = 350;
   dlThroughputUpperLimit = 1800;
   dlThroughputLowerLimit = 0;
+  defaultUEULThroughputSetting = 5;
+  defaultUEDLThroughputSetting = 5;
+
+  fieldStr = {
+    coverage: "field.coverage",
+    sinr: "field.sinr",
+    rsrp: "field.rsrp",
+    throughput: "field.throughput",
+  };
+  ueStr = {
+    coverage: "ue.coverage",
+    throughputByRsrp: "ue.throughputByRsrp",
+  };
+  evaluationString = {
+    field: this.fieldStr,
+    ue: this.ueStr
+  };
 
   // useSmartAntenna = "false";
   /** 畫圖物件 */
@@ -606,29 +620,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     });
 
-
-    if(window.sessionStorage.getItem(`evaluationFuncForm`) != null)
-    {
-      this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
-    }
-    if(window.sessionStorage.getItem(`isBsNumberOptimization`) != null)
-    {
-      this.isBsNumberOptimization = window.sessionStorage.getItem(`isBsNumberOptimization`);
-    }
-    
-    
-    if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
-      this.addSINR();
-   
-    if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
-      this.addRSRP();
-    
-    if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
-      this.addThroughput();
-   
-    if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
-      this.addUEThroughput();
-
     //取得材質列表
     const promise = new Promise((resolve, reject) => {
       let url_obs = `${this.authService.API_URL}/getObstacle/${this.authService.userToken}`;
@@ -742,6 +733,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 // console.log(output);
                 this.dlRatio = result['tddframeratio'];
                 this.calculateForm = this.formService.setHstToForm(result);
+                this.isBsNumberOptimization = this.formService.setHstToBsNumOpt(result);
+                console.log("isBsNumOpt = " + this.isBsNumberOptimization);
+                this.evaluationFuncForm = this.calculateForm.evaluationFunc;
+                this.changeAreaFormatToPercent();
+                this.changePlaningIndexByEvaluationForm();
                 if (!(Number(this.calculateForm.maxConnectionNum)>0)){
                   this.calculateForm['maxConnectionNum'] = 32;
                 }
@@ -776,21 +772,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
                 if (this.calculateForm.isSimulation) {
-                  this.planningIndex = '0';
-                  // this.formatPlanningIndex();
+                  this.planningIndex = '1';
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    this.planningIndex = '0';
-                    // this.formatPlanningIndex();
+                    this.planningIndex = '1';
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isAverageSinr == true) {
                       this.calculateForm.isCoverage = true;
                       this.calculateForm.isAverageSinr = false;
                     }
                   } else {
-                    this.planningIndex = '0';
-                    // this.formatPlanningIndex();
+                    this.planningIndex = '1';
                     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                     if (this.calculateForm.isUeAvgSinr) {
                       this.calculateForm.isUeAvgThroughput = true;
@@ -922,6 +915,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
               this.calculateForm.pathLossModelId = this.modelList[0]['id'];
           }
+
+          // evaluationForm初始值
+          this.evaluationFuncForm = new EvaluationFuncForm();
+          this.changePlaningIndexByEvaluationForm();
+          if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
+          this.addSINR();
+      
+          if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
+            this.addRSRP();
+          
+          if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
+            this.addThroughput();
+        
+          if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+            this.addUEThroughput();
         }
         setTimeout(()=> {
           if (this.calculateForm.defaultBs !== "") {
@@ -934,6 +942,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             console.log('Calculation')
           }
         }, 1000);
+
+
       }
     })
     .catch(err => console.log(err))
@@ -2567,47 +2577,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   openSINRSetting() {
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
-    // for(var i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
-    // {
-    //   if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio < 1)
-    //     this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
-    // }
     this.matDialog.open(this.SINRModalTable);
   }  
   openRSRPSetting() {
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
-    // for(var i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
-    // {
-    //   if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio < 1)
-    //     this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
-    // }
     this.matDialog.open(this.RSRPModalTable);
   }  
   openThroughputSetting() {
     if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
       this.addThroughput();
-    // for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
-    // {
-    //   if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio < 1)
-    //     this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
-    // }
     this.matDialog.open(this.ThroughputModalTable);
   }  
   openUEThroughputSetting() {
     if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
-    // for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
-    // {
-    //   if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio < 1)
-    //     this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
-    // }      
     this.matDialog.open(this.UEThroughputModalTable);
   }
   openUECoverageSetting() {    
     this.matDialog.open(this.UECoverageModalTable);    
-    // if(this.evaluationFuncForm.ue.coverage.ratio < 1)
-    //   this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
   }
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
@@ -3443,7 +3431,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    } else if (this.planningIndex === '0' && !this.evaluationFuncForm.field.coverage.activate && 
+    } else if (this.planningIndex === '1' && !this.evaluationFuncForm.field.coverage.activate && 
     !this.evaluationFuncForm.field.rsrp.activate && !this.evaluationFuncForm.field.sinr.activate && 
     !this.evaluationFuncForm.field.throughput.activate) {
       let msg = this.translateService.instant('no_target_fault');
@@ -3466,7 +3454,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // console.log(this.calculateForm.frequency);
 
       console.log(this.evaluationFuncForm);
-        this.setForm();
+      this.setForm();
 
       console.log(this.evaluationFuncForm);
       // 規劃目標
@@ -3512,20 +3500,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** 設定規劃目標  */
   setPlanningObj() {
-    var ratioTemp = 0;
-    var a,b,c;
     // check規劃目標
-    if (this.planningIndex === '0') {
+    if (this.planningIndex === '1') 
+    {
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
       this.calculateForm.isUeCoverage = false;
 
       this.evaluationFuncForm.ue.coverage.activate = false;
       this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
-    } else {
+    } 
+    else if (this.planningIndex === '2') 
+    {
       this.calculateForm.isAverageSinr = false;
       this.calculateForm.isCoverage = false;
 
+      this.evaluationFuncForm.field.coverage.activate = false;
+      this.evaluationFuncForm.field.throughput.activate = false;
+      this.evaluationFuncForm.field.sinr.activate = false;
+      this.evaluationFuncForm.field.rsrp.activate = false;
+    }
+    else
+    {
+      this.evaluationFuncForm.ue.coverage.activate = false;
+      this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
       this.evaluationFuncForm.field.coverage.activate = false;
       this.evaluationFuncForm.field.throughput.activate = false;
       this.evaluationFuncForm.field.sinr.activate = false;
@@ -3972,6 +3970,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
         if (res['progress'] === 1) {
 
+          this.authService.showFinish();
+
           const resultUrl = `${this.authService.API_URL}/completeCalcResult/${this.taskid}/${this.authService.userToken}`;
           this.http.get(resultUrl).subscribe(
             resCalcResult => {
@@ -4103,8 +4103,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   }
 
-  changeEvaluationFuncForm() {
+  setStorageEvaluationFuncForm() {
     window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+  }
+
+  getStorageEvaluationFuncForm() {
+    if(window.sessionStorage.getItem(`evaluationFuncForm`) != null)
+    {
+      this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
+    }
   }
 
   changeBsNumOpti() {
@@ -6016,7 +6023,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
     const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
     if (candidateData.length > 1) {
-      // this.planningIndex = '1';
+      this.planningIndex = '1';     //if there is any candidate, planning index should be 1 or 2
       for (let i = 1; i < candidateData.length; i++) {
         const id = `candidate_${(i - 1)}`;
         this.candidateList.push(id);
@@ -6348,7 +6355,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const objectiveParametersData = (XLSX.utils.sheet_to_json(objectiveParametersWS, {header: 1}));
     if (objectiveParametersData.length > 1) {
       this.calculateForm.availableNewBsNumber = Number(objectiveParametersData[1][2]);
-      this.isBsNumberOptimization = objectiveParametersData[1][3];
+      if(objectiveParametersData[1][3] != null)
+      {
+        this.isBsNumberOptimization = objectiveParametersData[1][3];
+        if(this.isBsNumberOptimization != 'default' && this.isBsNumberOptimization != 'custom')
+        {
+          this.isBsNumberOptimization = 'custom';
+        }
+      }
+      else
+        this.isBsNumberOptimization = 'custom';
       this.changeBsNumOpti();
     }
     if (this.calculateForm.objectiveIndex === '2') {
@@ -6374,6 +6390,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (mutilFunctionSettingData.length > 1) 
       {
         this.planningIndex = mutilFunctionSettingData[1][0];
+        if(this.planningIndex = '0')
+        {
+          this.planningIndex = '1';
+        }
         console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
         console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
         this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
@@ -7055,7 +7075,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
 
-    if (this.planningIndex === '0') {
+    if (this.planningIndex === '1') {
       this.calculateForm.isSimulation = false;
       this.calculateForm.isCoverage = true;
       this.calculateForm.isUeCoverage = false;
@@ -8428,12 +8448,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         "compliance": "moreThan",
         "value": this.defaultSINRSetting
       });
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   delSINR(index) {    
     this.evaluationFuncForm.field.sinr.ratio.splice(index, 1);
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   addRSRP() {
@@ -8444,12 +8464,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       "compliance": "moreThan",
       "value": this.defaultRSRPSetting
     });
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   delRSRP(index) {    
     this.evaluationFuncForm.field.rsrp.ratio.splice(index, 1);
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   addThroughput() {
@@ -8461,12 +8481,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       "ULValue":  this.defaultULThroughputSetting,
       "DLValue":  this.defaultDLThroughputSetting
     });
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   delThroughput(index) {    
     this.evaluationFuncForm.field.throughput.ratio.splice(index, 1);
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   addUEThroughput() {
@@ -8475,16 +8495,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       "countRatio": this.defaultArea, 
       "compliance": "moreThan",
-      "ULValue":  this.defaultULThroughputSetting,
-      "DLValue":  this.defaultDLThroughputSetting
+      "ULValue":  this.defaultUEULThroughputSetting,
+      "DLValue":  this.defaultUEDLThroughputSetting
     });
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
 
   delUEThroughput(index) {    
     this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(index, 1);
-    this.changeEvaluationFuncForm();
+    this.setStorageEvaluationFuncForm();
   }
+
 
   checkPercent(area) {
     console.log('Check area:'+ area);
@@ -8501,9 +8522,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      this.getStorageEvaluationFuncForm();    //還原舊參數
     }
     else{      
-      this.changeEvaluationFuncForm();
+      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8520,9 +8543,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      this.getStorageEvaluationFuncForm();    //還原舊參數
     }
     else{      
-      this.changeEvaluationFuncForm();
+      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8539,9 +8563,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      this.getStorageEvaluationFuncForm();    //還原舊參數
     }
     else{      
-      this.changeEvaluationFuncForm();
+      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8558,9 +8583,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      this.getStorageEvaluationFuncForm();    //還原舊參數
     }
     else{      
-      this.changeEvaluationFuncForm();
+      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8577,9 +8603,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      this.getStorageEvaluationFuncForm();    //還原舊參數
     }
     else{      
-      this.changeEvaluationFuncForm();
+      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8592,54 +8619,51 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     else
     {
-      this.planningIndex = '2';
+      this.planningIndex = '3';
       console.log("this.planningIndex = "+this.planningIndex);
     }
+  } 
 
-    // console.log("Number(index)  = ["+Number(index) +"]");
-    // if(Number(index) == 1)
-    //   return '1';
-    // else if(Number(index) == 2)
-    //   return '2';
-    // else if(Number(index) == 3)
-    //   return '3';
-    // else
-    // return '2';
-  }
-  
-  changeSINRSetting()
+  changePlaningIndexByEvaluationForm()
   {
-	  if(this.isDefaultSINRSetting == 'default')
-	  {
-		  this.evaluationFuncForm.field.sinr.ratio = [];
-		  this.addSINR();
-	  }
+    var isField = (this.evaluationFuncForm.field.coverage.activate || this.evaluationFuncForm.field.sinr.activate ||
+                  this.evaluationFuncForm.field.rsrp.activate || this.evaluationFuncForm.field.throughput.activate);
+    var isUe = (this.evaluationFuncForm.ue.coverage.activate || this.evaluationFuncForm.ue.throughputByRsrp.activate);
+    
+    if(isField)
+    {
+      this.planningIndex = '1';
+    }
+    else if(isUe)
+    {
+      this.planningIndex = '2';
+    }
+    else
+    {
+      this.planningIndex = '3';
+    }
   }
-  
-  changeRSRPSetting()
+
+  changeAreaFormatToPercent()
   {
-	  if(this.isDefaultRSRPSetting == 'default')
-	  {
-		  this.evaluationFuncForm.field.rsrp.ratio = [];
-		  this.addRSRP();
-	  }
-  }
-  
-  changeThroughputSetting()
-  {
-	  if(this.isDefaultThroughputSetting == 'default')
-	  {
-		  this.evaluationFuncForm.field.throughput.ratio = [];
-		  this.addThroughput();
-	  }
-  }
-  
-  changeUEThroughputSetting()
-  {
-	  if(this.isDefaultUEThroughputSetting == 'default')
-	  {
-		  this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
-		  this.addUEThroughput();
-	  }
+    var i = 0;
+    this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
+    for(i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
+    {
+      this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
+    }
+    for(i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
+    {
+      this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
+    }
+    for(i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
+    {
+      this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
+    }
+    this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
+    for(i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
+    {
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
+    }
   }
 }

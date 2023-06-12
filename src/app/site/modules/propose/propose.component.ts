@@ -84,7 +84,8 @@ export class ProposeComponent implements OnInit {
           xanchor: 'left',
           yanchor: 'bottom',
           sizing: 'stretch',
-          layer: 'below'
+          layer: 'below',
+          opacity: 0.5
         });
 
         this.draw(isPDF, images);
@@ -185,14 +186,14 @@ export class ProposeComponent implements OnInit {
           mode: 'text',
           x: [xyMap[this.result['chosenCandidate'][i].toString()].x],
           y: [xyMap[this.result['chosenCandidate'][i].toString()].y],
-          text: `${numMap[this.result['chosenCandidate'][i].toString()]}<br>✅`,
+          text: `\t${numMap[this.result['chosenCandidate'][i].toString()]}<br>✅`,
           marker: {
             size: 27,
             color: color,
             symbol: 'arrow-bar-down-open'
           },
           textfont: {
-            size: 14,
+            size: 24,
             color: 'red'
           },
           hoverinfo: 'x+y',
@@ -210,15 +211,15 @@ export class ProposeComponent implements OnInit {
           y: [y[i]],
           text: text[i],
           marker: {
-            size: 20,
+            size: 27,
             color: 'gray',
             symbol: 'x'
           },
           textfont: {
-            size: 14,
+            size: 24,
             color: 'red'
           },
-          textposition: 'center top',
+          textposition: 'right top',
           hoverinfo: 'x+y',
           showlegend: false
         });
