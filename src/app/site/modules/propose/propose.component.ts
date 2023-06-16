@@ -188,7 +188,7 @@ export class ProposeComponent implements OnInit {
           y: [xyMap[this.result['chosenCandidate'][i].toString()].y],
           text: `\t${numMap[this.result['chosenCandidate'][i].toString()]}<br>✅`,
           marker: {
-            size: 27,
+            size: 28,
             color: color,
             symbol: 'arrow-bar-down-open'
           },
@@ -211,7 +211,7 @@ export class ProposeComponent implements OnInit {
           y: [y[i]],
           text: text[i],
           marker: {
-            size: 27,
+            size: 24,
             color: 'gray',
             symbol: 'x'
           },

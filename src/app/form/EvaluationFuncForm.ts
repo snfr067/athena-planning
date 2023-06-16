@@ -47,7 +47,7 @@ export class UEThroughputForm
 
 export class CoverageForm 
 {
-    activate: boolean = false;
+    activate: boolean = true;
 	ratio: number = 95;
 }
 
@@ -62,14 +62,14 @@ export class ThroughputRatioForm
 {
     compliance: string = "moreThan";
     areaRatio: number = 0.0;
-    ULValue: number = 0;
-    DLValue: number = 0;
+    ULValue: any;
+    DLValue: any;
 }
 
 export class UEThroughputRatioForm 
 {
     compliance: string = "moreThan";
     countRatio: number = 0.0;
-    ULValue: number = 0;
-    DLValue: number = 0;
+    ULValue: any;
+    DLValue: any;
 }

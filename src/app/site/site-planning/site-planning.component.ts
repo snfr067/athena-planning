@@ -373,6 +373,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** http error */
   statusCode = "";
   errMsg = "";
+  fieldThroughputTypeArr = [];
+  ueThroughputTypeArr = [];
+  fieldThroughputValueArr = [];
+  ueThroughputValueArr = [];
   isBsNumberOptimization = "custom";
   isDefaultSINRSetting = "custom";
   isDefaultRSRPSetting = "custom";
@@ -737,7 +741,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 console.log("isBsNumOpt = " + this.isBsNumberOptimization);
                 this.evaluationFuncForm = this.calculateForm.evaluationFunc;
                 this.changeAreaFormatToPercent();
-                this.changePlaningIndexByEvaluationForm();
+                this.setThroughputTypeAndValue();
+
                 if (!(Number(this.calculateForm.maxConnectionNum)>0)){
                   this.calculateForm['maxConnectionNum'] = 32;
                 }
@@ -771,23 +776,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
-                if (this.calculateForm.isSimulation) {
-                  this.planningIndex = '1';
-                } else {
-                  if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    this.planningIndex = '1';
-                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                    if (this.calculateForm.isAverageSinr == true) {
-                      this.calculateForm.isCoverage = true;
-                      this.calculateForm.isAverageSinr = false;
-                    }
-                  } else {
-                    this.planningIndex = '1';
-                    // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                    if (this.calculateForm.isUeAvgSinr) {
-                      this.calculateForm.isUeAvgThroughput = true;
-                      this.calculateForm.isUeAvgSinr = false;
+                if (this.calculateForm.isSimulation) 
+                {
+                  this.planningIndex = '3';
+                } 
+                else 
+                {
+                  var isFieldOrUEActive = this.changePlaningIndexByEvaluationForm();
+
+                  // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                  if(!isFieldOrUEActive)
+                  {
+                    if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) 
+                    {                  
+                      this.planningIndex = '1';
+                      // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                      if (this.calculateForm.isAverageSinr == true) 
+                      {
+                        this.calculateForm.isCoverage = true;
+                        this.calculateForm.isAverageSinr = false;
+                      }
+                    } 
+                    else 
+                    {
+                      this.planningIndex = '2';
+                      // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                      if (this.calculateForm.isUeAvgSinr) 
+                      {
+                        this.calculateForm.isUeAvgThroughput = true;
+                        this.calculateForm.isUeAvgSinr = false;
+                      }
                     }
                   }
                 }
@@ -858,15 +876,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
                 if (this.calculateForm.isSimulation) {
                   // this.planningIndex = '3';
-                  this.formatPlanningIndex();
+                  this.getPlanningIndex();
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
                     // this.planningIndex = '1';
-                    this.formatPlanningIndex();
+                    this.getPlanningIndex();
                   } else {
                     // this.planningIndex = '2';
-                    this.formatPlanningIndex();
+                    this.getPlanningIndex();
                   }
                 }
 
@@ -917,8 +935,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
 
           // evaluationForm初始值
+          this.planningIndex = '3';
           this.evaluationFuncForm = new EvaluationFuncForm();
-          this.changePlaningIndexByEvaluationForm();
           if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
           this.addSINR();
       
@@ -934,11 +952,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         setTimeout(()=> {
           if (this.calculateForm.defaultBs !== "") {
             // this.planningIndex = '3';
-            this.formatPlanningIndex();
+            this.getPlanningIndex();
             console.log('Simulation')
           } else {
             // this.planningIndex = '1';
-            this.formatPlanningIndex();
+            this.getPlanningIndex();
             console.log('Calculation')
           }
         }, 1000);
@@ -3372,24 +3390,41 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // Candidate
     // DefaultBs [重要!!]
     // ---------- 我是分隔線 ----------
-    if (((this.candidateList.length < this.calculateForm.availableNewBsNumber) || Number(this.calculateForm.availableNewBsNumber) <= 0) && this.planningIndex !== '3') {
+
+    let isCanLessAvl = this.candidateList.length < this.calculateForm.availableNewBsNumber && this.isBsNumberOptimization == 'custom';
+    let isAvlLessZero = Number(this.calculateForm.availableNewBsNumber) <= 0 && this.isBsNumberOptimization == 'custom';
+    let isCanLessZero = Number(this.candidateList.length) <= 0;
+
+    if ((isCanLessAvl || isAvlLessZero || isCanLessZero) && this.planningIndex !== '3') 
+    {
       let msg;
-      if (this.calculateForm.objectiveIndex === '2') {
-        msg = this.translateService.instant('availableNewBsNumber.wifi');
-      } else {
-        msg = this.translateService.instant('availableNewBsNumber.gen');
+
+      if (this.candidateList.length == 0)
+      {
+        msg = this.translateService.instant('calculate.candidate.Mandatory');
       }
-      if (this.candidateList.length < this.calculateForm.availableNewBsNumber) {
-        msg += ' ' + this.translateService.instant('must_less_than_candidateBs') + this.candidateList.length;
-      } else { 
-        msg += ' ' + this.translateService.instant('must_greater_than') + '0';
+      else
+      {
+        if (this.calculateForm.objectiveIndex === '2') {
+          msg = this.translateService.instant('availableNewBsNumber.wifi');
+        } else {
+          msg = this.translateService.instant('availableNewBsNumber.gen');
+        }
+        
+        if (this.candidateList.length < this.calculateForm.availableNewBsNumber) {
+          msg += ' ' + this.translateService.instant('must_less_than_candidateBs') + this.candidateList.length;
+        } else { 
+          msg += ' ' + this.translateService.instant('must_greater_than') + '0';
+        }
       }
+      
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: msg
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    } else if (!(Number(this.calculateForm.maxConnectionNum)>0)) {
+    } 
+    else if (!(Number(this.calculateForm.maxConnectionNum)>0)) {
       let msg = this.translateService.instant('maxConnectionNum') +' '+ this.translateService.instant('must_greater_than') + ' 0';
       this.msgDialogConfig.data = {
         type: 'error',
@@ -3545,6 +3580,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.evaluationFunc.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
       console.log("this.calculateForm.evaluationFunc = "+this.calculateForm.evaluationFunc);
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.field.coverage.activate = false;
+      this.calculateForm.evaluationFunc.field.coverage.ratio = this.defaultArea / 100;
+    }
+
     if(this.evaluationFuncForm.field.sinr.activate)
     {
       this.calculateForm.evaluationFunc.field.sinr.activate = true;
@@ -3560,6 +3601,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         );
       }
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.field.sinr.activate = false;
+      this.calculateForm.evaluationFunc.field.sinr.ratio = [];
+    }
+
     if(this.evaluationFuncForm.field.rsrp.activate)
     {
       this.calculateForm.evaluationFunc.field.rsrp.activate = true;
@@ -3575,6 +3622,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         );
       }
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.field.rsrp.ratio = [];
+    }
+
     if(this.evaluationFuncForm.field.throughput.activate)
     {
       this.calculateForm.evaluationFunc.field.throughput.activate = true;
@@ -3585,12 +3637,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             "areaRatio": this.evaluationFuncForm.field.throughput.ratio[i].areaRatio/100,
             "compliance": this.evaluationFuncForm.field.throughput.ratio[i].compliance,
-            "ULValue": Number(this.evaluationFuncForm.field.throughput.ratio[i].ULValue),
-            "DLValue": Number(this.evaluationFuncForm.field.throughput.ratio[i].DLValue)
+            "ULValue": this.evaluationFuncForm.field.throughput.ratio[i].ULValue,
+            "DLValue": this.evaluationFuncForm.field.throughput.ratio[i].DLValue
           }
         );
       }
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.field.throughput.activate = false;
+      this.calculateForm.evaluationFunc.field.throughput.ratio = [];
+    }
+
     if(this.evaluationFuncForm.ue.throughputByRsrp.activate)
     {
       this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate = true;
@@ -3601,18 +3659,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             "countRatio": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio/100,
             "compliance": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance,
-            "ULValue": Number(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue),
-            "DLValue": Number(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue)
+            "ULValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue,
+            "DLValue": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue
           }
         );
       }
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.ue.throughputByRsrp.activate = false;
+      this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio = [];
+    }
+
     if(this.evaluationFuncForm.ue.coverage.activate)
     {
       this.calculateForm.evaluationFunc.ue.coverage.activate = true;
       this.calculateForm.evaluationFunc.ue.coverage.ratio = 
       this.evaluationFuncForm.ue.coverage.ratio / 100;
     }
+    else
+    {
+      this.calculateForm.evaluationFunc.ue.coverage.activate = false;
+      this.calculateForm.evaluationFunc.ue.coverage.ratio = this.defaultArea / 100;
+    }
+
     console.log(this.evaluationFuncForm);
     console.log(this.calculateForm);
     //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
@@ -4101,6 +4171,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     //   this.calculateForm.isUeAvgThroughput = false;
     // }
 
+  }
+
+  changeEvaluationFuncCheckBox()
+  {
+    if(this.evaluationFuncForm.field.sinr.activate && this.evaluationFuncForm.field.sinr.ratio.length == 0)
+    {
+      this.addSINR();
+    }
+    if(this.evaluationFuncForm.field.rsrp.activate && this.evaluationFuncForm.field.rsrp.ratio.length == 0)
+    {
+      this.addRSRP();
+    }
+    if(this.evaluationFuncForm.field.throughput.activate && this.evaluationFuncForm.field.throughput.ratio.length == 0)
+    {
+      this.addThroughput();
+    }
+    if(this.evaluationFuncForm.ue.throughputByRsrp.activate && this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+    {
+      this.addUEThroughput();
+    }
+    this.setStorageEvaluationFuncForm();
   }
 
   setStorageEvaluationFuncForm() {
@@ -6136,6 +6227,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // };
       }
     }
+    else
+    {
+      this.planningIndex = '3';
+    }
     /* UE sheet */
     const ue: string = this.wb.SheetNames[sheetNameIndex['ue']];
     if (typeof ue !== 'undefined') {
@@ -6452,17 +6547,53 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const mutilFunctionThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionThroughput];
       const mutilFunctionThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionThroughputWS, {header: 1}));
       this.evaluationFuncForm.field.throughput.ratio = [];
+
       for(var i = 0; i < fieldThroughputLen; i++)
       {
-        this.evaluationFuncForm.field.throughput.ratio.push(
-          {
-            "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
-            "compliance": mutilFunctionThroughputData[i+1][1],
-            "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
-            "DLValue": Number(mutilFunctionThroughputData[i+1][3])
-          }
-        );
-      } 
+        if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionThroughputData[i+1][3]))) 
+        {          
+          this.evaluationFuncForm.field.throughput.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+              "compliance": mutilFunctionThroughputData[i+1][1],
+              "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
+              "DLValue": null
+            }
+          );
+          this.evaluationFuncForm.field.throughput.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+              "compliance": mutilFunctionThroughputData[i+1][1],
+              "ULValue": null,
+              "DLValue": Number(mutilFunctionThroughputData[i+1][3])
+            }
+          );          
+        }
+        else if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])))
+        {
+          this.evaluationFuncForm.field.throughput.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+              "compliance": mutilFunctionThroughputData[i+1][1],
+              "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
+              "DLValue": null
+            }
+          );
+          
+        }
+        else if(!isNaN(Number(mutilFunctionThroughputData[i+1][3])))
+        {
+          this.evaluationFuncForm.field.throughput.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+              "compliance": mutilFunctionThroughputData[i+1][1],
+              "ULValue": null,
+              "DLValue": Number(mutilFunctionThroughputData[i+1][3])
+            }
+          );          
+        }
+      }
+
 
       const mutilFunctionUECoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function UE coverage']];
       const mutilFunctionUECoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUECoverage];
@@ -6476,23 +6607,67 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const mutilFunctionUEThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUEThroughput];
       const mutilFunctionUEThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionUEThroughputWS, {header: 1}));
       this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
+
+
       for(var i = 0; i < ueThroughputLen; i++)
       {
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
-          {
-            "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
-            "compliance": mutilFunctionUEThroughputData[i+1][1],
-            "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
-            "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
-          }
-        );
+        if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))  //old format
+        {
+          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+            {
+              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+              "compliance": mutilFunctionUEThroughputData[i+1][1],
+              "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
+              "DLValue": null
+            }
+          );
+
+          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+            {
+              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+              "compliance": mutilFunctionUEThroughputData[i+1][1],
+              "ULValue": null,
+              "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
+            }
+          );
+        }
+        else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])))
+        {
+          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+            {
+              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+              "compliance": mutilFunctionUEThroughputData[i+1][1],
+              "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
+              "DLValue": null
+            }
+          );
+        }
+        else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))
+        {
+          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+            {
+              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+              "compliance": mutilFunctionUEThroughputData[i+1][1],
+              "ULValue": null,
+              "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
+            }
+          );
+        }
       } 
 
-
+      this.setThroughputTypeAndValue();
       window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
       window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
     }
+    else
+    {
+      if (candidateData.length > 1)
+        this.planningIndex = '1';
+      else
+        this.planningIndex = '3';
 
+      this.evaluationFuncForm = new EvaluationFuncForm();
+    }
   }
 
   /**
@@ -7073,7 +7248,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   changePlanningIndex() {
     // 設定預設值
 
-    window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
 
     if (this.planningIndex === '1') {
       this.calculateForm.isSimulation = false;
@@ -7081,12 +7255,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = false;
       this.changeAntennaToOmidirectial();
+      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else if (this.planningIndex === '2') {
       this.calculateForm.isSimulation = false;
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = true;
       this.calculateForm.isCoverage = false;
       this.changeAntennaToOmidirectial();
+      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else {
       if (this.candidateList.length != 0) {
         // this.msgDialogConfig.data = {
@@ -7094,7 +7270,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         //   infoMessage: '<br>這個目標設定的改變，會刪除掉場域上所有的待選位置! <br>是否繼續執行?'
         // };
         // this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        this.matDialog.open(this.changeToSimulationModal);
+        this.matDialog.open(this.changeToSimulationModal, { disableClose: true });
       } else {
         this.calculateForm.isSimulation = true;
         // this.clearAll('candidate');
@@ -7119,14 +7295,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isUeAvgSinr = false;
       this.calculateForm.isUeAvgThroughput = false;
       this.matDialog.closeAll();
+      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else {
-      if (this.calculateForm.isCoverage) {
-        // this.planningIndex = '1';
-        this.formatPlanningIndex();
-      } else {
-        // this.planningIndex = '2';
-        this.formatPlanningIndex();
-      }
+      // if (this.calculateForm.isCoverage) {
+      //   this.planningIndex = '1';
+      //   this.getPlanningIndex();
+      // } else {
+      //   this.planningIndex = '2';
+        this.getPlanningIndex();
+      // }
       this.matDialog.closeAll();
     }
     
@@ -8474,12 +8651,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   addThroughput() {
     
+    this.fieldThroughputTypeArr[this.evaluationFuncForm.field.throughput.ratio.length] = 'UL';
+    this.fieldThroughputValueArr[this.evaluationFuncForm.field.throughput.ratio.length] = this.defaultULThroughputSetting;
     this.evaluationFuncForm.field.throughput.ratio.push(
     {
       "areaRatio": this.defaultArea, 
       "compliance": "moreThan",
       "ULValue":  this.defaultULThroughputSetting,
-      "DLValue":  this.defaultDLThroughputSetting
+      "DLValue":  null
     });
     this.setStorageEvaluationFuncForm();
   }
@@ -8491,12 +8670,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   addUEThroughput() {
     
+    this.ueThroughputTypeArr[this.evaluationFuncForm.ue.throughputByRsrp.ratio.length] = 'UL';
+    this.ueThroughputValueArr[this.evaluationFuncForm.ue.throughputByRsrp.ratio.length] = this.defaultUEULThroughputSetting;
     this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
     {
       "countRatio": this.defaultArea, 
       "compliance": "moreThan",
       "ULValue":  this.defaultUEULThroughputSetting,
-      "DLValue":  this.defaultUEDLThroughputSetting
+      "DLValue":  null
     });
     this.setStorageEvaluationFuncForm();
   }
@@ -8570,12 +8751,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
-  checkULThroughput(throughput) {
+  checkThroughput(throughput, isULorDL, index) 
+  {
     console.log('Check throughput:'+ throughput);
     let msg = '';
 
-    if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
-      msg = this.translateService.instant('ulthroughput_fault');
+    if(isULorDL == 'UL')
+    {
+      if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
+        msg = this.translateService.instant('ulthroughput_fault');
+    }
+    else if(isULorDL == 'DL')
+    {
+      if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
+        msg = this.translateService.instant('dlthroughput_fault');
+    }
+
 
     if (msg != '') {
       this.msgDialogConfig.data = {
@@ -8585,17 +8776,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       this.getStorageEvaluationFuncForm();    //還原舊參數
     }
-    else{      
+    else
+    {      
+      if(isULorDL == 'UL')
+      {
+        this.evaluationFuncForm.field.throughput.ratio[index].ULValue = throughput;
+        this.evaluationFuncForm.field.throughput.ratio[index].DLValue = null;
+      }
+      else if(isULorDL == 'DL')
+      {
+        this.evaluationFuncForm.field.throughput.ratio[index].DLValue = throughput;
+        this.evaluationFuncForm.field.throughput.ratio[index].ULValue = null;
+      }
       this.setStorageEvaluationFuncForm();
     }
   }
 
-  checkDLThroughput(throughput) {
+  checkUEThroughput(throughput, isULorDL, index) 
+  {
     console.log('Check throughput:'+ throughput);
     let msg = '';
 
-    if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
-      msg = this.translateService.instant('dlthroughput_fault');
+    if(isULorDL == 'UL')
+    {
+      if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
+        msg = this.translateService.instant('ulthroughput_fault');
+    }
+    else if(isULorDL == 'DL')
+    {
+      if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
+        msg = this.translateService.instant('dlthroughput_fault');
+    }
 
     if (msg != '') {
       this.msgDialogConfig.data = {
@@ -8605,12 +8816,63 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       this.getStorageEvaluationFuncForm();    //還原舊參數
     }
-    else{      
+    else
+    {      
+      if(isULorDL == 'UL')
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = throughput;
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = null;
+      }
+      else if(isULorDL == 'DL')
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = throughput;
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = null;
+      }
       this.setStorageEvaluationFuncForm();
     }
   }
 
-  formatPlanningIndex()
+  // checkULThroughput(throughput) {
+  //   console.log('Check throughput:'+ throughput);
+  //   let msg = '';
+
+  //   if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
+  //     msg = this.translateService.instant('ulthroughput_fault');
+
+  //   if (msg != '') {
+  //     this.msgDialogConfig.data = {
+  //       type: 'error',
+  //       infoMessage: msg
+  //     };
+  //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+  //     this.getStorageEvaluationFuncForm();    //還原舊參數
+  //   }
+  //   else{      
+  //     this.setStorageEvaluationFuncForm();
+  //   }
+  // }
+
+  // checkDLThroughput(throughput) {
+  //   console.log('Check throughput:'+ throughput);
+  //   let msg = '';
+
+  //   if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
+  //     msg = this.translateService.instant('dlthroughput_fault');
+
+  //   if (msg != '') {
+  //     this.msgDialogConfig.data = {
+  //       type: 'error',
+  //       infoMessage: msg
+  //     };
+  //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+  //     this.getStorageEvaluationFuncForm();    //還原舊參數
+  //   }
+  //   else{      
+  //     this.setStorageEvaluationFuncForm();
+  //   }
+  // }
+
+  getPlanningIndex()
   {
     if(window.sessionStorage.getItem(`planningIndex`) != null)
     {
@@ -8624,6 +8886,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   } 
 
+  setPlanningIndex()
+  {
+    window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
+  }
+
+
   changePlaningIndexByEvaluationForm()
   {
     var isField = (this.evaluationFuncForm.field.coverage.activate || this.evaluationFuncForm.field.sinr.activate ||
@@ -8633,14 +8901,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if(isField)
     {
       this.planningIndex = '1';
+      return true;
     }
     else if(isUe)
     {
       this.planningIndex = '2';
+      return true;
     }
     else
     {
       this.planningIndex = '3';
+      return false;
     }
   }
 
@@ -8664,6 +8935,114 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for(i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
     {
       this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
+    }
+  }
+
+  changeFieldULDL(index, value)
+  {
+    if( this.fieldThroughputTypeArr[index] === 'UL')
+    {
+      this.evaluationFuncForm.field.throughput.ratio[index].ULValue = value;
+      this.evaluationFuncForm.field.throughput.ratio[index].DLValue = null;
+    }
+    else if( this.fieldThroughputTypeArr[index] === 'DL')
+    {
+      this.evaluationFuncForm.field.throughput.ratio[index].ULValue = null;
+      this.evaluationFuncForm.field.throughput.ratio[index].DLValue = value;
+    }
+    this.setStorageEvaluationFuncForm();
+  }
+
+  changeUEULDL(index, value)
+  {
+    if( this.ueThroughputTypeArr[index] === 'UL')
+    {
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = value;
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = null;
+    }
+    else if( this.ueThroughputTypeArr[index] === 'DL')
+    {
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = null;
+      this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = value;
+    }
+    this.setStorageEvaluationFuncForm();
+  }
+
+  setThroughputTypeAndValue()
+  {
+    this.fieldThroughputTypeArr = [];
+    this.fieldThroughputValueArr = [];
+    this.ueThroughputTypeArr = [];
+    this.ueThroughputValueArr = [];
+    for(var i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.field.throughput.ratio[i].ULValue != null && this.evaluationFuncForm.field.throughput.ratio[i].DLValue != null)
+      {
+        this.fieldThroughputTypeArr.push("UL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.field.throughput.ratio[i].ULValue);
+        this.fieldThroughputTypeArr.push("DL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.field.throughput.ratio[i].DLValue);
+
+        this.evaluationFuncForm.field.throughput.ratio.splice(i+1, 0, 
+          {
+            "areaRatio": this.evaluationFuncForm.field.throughput.ratio[i].areaRatio, 
+            "compliance": this.evaluationFuncForm.field.throughput.ratio[i].compliance,
+            "ULValue":  null,
+            "DLValue":  this.evaluationFuncForm.field.throughput.ratio[i].DLValue
+          }
+        );
+        this.evaluationFuncForm.field.throughput.ratio[i].DLValue = null;
+      }
+      else if(this.evaluationFuncForm.field.throughput.ratio[i].ULValue != null)
+      {
+        this.fieldThroughputTypeArr.push("UL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.field.throughput.ratio[i].ULValue);
+      }
+      else if(this.evaluationFuncForm.field.throughput.ratio[i].DLValue != null)
+      {
+        this.fieldThroughputTypeArr.push("DL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.field.throughput.ratio[i].DLValue);
+      }
+      else
+      {
+        this.fieldThroughputTypeArr.push("UL");
+        this.fieldThroughputValueArr.push(0);
+      }
+    }
+    for(var i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
+    {
+      if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue != null && this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue != null)
+      {
+        this.fieldThroughputTypeArr.push("UL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue);
+        this.fieldThroughputTypeArr.push("DL");
+        this.fieldThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue);
+
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(i+1, 0, 
+          {
+            "countRatio": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio, 
+            "compliance": this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].compliance,
+            "ULValue":  null,
+            "DLValue":  this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue
+          }
+        );
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue = null;
+      }
+      else if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue != null)
+      {
+        this.ueThroughputTypeArr.push("UL");
+        this.ueThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue);
+      }
+      else if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue != null)
+      {
+        this.ueThroughputTypeArr.push("DL");
+        this.ueThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue);
+      }
+      else
+      {
+        this.ueThroughputTypeArr.push("UL");
+        this.ueThroughputValueArr.push(0);
+      }
     }
   }
 }

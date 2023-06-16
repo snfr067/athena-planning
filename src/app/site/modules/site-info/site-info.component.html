@@ -62,26 +62,26 @@
           <font color="red" *ngIf="unAchievedObj.isFieldThroughputUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isFieldThroughputUnAchieved">{{ 'achieved' | translate }}</font>
           <div style="padding-left:0.5em;" *ngFor="let setting of calculateForm.evaluationFunc.field.throughput.ratio; let i=index">
-            <div>
+            <div *ngIf="calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue != null">
               {{ 'setCondition' | translate }}{{i+1}}. {{ 'FieldArea' | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100 | number: '1.0-2'}}% UL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps  
             </div>         
-            <div style="padding-left:5em;" >
-              {{ 'FieldArea' | translate }}
+            <div *ngIf="calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue != null" >
+              {{ 'setCondition' | translate }}{{i+1}}. {{ 'FieldArea' | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].areaRatio * 100 | number: '1.0-2'}}% DL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps
             </div>         
-            <div>
+            <div *ngIf="calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue != null">
               {{ 'realCondition' | translate }}{{i+1}}. {{ 'FieldArea' | translate }}
               {{realFieldULThroughput[i] * 100 | number: '1.0-2'}}% UL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].ULValue}}Mbps 
             </div>  
-            <div style="padding-left:5em;" >       
-              {{ 'FieldArea' | translate }}
+            <div *ngIf="calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue != null">  
+              {{ 'realCondition' | translate }}{{i+1}}. {{ 'FieldArea' | translate }}
               {{realFieldDLThroughput[i] * 100 | number: '1.0-2'}}% DL 
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.field.throughput.ratio[i].DLValue}}Mbps
@@ -92,26 +92,26 @@
           <font color="red" *ngIf="unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'unachieved' | translate }}</font>
           <font color="green" *ngIf="!unAchievedObj.isUEThroughputByRsrpUnAchieved">{{ 'achieved' | translate }}</font>
           <div style="padding-left:0.5em;" *ngFor="let setting of calculateForm.evaluationFunc.ue.throughputByRsrp.ratio; let i=index">
-            <div>              
+            <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue != null">              
               {{ 'setCondition' | translate }}{{i+1}}. {{ 'ue' | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100 | number: '1.0-2'}}% UL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
             </div>
-            <div style="padding-left:5em;">
-              {{ 'ue' | translate }}
+            <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue != null">         
+              {{ 'setCondition' | translate }}{{i+1}}. {{ 'ue' | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].countRatio * 100 | number: '1.0-2'}}% DL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps
             </div>
-            <div>
+            <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue != null">
               {{ 'realCondition' | translate }}{{i+1}}. {{ 'ue' | translate }}
               {{realUEULThroughput[i] * 100 | number: '1.0-2'}}% UL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].ULValue}}Mbps;
             </div>
-            <div style="padding-left:5em;">
-              {{ 'ue' | translate }}
+            <div *ngIf="calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue != null">
+              {{ 'realCondition' | translate }}{{i+1}}. {{ 'ue' | translate }}
               {{realUEDLThroughput[i] * 100 | number: '1.0-2'}}% DL 
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].compliance | translate }}
               {{calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[i].DLValue}}Mbps

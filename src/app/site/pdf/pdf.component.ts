@@ -121,7 +121,7 @@ export class PdfComponent implements OnInit {
     // this.export(this.taskId, true);
 
     // this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
-    console.log(this.result);
+    // console.log(this.result);
 
   }
 
@@ -787,18 +787,33 @@ export class PdfComponent implements OnInit {
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.field.throughput.ratio.length; x++)
       {
-        compliance = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
-        throughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + 
-        this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100).toFixed(2) + "% " + 
-        "UL " + compliance + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n" +
-        "  " + tab + this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100).toFixed(2) + "% " + 
-        "DL " + compliance + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n" + 
-        "  " + this.translateService.instant('realCondition') + (x+1) + ". " + 
-        this.translateService.instant('FieldArea') + (this.realFieldULThroughput[x] * 100).toFixed(2) + "% " + 
-        "UL " + compliance + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n" +
-        "  " + tab  + this.translateService.instant('FieldArea') + (this.realFieldDLThroughput[x] * 100).toFixed(2) + "% " + 
-        "DL " + compliance + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
-        "\n";
+        if(this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue != null || 
+          this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue != null)
+        {
+          compliance = this.translateService.instant(this.calculateForm.evaluationFunc.field.throughput.ratio[x].compliance);
+          throughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + 
+          this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.field.throughput.ratio[x].areaRatio*100).toFixed(2) + "% ";        
+          if(this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue != null)
+          {
+            throughputContent += "UL " + compliance + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n";
+          } 
+          else if(this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue != null)
+          {
+            throughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
+          } 
+          throughputContent += "  " + this.translateService.instant('realCondition') + (x+1) + ". " + 
+          this.translateService.instant('FieldArea');
+          if(this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue != null)
+          { 
+            throughputContent += (this.realFieldULThroughput[x] * 100).toFixed(2) + "% ";
+            throughputContent += "UL " + compliance + " " + this.calculateForm.evaluationFunc.field.throughput.ratio[x].ULValue + "Mbps\n";
+          } 
+          else if(this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue != null)
+          {
+            throughputContent += (this.realFieldDLThroughput[x] * 100).toFixed(2) + "% ";
+            throughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.field.throughput.ratio[x].DLValue + "Mbps\n";
+          } 
+        }
 		  }
 	  
 	    throughputContent += "\n";
@@ -829,18 +844,33 @@ export class PdfComponent implements OnInit {
 
       for(var x = 0; x < this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio.length; x++)
       {
-        compliance = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
-        UEThroughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + this.translateService.instant('FieldArea') + 
-        (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% " + 
-        "UL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
-        "  " + tab + this.translateService.instant('FieldArea') + (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% " + 
-        "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n" + 
-        "  " + this.translateService.instant('realCondition') + (x+1) + ". " + this.translateService.instant('FieldArea') + 
-        (this.realUEULThroughput[x] * 100).toFixed(2) + "% " + 
-        "UL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n"+
-        "  " + tab + this.translateService.instant('FieldArea') + (this.realUEDLThroughput[x] * 100).toFixed(2) + "% " + 
-        "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps" + 
-        "\n";
+        if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue != null || 
+          this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
+        {
+          compliance = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
+          UEThroughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + this.translateService.instant('ue') + 
+          (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% ";
+          if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue != null)
+          {
+            UEThroughputContent += "UL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n";
+          } 
+          else if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
+          {
+            UEThroughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+          }   
+          UEThroughputContent += "  " + this.translateService.instant('realCondition') + (x+1) + ". " + this.translateService.instant('ue');
+          if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue != null)
+          {
+            UEThroughputContent += (this.realUEULThroughput[x] * 100).toFixed(2) + "% ";
+            UEThroughputContent += "UL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue + "Mbps\n";
+          } 
+          else if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
+          {
+            UEThroughputContent += (this.realUEDLThroughput[x] * 100).toFixed(2) + "% ";
+            UEThroughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+          }
+        }
+        
       }
 	    UEThroughputContent += "\n";
     }
@@ -958,12 +988,12 @@ export class PdfComponent implements OnInit {
     
     await this.checkSiteMap();
 
-    console.log(data);
+    // console.log(data);
     console.log('start sitePlanningMap.');
     await html2canvas(data, {
       useCORS: true
     }).then(canvas => {
-      console.log(canvas);
+      // console.log(canvas);
       const imgWidth = 182;
       const imgHeight = canvas.height * imgWidth / canvas.width;
       mapHeight = imgHeight;
@@ -1217,7 +1247,7 @@ export class PdfComponent implements OnInit {
           }
         }
       }
-      console.log(defaultBs);
+      // console.log(defaultBs);
       let defaultLen = defaultBs.length;
       for (let i=0;i < defaultLen;i++) {
         const antObj = JSON.parse(defaultAnt[i]);
@@ -1493,7 +1523,7 @@ export class PdfComponent implements OnInit {
         }
         let choseCand = this.result['candidateIdx'].sort(function(a, b){return a - b});
         console.log(candidateNum);
-        console.log(choseCand);
+        // console.log(choseCand);
         let k = 0;
         for (let i = 0;i < candidateNum; i++) {
           if (choseCand[k] != i) {
@@ -1544,13 +1574,13 @@ export class PdfComponent implements OnInit {
         }
       } else {
         let candidateNum = 0;
-        console.log(this.calculateForm.candidateBs);
+        // console.log(this.calculateForm.candidateBs);
         if (this.calculateForm.candidateBs.includes('|')) {
           candidateNum = this.calculateForm.candidateBs.split('|').length;
         } else {
           if (this.calculateForm.candidateBs != '') {candidateNum = 1;}
         }
-        console.log(candidateNum);
+        // console.log(candidateNum);
         let choseCand = this.result['candidateIdx'].sort(function(a, b){return a - b});
         let k = 0;
         for (let i = 0;i < candidateNum; i++) {
@@ -1608,8 +1638,8 @@ export class PdfComponent implements OnInit {
       let fieldTotalDlTpt = 0;
       let fieldTotalUlTpt = 0;
       for (let i = 0;i < p2Data.length;i++) {
-        console.log();
-        console.log();
+        // console.log();
+        // console.log();
         ueNum += Number(p2Data[i][1]);
         if (typeof p2Data[i][2] == 'string') {
           fieldTotalDlTpt += Number(p2Data[i][2].split(' ')[0]);
@@ -1762,7 +1792,7 @@ export class PdfComponent implements OnInit {
     const obstacleData = [];
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
-      console.log("-----item------",item);
+      // console.log("-----item------",item);
       obstacleData.push([(k + 1), item.x, item.rotate, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
@@ -1866,7 +1896,7 @@ export class PdfComponent implements OnInit {
         }
       }
     }
-    console.log(ueData);
+    // console.log(ueData);
     pdf.autoTable(ueTitle, ueData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
@@ -1927,7 +1957,7 @@ export class PdfComponent implements OnInit {
           let id = this.antennaList[i]['antenna_id'];
           this.AntennaIdToIndex[id]=i;
         }
-        console.log(result);
+        // console.log(result);
         return result;
       },err => {
         console.log(err);
@@ -1946,7 +1976,7 @@ export class PdfComponent implements OnInit {
           let id = this.materialList[i]['id'];
           this.materialIdToIndex[id]=i;
         }
-        console.log(result);
+        // console.log(result);
       },
       err => {
         console.log(err);
@@ -1962,8 +1992,8 @@ export class PdfComponent implements OnInit {
       res => {
         result = res;
         this.pathLossModelList = Object.values(result);
-        console.log("****getPathLossModelList",result);
-        console.log("****getPathLossModelList",this.pathLossModelList);
+        // console.log("****getPathLossModelList",result);
+        // console.log("****getPathLossModelList",this.pathLossModelList);
       },
       err => {
         console.log(err);

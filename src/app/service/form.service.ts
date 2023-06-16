@@ -197,7 +197,11 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
       {
-        realRatio.push((result['output'].evaluationResult.field.throughput.ratio[i].ULValue).toFixed(4));
+        if(result['output'].evaluationResult.field.throughput.ratio[i].ULValue != null)
+          realRatio.push((result['output'].evaluationResult.field.throughput.ratio[i].ULValue).toFixed(4));
+        else
+          realRatio.push(null);
+
       }
     }
 
@@ -212,7 +216,10 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.field.throughput.ratio.length; i++)
       {
-        realRatio.push((result['output'].evaluationResult.field.throughput.ratio[i].DLValue).toFixed(4));
+        if(result['output'].evaluationResult.field.throughput.ratio[i].DLValue != null)
+          realRatio.push((result['output'].evaluationResult.field.throughput.ratio[i].DLValue).toFixed(4));
+        else
+          realRatio.push(null);
       }
     }
 
@@ -239,7 +246,10 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
       {
-        realRatio.push((result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue).toFixed(4));
+        if(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue != null)
+          realRatio.push((result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].ULValue).toFixed(4));
+        else
+          realRatio.push(null);
       }
     }
 
@@ -254,7 +264,10 @@ export class FormService {
     {
       for(var i = 0; i < result['output'].evaluationResult.ue.throughputByRsrp.ratio.length; i++)
       {
-        realRatio.push((result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue).toFixed(4));
+        if(result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue != null)
+          realRatio.push((result['output'].evaluationResult.ue.throughputByRsrp.ratio[i].DLValue).toFixed(4));
+        else
+          realRatio.push(null);
       }
     }
 

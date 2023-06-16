@@ -245,6 +245,7 @@
 	"availableNewBsNumber.gen": "New BS number",
 	"maxConnectionNum": "Maximum number of UE served by each BS",
 	"ue.Mandatory": "For target of UE performance，UE number can't be 0",
+	"calculate.candidate.Mandatory": "For calculation mode, the count of candidate base station can not be 0",
 	"must_greater_than": "must be greater than",
 	"must_greater_than_or_equal_to": "must be greater than or equal to",
 	"contain_special_character": "can not contain special characters or whitespace",
