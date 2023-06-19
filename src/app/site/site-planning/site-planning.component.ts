@@ -6372,34 +6372,80 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.objectiveIndex = bsParametersData[1][2];
       this.duplexMode = bsParametersData[1][3];
       this.dlRatio = Number(bsParametersData[1][4]);
-      // this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
-      // this.calculateForm.isAverageSinr = false;
-      // this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
-      // this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
-      // this.calculateForm.isUeAvgSinr = false;
-      // this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
-      // this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
-      // this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
+      this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
+      this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
+      this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
+      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
+      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
 
-      // if (this.calculateForm.isCoverage == true) {
-      //   this.calculateForm.isUeAvgThroughput = false;
-      //   this.calculateForm.isUeCoverage = false;
-      // } else if (this.calculateForm.isUeAvgThroughput == true) {
-      //   this.calculateForm.isCoverage = false;
-      //   this.calculateForm.isUeCoverage = false;
-      // } else {
-      //   this.calculateForm.isCoverage = false;
-      //   this.calculateForm.isUeAvgThroughput = false;
-      // }
+      if (this.calculateForm.isCoverage == true) {
+        // this.calculateForm.isUeAvgThroughput = false;
+        // this.calculateForm.isUeCoverage = false;
+        this.evaluationFuncForm.field.coverage.activate = true;
+        this.evaluationFuncForm.field.sinr.activate = false;
+        this.evaluationFuncForm.field.rsrp.activate = false;
+        this.evaluationFuncForm.field.throughput.activate = false;
+        this.evaluationFuncForm.ue.coverage.activate = false;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+
+      } 
+      if (this.calculateForm.isAvgThroughput == true) {
+        // this.calculateForm.isCoverage = false;
+        // this.calculateForm.isUeCoverage = false;
+        this.evaluationFuncForm.field.throughput.activate = true;
+        this.evaluationFuncForm.field.sinr.activate = false;
+        this.evaluationFuncForm.field.rsrp.activate = false;
+        this.evaluationFuncForm.field.coverage.activate = false;
+        this.evaluationFuncForm.ue.coverage.activate = false;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+        if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
+          this.addThroughput();
+      } 
+      if (this.calculateForm.isAverageSinr == true) {
+        // this.calculateForm.isCoverage = false;
+        // this.calculateForm.isUeCoverage = false;
+        this.evaluationFuncForm.field.sinr.activate = true;
+        this.evaluationFuncForm.field.throughput.activate = false;
+        this.evaluationFuncForm.field.rsrp.activate = false;
+        this.evaluationFuncForm.field.coverage.activate = false;
+        this.evaluationFuncForm.ue.coverage.activate = false;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+        if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
+          this.addSINR();
+      } 
+      if (this.calculateForm.isUeAvgThroughput == true) {
+        // this.calculateForm.isCoverage = false;
+        // this.calculateForm.isUeCoverage = false;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = true;
+        this.evaluationFuncForm.field.sinr.activate = false;
+        this.evaluationFuncForm.field.throughput.activate = false;
+        this.evaluationFuncForm.field.rsrp.activate = false;
+        this.evaluationFuncForm.field.coverage.activate = false;
+        this.evaluationFuncForm.ue.coverage.activate = false;
+        if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+          this.addUEThroughput();
+      } 
+      if (this.calculateForm.isUeCoverage == true) {
+        // this.calculateForm.isCoverage = false;
+        // this.calculateForm.isUeCoverage = false;
+        this.evaluationFuncForm.ue.coverage.activate = true;
+        this.evaluationFuncForm.field.sinr.activate = false;
+        this.evaluationFuncForm.field.throughput.activate = false;
+        this.evaluationFuncForm.field.rsrp.activate = false;
+        this.evaluationFuncForm.field.coverage.activate = false;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+      }       
       
-      // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
-      // // if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput) {
-      //   // this.planningIndex = '1';
-      // } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
-      //   // this.planningIndex = '2';
-      // } else {
-      //   // this.planningIndex = '3';
-      // }
+      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
+        this.planningIndex = '1';
+      } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
+        this.planningIndex = '2';
+      } else {
+        this.planningIndex = '3';
+      }
+
+      console.log(this.calculateForm);
       
       // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
       // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
@@ -6656,15 +6702,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.setThroughputTypeAndValue();
       window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
       window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
-    }
-    else
-    {
-      if (candidateData.length >= 1)
-        this.planningIndex = '1';
-      else
-        this.planningIndex = '3';
-
-      this.evaluationFuncForm = new EvaluationFuncForm();
     }
   }
 
@@ -9016,10 +9053,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue != null && this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue != null)
       {
-        this.fieldThroughputTypeArr.push("UL");
-        this.fieldThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue);
-        this.fieldThroughputTypeArr.push("DL");
-        this.fieldThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue);
+        this.ueThroughputTypeArr.push("UL");
+        this.ueThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].ULValue);
+        this.ueThroughputTypeArr.push("DL");
+        this.ueThroughputValueArr.push(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].DLValue);
 
         this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(i+1, 0, 
           {
