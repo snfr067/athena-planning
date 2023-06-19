@@ -18,7 +18,7 @@ export class UEForm
     throughput: ThroughputForm = new ThroughputForm();
     throughputByRsrp: UEThroughputForm = new UEThroughputForm();
     coverage: CoverageForm = new CoverageForm();
-    throughputByDistance: CoverageForm = new CoverageForm();
+    throughputByDistance: UEThroughputForm = new UEThroughputForm();
 }
 
 export class SINRForm 

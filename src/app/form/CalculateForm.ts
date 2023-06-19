@@ -45,9 +45,6 @@ export class CalculateForm {
   isAvgThroughput = false;
   throughputRatio: number = 5;
   isCoverage: boolean = false;
-  isSINR: boolean = false;
-  isRSRP: boolean = false;
-  isThroughput: boolean = false;
   coverageRatio: number = 0.95;
   //UE related target
   isUeCoverage = false;

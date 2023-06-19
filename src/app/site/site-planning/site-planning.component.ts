@@ -740,6 +740,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.isBsNumberOptimization = this.formService.setHstToBsNumOpt(result);
                 console.log("isBsNumOpt = " + this.isBsNumberOptimization);
                 this.evaluationFuncForm = this.calculateForm.evaluationFunc;
+                this.oldFormatEvaluation();
                 this.changeAreaFormatToPercent();
                 this.setThroughputTypeAndValue();
 
@@ -776,7 +777,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
-                if (this.calculateForm.isSimulation) 
+                if (this.calculateForm.isSimulation === true) 
                 {
                   this.planningIndex = '3';
                 } 
@@ -785,29 +786,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   var isFieldOrUEActive = this.changePlaningIndexByEvaluationForm();
 
                   // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                  if(!isFieldOrUEActive)
-                  {
-                    if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) 
-                    {                  
-                      this.planningIndex = '1';
-                      // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                      if (this.calculateForm.isAverageSinr == true) 
-                      {
-                        this.calculateForm.isCoverage = true;
-                        this.calculateForm.isAverageSinr = false;
-                      }
-                    } 
-                    else 
-                    {
-                      this.planningIndex = '2';
-                      // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
-                      if (this.calculateForm.isUeAvgSinr) 
-                      {
-                        this.calculateForm.isUeAvgThroughput = true;
-                        this.calculateForm.isUeAvgSinr = false;
-                      }
-                    }
-                  }
+                  // if(!isFieldOrUEActive)
+                  // {
+                  //   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) 
+                  //   {                  
+                  //     this.planningIndex = '1';
+                  //     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                  //     if (this.calculateForm.isAverageSinr == true) 
+                  //     {
+                  //       this.calculateForm.isCoverage = true;
+                  //       this.calculateForm.isAverageSinr = false;
+                  //     }
+                  //   } 
+                  //   else 
+                  //   {
+                  //     this.planningIndex = '2';
+                  //     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
+                  //     if (this.calculateForm.isUeAvgSinr) 
+                  //     {
+                  //       this.calculateForm.isUeAvgThroughput = true;
+                  //       this.calculateForm.isUeAvgSinr = false;
+                  //     }
+                  //   }
+                  // }
                 }
                 // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify({
                 //   isAverageSinr: this.calculateForm.isAverageSinr,
@@ -874,17 +875,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 console.log(res);
                 this.calculateForm = res['input'];
 
-                if (this.calculateForm.isSimulation) {
-                  // this.planningIndex = '3';
-                  this.getPlanningIndex();
+                if (this.calculateForm.isSimulation === true) {
+                  this.planningIndex = '3';
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
                   // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    // this.planningIndex = '1';
-                    this.getPlanningIndex();
+                    this.planningIndex = '1';                    
                   } else {
-                    // this.planningIndex = '2';
-                    this.getPlanningIndex();
+                    this.planningIndex = '2';
                   }
                 }
 
@@ -935,7 +933,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
 
           // evaluationForm初始值
-          this.planningIndex = '3';
+          this.planningIndex = '1';
           this.evaluationFuncForm = new EvaluationFuncForm();
           if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
           this.addSINR();
@@ -949,17 +947,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
             this.addUEThroughput();
         }
-        setTimeout(()=> {
-          if (this.calculateForm.defaultBs !== "") {
-            // this.planningIndex = '3';
-            this.getPlanningIndex();
-            console.log('Simulation')
-          } else {
-            // this.planningIndex = '1';
-            this.getPlanningIndex();
-            console.log('Calculation')
-          }
-        }, 1000);
+        // setTimeout(()=> {
+        //   if (this.calculateForm.defaultBs !== "") {
+        //     this.planningIndex = '3';
+            
+        //     console.log('Simulation')
+        //   } else {
+        //     this.planningIndex = '1';
+        //     console.log('Calculation')
+        //   }
+        // }, 1000);
 
 
       }
@@ -5621,6 +5618,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mapData);
     XLSX.utils.book_append_sheet(wb, ws, 'map');
+
     // defaultBS
     const baseStationData = [['x', 'y', 'z','material','color','txpower','beamId','tddfrequency', 'tddbandwidth',
     'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
@@ -6661,7 +6659,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     else
     {
-      if (candidateData.length > 1)
+      if (candidateData.length >= 1)
         this.planningIndex = '1';
       else
         this.planningIndex = '3';
@@ -8845,7 +8843,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   //       infoMessage: msg
   //     };
   //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-  //     this.getStorageEvaluationFuncForm();    //還原舊參數
   //   }
   //   else{      
   //     this.setStorageEvaluationFuncForm();
@@ -8865,7 +8862,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   //       infoMessage: msg
   //     };
   //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-  //     this.getStorageEvaluationFuncForm();    //還原舊參數
   //   }
   //   else{      
   //     this.setStorageEvaluationFuncForm();
@@ -8881,7 +8877,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     else
     {
-      this.planningIndex = '3';
+      this.changePlaningIndexByEvaluationForm();
       console.log("this.planningIndex = "+this.planningIndex);
     }
   } 
@@ -8897,6 +8893,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     var isField = (this.evaluationFuncForm.field.coverage.activate || this.evaluationFuncForm.field.sinr.activate ||
                   this.evaluationFuncForm.field.rsrp.activate || this.evaluationFuncForm.field.throughput.activate);
     var isUe = (this.evaluationFuncForm.ue.coverage.activate || this.evaluationFuncForm.ue.throughputByRsrp.activate);
+
+
+    console.log(this.evaluationFuncForm);
     
     if(isField)
     {
@@ -8910,7 +8909,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     else
     {
-      this.planningIndex = '3';
+      this.planningIndex = '1';
       return false;
     }
   }
@@ -8921,20 +8920,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
     for(i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
     {
-      this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
+      if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio <= 1)
+        this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
     }
     for(i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
     {
-      this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
+      if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio <= 1)
+        this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
     }
     for(i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
     {
-      this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
+      if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio <= 1)
+        this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
     }
     this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
     for(i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
     {
-      this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
+      if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio <= 1)
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
     }
   }
 
@@ -9044,5 +9047,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.ueThroughputValueArr.push(0);
       }
     }
+  }
+
+  oldFormatEvaluation()
+  {
+    if(this.evaluationFuncForm == null || 
+      (this.evaluationFuncForm.field.coverage.activate == false && 
+       this.evaluationFuncForm.field.sinr.activate == false && 
+       this.evaluationFuncForm.field.rsrp.activate == false && 
+       this.evaluationFuncForm.field.throughput.activate == false && 
+       this.evaluationFuncForm.ue.coverage.activate == false && 
+       this.evaluationFuncForm.ue.throughputByRsrp.activate == false))
+       {
+        this.evaluationFuncForm.field.coverage.activate = this.calculateForm.isCoverage;
+        this.evaluationFuncForm.ue.coverage.activate = this.calculateForm.isUeCoverage;
+        this.evaluationFuncForm.ue.coverage.ratio = this.defaultArea / 100;
+        this.evaluationFuncForm.ue.throughputByRsrp.activate = this.calculateForm.isUeAvgThroughput;
+        if(this.evaluationFuncForm.ue.throughputByRsrp.activate && this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+          this.addUEThroughput();
+        console.log(this.evaluationFuncForm);
+       }
   }
 }

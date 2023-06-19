@@ -180,6 +180,8 @@ export class SpinnerComponent implements OnInit {
     this.spinner.show();
   }
 
+
+  
   showResult() {
     this.showLoad = false;
     this.showPdf = false;

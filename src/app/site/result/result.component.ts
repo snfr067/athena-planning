@@ -22,6 +22,7 @@ import { FormService } from '../../service/form.service';
 import { Options } from '@angular-slider/ngx-slider/options';
 import { SignalUlThroughputComponent } from '../modules/signal-ul-throughput/signal-ul-throughput.component';
 import { SignalDlThroughputComponent } from '../modules/signal-dl-throughput/signal-dl-throughput.component';
+import * as XLSX from 'xlsx';
 
 declare var Plotly: any;
 
@@ -910,7 +911,10 @@ export class ResultComponent implements OnInit {
 
   /** export PDF */
   async exportPDF() {
-    this.pdf.export(this.taskId, this.isHst, this.scaleMinSQ, this.scaleMaxSQ, this.scaleMinST, this.scaleMaxST, this.scaleMinUL, this.scaleMaxUL, this.scaleMinDL, this.scaleMaxDL);
+    this.pdf.export(this.taskId, this.isHst, this.scaleMinSQ, 
+      this.scaleMaxSQ, this.scaleMinST, this.scaleMaxST, 
+      this.scaleMinUL, this.scaleMaxUL, this.scaleMinDL, 
+      this.scaleMaxDL);
   }
 
   /** 訊號品質圖 */
@@ -1300,5 +1304,165 @@ export class ResultComponent implements OnInit {
         console.log(err);
       }
     );
+  }
+
+  exportRawData()
+  {        
+    // all
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    var z = 0, x = 0, y = 0;
+    var sheetName = '';
+
+    for(z = 0; z < this.zValues.length; z++)
+    {
+      //sinr
+      sheetName = "(SINR Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      var sinrData = [];
+      var pushArr = [" "];
+      var value = 0;
+
+      for(x = 0; x < this.result['sinrMap'].length; x++)
+      {
+        value = 0.5 + x*1;
+        pushArr.push(String(value));
+      }
+      sinrData.push(pushArr);
+      pushArr = [];
+
+      for(y = 0; y < this.result['sinrMap'][0].length; y++)
+      {
+        value = 0.5 + y*1;
+        pushArr.push(String(value));
+        for(x = 0; x < this.result['sinrMap'].length; x++)
+        {
+          value = this.result['sinrMap'][x][y][z];
+          pushArr.push(String(value));
+        }
+        sinrData.push(pushArr);
+        pushArr = [];
+      }
+      const sinrWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sinrData);
+      XLSX.utils.book_append_sheet(wb, sinrWS, sheetName);
+      
+      //rsrp
+      sheetName = "(RSRP Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      var rsrpData = [];
+      pushArr = [" "];
+      value = 0;
+
+      for(x = 0; x < this.result['rsrpMap'].length; x++)
+      {
+        value = 0.5 + x*1;
+        pushArr.push(String(value));
+      }
+      rsrpData.push(pushArr);
+      pushArr = [];
+
+      for(y = 0; y < this.result['rsrpMap'][0].length; y++)
+      {
+        value = 0.5 + y*1;
+        pushArr.push(String(value));
+        for(x = 0; x < this.result['rsrpMap'].length; x++)
+        {
+          value = this.result['rsrpMap'][x][y][z];
+          pushArr.push(String(value));
+        }
+        rsrpData.push(pushArr);
+        pushArr = [];
+      }
+      const rsrpWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rsrpData);
+      XLSX.utils.book_append_sheet(wb, rsrpWS, sheetName);
+      
+      //coverage
+      sheetName = "(Coverage Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      var coverageData = [];
+      pushArr = [" "];
+      value = 0;
+
+      for(x = 0; x < this.result['connectionMap'].length; x++)
+      {
+        value = 0.5 + x*1;
+        pushArr.push(String(value));
+      }
+      coverageData.push(pushArr);
+      pushArr = [];
+
+      for(y = 0; y < this.result['connectionMap'][0].length; y++)
+      {
+        value = 0.5 + y*1;
+        pushArr.push(String(value));
+        for(x = 0; x < this.result['connectionMap'].length; x++)
+        {
+          value = this.result['connectionMap'][x][y][z];
+          pushArr.push(String(value));
+        }
+        coverageData.push(pushArr);
+        pushArr = [];
+      }
+      const coverageWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(coverageData);
+      XLSX.utils.book_append_sheet(wb, coverageWS, sheetName);
+
+      //ul throughput
+      sheetName = "(Uplink Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      var ulThroughputData = [];
+      pushArr = [" "];
+      value = 0;
+
+      for(x = 0; x < this.result['ulThroughputMap'].length; x++)
+      {
+        value = 0.5 + x*1;
+        pushArr.push(String(value));
+      }
+      ulThroughputData.push(pushArr);
+      pushArr = [];
+
+      for(y = 0; y < this.result['ulThroughputMap'][0].length; y++)
+      {
+        value = 0.5 + y*1;
+        pushArr.push(String(value));
+        for(x = 0; x < this.result['ulThroughputMap'].length; x++)
+        {
+          value = this.result['ulThroughputMap'][x][y][z];
+          pushArr.push(String(value));
+        }
+        ulThroughputData.push(pushArr);
+        pushArr = [];
+      }
+      const ulThroughputWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ulThroughputData);
+      XLSX.utils.book_append_sheet(wb, ulThroughputWS, sheetName);
+      
+      //dl throughput 
+      sheetName = "(Downlink Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      var dlThroughputData = [];
+      pushArr = [" "];
+      value = 0;
+
+      for(x = 0; x < this.result['throughputMap'].length; x++)
+      {
+        value = 0.5 + x*1;
+        pushArr.push(String(value));
+      }
+      dlThroughputData.push(pushArr);
+      pushArr = [];
+
+      for(y = 0; y < this.result['throughputMap'][0].length; y++)
+      {
+        value = 0.5 + y*1;
+        pushArr.push(String(value));
+        for(x = 0; x < this.result['throughputMap'].length; x++)
+        {
+          value = this.result['throughputMap'][x][y][z];
+          pushArr.push(String(value));
+        }
+        dlThroughputData.push(pushArr);
+        pushArr = [];
+      }
+      const dlThroughputWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(dlThroughputData);
+      XLSX.utils.book_append_sheet(wb, dlThroughputWS, sheetName);
+    }
+
+    //save
+    XLSX.writeFile(wb, `${this.calculateForm.taskName}-Rawdata.xlsx`);    
+
   }
 }
