@@ -8700,6 +8700,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   delThroughput(index) {    
     this.evaluationFuncForm.field.throughput.ratio.splice(index, 1);
+    this.fieldThroughputTypeArr.splice(index, 1);
+    this.fieldThroughputValueArr.splice(index, 1);
     this.setStorageEvaluationFuncForm();
   }
 
@@ -8719,6 +8721,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   delUEThroughput(index) {    
     this.evaluationFuncForm.ue.throughputByRsrp.ratio.splice(index, 1);
+    this.ueThroughputTypeArr.splice(index, 1);
+    this.ueThroughputValueArr.splice(index, 1);
     this.setStorageEvaluationFuncForm();
   }
 
