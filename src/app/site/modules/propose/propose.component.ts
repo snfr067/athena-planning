@@ -85,7 +85,7 @@ export class ProposeComponent implements OnInit {
           yanchor: 'bottom',
           sizing: 'stretch',
           layer: 'below',
-          opacity: 0.5
+          opacity: 0.2
         });
 
         this.draw(isPDF, images);

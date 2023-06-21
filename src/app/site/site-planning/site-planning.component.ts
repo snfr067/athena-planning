@@ -1207,130 +1207,171 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   initData(isImportXls, isImportImg, isHWAChange) {
     // console.log('--initData.');
 
-    console.log(this.defaultBSList);
-    this.createResolutionList();
-    //檢查有沒有場域長寬高被改成負數
-    if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
-      if (this.calculateForm.height < 0) {
-        this.calculateForm.height = Number(window.sessionStorage.getItem('tempParam'));
-        window.sessionStorage.removeItem('tempParam');
-        // this.calculateForm.height = 100;
-      } else if (this.calculateForm.altitude <= 0) {
-        this.calculateForm.altitude = Number(window.sessionStorage.getItem('tempParam'));
-        window.sessionStorage.removeItem('tempParam');
-        // this.calculateForm.altitude = 3;
-      } else {
-        this.calculateForm.width = Number(window.sessionStorage.getItem('tempParam'));
-        window.sessionStorage.removeItem('tempParam');
-        // this.calculateForm.width = 100;
+    try
+    {
+      console.log(this.defaultBSList);
+      this.createResolutionList();
+      //檢查有沒有場域長寬高被改成負數
+      if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
+        if (this.calculateForm.height < 0) {
+          this.calculateForm.height = Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+          // this.calculateForm.height = 100;
+        } else if (this.calculateForm.altitude <= 0) {
+          this.calculateForm.altitude = Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+          // this.calculateForm.altitude = 3;
+        } else {
+          this.calculateForm.width = Number(window.sessionStorage.getItem('tempParam'));
+          window.sessionStorage.removeItem('tempParam');
+          // this.calculateForm.width = 100;
+        }
+        let msg = this.translateService.instant('field_alt_less_0');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       }
-      let msg = this.translateService.instant('field_alt_less_0');
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: msg
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-    }
 
-    // FoolProof Altitude
-    if (isHWAChange == 'altitude') { 
-      let msg = this.translateService.instant('field_alt_fix_then_all_fix');
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: msg
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      // FoolProof Altitude
+      if (isHWAChange == 'altitude') { 
+        let msg = this.translateService.instant('field_alt_fix_then_all_fix');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
 
-      //檢查場域高度有沒有小於場域所有的物件高度
-      //zValues
-      for (let i = 0;i < this.zValues.length;i++) {
-        if (this.calculateForm.altitude < Number(this.zValues[i])) {
-          delete this.zValues[i];
+        //檢查場域高度有沒有小於場域所有的物件高度
+        //zValues
+        for (let i = 0;i < this.zValues.length;i++) {
+          if (this.calculateForm.altitude < Number(this.zValues[i])) {
+            delete this.zValues[i];
+          }
+        }
+        if (this.zValues[0] == undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
+          this.zValues[0] = 0;
+          this.zValues.length = 1;
+        } else if (this.zValues[0] != undefined && this.zValues[1] != undefined && this.zValues[2] == undefined) {
+          this.zValues.length = 2;
+        } else if (this.zValues[0] != undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
+          this.zValues.length = 1;
+        }
+        //障礙物
+        for (let i = 0;i < this.obstacleList.length;i++) {
+          // console.log('障礙物'+this.dragObject[this.obstacleList[i]].altitude+' '+this.calculateForm.altitude);
+          if (this.calculateForm.altitude < this.dragObject[this.obstacleList[i]].altitude) {
+            this.dragObject[this.obstacleList[i]].altitude = this.calculateForm.altitude;
+            // console.log('障礙物高度被修改成場域高度'+this.dragObject[this.obstacleList[i]].altitude);
+          }
+        }
+        //既有基地台
+        for (let i = 0;i < this.defaultBSList.length;i++) {
+          // console.log('既有基地台'+this.dragObject[this.defaultBSList[i]].altitude+' '+this.calculateForm.altitude);
+          if (this.calculateForm.altitude < this.dragObject[this.defaultBSList[i]].altitude) {
+            this.dragObject[this.defaultBSList[i]].altitude = this.calculateForm.altitude;
+            // console.log('既有基地台高度被修改成場域高度'+this.dragObject[this.defaultBSList[i]].altitude);
+          }
+        }
+        //待選基地台
+        for (let i = 0;i < this.candidateList.length;i++) {
+          if (this.calculateForm.altitude < this.dragObject[this.candidateList[i]].altitude) {
+            this.dragObject[this.candidateList[i]].altitude = this.calculateForm.altitude;
+          }
         }
       }
-      if (this.zValues[0] == undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
-        this.zValues[0] = 0;
-        this.zValues.length = 1;
-      } else if (this.zValues[0] != undefined && this.zValues[1] != undefined && this.zValues[2] == undefined) {
-        this.zValues.length = 2;
-      } else if (this.zValues[0] != undefined && this.zValues[1] == undefined && this.zValues[2] == undefined) {
-        this.zValues.length = 1;
-      }
-      //障礙物
-      for (let i = 0;i < this.obstacleList.length;i++) {
-        // console.log('障礙物'+this.dragObject[this.obstacleList[i]].altitude+' '+this.calculateForm.altitude);
-        if (this.calculateForm.altitude < this.dragObject[this.obstacleList[i]].altitude) {
-          this.dragObject[this.obstacleList[i]].altitude = this.calculateForm.altitude;
-          // console.log('障礙物高度被修改成場域高度'+this.dragObject[this.obstacleList[i]].altitude);
-        }
-      }
-      //既有基地台
-      for (let i = 0;i < this.defaultBSList.length;i++) {
-        // console.log('既有基地台'+this.dragObject[this.defaultBSList[i]].altitude+' '+this.calculateForm.altitude);
-        if (this.calculateForm.altitude < this.dragObject[this.defaultBSList[i]].altitude) {
-          this.dragObject[this.defaultBSList[i]].altitude = this.calculateForm.altitude;
-          // console.log('既有基地台高度被修改成場域高度'+this.dragObject[this.defaultBSList[i]].altitude);
-        }
-      }
-      //待選基地台
-      for (let i = 0;i < this.candidateList.length;i++) {
-        if (this.calculateForm.altitude < this.dragObject[this.candidateList[i]].altitude) {
-          this.dragObject[this.candidateList[i]].altitude = this.calculateForm.altitude;
-        }
-      }
-    }
+      
+      // Plotly繪圖config
+      const defaultPlotlyConfiguration = {
+        displaylogo: false,
+        showTips: false,
+        editable: false,
+        scrollZoom: false,
+        displayModeBar: false
+      };
+      // 繪圖layout
+      this.plotLayout = {
+        autosize: false,
+        width: this.calculateForm.width,
+        height: this.calculateForm.height,
+        xaxis: {
+          linewidth: 1,
+          mirror: 'all',
+          range: [0, this.calculateForm.width],
+          showgrid: false,
+          zeroline: false,
+          fixedrange: true
+        },
+        yaxis: {
+          linewidth: 1,
+          mirror: 'all',
+          range: [0, this.calculateForm.height],
+          showgrid: false,
+          zeroline: false,
+          fixedrange: true
+        },
+        margin: { t: 20, b: 20, l: 50, r: 50}
+      };
+
+      window.setTimeout(() => {
+        if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
+          const reader = new FileReader();
+          reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
+          reader.onload = (e) => {
+            // 背景圖
+            this.plotLayout['images'] = [{
+              source: reader.result,
+              x: 0,
+              y: 0,
+              sizex: this.calculateForm.width,
+              sizey: this.calculateForm.height,
+              xref: 'x',
+              yref: 'y',
+              xanchor: 'left',
+              yanchor: 'bottom',
+              sizing: 'stretch'
+            }];
     
-    // Plotly繪圖config
-    const defaultPlotlyConfiguration = {
-      displaylogo: false,
-      showTips: false,
-      editable: false,
-      scrollZoom: false,
-      displayModeBar: false
-    };
-    // 繪圖layout
-    this.plotLayout = {
-      autosize: false,
-      width: this.calculateForm.width,
-      height: this.calculateForm.height,
-      xaxis: {
-        linewidth: 1,
-        mirror: 'all',
-        range: [0, this.calculateForm.width],
-        showgrid: false,
-        zeroline: false,
-        fixedrange: true
-      },
-      yaxis: {
-        linewidth: 1,
-        mirror: 'all',
-        range: [0, this.calculateForm.height],
-        showgrid: false,
-        zeroline: false,
-        fixedrange: true
-      },
-      margin: { t: 20, b: 20, l: 50, r: 50}
-    };
-
-    window.setTimeout(() => {
-      if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
-        const reader = new FileReader();
-        reader.readAsDataURL(this.dataURLtoBlob(this.calculateForm.mapImage));
-        reader.onload = (e) => {
-          // 背景圖
-          this.plotLayout['images'] = [{
-            source: reader.result,
-            x: 0,
-            y: 0,
-            sizex: this.calculateForm.width,
-            sizey: this.calculateForm.height,
-            xref: 'x',
-            yref: 'y',
-            xanchor: 'left',
-            yanchor: 'bottom',
-            sizing: 'stretch'
-          }];
-  
+            // draw background image chart
+            Plotly.newPlot('chart', {
+              data: [],
+              layout: this.plotLayout,
+              config: defaultPlotlyConfiguration
+            }).then((gd) => {
+              // this.chartService.calSize(this.calculateForm, gd).then(res => {
+              //   const layoutOption = {
+              //     width: res[0],
+              //     height: res[1]
+              //   };
+              //   // image放進圖裡後需取得比例尺
+              //   Plotly.relayout('chart', layoutOption).then((gd2) => {
+                  // 計算比例尺
+                  this.calScale(gd);
+                  if (isImportXls) {
+                    // import xlsx
+                    this.setImportData();
+                  } else if (isImportImg) {
+                    // do noting
+                  } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
+                    // 編輯
+                    if (isHWAChange !== '') {
+                      // this.edit(false);
+                    } else {
+                      this.edit(true);
+                    }
+                    console.log(this.calculateForm);
+                  }
+                  // 重設場域尺寸與載入物件
+                  this.chartResize();
+              //   }); 
+              // });
+            });
+          };
+    
+        } else {
+          // this.plotLayout['width'] = window.innerWidth * 0.68;
+          // this.plotLayout['width'] = window.innerWidth;
           // draw background image chart
           Plotly.newPlot('chart', {
             data: [],
@@ -1342,94 +1383,69 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             //     width: res[0],
             //     height: res[1]
             //   };
-            //   // image放進圖裡後需取得比例尺
+            //   // 重設長寬
             //   Plotly.relayout('chart', layoutOption).then((gd2) => {
+                  
                 // 計算比例尺
                 this.calScale(gd);
+                // import xlsx
                 if (isImportXls) {
-                  // import xlsx
                   this.setImportData();
                 } else if (isImportImg) {
-                  // do noting
+                  // do nothing
                 } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
                   // 編輯
+                  console.log(this.calculateForm);
                   if (isHWAChange !== '') {
                     // this.edit(false);
                   } else {
                     this.edit(true);
                   }
-                  console.log(this.calculateForm);
                 }
                 // 重設場域尺寸與載入物件
                 this.chartResize();
-            //   }); 
+            //   });
             // });
+            
           });
-        };
-  
-      } else {
-        // this.plotLayout['width'] = window.innerWidth * 0.68;
-        // this.plotLayout['width'] = window.innerWidth;
-        // draw background image chart
-        Plotly.newPlot('chart', {
-          data: [],
-          layout: this.plotLayout,
-          config: defaultPlotlyConfiguration
-        }).then((gd) => {
-          // this.chartService.calSize(this.calculateForm, gd).then(res => {
-          //   const layoutOption = {
-          //     width: res[0],
-          //     height: res[1]
-          //   };
-          //   // 重設長寬
-          //   Plotly.relayout('chart', layoutOption).then((gd2) => {
-                
-              // 計算比例尺
-              this.calScale(gd);
-              // import xlsx
-              if (isImportXls) {
-                this.setImportData();
-              } else if (isImportImg) {
-                // do nothing
-              } else if (this.taskid !== '' || sessionStorage.getItem('form_blank_task') != null) {
-                // 編輯
-                console.log(this.calculateForm);
-                if (isHWAChange !== '') {
-                  // this.edit(false);
-                } else {
-                  this.edit(true);
-                }
-              }
-              // 重設場域尺寸與載入物件
-              this.chartResize();
-          //   });
-          // });
-          
-        });
-      }
+        }
 
-      if (isHWAChange != '') {
-        window.setTimeout(() => {
-          for (const item of this.obstacleList) {
-            if (this.dragObject[item].element == '2') {
-              // 切換場域尺寸後圓形會變形，重新初始化物件設定長寬
-              this.moveClick(item);
-              this.target = document.querySelector(`#${item}`);
-              this.setTransform(this.target);
-              const width = this.target.getBoundingClientRect().width;
-              this.frame.set('height', `${width}px`);
-              this.frame.set('width', `${width}px`);
-              const x = (width / 2).toString();
-              this.ellipseStyle[this.svgId].rx = x;
-              this.ellipseStyle[this.svgId].ry = x;
-              this.ellipseStyle[this.svgId].cx = x;
-              this.ellipseStyle[this.svgId].cy = x;
-              this.moveable.destroy();
+        if (isHWAChange != '') {
+          window.setTimeout(() => {
+            for (const item of this.obstacleList) {
+              if (this.dragObject[item].element == '2') {
+                // 切換場域尺寸後圓形會變形，重新初始化物件設定長寬
+                this.moveClick(item);
+                this.target = document.querySelector(`#${item}`);
+                this.setTransform(this.target);
+                const width = this.target.getBoundingClientRect().width;
+                this.frame.set('height', `${width}px`);
+                this.frame.set('width', `${width}px`);
+                const x = (width / 2).toString();
+                this.ellipseStyle[this.svgId].rx = x;
+                this.ellipseStyle[this.svgId].ry = x;
+                this.ellipseStyle[this.svgId].cx = x;
+                this.ellipseStyle[this.svgId].cy = x;
+                this.moveable.destroy();
+              }
             }
-          }
-        }, 500);
-      }
-    }, 0);
+          }, 500);
+        }
+      }, 0);
+    }
+    catch (error) {
+      console.log(error);
+      // fail xlsx
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('xlxs.fail')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      window.setTimeout(() => {
+        this.matDialog.closeAll();
+        this.router.navigate(['/']);
+      }, 3000);
+    }
   }
 
   /** 計算比例尺 */
@@ -1496,20 +1512,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   dataURLtoBlob(dataURI) {
     let byteString;
-    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
-      byteString = atob(dataURI.split(',')[1]); // atob(dataURI.split(',')[1]);
-      // decodeURIComponent(escape(window.atob(("eyJzdWIiOiJ0ZXN0MyIsInVzZXJJZCI6IjEwMTY5MiIsIm5hbWUiOiLmtYvor5V0ZXN0M-a1i-ivlSIsImV4cCI6MTU3OTUxMTY0OH0").replace(/-/g, "+").replace(/_/g, "/"))));
-    } else {
-      byteString = unescape(dataURI.split(',')[1]);
+    try
+    {
+      if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1]); // atob(dataURI.split(',')[1]);
+        // decodeURIComponent(escape(window.atob(("eyJzdWIiOiJ0ZXN0MyIsInVzZXJJZCI6IjEwMTY5MiIsIm5hbWUiOiLmtYvor5V0ZXN0M-a1i-ivlSIsImV4cCI6MTU3OTUxMTY0OH0").replace(/-/g, "+").replace(/_/g, "/"))));
+      } else {
+        byteString = unescape(dataURI.split(',')[1]);
+      }
+      // separate out the mime component
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      // write the bytes of the string to a typed array
+      const ia = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ia], {type: mimeString});
     }
-    // separate out the mime component
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    // write the bytes of the string to a typed array
-    const ia = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
+    catch (error) {
+      console.log(error);
+      // fail xlsx
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('xlxs.fail')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      window.setTimeout(() => {
+        this.matDialog.closeAll();
+        this.router.navigate(['/']);
+      }, 3000);
+      throw error;
     }
-    return new Blob([ia], {type: mimeString});
   }
 
   /**
@@ -5906,7 +5939,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   import(event) {
     /* wire up file reader */
     const target: DataTransfer = <DataTransfer> (event.target);
-    if (target.files.length !== 1) {
+    if (target.files.length !== 1) 
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('mutil.import.file.fault')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       throw new Error('Cannot use multiple files');
     }
     const file = event.target.files[0];
@@ -5917,8 +5956,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // const name = file.name.substring(0, file.name.lastIndexOf('.'));
       const name = file.name;
       sessionStorage.setItem('taskName', name);
+
       this.readXls(bstr);
-      
 
       event.target.value = ''; // 清空
     };
@@ -5938,59 +5977,74 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.calculateForm.taskName = sessionStorage.getItem('taskName');
     this.wb = XLSX.read(result, {type: 'binary'});
 
-    /* map sheet */
-    const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
-    const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
-    const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
-    /*
-      mapData = [
-        ['image', 'imageName', ...]
-        ['data:image/...', 'EGATRON3F.png', ...]
-        ['','', ,,, , 2.1]
-      ]
-      0對應column name, 1+對應data
-    */
-    try {
-      this.calculateForm.mapImage = '';
-      const keyMap = {};
-      Object.keys(mapData[0]).forEach((key) => {
-        keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
-      });
-      this.zValues.length = 0;
-      for (let i = 1; i < mapData.length; i++) {
-        this.calculateForm.mapImage += mapData[i][0];
-        if (typeof mapData[i][keyMap['mapLayer']] !== 'undefined') {
-          if (mapData[i][keyMap['mapLayer']] !== '') {
-            this.zValues.push(mapData[i][keyMap['mapLayer']]);
+    if(this.wb.SheetNames[0] == 'map')
+    {
+      /* map sheet */
+      const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
+      const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
+      const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
+      /*
+        mapData = [
+          ['image', 'imageName', ...]
+          ['data:image/...', 'EGATRON3F.png', ...]
+          ['','', ,,, , 2.1]
+        ]
+        0對應column name, 1+對應data
+      */
+      try {
+        this.calculateForm.mapImage = '';
+        const keyMap = {};
+        Object.keys(mapData[0]).forEach((key) => {
+          keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
+        });
+        this.zValues.length = 0;
+        for (let i = 1; i < mapData.length; i++) {
+          this.calculateForm.mapImage += mapData[i][0];
+          if (typeof mapData[i][keyMap['mapLayer']] !== 'undefined') {
+            if (mapData[i][keyMap['mapLayer']] !== '') {
+              this.zValues.push(mapData[i][keyMap['mapLayer']]);
+            }
           }
         }
-      }
-      this.calculateForm.width = mapData[1][keyMap['width']];
-      this.calculateForm.height = mapData[1][keyMap['height']];
-      this.calculateForm.altitude = mapData[1][keyMap['altitude']];
-      // mapName or imageName
-      if (typeof mapData[1][keyMap['mapName']] === 'undefined') {
-        this.calculateForm.mapName = mapData[1][keyMap['imageName']];
-      } else {
-        this.calculateForm.mapName = mapData[1][keyMap['mapName']];
-      }
-      // excel無protocol時預設wifi
-      if (typeof mapData[1][keyMap['protocol']] === 'undefined') {
-        this.calculateForm.objectiveIndex = '2';
-      } else {
-        if (mapData[1][keyMap['protocol']] === '0' || mapData[1][keyMap['protocol']] === '4G') {
-          this.calculateForm.objectiveIndex = '0';
-        } else if (mapData[1][keyMap['protocol']] === '1' || mapData[1][keyMap['protocol']] === '5G') {
-          this.calculateForm.objectiveIndex = '1';
-        } else if (mapData[1][keyMap['protocol']] === '2' || mapData[1][keyMap['protocol']] === 'wifi') {
-          this.calculateForm.objectiveIndex = '2';
+        this.calculateForm.width = mapData[1][keyMap['width']];
+        this.calculateForm.height = mapData[1][keyMap['height']];
+        this.calculateForm.altitude = mapData[1][keyMap['altitude']];
+        // mapName or imageName
+        if (typeof mapData[1][keyMap['mapName']] === 'undefined') {
+          this.calculateForm.mapName = mapData[1][keyMap['imageName']];
+        } else {
+          this.calculateForm.mapName = mapData[1][keyMap['mapName']];
         }
+        // excel無protocol時預設wifi
+        if (typeof mapData[1][keyMap['protocol']] === 'undefined') {
+          this.calculateForm.objectiveIndex = '2';
+        } else {
+          if (mapData[1][keyMap['protocol']] === '0' || mapData[1][keyMap['protocol']] === '4G') {
+            this.calculateForm.objectiveIndex = '0';
+          } else if (mapData[1][keyMap['protocol']] === '1' || mapData[1][keyMap['protocol']] === '5G') {
+            this.calculateForm.objectiveIndex = '1';
+          } else if (mapData[1][keyMap['protocol']] === '2' || mapData[1][keyMap['protocol']] === 'wifi') {
+            this.calculateForm.objectiveIndex = '2';
+          }
+        }
+    
+        this.initData(true, false, '');
+      } catch (error) {
+        console.log(error);
+        // fail xlsx
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('xlxs.fail')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        window.setTimeout(() => {
+          this.matDialog.closeAll();
+          this.router.navigate(['/']);
+        }, 3000);
       }
-  
-      this.initData(true, false, '');
-    } catch (error) {
-      console.log(error);
-      // fail xlsx
+    }
+    else
+    {
       this.msgDialogConfig.data = {
         type: 'error',
         infoMessage: this.translateService.instant('xlxs.fail')
@@ -5999,7 +6053,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       window.setTimeout(() => {
         this.matDialog.closeAll();
         this.router.navigate(['/']);
-      }, 2000);
+      }, 3000);
     }
 
   }
@@ -6014,694 +6068,710 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.ueList.length = 0;
 
 
-    const materialReg = new RegExp('[0-4]');
-    /* base station sheet */
-    const sheetNameIndex = {};
-    for (let i = 0; i < this.wb.SheetNames.length; i++) {
-      sheetNameIndex[this.wb.SheetNames[i]] = i;
-    }
-
-    const baseStation: string = this.wb.SheetNames[sheetNameIndex['base_station']];
-    const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
-    const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
-    if (baseStationData.length > 1) {
-      // this.planningIndex = '3';
-      for (let i = 1; i < baseStationData.length; i++) {
-        const id = `defaultBS_${(i - 1)}`;
-        // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
-        // 不在清單內，指定為木頭
-        // if (!materialReg.test(material)) {
-          // material = '0';
-        // }
-        // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
-        this.dragObject[id] = {
-          x: baseStationData[i][0],
-          y: baseStationData[i][1],
-          z: baseStationData[i][2],
-          width: this.xLinear(30),
-          height: this.yLinear(30),
-          altitude: baseStationData[i][2],
-          rotate: 0,
-          title: this.svgMap['defaultBS'].title,
-          type: this.svgMap['defaultBS'].type,
-          color: this.DEFAULT_BS_COLOR,
-          // material: material,
-          element: this.svgMap['defaultBS'].element
-        };
-        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
-          this.dragObject[id].altitude = this.calculateForm.altitude;
-        }
-        // RF parameter import
-        const offset = 2;
-        let bsTxGain = 0;
-        let bsNoiseFigure = 0;
-        let AntennaId = 1;
-        let theta = 0;
-        let phi = 0;
-        if (Object.values(baseStationData[0]).includes("bsTxGain")){
-          bsTxGain= baseStationData[i][24+offset];
-        }
-        if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
-          bsNoiseFigure= baseStationData[i][25+offset];
-        }
-        if (Object.values(baseStationData[0]).includes("AntennaId")){
-          AntennaId= baseStationData[i][26+offset];
-        }
-        if (Object.values(baseStationData[0]).includes("theta")){
-          theta= baseStationData[i][27+offset];
-        }
-        if (Object.values(baseStationData[0]).includes("phi")){
-          phi= baseStationData[i][28+offset];
-        }
-        this.bsListRfParam[id] = {
-          txpower: baseStationData[i][3+offset],
-          beampattern: baseStationData[i][4+offset],
-          tddfrequency: baseStationData[i][5+offset],
-          tddbandwidth: baseStationData[i][6+offset],
-          dlBandwidth: baseStationData[i][7+offset],
-          ulBandwidth: baseStationData[i][8+offset],
-          fddDlFrequency: baseStationData[i][9+offset],
-          fddUlFrequency: baseStationData[i][10+offset],
-          mimoNumber4G: baseStationData[i][11+offset],
-          tddscs: baseStationData[i][12+offset],
-          dlModulationCodScheme: baseStationData[i][13+offset],
-          ulModulationCodScheme: baseStationData[i][14+offset],
-          dlMimoLayer: baseStationData[i][15+offset],
-          ulMimoLayer: baseStationData[i][16+offset],
-          dlScs: baseStationData[i][17+offset],
-          ulScs: baseStationData[i][18+offset],
-          wifiProtocol: baseStationData[i][19+offset],
-          guardInterval: baseStationData[i][20+offset],
-          wifiMimo: baseStationData[i][21+offset],
-          wifiBandwidth: baseStationData[i][22+offset],
-          wifiFrequency: baseStationData[i][23+offset],
-          bsTxGain: bsTxGain,
-          bsNoiseFigure: bsNoiseFigure,
-          AntennaId :AntennaId,
-          theta:theta,
-          phi:phi
-        };
-        
-        this.defaultBSList.push(id);
-        // set 既有基站位置
-        // this.setDefaultBsSize(id);
-      }
-    }
-    /* candidate sheet */
-    const candidate: string = this.wb.SheetNames[sheetNameIndex['candidate']];
-    const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
-    const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
-    if (candidateData.length > 1) {
-      this.planningIndex = '1';     //if there is any candidate, planning index should be 1 or 2
-      for (let i = 1; i < candidateData.length; i++) {
-        const id = `candidate_${(i - 1)}`;
-        this.candidateList.push(id);
-        // let material = (typeof candidateData[i][3] === 'undefined' ? '0' : candidateData[i][3]);
-        // if (!materialReg.test(material)) {
-          // material = '0';
-        // }
-        // const color = (typeof candidateData[i][4] === 'undefined' ? this.CANDIDATE_COLOR : candidateData[i][4]);
-
-        this.dragObject[id] = {
-          x: candidateData[i][0],
-          y: candidateData[i][1],
-          z: candidateData[i][2],
-          width: this.xLinear(this.candidateWidth),
-          height: this.yLinear(this.candidateHeight),
-          altitude: candidateData[i][2],
-          rotate: 0,
-          title: this.svgMap['candidate'].title,
-          type: this.svgMap['candidate'].type,
-          color: this.DEFAULT_BS_COLOR,
-          // material: material,
-          element: this.svgMap['candidate'].element
-        };
-
-        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
-          this.dragObject[id].altitude = this.calculateForm.altitude;
-        }
-        // this.bsListRfParam[id] = {
-        //   tddfrequency: candidateData[i][5],
-        //   tddbandwidth: candidateData[i][6],
-        //   dlBandwidth: candidateData[i][7],
-        //   ulBandwidth: candidateData[i][8],
-        //   fddDlFrequency: candidateData[i][9],
-        //   fddUlFrequency: candidateData[i][10],
-        //   mimoNumber4G: candidateData[i][11],
-        //   tddscs: candidateData[i][12],
-        //   dlModulationCodScheme: candidateData[i][13],
-        //   ulModulationCodScheme: candidateData[i][14],
-        //   dlMimoLayer: candidateData[i][15],
-        //   ulMimoLayer: candidateData[i][16],
-        //   dlScs: candidateData[i][17],
-        //   ulScs: candidateData[i][18],
-        // };
-        const offset = 2;
-        this.tempCalParamSet.tddfrequency = candidateData[i][3+offset];
-        this.tempCalParamSet.tddbandwidth = candidateData[i][4+offset];
-        this.tempCalParamSet.dlBandwidth = candidateData[i][5+offset];
-        this.tempCalParamSet.ulBandwidth = candidateData[i][6+offset];
-        this.tempCalParamSet.fddDlFrequency = candidateData[i][7+offset];
-        this.tempCalParamSet.fddUlFrequency = candidateData[i][8+offset];
-        this.tempCalParamSet.mimoNumber4G = candidateData[i][9+offset];
-        this.tempCalParamSet.tddscs = candidateData[i][10+offset];
-        this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11+offset];
-        this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12+offset];
-        this.tempCalParamSet.dlMimoLayer = candidateData[i][13+offset];
-        this.tempCalParamSet.ulMimoLayer = candidateData[i][14+offset];
-        this.tempCalParamSet.dlScs = candidateData[i][15+offset];
-        this.tempCalParamSet.ulScs = candidateData[i][16+offset];
-        this.tempCalParamSet.wifiProtocol = candidateData[i][17+offset];
-        this.tempCalParamSet.guardInterval = candidateData[i][18+offset];
-        this.tempCalParamSet.wifiMimo = candidateData[i][19+offset];
-        this.tempCalParamSet.wifiBandwidth = candidateData[i][20+offset];
-        this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
-        let bsTxGain = 0
-        let bsNoiseFigure = 0
-        let AntennaId = 1;
-        let theta = 0;
-        let phi = 0;
-        if (Object.values(candidateData[0]).includes("bsTxGain")){
-          bsTxGain= candidateData[i][22+offset];
-        }
-        if (Object.values(candidateData[0]).includes("bsNoiseFigure")){
-          bsNoiseFigure= candidateData[i][23+offset];
-        }
-        if (Object.values(candidateData[0]).includes("AntennaId")){
-          AntennaId= candidateData[i][24+offset];
-        }
-        if (Object.values(candidateData[0]).includes("theta")){
-          theta= candidateData[i][25+offset];
-        }
-        if (Object.values(candidateData[0]).includes("phi")){
-          phi= candidateData[i][26+offset];
-        }
-        this.tempCalParamSet.bsTxGain = bsTxGain;
-        this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
-        this.tempCalParamSet.AntennaId = AntennaId;
-        this.tempCalParamSet.theta = theta;
-        this.tempCalParamSet.phi = phi;
-        // set UE位置
-        // this.setCandidateSize(id);
-
-        // RF parameter import
-        // this.bsListRfParam[id] = {
-        //   txpower: baseStationData[i][5],
-        //   beampattern: baseStationData[i][6],
-        //   tddfrequency: baseStationData[i][7],
-        //   tddbandwidth: baseStationData[i][8],
-        //   dlBandwidth: baseStationData[i][9],
-        //   ulBandwidth: baseStationData[i][10],
-        //   fddDlFrequency: baseStationData[i][11],
-        //   fddUlFrequency: baseStationData[i][12],
-        //   mimoNumber4G: baseStationData[i][13],
-        //   tddscs: baseStationData[i][14],
-        //   dlModulationCodScheme: baseStationData[i][15],
-        //   ulModulationCodScheme: baseStationData[i][16],
-        //   dlMimoLayer: baseStationData[i][17],
-        //   ulMimoLayer: baseStationData[i][18],
-        //   dlScs: baseStationData[i][19],
-        //   ulScs: baseStationData[i][20],
-        // };
-      }
-    }
-    else
+    try
     {
-      this.planningIndex = '3';
-    }
-    /* UE sheet */
-    const ue: string = this.wb.SheetNames[sheetNameIndex['ue']];
-    if (typeof ue !== 'undefined') {
-      const ueWS: XLSX.WorkSheet = this.wb.Sheets[ue];
-      const ueData = (XLSX.utils.sheet_to_json(ueWS, {header: 1}));
-      if (ueData.length > 1) {
-        for (let i = 1; i < ueData.length; i++) {
-          if (typeof ueData[i][0] === 'undefined') {
-            continue;
+      const materialReg = new RegExp('[0-4]');
+      /* base station sheet */
+      const sheetNameIndex = {};
+      for (let i = 0; i < this.wb.SheetNames.length; i++) {
+        sheetNameIndex[this.wb.SheetNames[i]] = i;
+      }
+
+      const baseStation: string = this.wb.SheetNames[sheetNameIndex['base_station']];
+      const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
+      const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
+      if (baseStationData.length > 1) {
+        // this.planningIndex = '3';
+        for (let i = 1; i < baseStationData.length; i++) {
+          const id = `defaultBS_${(i - 1)}`;
+          // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
+          // 不在清單內，指定為木頭
+          // if (!materialReg.test(material)) {
+            // material = '0';
+          // }
+          // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
+          this.dragObject[id] = {
+            x: baseStationData[i][0],
+            y: baseStationData[i][1],
+            z: baseStationData[i][2],
+            width: this.xLinear(30),
+            height: this.yLinear(30),
+            altitude: baseStationData[i][2],
+            rotate: 0,
+            title: this.svgMap['defaultBS'].title,
+            type: this.svgMap['defaultBS'].type,
+            color: this.DEFAULT_BS_COLOR,
+            // material: material,
+            element: this.svgMap['defaultBS'].element
+          };
+          if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+            this.dragObject[id].altitude = this.calculateForm.altitude;
           }
-          const id = `UE_${(i - 1)}`;
-          this.ueList.push(id);
-          let material = (typeof ueData[i][3] === 'undefined' ? '0' : ueData[i][3]);
-          if (!materialReg.test(material)) {
-            material = '0';
+          // RF parameter import
+          const offset = 2;
+          let bsTxGain = 0;
+          let bsNoiseFigure = 0;
+          let AntennaId = 1;
+          let theta = 0;
+          let phi = 0;
+          if (Object.values(baseStationData[0]).includes("bsTxGain")){
+            bsTxGain= baseStationData[i][24+offset];
           }
-          const color = (typeof ueData[i][4] === 'undefined' ? this.UE_COLOR : ueData[i][4]);
+          if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
+            bsNoiseFigure= baseStationData[i][25+offset];
+          }
+          if (Object.values(baseStationData[0]).includes("AntennaId")){
+            AntennaId= baseStationData[i][26+offset];
+          }
+          if (Object.values(baseStationData[0]).includes("theta")){
+            theta= baseStationData[i][27+offset];
+          }
+          if (Object.values(baseStationData[0]).includes("phi")){
+            phi= baseStationData[i][28+offset];
+          }
+          this.bsListRfParam[id] = {
+            txpower: baseStationData[i][3+offset],
+            beampattern: baseStationData[i][4+offset],
+            tddfrequency: baseStationData[i][5+offset],
+            tddbandwidth: baseStationData[i][6+offset],
+            dlBandwidth: baseStationData[i][7+offset],
+            ulBandwidth: baseStationData[i][8+offset],
+            fddDlFrequency: baseStationData[i][9+offset],
+            fddUlFrequency: baseStationData[i][10+offset],
+            mimoNumber4G: baseStationData[i][11+offset],
+            tddscs: baseStationData[i][12+offset],
+            dlModulationCodScheme: baseStationData[i][13+offset],
+            ulModulationCodScheme: baseStationData[i][14+offset],
+            dlMimoLayer: baseStationData[i][15+offset],
+            ulMimoLayer: baseStationData[i][16+offset],
+            dlScs: baseStationData[i][17+offset],
+            ulScs: baseStationData[i][18+offset],
+            wifiProtocol: baseStationData[i][19+offset],
+            guardInterval: baseStationData[i][20+offset],
+            wifiMimo: baseStationData[i][21+offset],
+            wifiBandwidth: baseStationData[i][22+offset],
+            wifiFrequency: baseStationData[i][23+offset],
+            bsTxGain: bsTxGain,
+            bsNoiseFigure: bsNoiseFigure,
+            AntennaId :AntennaId,
+            theta:theta,
+            phi:phi
+          };
+          
+          this.defaultBSList.push(id);
+          // set 既有基站位置
+          // this.setDefaultBsSize(id);
+        }
+      }
+      /* candidate sheet */
+      const candidate: string = this.wb.SheetNames[sheetNameIndex['candidate']];
+      const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
+      const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
+      if (candidateData.length > 1) {
+        this.planningIndex = '1';     //if there is any candidate, planning index should be 1 or 2
+        for (let i = 1; i < candidateData.length; i++) {
+          const id = `candidate_${(i - 1)}`;
+          this.candidateList.push(id);
+          // let material = (typeof candidateData[i][3] === 'undefined' ? '0' : candidateData[i][3]);
+          // if (!materialReg.test(material)) {
+            // material = '0';
+          // }
+          // const color = (typeof candidateData[i][4] === 'undefined' ? this.CANDIDATE_COLOR : candidateData[i][4]);
 
           this.dragObject[id] = {
-            x: ueData[i][0],
-            y: ueData[i][1],
-            z: ueData[i][2],
-            width: this.xLinear(this.ueWidth),
-            height: this.yLinear(this.ueHeight),
-            altitude: ueData[i][2],
+            x: candidateData[i][0],
+            y: candidateData[i][1],
+            z: candidateData[i][2],
+            width: this.xLinear(this.candidateWidth),
+            height: this.yLinear(this.candidateHeight),
+            altitude: candidateData[i][2],
             rotate: 0,
-            title: this.svgMap['UE'].title,
-            type: this.svgMap['UE'].type,
-            color: color,
-            material: material,
-            element: this.svgMap['UE'].element
+            title: this.svgMap['candidate'].title,
+            type: this.svgMap['candidate'].type,
+            color: this.DEFAULT_BS_COLOR,
+            // material: material,
+            element: this.svgMap['candidate'].element
           };
-          if (Object.values(ueData[0]).includes("ueRxGain")){
-            //新增欄位
-            var ueRxGain= ueData[i][3]
-          } else {
-            var ueRxGain = 0
+
+          if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+            this.dragObject[id].altitude = this.calculateForm.altitude;
           }
-          this.ueListParam[id] = {
-            ueRxGain: ueRxGain
+          // this.bsListRfParam[id] = {
+          //   tddfrequency: candidateData[i][5],
+          //   tddbandwidth: candidateData[i][6],
+          //   dlBandwidth: candidateData[i][7],
+          //   ulBandwidth: candidateData[i][8],
+          //   fddDlFrequency: candidateData[i][9],
+          //   fddUlFrequency: candidateData[i][10],
+          //   mimoNumber4G: candidateData[i][11],
+          //   tddscs: candidateData[i][12],
+          //   dlModulationCodScheme: candidateData[i][13],
+          //   ulModulationCodScheme: candidateData[i][14],
+          //   dlMimoLayer: candidateData[i][15],
+          //   ulMimoLayer: candidateData[i][16],
+          //   dlScs: candidateData[i][17],
+          //   ulScs: candidateData[i][18],
+          // };
+          const offset = 2;
+          this.tempCalParamSet.tddfrequency = candidateData[i][3+offset];
+          this.tempCalParamSet.tddbandwidth = candidateData[i][4+offset];
+          this.tempCalParamSet.dlBandwidth = candidateData[i][5+offset];
+          this.tempCalParamSet.ulBandwidth = candidateData[i][6+offset];
+          this.tempCalParamSet.fddDlFrequency = candidateData[i][7+offset];
+          this.tempCalParamSet.fddUlFrequency = candidateData[i][8+offset];
+          this.tempCalParamSet.mimoNumber4G = candidateData[i][9+offset];
+          this.tempCalParamSet.tddscs = candidateData[i][10+offset];
+          this.tempCalParamSet.dlModulationCodScheme = candidateData[i][11+offset];
+          this.tempCalParamSet.ulModulationCodScheme = candidateData[i][12+offset];
+          this.tempCalParamSet.dlMimoLayer = candidateData[i][13+offset];
+          this.tempCalParamSet.ulMimoLayer = candidateData[i][14+offset];
+          this.tempCalParamSet.dlScs = candidateData[i][15+offset];
+          this.tempCalParamSet.ulScs = candidateData[i][16+offset];
+          this.tempCalParamSet.wifiProtocol = candidateData[i][17+offset];
+          this.tempCalParamSet.guardInterval = candidateData[i][18+offset];
+          this.tempCalParamSet.wifiMimo = candidateData[i][19+offset];
+          this.tempCalParamSet.wifiBandwidth = candidateData[i][20+offset];
+          this.tempCalParamSet.wifiFrequency = candidateData[i][21+offset];
+          let bsTxGain = 0
+          let bsNoiseFigure = 0
+          let AntennaId = 1;
+          let theta = 0;
+          let phi = 0;
+          if (Object.values(candidateData[0]).includes("bsTxGain")){
+            bsTxGain= candidateData[i][22+offset];
           }
+          if (Object.values(candidateData[0]).includes("bsNoiseFigure")){
+            bsNoiseFigure= candidateData[i][23+offset];
+          }
+          if (Object.values(candidateData[0]).includes("AntennaId")){
+            AntennaId= candidateData[i][24+offset];
+          }
+          if (Object.values(candidateData[0]).includes("theta")){
+            theta= candidateData[i][25+offset];
+          }
+          if (Object.values(candidateData[0]).includes("phi")){
+            phi= candidateData[i][26+offset];
+          }
+          this.tempCalParamSet.bsTxGain = bsTxGain;
+          this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
+          this.tempCalParamSet.AntennaId = AntennaId;
+          this.tempCalParamSet.theta = theta;
+          this.tempCalParamSet.phi = phi;
           // set UE位置
-          // this.setUeSize(id);
-        }
-      }
-    }
+          // this.setCandidateSize(id);
 
-    /* obstacle sheet */
-    const obstacle: string = this.wb.SheetNames[sheetNameIndex['obstacle']];
-    const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
-    const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
-    // console.log("obstacle sheet obstacleData",obstacleData);
-    if (obstacleData.length > 1) {
-      for (let i = 1; i < obstacleData.length; i++) {
-        if ((<Array<any>> obstacleData[i]).length === 0) {
-          continue;
-        }
-        let id;
-        let type;
-        let diff = Object.keys(obstacleData[i]).length - 10; //因應版本不同,欄位長度不同
-        let shape = this.parseElement(obstacleData[i][9+diff]);
-        if (shape === 'rect' || Number(shape) === 0) {
-          id = `rect_${this.generateString(10)}`;
-          type = 'rect';
-
-        } else if (shape === 'ellipse' || Number(shape) === 2) {
-          id = `ellipse_${this.generateString(10)}`;
-          type = 'ellipse';
-
-        } else if (shape === 'polygon' || Number(shape) === 1) {
-          id = `polygon_${this.generateString(10)}`;
-          type = 'polygon';
-
-        } else if (shape === 'trapezoid' || Number(shape) === 3) {
-          id = `trapezoid_${this.generateString(10)}`;
-          type = 'trapezoid';
-
-        } else {
-          // default
-          shape = '0';
-          id = `rect_${this.generateString(10)}`;
-          type = 'rect';
-
-        }
-        let material = (typeof obstacleData[i][7+diff] === 'undefined' ? '0' : obstacleData[i][7+diff].toString());
-        // if (!materialReg.test(material)) {
-        //   material = '0';
-        // }
-        if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
-          if(Number(obstacleData[i][7+diff]) < this.materialList.length){
-            material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
-          } else {
-            material = this.materialList[0]['id'];
-          }
-        }else{
-          let index = this.materialIdToIndex[obstacleData[i][7+diff]];
-          material = this.materialList[index]['id'];
-        }
-        const color = (typeof obstacleData[i][8+diff] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][8+diff]);
-        let zValue = obstacleData[i][2+diff];
-        if (diff == -1){
-          zValue = 0;
-        }
-        let materialName = '';
-        if(this.authService.lang =='zh-TW'){
-          materialName = this.materialList[this.materialIdToIndex[material]]['chineseName'];
-        }else{
-          materialName = this.materialList[this.materialIdToIndex[material]]['name'];
-        }
-        this.dragObject[id] = {
-          x: obstacleData[i][0],
-          y: obstacleData[i][1],
-          z: zValue,
-          width: obstacleData[i][3+diff],
-          height: obstacleData[i][4+diff],
-          altitude: obstacleData[i][5+diff],
-          rotate: (typeof obstacleData[i][6+diff] === 'undefined' ? 0 : obstacleData[i][6+diff]),
-          title: this.svgMap[type].title,
-          type: this.svgMap[type].type,
-          color: color,
-          material: material,
-          element: shape,
-          materialName: materialName
-        };
-
-        if (this.dragObject[id].altitude > this.calculateForm.altitude) {
-          this.dragObject[id].altitude = this.calculateForm.altitude;
-        }
-        // set 障礙物尺寸與位置
-        // this.setObstacleSize(id);
-        this.obstacleList.push(id);
-      }
-    }
-    /* bs parameters sheet */
-    const bsParameters: string = this.wb.SheetNames[sheetNameIndex['bs parameters']];
-    const bsParametersWS: XLSX.WorkSheet = this.wb.Sheets[bsParameters];
-    const bsParametersData = (XLSX.utils.sheet_to_json(bsParametersWS, {header: 1}));
-    if (bsParametersData.length > 1) {
-      this.calculateForm.powerMaxRange = Number(bsParametersData[1][0]);
-      this.calculateForm.powerMinRange = Number(bsParametersData[1][1]);
-      this.calculateForm.objectiveIndex = bsParametersData[1][2];
-      this.duplexMode = bsParametersData[1][3];
-      this.dlRatio = Number(bsParametersData[1][4]);
-      this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
-      this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
-      this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
-      this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
-      this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
-
-      if (this.calculateForm.isCoverage == true) {
-        // this.calculateForm.isUeAvgThroughput = false;
-        // this.calculateForm.isUeCoverage = false;
-        this.evaluationFuncForm.field.coverage.activate = true;
-        this.evaluationFuncForm.field.sinr.activate = false;
-        this.evaluationFuncForm.field.rsrp.activate = false;
-        this.evaluationFuncForm.field.throughput.activate = false;
-        this.evaluationFuncForm.ue.coverage.activate = false;
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
-
-      } 
-      if (this.calculateForm.isAvgThroughput == true) {
-        // this.calculateForm.isCoverage = false;
-        // this.calculateForm.isUeCoverage = false;
-        this.evaluationFuncForm.field.throughput.activate = true;
-        this.evaluationFuncForm.field.sinr.activate = false;
-        this.evaluationFuncForm.field.rsrp.activate = false;
-        this.evaluationFuncForm.field.coverage.activate = false;
-        this.evaluationFuncForm.ue.coverage.activate = false;
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
-        if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
-          this.addThroughput();
-      } 
-      if (this.calculateForm.isAverageSinr == true) {
-        // this.calculateForm.isCoverage = false;
-        // this.calculateForm.isUeCoverage = false;
-        this.evaluationFuncForm.field.sinr.activate = true;
-        this.evaluationFuncForm.field.throughput.activate = false;
-        this.evaluationFuncForm.field.rsrp.activate = false;
-        this.evaluationFuncForm.field.coverage.activate = false;
-        this.evaluationFuncForm.ue.coverage.activate = false;
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
-        if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
-          this.addSINR();
-      } 
-      if (this.calculateForm.isUeAvgThroughput == true) {
-        // this.calculateForm.isCoverage = false;
-        // this.calculateForm.isUeCoverage = false;
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = true;
-        this.evaluationFuncForm.field.sinr.activate = false;
-        this.evaluationFuncForm.field.throughput.activate = false;
-        this.evaluationFuncForm.field.rsrp.activate = false;
-        this.evaluationFuncForm.field.coverage.activate = false;
-        this.evaluationFuncForm.ue.coverage.activate = false;
-        if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
-          this.addUEThroughput();
-      } 
-      if (this.calculateForm.isUeCoverage == true) {
-        // this.calculateForm.isCoverage = false;
-        // this.calculateForm.isUeCoverage = false;
-        this.evaluationFuncForm.ue.coverage.activate = true;
-        this.evaluationFuncForm.field.sinr.activate = false;
-        this.evaluationFuncForm.field.throughput.activate = false;
-        this.evaluationFuncForm.field.rsrp.activate = false;
-        this.evaluationFuncForm.field.coverage.activate = false;
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
-      }       
-      
-      if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
-        this.planningIndex = '1';
-      } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
-        this.planningIndex = '2';
-      } else {
-        this.planningIndex = '3';
-      }
-
-      console.log(this.calculateForm);
-      
-      // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
-      // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
-      // this.calculateForm.bandwidth = bsParametersData[1][4];
-      // this.calculateForm.frequency = bsParametersData[1][5];
-      // this.calculateForm.bandwidth = Number(bsParametersData[1][4]);
-      // this.calculateForm.frequency = Number(bsParametersData[1][5]);
-    }
-    /* algorithm parameters sheet */
-    const algorithmParameters: string = this.wb.SheetNames[sheetNameIndex['algorithm parameters']];
-    const algorithmParametersWS: XLSX.WorkSheet = this.wb.Sheets[algorithmParameters];
-    const algorithmParametersData = (XLSX.utils.sheet_to_json(algorithmParametersWS, {header: 1}));
-    if (algorithmParametersData.length > 1) {
-      this.calculateForm.crossover = Number(algorithmParametersData[1][0]);
-      this.calculateForm.mutation = Number(algorithmParametersData[1][1]);
-      this.calculateForm.iteration = Number(algorithmParametersData[1][2]);
-      this.calculateForm.seed = Number(algorithmParametersData[1][3]);
-      // this.calculateForm.computeRound = Number(algorithmParametersData[1][4]);
-      this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
-      this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
-      // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
-        if(this.calculateForm.pathLossModelId < this.modelList.length){
-          this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
-        }
-        else{
-          this.calculateForm.pathLossModelId = this.modelList[0]['id'];
-        }
-      }
-      this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
-      if (!(Number(this.calculateForm.maxConnectionNum)>0)){
-        this.calculateForm.maxConnectionNum = 32;
-      }
-      this.calculateForm.resolution = Number(algorithmParametersData[1][8]);
-      if (!(Number(this.calculateForm.resolution)>0)){
-        this.calculateForm['resolution'] = 1;
-      }
-      this.calculateForm.geographicalNorth = Number(algorithmParametersData[1][9]);
-      if (this.authService.isEmpty(this.calculateForm.geographicalNorth) || isNaN(this.calculateForm.geographicalNorth)){
-        this.calculateForm['geographicalNorth'] = 0;
-      }
-    }
-    /* objective parameters sheet */
-    const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];
-    const objectiveParametersWS: XLSX.WorkSheet = this.wb.Sheets[objectiveParameters];
-    const objectiveParametersData = (XLSX.utils.sheet_to_json(objectiveParametersWS, {header: 1}));
-    if (objectiveParametersData.length > 1) {
-      this.calculateForm.availableNewBsNumber = Number(objectiveParametersData[1][2]);
-      if(objectiveParametersData[1][3] != null)
-      {
-        this.isBsNumberOptimization = objectiveParametersData[1][3];
-        if(this.isBsNumberOptimization != 'default' && this.isBsNumberOptimization != 'custom')
-        {
-          this.isBsNumberOptimization = 'custom';
+          // RF parameter import
+          // this.bsListRfParam[id] = {
+          //   txpower: baseStationData[i][5],
+          //   beampattern: baseStationData[i][6],
+          //   tddfrequency: baseStationData[i][7],
+          //   tddbandwidth: baseStationData[i][8],
+          //   dlBandwidth: baseStationData[i][9],
+          //   ulBandwidth: baseStationData[i][10],
+          //   fddDlFrequency: baseStationData[i][11],
+          //   fddUlFrequency: baseStationData[i][12],
+          //   mimoNumber4G: baseStationData[i][13],
+          //   tddscs: baseStationData[i][14],
+          //   dlModulationCodScheme: baseStationData[i][15],
+          //   ulModulationCodScheme: baseStationData[i][16],
+          //   dlMimoLayer: baseStationData[i][17],
+          //   ulMimoLayer: baseStationData[i][18],
+          //   dlScs: baseStationData[i][19],
+          //   ulScs: baseStationData[i][20],
+          // };
         }
       }
       else
-        this.isBsNumberOptimization = 'custom';
-      this.changeBsNumOpti();
-    }
-    if (this.calculateForm.objectiveIndex === '2') {
-      // 切換到2.4Ghz
-      if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
-        this.wifiFrequency = '1';
-      }
-      this.changeWifiFrequency();
-    } else if (this.calculateForm.objectiveIndex === '1') {
-      // 5G set子載波間距
-      this.setSubcarrier();
-    }
-
-    this.ognSpanStyle = _.cloneDeep(this.spanStyle);
-    this.ognDragObject = _.cloneDeep(this.dragObject);
-
-    /* Mutil Function sheets */
-    if(this.wb.SheetNames.length >= 9)    // new format
-    {
-      const mutilFunctionSetting: string = this.wb.SheetNames[sheetNameIndex['mutil function setting']];
-      const mutilFunctionSettingWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSetting];
-      const mutilFunctionSettingData = (XLSX.utils.sheet_to_json(mutilFunctionSettingWS, {header: 1}));
-      if (mutilFunctionSettingData.length > 1) 
       {
-        this.planningIndex = mutilFunctionSettingData[1][0];
-        if(this.planningIndex = '0')
-        {
+        this.planningIndex = '3';
+      }
+      /* UE sheet */
+      const ue: string = this.wb.SheetNames[sheetNameIndex['ue']];
+      if (typeof ue !== 'undefined') {
+        const ueWS: XLSX.WorkSheet = this.wb.Sheets[ue];
+        const ueData = (XLSX.utils.sheet_to_json(ueWS, {header: 1}));
+        if (ueData.length > 1) {
+          for (let i = 1; i < ueData.length; i++) {
+            if (typeof ueData[i][0] === 'undefined') {
+              continue;
+            }
+            const id = `UE_${(i - 1)}`;
+            this.ueList.push(id);
+            let material = (typeof ueData[i][3] === 'undefined' ? '0' : ueData[i][3]);
+            if (!materialReg.test(material)) {
+              material = '0';
+            }
+            const color = (typeof ueData[i][4] === 'undefined' ? this.UE_COLOR : ueData[i][4]);
+
+            this.dragObject[id] = {
+              x: ueData[i][0],
+              y: ueData[i][1],
+              z: ueData[i][2],
+              width: this.xLinear(this.ueWidth),
+              height: this.yLinear(this.ueHeight),
+              altitude: ueData[i][2],
+              rotate: 0,
+              title: this.svgMap['UE'].title,
+              type: this.svgMap['UE'].type,
+              color: color,
+              material: material,
+              element: this.svgMap['UE'].element
+            };
+            if (Object.values(ueData[0]).includes("ueRxGain")){
+              //新增欄位
+              var ueRxGain= ueData[i][3]
+            } else {
+              var ueRxGain = 0
+            }
+            this.ueListParam[id] = {
+              ueRxGain: ueRxGain
+            }
+            // set UE位置
+            // this.setUeSize(id);
+          }
+        }
+      }
+
+      /* obstacle sheet */
+      const obstacle: string = this.wb.SheetNames[sheetNameIndex['obstacle']];
+      const obstacleWS: XLSX.WorkSheet = this.wb.Sheets[obstacle];
+      const obstacleData = (XLSX.utils.sheet_to_json(obstacleWS, {header: 1}));
+      // console.log("obstacle sheet obstacleData",obstacleData);
+      if (obstacleData.length > 1) {
+        for (let i = 1; i < obstacleData.length; i++) {
+          if ((<Array<any>> obstacleData[i]).length === 0) {
+            continue;
+          }
+          let id;
+          let type;
+          let diff = Object.keys(obstacleData[i]).length - 10; //因應版本不同,欄位長度不同
+          let shape = this.parseElement(obstacleData[i][9+diff]);
+          if (shape === 'rect' || Number(shape) === 0) {
+            id = `rect_${this.generateString(10)}`;
+            type = 'rect';
+
+          } else if (shape === 'ellipse' || Number(shape) === 2) {
+            id = `ellipse_${this.generateString(10)}`;
+            type = 'ellipse';
+
+          } else if (shape === 'polygon' || Number(shape) === 1) {
+            id = `polygon_${this.generateString(10)}`;
+            type = 'polygon';
+
+          } else if (shape === 'trapezoid' || Number(shape) === 3) {
+            id = `trapezoid_${this.generateString(10)}`;
+            type = 'trapezoid';
+
+          } else {
+            // default
+            shape = '0';
+            id = `rect_${this.generateString(10)}`;
+            type = 'rect';
+
+          }
+          let material = (typeof obstacleData[i][7+diff] === 'undefined' ? '0' : obstacleData[i][7+diff].toString());
+          // if (!materialReg.test(material)) {
+          //   material = '0';
+          // }
+          if(!(obstacleData[i][7+diff] in this.materialIdToIndex)){ 
+            if(Number(obstacleData[i][7+diff]) < this.materialList.length){
+              material = this.materialList[Number(obstacleData[i][7+diff])]['id'];
+            } else {
+              material = this.materialList[0]['id'];
+            }
+          }else{
+            let index = this.materialIdToIndex[obstacleData[i][7+diff]];
+            material = this.materialList[index]['id'];
+          }
+          const color = (typeof obstacleData[i][8+diff] === 'undefined' ? this.OBSTACLE_COLOR : obstacleData[i][8+diff]);
+          let zValue = obstacleData[i][2+diff];
+          if (diff == -1){
+            zValue = 0;
+          }
+          let materialName = '';
+          if(this.authService.lang =='zh-TW'){
+            materialName = this.materialList[this.materialIdToIndex[material]]['chineseName'];
+          }else{
+            materialName = this.materialList[this.materialIdToIndex[material]]['name'];
+          }
+          this.dragObject[id] = {
+            x: obstacleData[i][0],
+            y: obstacleData[i][1],
+            z: zValue,
+            width: obstacleData[i][3+diff],
+            height: obstacleData[i][4+diff],
+            altitude: obstacleData[i][5+diff],
+            rotate: (typeof obstacleData[i][6+diff] === 'undefined' ? 0 : obstacleData[i][6+diff]),
+            title: this.svgMap[type].title,
+            type: this.svgMap[type].type,
+            color: color,
+            material: material,
+            element: shape,
+            materialName: materialName
+          };
+
+          if (this.dragObject[id].altitude > this.calculateForm.altitude) {
+            this.dragObject[id].altitude = this.calculateForm.altitude;
+          }
+          // set 障礙物尺寸與位置
+          // this.setObstacleSize(id);
+          this.obstacleList.push(id);
+        }
+      }
+      /* bs parameters sheet */
+      const bsParameters: string = this.wb.SheetNames[sheetNameIndex['bs parameters']];
+      const bsParametersWS: XLSX.WorkSheet = this.wb.Sheets[bsParameters];
+      const bsParametersData = (XLSX.utils.sheet_to_json(bsParametersWS, {header: 1}));
+      if (bsParametersData.length > 1) {
+        this.calculateForm.powerMaxRange = Number(bsParametersData[1][0]);
+        this.calculateForm.powerMinRange = Number(bsParametersData[1][1]);
+        this.calculateForm.objectiveIndex = bsParametersData[1][2];
+        this.duplexMode = bsParametersData[1][3];
+        this.dlRatio = Number(bsParametersData[1][4]);
+        this.calculateForm.isAverageSinr = JSON.parse(bsParametersData[1][5]);
+        this.calculateForm.isCoverage = JSON.parse(bsParametersData[1][6]);
+        this.calculateForm.isAvgThroughput = JSON.parse(bsParametersData[1][7]);
+        this.calculateForm.isUeAvgSinr = JSON.parse(bsParametersData[1][7]);
+        this.calculateForm.isUeAvgThroughput = JSON.parse(bsParametersData[1][8]);
+        this.calculateForm.isUeCoverage = JSON.parse(bsParametersData[1][9]);
+
+        if (this.calculateForm.isCoverage == true) {
+          // this.calculateForm.isUeAvgThroughput = false;
+          // this.calculateForm.isUeCoverage = false;
+          this.evaluationFuncForm.field.coverage.activate = true;
+          this.evaluationFuncForm.field.sinr.activate = false;
+          this.evaluationFuncForm.field.rsrp.activate = false;
+          this.evaluationFuncForm.field.throughput.activate = false;
+          this.evaluationFuncForm.ue.coverage.activate = false;
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+
+        } 
+        if (this.calculateForm.isAvgThroughput == true) {
+          // this.calculateForm.isCoverage = false;
+          // this.calculateForm.isUeCoverage = false;
+          this.evaluationFuncForm.field.throughput.activate = true;
+          this.evaluationFuncForm.field.sinr.activate = false;
+          this.evaluationFuncForm.field.rsrp.activate = false;
+          this.evaluationFuncForm.field.coverage.activate = false;
+          this.evaluationFuncForm.ue.coverage.activate = false;
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+          if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
+            this.addThroughput();
+        } 
+        if (this.calculateForm.isAverageSinr == true) {
+          // this.calculateForm.isCoverage = false;
+          // this.calculateForm.isUeCoverage = false;
+          this.evaluationFuncForm.field.sinr.activate = true;
+          this.evaluationFuncForm.field.throughput.activate = false;
+          this.evaluationFuncForm.field.rsrp.activate = false;
+          this.evaluationFuncForm.field.coverage.activate = false;
+          this.evaluationFuncForm.ue.coverage.activate = false;
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+          if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
+            this.addSINR();
+        } 
+        if (this.calculateForm.isUeAvgThroughput == true) {
+          // this.calculateForm.isCoverage = false;
+          // this.calculateForm.isUeCoverage = false;
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = true;
+          this.evaluationFuncForm.field.sinr.activate = false;
+          this.evaluationFuncForm.field.throughput.activate = false;
+          this.evaluationFuncForm.field.rsrp.activate = false;
+          this.evaluationFuncForm.field.coverage.activate = false;
+          this.evaluationFuncForm.ue.coverage.activate = false;
+          if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+            this.addUEThroughput();
+        } 
+        if (this.calculateForm.isUeCoverage == true) {
+          // this.calculateForm.isCoverage = false;
+          // this.calculateForm.isUeCoverage = false;
+          this.evaluationFuncForm.ue.coverage.activate = true;
+          this.evaluationFuncForm.field.sinr.activate = false;
+          this.evaluationFuncForm.field.throughput.activate = false;
+          this.evaluationFuncForm.field.rsrp.activate = false;
+          this.evaluationFuncForm.field.coverage.activate = false;
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = false;
+        }       
+        
+        if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
           this.planningIndex = '1';
+        } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
+          this.planningIndex = '2';
+        } else {
+          this.planningIndex = '3';
         }
-        console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
-        console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
-        this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
-        this.evaluationFuncForm.field.sinr.activate = JSON.parse(mutilFunctionSettingData[1][2]);
-        this.evaluationFuncForm.field.rsrp.activate = JSON.parse(mutilFunctionSettingData[1][3]);
-        this.evaluationFuncForm.field.throughput.activate = JSON.parse(mutilFunctionSettingData[1][4]);
-        this.evaluationFuncForm.ue.coverage.activate = JSON.parse(mutilFunctionSettingData[1][5]);
-        console.log("mutilFunctionSettingData[1][6]: "+mutilFunctionSettingData[1][6]);
-        console.log("b-mutilFunctionSettingData[1][6]: "+JSON.parse(mutilFunctionSettingData[1][6]));
-        this.evaluationFuncForm.ue.throughputByRsrp.activate = JSON.parse(mutilFunctionSettingData[1][6]);
-        var fieldSINRLen = Number(mutilFunctionSettingData[1][7]);
-        var fieldRSRPLen = Number(mutilFunctionSettingData[1][8]);
-        var fieldThroughputLen = Number(mutilFunctionSettingData[1][9]);
-        var ueThroughputLen = Number(mutilFunctionSettingData[1][10]);
-      }
 
-      const mutilFunctionCoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function coverage']];
-      const mutilFunctionCoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionCoverage];
-      const mutilFunctionCoverageData = (XLSX.utils.sheet_to_json(mutilFunctionCoverageWS, {header: 1}));
-      if (mutilFunctionCoverageData.length > 1) 
-      {
-        this.evaluationFuncForm.field.coverage.ratio = Number(mutilFunctionCoverageData[1][0]);
+        console.log(this.calculateForm);
+        
+        // this.calculateForm.beamMaxId = Number(bsParametersData[1][2]);
+        // this.calculateForm.beamMinId = Number(bsParametersData[1][3]);
+        // this.calculateForm.bandwidth = bsParametersData[1][4];
+        // this.calculateForm.frequency = bsParametersData[1][5];
+        // this.calculateForm.bandwidth = Number(bsParametersData[1][4]);
+        // this.calculateForm.frequency = Number(bsParametersData[1][5]);
       }
-
-      const mutilFunctionSINR: string = this.wb.SheetNames[sheetNameIndex['mutil function sinr']];
-      const mutilFunctionSINRWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSINR];
-      const mutilFunctionSINRData = (XLSX.utils.sheet_to_json(mutilFunctionSINRWS, {header: 1}));
-      this.evaluationFuncForm.field.sinr.ratio = [];
-      for(var i = 0; i < fieldSINRLen; i++)
-      {
-        this.evaluationFuncForm.field.sinr.ratio.push(
-          {
-            "areaRatio": Number(mutilFunctionSINRData[i+1][0]),
-            "compliance": mutilFunctionSINRData[i+1][1],
-            "value": Number(mutilFunctionSINRData[i+1][2])
+      /* algorithm parameters sheet */
+      const algorithmParameters: string = this.wb.SheetNames[sheetNameIndex['algorithm parameters']];
+      const algorithmParametersWS: XLSX.WorkSheet = this.wb.Sheets[algorithmParameters];
+      const algorithmParametersData = (XLSX.utils.sheet_to_json(algorithmParametersWS, {header: 1}));
+      if (algorithmParametersData.length > 1) {
+        this.calculateForm.crossover = Number(algorithmParametersData[1][0]);
+        this.calculateForm.mutation = Number(algorithmParametersData[1][1]);
+        this.calculateForm.iteration = Number(algorithmParametersData[1][2]);
+        this.calculateForm.seed = Number(algorithmParametersData[1][3]);
+        // this.calculateForm.computeRound = Number(algorithmParametersData[1][4]);
+        this.calculateForm.useUeCoordinate = Number(algorithmParametersData[1][5]);
+        this.calculateForm.pathLossModelId = Number(algorithmParametersData[1][6]);
+        // this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+        if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
+          if(this.calculateForm.pathLossModelId < this.modelList.length){
+            this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
           }
-        );
-      }
-
-      const mutilFunctionRSRP: string = this.wb.SheetNames[sheetNameIndex['mutil function rsrp']];
-      const mutilFunctionRSRPWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionRSRP];
-      const mutilFunctionRSRPData = (XLSX.utils.sheet_to_json(mutilFunctionRSRPWS, {header: 1}));
-      this.evaluationFuncForm.field.rsrp.ratio = [];
-      for(var i = 0; i < fieldRSRPLen; i++)
-      {
-        this.evaluationFuncForm.field.rsrp.ratio.push(
-          {
-            "areaRatio": Number(mutilFunctionRSRPData[i+1][0]),
-            "compliance": mutilFunctionRSRPData[i+1][1],
-            "value": Number(mutilFunctionRSRPData[i+1][2])
+          else{
+            this.calculateForm.pathLossModelId = this.modelList[0]['id'];
           }
-        );
-      }
-
-      const mutilFunctionThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function throughput']];
-      const mutilFunctionThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionThroughput];
-      const mutilFunctionThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionThroughputWS, {header: 1}));
-      this.evaluationFuncForm.field.throughput.ratio = [];
-
-      for(var i = 0; i < fieldThroughputLen; i++)
-      {
-        if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionThroughputData[i+1][3]))) 
-        {          
-          this.evaluationFuncForm.field.throughput.ratio.push(
-            {
-              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
-              "compliance": mutilFunctionThroughputData[i+1][1],
-              "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
-              "DLValue": null
-            }
-          );
-          this.evaluationFuncForm.field.throughput.ratio.push(
-            {
-              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
-              "compliance": mutilFunctionThroughputData[i+1][1],
-              "ULValue": null,
-              "DLValue": Number(mutilFunctionThroughputData[i+1][3])
-            }
-          );          
         }
-        else if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])))
-        {
-          this.evaluationFuncForm.field.throughput.ratio.push(
-            {
-              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
-              "compliance": mutilFunctionThroughputData[i+1][1],
-              "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
-              "DLValue": null
-            }
-          );
-          
+        this.calculateForm.maxConnectionNum = Number(algorithmParametersData[1][7]);
+        if (!(Number(this.calculateForm.maxConnectionNum)>0)){
+          this.calculateForm.maxConnectionNum = 32;
         }
-        else if(!isNaN(Number(mutilFunctionThroughputData[i+1][3])))
-        {
-          this.evaluationFuncForm.field.throughput.ratio.push(
-            {
-              "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
-              "compliance": mutilFunctionThroughputData[i+1][1],
-              "ULValue": null,
-              "DLValue": Number(mutilFunctionThroughputData[i+1][3])
-            }
-          );          
+        this.calculateForm.resolution = Number(algorithmParametersData[1][8]);
+        if (!(Number(this.calculateForm.resolution)>0)){
+          this.calculateForm['resolution'] = 1;
+        }
+        this.calculateForm.geographicalNorth = Number(algorithmParametersData[1][9]);
+        if (this.authService.isEmpty(this.calculateForm.geographicalNorth) || isNaN(this.calculateForm.geographicalNorth)){
+          this.calculateForm['geographicalNorth'] = 0;
         }
       }
-
-
-      const mutilFunctionUECoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function UE coverage']];
-      const mutilFunctionUECoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUECoverage];
-      const mutilFunctionUECoverageData = (XLSX.utils.sheet_to_json(mutilFunctionUECoverageWS, {header: 1}));
-      if (mutilFunctionUECoverageData.length > 1) 
-      {
-        this.evaluationFuncForm.ue.coverage.ratio = Number(mutilFunctionUECoverageData[1][0]);
+      /* objective parameters sheet */
+      const objectiveParameters: string = this.wb.SheetNames[sheetNameIndex['objective parameters']];
+      const objectiveParametersWS: XLSX.WorkSheet = this.wb.Sheets[objectiveParameters];
+      const objectiveParametersData = (XLSX.utils.sheet_to_json(objectiveParametersWS, {header: 1}));
+      if (objectiveParametersData.length > 1) {
+        this.calculateForm.availableNewBsNumber = Number(objectiveParametersData[1][2]);
+        if(objectiveParametersData[1][3] != null)
+        {
+          this.isBsNumberOptimization = objectiveParametersData[1][3];
+          if(this.isBsNumberOptimization != 'default' && this.isBsNumberOptimization != 'custom')
+          {
+            this.isBsNumberOptimization = 'custom';
+          }
+        }
+        else
+          this.isBsNumberOptimization = 'custom';
+        this.changeBsNumOpti();
       }
-      
-      const mutilFunctionUEThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function UE throughput']];
-      const mutilFunctionUEThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUEThroughput];
-      const mutilFunctionUEThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionUEThroughputWS, {header: 1}));
-      this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
+      if (this.calculateForm.objectiveIndex === '2') {
+        // 切換到2.4Ghz
+        if (Number(Number(this.calculateForm.bandwidth) >= 20)) {
+          this.wifiFrequency = '1';
+        }
+        this.changeWifiFrequency();
+      } else if (this.calculateForm.objectiveIndex === '1') {
+        // 5G set子載波間距
+        this.setSubcarrier();
+      }
 
+      this.ognSpanStyle = _.cloneDeep(this.spanStyle);
+      this.ognDragObject = _.cloneDeep(this.dragObject);
 
-      for(var i = 0; i < ueThroughputLen; i++)
+      /* Mutil Function sheets */
+      if(this.wb.SheetNames.length >= 9)    // new format
       {
-        if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))  //old format
+        const mutilFunctionSetting: string = this.wb.SheetNames[sheetNameIndex['mutil function setting']];
+        const mutilFunctionSettingWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSetting];
+        const mutilFunctionSettingData = (XLSX.utils.sheet_to_json(mutilFunctionSettingWS, {header: 1}));
+        if (mutilFunctionSettingData.length > 1) 
         {
-          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
-            {
-              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
-              "compliance": mutilFunctionUEThroughputData[i+1][1],
-              "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
-              "DLValue": null
-            }
-          );
+          this.planningIndex = mutilFunctionSettingData[1][0];
+          if(this.planningIndex = '0')
+          {
+            this.planningIndex = '1';
+          }
+          console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
+          console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
+          this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
+          this.evaluationFuncForm.field.sinr.activate = JSON.parse(mutilFunctionSettingData[1][2]);
+          this.evaluationFuncForm.field.rsrp.activate = JSON.parse(mutilFunctionSettingData[1][3]);
+          this.evaluationFuncForm.field.throughput.activate = JSON.parse(mutilFunctionSettingData[1][4]);
+          this.evaluationFuncForm.ue.coverage.activate = JSON.parse(mutilFunctionSettingData[1][5]);
+          console.log("mutilFunctionSettingData[1][6]: "+mutilFunctionSettingData[1][6]);
+          console.log("b-mutilFunctionSettingData[1][6]: "+JSON.parse(mutilFunctionSettingData[1][6]));
+          this.evaluationFuncForm.ue.throughputByRsrp.activate = JSON.parse(mutilFunctionSettingData[1][6]);
+          var fieldSINRLen = Number(mutilFunctionSettingData[1][7]);
+          var fieldRSRPLen = Number(mutilFunctionSettingData[1][8]);
+          var fieldThroughputLen = Number(mutilFunctionSettingData[1][9]);
+          var ueThroughputLen = Number(mutilFunctionSettingData[1][10]);
+        }
 
-          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
-            {
-              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
-              "compliance": mutilFunctionUEThroughputData[i+1][1],
-              "ULValue": null,
-              "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
-            }
-          );
-        }
-        else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])))
+        const mutilFunctionCoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function coverage']];
+        const mutilFunctionCoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionCoverage];
+        const mutilFunctionCoverageData = (XLSX.utils.sheet_to_json(mutilFunctionCoverageWS, {header: 1}));
+        if (mutilFunctionCoverageData.length > 1) 
         {
-          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
-            {
-              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
-              "compliance": mutilFunctionUEThroughputData[i+1][1],
-              "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
-              "DLValue": null
-            }
-          );
+          this.evaluationFuncForm.field.coverage.ratio = Number(mutilFunctionCoverageData[1][0]);
         }
-        else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))
-        {
-          this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
-            {
-              "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
-              "compliance": mutilFunctionUEThroughputData[i+1][1],
-              "ULValue": null,
-              "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
-            }
-          );
-        }
-      } 
 
-      this.setThroughputTypeAndValue();
-      window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
-      window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+        const mutilFunctionSINR: string = this.wb.SheetNames[sheetNameIndex['mutil function sinr']];
+        const mutilFunctionSINRWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionSINR];
+        const mutilFunctionSINRData = (XLSX.utils.sheet_to_json(mutilFunctionSINRWS, {header: 1}));
+        this.evaluationFuncForm.field.sinr.ratio = [];
+        for(var i = 0; i < fieldSINRLen; i++)
+        {
+          this.evaluationFuncForm.field.sinr.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionSINRData[i+1][0]),
+              "compliance": mutilFunctionSINRData[i+1][1],
+              "value": Number(mutilFunctionSINRData[i+1][2])
+            }
+          );
+        }
+
+        const mutilFunctionRSRP: string = this.wb.SheetNames[sheetNameIndex['mutil function rsrp']];
+        const mutilFunctionRSRPWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionRSRP];
+        const mutilFunctionRSRPData = (XLSX.utils.sheet_to_json(mutilFunctionRSRPWS, {header: 1}));
+        this.evaluationFuncForm.field.rsrp.ratio = [];
+        for(var i = 0; i < fieldRSRPLen; i++)
+        {
+          this.evaluationFuncForm.field.rsrp.ratio.push(
+            {
+              "areaRatio": Number(mutilFunctionRSRPData[i+1][0]),
+              "compliance": mutilFunctionRSRPData[i+1][1],
+              "value": Number(mutilFunctionRSRPData[i+1][2])
+            }
+          );
+        }
+
+        const mutilFunctionThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function throughput']];
+        const mutilFunctionThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionThroughput];
+        const mutilFunctionThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionThroughputWS, {header: 1}));
+        this.evaluationFuncForm.field.throughput.ratio = [];
+
+        for(var i = 0; i < fieldThroughputLen; i++)
+        {
+          if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionThroughputData[i+1][3]))) 
+          {          
+            this.evaluationFuncForm.field.throughput.ratio.push(
+              {
+                "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+                "compliance": mutilFunctionThroughputData[i+1][1],
+                "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
+                "DLValue": null
+              }
+            );
+            this.evaluationFuncForm.field.throughput.ratio.push(
+              {
+                "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+                "compliance": mutilFunctionThroughputData[i+1][1],
+                "ULValue": null,
+                "DLValue": Number(mutilFunctionThroughputData[i+1][3])
+              }
+            );          
+          }
+          else if(!isNaN(Number(mutilFunctionThroughputData[i+1][2])))
+          {
+            this.evaluationFuncForm.field.throughput.ratio.push(
+              {
+                "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+                "compliance": mutilFunctionThroughputData[i+1][1],
+                "ULValue": Number(mutilFunctionThroughputData[i+1][2]),
+                "DLValue": null
+              }
+            );
+            
+          }
+          else if(!isNaN(Number(mutilFunctionThroughputData[i+1][3])))
+          {
+            this.evaluationFuncForm.field.throughput.ratio.push(
+              {
+                "areaRatio": Number(mutilFunctionThroughputData[i+1][0]),
+                "compliance": mutilFunctionThroughputData[i+1][1],
+                "ULValue": null,
+                "DLValue": Number(mutilFunctionThroughputData[i+1][3])
+              }
+            );          
+          }
+        }
+
+
+        const mutilFunctionUECoverage: string = this.wb.SheetNames[sheetNameIndex['mutil function UE coverage']];
+        const mutilFunctionUECoverageWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUECoverage];
+        const mutilFunctionUECoverageData = (XLSX.utils.sheet_to_json(mutilFunctionUECoverageWS, {header: 1}));
+        if (mutilFunctionUECoverageData.length > 1) 
+        {
+          this.evaluationFuncForm.ue.coverage.ratio = Number(mutilFunctionUECoverageData[1][0]);
+        }
+        
+        const mutilFunctionUEThroughput: string = this.wb.SheetNames[sheetNameIndex['mutil function UE throughput']];
+        const mutilFunctionUEThroughputWS: XLSX.WorkSheet = this.wb.Sheets[mutilFunctionUEThroughput];
+        const mutilFunctionUEThroughputData = (XLSX.utils.sheet_to_json(mutilFunctionUEThroughputWS, {header: 1}));
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio = [];
+
+
+        for(var i = 0; i < ueThroughputLen; i++)
+        {
+          if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])) && !isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))  //old format
+          {
+            this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+              {
+                "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+                "compliance": mutilFunctionUEThroughputData[i+1][1],
+                "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
+                "DLValue": null
+              }
+            );
+
+            this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+              {
+                "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+                "compliance": mutilFunctionUEThroughputData[i+1][1],
+                "ULValue": null,
+                "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
+              }
+            );
+          }
+          else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][2])))
+          {
+            this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+              {
+                "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+                "compliance": mutilFunctionUEThroughputData[i+1][1],
+                "ULValue": Number(mutilFunctionUEThroughputData[i+1][2]),
+                "DLValue": null
+              }
+            );
+          }
+          else if(!isNaN(Number(mutilFunctionUEThroughputData[i+1][3])))
+          {
+            this.evaluationFuncForm.ue.throughputByRsrp.ratio.push(
+              {
+                "countRatio": Number(mutilFunctionUEThroughputData[i+1][0]),
+                "compliance": mutilFunctionUEThroughputData[i+1][1],
+                "ULValue": null,
+                "DLValue": Number(mutilFunctionUEThroughputData[i+1][3])
+              }
+            );
+          }
+        } 
+
+        this.setThroughputTypeAndValue();
+        window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
+        window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+      }
+    }
+    catch (error) {
+      console.log(error);
+      // fail xlsx
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('xlxs.fail')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      window.setTimeout(() => {
+        this.matDialog.closeAll();
+        this.router.navigate(['/']);
+      }, 3000);
     }
   }
 

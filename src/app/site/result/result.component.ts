@@ -1329,7 +1329,7 @@ export class ResultComponent implements OnInit {
       sinrData.push(pushArr);
       pushArr = [];
 
-      for(y = 0; y < this.result['sinrMap'][0].length; y++)
+      for(y = this.result['sinrMap'][0].length-1; y >= 0; y--)
       {
         value = 0.5 + y*1;
         pushArr.push(String(value));
@@ -1358,7 +1358,7 @@ export class ResultComponent implements OnInit {
       rsrpData.push(pushArr);
       pushArr = [];
 
-      for(y = 0; y < this.result['rsrpMap'][0].length; y++)
+      for(y = this.result['rsrpMap'][0].length-1; y >= 0; y--)
       {
         value = 0.5 + y*1;
         pushArr.push(String(value));
@@ -1387,7 +1387,7 @@ export class ResultComponent implements OnInit {
       coverageData.push(pushArr);
       pushArr = [];
 
-      for(y = 0; y < this.result['connectionMap'][0].length; y++)
+      for(y = this.result['connectionMap'][0].length-1; y >= 0; y--)
       {
         value = 0.5 + y*1;
         pushArr.push(String(value));
@@ -1416,7 +1416,7 @@ export class ResultComponent implements OnInit {
       ulThroughputData.push(pushArr);
       pushArr = [];
 
-      for(y = 0; y < this.result['ulThroughputMap'][0].length; y++)
+      for(y = this.result['ulThroughputMap'][0].length-1; y >= 0; y--)
       {
         value = 0.5 + y*1;
         pushArr.push(String(value));
@@ -1445,7 +1445,7 @@ export class ResultComponent implements OnInit {
       dlThroughputData.push(pushArr);
       pushArr = [];
 
-      for(y = 0; y < this.result['throughputMap'][0].length; y++)
+      for(y = this.result['throughputMap'][0].length-1; y >= 0; y--)
       {
         value = 0.5 + y*1;
         pushArr.push(String(value));

@@ -957,7 +957,7 @@ export class PdfComponent implements OnInit {
       statistics = [
         [this.translateService.instant('pdf.total.defaultBs'),this.defaultBs.length],
         [this.translateService.instant('pdf.total.candidate'),this.inputBsList.length],
-        [this.translateService.instant('pdf.total.chosenCandidate'),this.calculateForm.availableNewBsNumber-this.defaultBs.length],
+        [this.translateService.instant('pdf.total.chosenCandidate'),this.result['chosenCandidate'].length],
         [this.translateService.instant('pdf.total.ue'),this.ueList.length],
       ];
     }

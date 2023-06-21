@@ -5,7 +5,6 @@
 	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
 	<!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
 	<mat-button-toggle value="export" style="border-radius: 0px 2px 2px 0px;" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
-	<mat-button-toggle value="exportRawData" (click)="exportRawData()" style="border-radius: 2px;">{{ 'export.raw.data' | translate }}</mat-button-toggle>
 	<mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
 	<mat-button-toggle value="save" (click)="save(false)" style="border-radius: 2px;">{{ 'save' | translate }}</mat-button-toggle>
 </mat-button-toggle-group>
@@ -40,6 +39,14 @@
 							<mat-button-toggle  value="UL_THROUGHPUT" (click)="drawUlThroughputMap(false)">{{ 'ulThroughputMap' | translate }}</mat-button-toggle>
 							<mat-button-toggle  value="DL_THROUGHPUT" (click)="drawDlThroughputMap(false)">{{ 'dlThroughputMap' | translate }}</mat-button-toggle>
 						</mat-button-toggle-group>
+
+						<mat-button-toggle-group  style="margin-left: 1em">
+							<mat-button-toggle value="exportRawData" (click)="exportRawData()">
+								{{ 'export.raw.data' | translate }}
+							</mat-button-toggle>
+						</mat-button-toggle-group>
+	
+						<br/>
 
 						<ng-container *ngIf="showUEArea">
 							<label class="mL_1 displayType">
