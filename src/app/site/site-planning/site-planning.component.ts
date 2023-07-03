@@ -498,6 +498,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   dlRatio = 70;
   scalingFactor = 1;
   rsrpThreshold = -90;
+  sinrThreshold = 15;
   
   tempCalParamSet = {
     txpower: 0,
@@ -605,6 +606,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.rsrpThreshold = -90;
     } else {
       this.rsrpThreshold = Number(sessionStorage.getItem('rsrpThreshold'));
+    }
+    if (!sessionStorage.getItem('sinrThreshold')) {
+      sessionStorage.setItem('sinrThreshold', JSON.stringify(10));
+      this.sinrThreshold = 10;
+    } else {
+      this.sinrThreshold = Number(sessionStorage.getItem('sinrThreshold'));
     }
     // sessionStorage.removeItem('sub_field_coor');
     this.view3dDialogConfig.autoFocus = false;
@@ -1441,10 +1448,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: this.translateService.instant('xlxs.fail')
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-      window.setTimeout(() => {
-        this.matDialog.closeAll();
-        this.router.navigate(['/']);
-      }, 3000);
     }
   }
 
@@ -1537,10 +1540,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: this.translateService.instant('xlxs.fail')
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-      window.setTimeout(() => {
-        this.matDialog.closeAll();
-        this.router.navigate(['/']);
-      }, 3000);
       throw error;
     }
   }
@@ -5969,92 +5968,95 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param result Reader result
    */
   readXls(result) {
-    this.obstacleList.length = 0;
-    this.defaultBSList.length = 0;
-    this.candidateList.length = 0;
-    this.ueList.length = 0;
-    this.calculateForm = new CalculateForm();
-    this.calculateForm.taskName = sessionStorage.getItem('taskName');
-    this.wb = XLSX.read(result, {type: 'binary'});
+	  
+	try {
+		this.obstacleList.length = 0;
+		this.defaultBSList.length = 0;
+		this.candidateList.length = 0;
+		this.ueList.length = 0;
+		this.calculateForm = new CalculateForm();
+		this.calculateForm.taskName = sessionStorage.getItem('taskName');
+		this.wb = XLSX.read(result, {type: 'binary'});
 
-    if(this.wb.SheetNames[0] == 'map')
-    {
-      /* map sheet */
-      const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
-      const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
-      const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
-      /*
-        mapData = [
-          ['image', 'imageName', ...]
-          ['data:image/...', 'EGATRON3F.png', ...]
-          ['','', ,,, , 2.1]
-        ]
-        0對應column name, 1+對應data
-      */
-      try {
-        this.calculateForm.mapImage = '';
-        const keyMap = {};
-        Object.keys(mapData[0]).forEach((key) => {
-          keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
-        });
-        this.zValues.length = 0;
-        for (let i = 1; i < mapData.length; i++) {
-          this.calculateForm.mapImage += mapData[i][0];
-          if (typeof mapData[i][keyMap['mapLayer']] !== 'undefined') {
-            if (mapData[i][keyMap['mapLayer']] !== '') {
-              this.zValues.push(mapData[i][keyMap['mapLayer']]);
-            }
-          }
-        }
-        this.calculateForm.width = mapData[1][keyMap['width']];
-        this.calculateForm.height = mapData[1][keyMap['height']];
-        this.calculateForm.altitude = mapData[1][keyMap['altitude']];
-        // mapName or imageName
-        if (typeof mapData[1][keyMap['mapName']] === 'undefined') {
-          this.calculateForm.mapName = mapData[1][keyMap['imageName']];
-        } else {
-          this.calculateForm.mapName = mapData[1][keyMap['mapName']];
-        }
-        // excel無protocol時預設wifi
-        if (typeof mapData[1][keyMap['protocol']] === 'undefined') {
-          this.calculateForm.objectiveIndex = '2';
-        } else {
-          if (mapData[1][keyMap['protocol']] === '0' || mapData[1][keyMap['protocol']] === '4G') {
-            this.calculateForm.objectiveIndex = '0';
-          } else if (mapData[1][keyMap['protocol']] === '1' || mapData[1][keyMap['protocol']] === '5G') {
-            this.calculateForm.objectiveIndex = '1';
-          } else if (mapData[1][keyMap['protocol']] === '2' || mapData[1][keyMap['protocol']] === 'wifi') {
-            this.calculateForm.objectiveIndex = '2';
-          }
-        }
-    
-        this.initData(true, false, '');
-      } catch (error) {
-        console.log(error);
-        // fail xlsx
-        this.msgDialogConfig.data = {
-          type: 'error',
-          infoMessage: this.translateService.instant('xlxs.fail')
-        };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-        window.setTimeout(() => {
-          this.matDialog.closeAll();
-          this.router.navigate(['/']);
-        }, 3000);
-      }
-    }
-    else
-    {
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: this.translateService.instant('xlxs.fail')
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-      window.setTimeout(() => {
-        this.matDialog.closeAll();
-        this.router.navigate(['/']);
-      }, 3000);
-    }
+		if(this.wb.SheetNames[0] == 'map')
+		{
+		  /* map sheet */
+		  const map: string = this.wb.SheetNames[0]; //第0個工作表名稱
+		  const mapWS: XLSX.WorkSheet = this.wb.Sheets[map]; //map工作表內容
+		  const mapData = (XLSX.utils.sheet_to_json(mapWS, {header: 1})); //轉成array
+		  /*
+			mapData = [
+			  ['image', 'imageName', ...]
+			  ['data:image/...', 'EGATRON3F.png', ...]
+			  ['','', ,,, , 2.1]
+			]
+			0對應column name, 1+對應data
+		  */
+		  try {
+			this.calculateForm.mapImage = '';
+			const keyMap = {};
+			Object.keys(mapData[0]).forEach((key) => {
+			  keyMap[mapData[0][key]] = key; // keymap = image:"0", imageName:"1" ...
+			});
+			this.zValues.length = 0;
+			for (let i = 1; i < mapData.length; i++) {
+			  this.calculateForm.mapImage += mapData[i][0];
+			  if (typeof mapData[i][keyMap['mapLayer']] !== 'undefined') {
+				if (mapData[i][keyMap['mapLayer']] !== '') {
+				  this.zValues.push(mapData[i][keyMap['mapLayer']]);
+				}
+			  }
+			}
+			this.calculateForm.width = mapData[1][keyMap['width']];
+			this.calculateForm.height = mapData[1][keyMap['height']];
+			this.calculateForm.altitude = mapData[1][keyMap['altitude']];
+			// mapName or imageName
+			if (typeof mapData[1][keyMap['mapName']] === 'undefined') {
+			  this.calculateForm.mapName = mapData[1][keyMap['imageName']];
+			} else {
+			  this.calculateForm.mapName = mapData[1][keyMap['mapName']];
+			}
+			// excel無protocol時預設wifi
+			if (typeof mapData[1][keyMap['protocol']] === 'undefined') {
+			  this.calculateForm.objectiveIndex = '2';
+			} else {
+			  if (mapData[1][keyMap['protocol']] === '0' || mapData[1][keyMap['protocol']] === '4G') {
+				this.calculateForm.objectiveIndex = '0';
+			  } else if (mapData[1][keyMap['protocol']] === '1' || mapData[1][keyMap['protocol']] === '5G') {
+				this.calculateForm.objectiveIndex = '1';
+			  } else if (mapData[1][keyMap['protocol']] === '2' || mapData[1][keyMap['protocol']] === 'wifi') {
+				this.calculateForm.objectiveIndex = '2';
+			  }
+			}
+		
+			this.initData(true, false, '');
+		  } catch (error) {
+			console.log(error);
+			// fail xlsx
+			this.msgDialogConfig.data = {
+			  type: 'error',
+			  infoMessage: this.translateService.instant('xlxs.fail')
+			};
+			this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+		  }
+		}
+		else
+		{
+		  this.msgDialogConfig.data = {
+			type: 'error',
+			infoMessage: this.translateService.instant('xlxs.fail')
+		  };
+		  this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+		}
+	} catch (error) {
+		console.log(error);
+		// fail xlsx
+		this.msgDialogConfig.data = {
+		  type: 'error',
+		  infoMessage: this.translateService.instant('xlxs.fail')
+		};
+		this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+	}
 
   }
 
@@ -6768,10 +6770,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         infoMessage: this.translateService.instant('xlxs.fail')
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-      window.setTimeout(() => {
-        this.matDialog.closeAll();
-        this.router.navigate(['/']);
-      }, 3000);
     }
   }
 
@@ -7832,6 +7830,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** 更改RSRP閥值 */
   changeRsrpThreshold() {
     sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
+  }
+
+  /** 更改SINR閥值 */
+  changeSinrThreshold() {
+    sessionStorage.setItem('sinrThreshold', JSON.stringify(this.sinrThreshold));
   }
 
   /**

@@ -1,12 +1,14 @@
 <h2 class="inline-block">{{ 'result.title' | translate }}</h2>
 
-<mat-button-toggle-group >
+<mat-button-toggle-group>
   <mat-button-toggle (click)="back()" value="back">{{ 'result.back' | translate }}</mat-button-toggle>
-	<mat-button-toggle  value="3d" (click)="view3D()" >{{ 'view.3d' | translate }}</mat-button-toggle>
-	<!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
-	<mat-button-toggle value="export" style="border-radius: 0px 2px 2px 0px;" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
-	<mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
-	<mat-button-toggle value="save" (click)="save(false)" style="border-radius: 2px;">{{ 'save' | translate }}</mat-button-toggle>
+  <mat-button-toggle value="3d" (click)="view3D()">{{ 'view.3d' | translate }}</mat-button-toggle>
+  <!-- <mat-button-toggle value="export">{{ 'result.export' | translate }}</mat-button-toggle> -->
+  <mat-button-toggle value="export" style="border-radius: 0px 2px 2px 0px;" (click)="exportPDF()">{{ 'result.export' | translate }}</mat-button-toggle>
+  <mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
+  <mat-button-toggle value="save" (click)="save(false)" style="border-radius: 2px;">{{ 'save' | translate }}</mat-button-toggle>
+  <mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
+  <mat-button-toggle value="caltime" (click)="caltime()" style="border-radius: 2px;">{{ 'com.time.show' | translate }}</mat-button-toggle>
 </mat-button-toggle-group>
 <!-- <mat-button-toggle-group >
 	<mat-button-toggle value="save" (click)="save(false)">{{ 'save' | translate }}</mat-button-toggle>
@@ -40,7 +42,8 @@
 							<mat-button-toggle  value="DL_THROUGHPUT" (click)="drawDlThroughputMap(false)">{{ 'dlThroughputMap' | translate }}</mat-button-toggle>
 						</mat-button-toggle-group>
 
-						<mat-button-toggle-group  style="margin-left: 1em">
+						<label class="mL_1" style="margin-left: 1em">{{ 'export' | translate }}</label>
+						<mat-button-toggle-group  >
 							<mat-button-toggle value="exportRawData" (click)="exportRawData()">
 								{{ 'export.raw.data' | translate }}
 							</mat-button-toggle>
@@ -357,6 +360,59 @@
   </div>
 </div>
 
+
 <div id="pdf_area" style="display: none;" >
 	<app-pdf #pdf></app-pdf>
 </div>
+
+<ng-template #comTimeModal>
+  <h5 mat-dialog-title>{{ 'com.time.show' | translate }}</h5>
+  <table class="comTimeTable">
+    <tbody>
+      <tr>
+        <td>{{ 'com.time.init' | translate }}</td>
+        <td>
+          {{ init_data_time }}
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'com.time.obst' | translate }}</td>
+        <td>
+          {{ obst_calc_time }}
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'com.time.mcts' | translate }}</td>
+        <td>
+          {{ mcts_time }}
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'com.time.heatmap' | translate }}</td>
+        <td>
+          {{ draw_heatmap_time }}
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'com.time.ue' | translate }}</td>
+        <td>
+          {{ ue_perf_analysis_time }}
+        </td>
+      </tr>
+      <tr>
+        <td>{{ 'com.time.output' | translate }}</td>
+        <td>
+          {{ output_time }}
+        </td>
+      </tr>
+      <tr>
+        <td style="background-color: #84C1FF;"><strong>{{ 'com.time.total' | translate }}</strong></td>
+        <td>
+          <strong>
+            {{ total_time }}
+          </strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>

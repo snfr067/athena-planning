@@ -28,38 +28,40 @@
 					</div>
 				</td>
 		</tr>
-		<tr>
-				<!-- <th>{{ 'subfield.num' | translate }}</th> -->
-				<th>{{ 'subfield.z' | translate }}</th>
-				<!-- <th>{{ 'subfield.width.height' | translate }}</th> -->
-				<!-- <th>{{ 'subfield.area' | translate }}</th> -->
-				<th>{{ 'subfield.coverage' | translate }}</th>
-				<th>{{ 'result.coverage.usersrp' | translate }}{{rsrpTh}} dBm {{ 'result.coverage.rsrpcoverage' | translate }}</th>
-				<th>{{ 'subfield.quality' | translate }}</th>
-				<th>{{ 'subfield.strength' | translate }}</th>
-				<!-- <th>{{ 'subfield.dltpt' | translate }}</th> -->
-				<!-- <th>{{ 'subfield.ultpt' | translate }}</th> -->
-		</tr>
-		<tr *ngFor="let item of subFieldList; let i = index" [attr.data-index]="i">
-			<!-- <td class="choose"  *ngIf="zNumber == 1">{{ i/2+1 }}</td> -->
-			<!-- <td class="choose"  *ngIf="zNumber == 1">{{ item.x }}/{{ item.y }}</td> -->
-			<!-- <td class="choose" rowspan="2" *ngIf="i%2 == 0 && zNumber == 2">{{ i/2+1 }}</td> -->
-			<!-- <td class="choose" rowspan="2" *ngIf="i%2 == 0 && zNumber == 2">{{ item.x }}/{{ item.y }}</td> -->
-			<!-- <td class="choose" rowspan="3" *ngIf="i%3 == 0 && zNumber == 3">{{ i/2+1 }}</td> -->
-			<!-- <td class="choose" rowspan="3" *ngIf="i%3 == 0 && zNumber == 3">{{ item.x }}/{{ item.y }}</td> -->
-			<!-- <td class="choose">{{ item.width }}/{{item.height}}/{{ item.z }} {{ 'meter' | translate }}</td> -->
-			<!-- <td class="choose">{{ item.area }}</td> -->
-			<td class="choose">{{ item.z }}</td>
-			<td class="choose">{{ item.coverage }}%</td>
-			<td class="choose">{{ item.coverageRsrp }}%</td>
-			<td class="choose">{{ item.quality }}dB</td>
-			<td class="choose">{{ item.rsrp }}dBm</td>
-			<!-- <td class="choose">{{ item.dltpt }}Mbps</td>0 -->
-			<!-- <td class="choose">{{ item.ultpt }}Mbps</td> -->
-				<!-- <td class="choose"><label>{{ item[0] }}</label></td>
-				<td class="choose">{{ item[1] }}</td>
-				<td class="choose">{{ item[2] }}</td>
-				<td class="choose">{{ item[3] }}</td> -->
-		</tr>
+    <tr>
+      <!-- <th>{{ 'subfield.num' | translate }}</th> -->
+      <th>{{ 'subfield.z' | translate }}</th>
+      <!-- <th>{{ 'subfield.width.height' | translate }}</th> -->
+      <!-- <th>{{ 'subfield.area' | translate }}</th> -->
+      <th>{{ 'subfield.coverage' | translate }}</th>
+      <th>{{ 'result.coverage.usersrp' | translate }}{{rsrpTh}} dBm {{ 'result.coverage.calculate' | translate }}</th>
+      <th>{{ 'result.coverage.usesinr' | translate }}{{sinrTh}} dBm {{ 'result.coverage.calculate' | translate }}</th>
+      <th>{{ 'subfield.quality' | translate }}</th>
+      <th>{{ 'subfield.strength' | translate }}</th>
+      <!-- <th>{{ 'subfield.dltpt' | translate }}</th> -->
+      <!-- <th>{{ 'subfield.ultpt' | translate }}</th> -->
+    </tr>
+    <tr *ngFor="let item of subFieldList; let i = index" [attr.data-index]="i">
+      <!-- <td class="choose"  *ngIf="zNumber == 1">{{ i/2+1 }}</td> -->
+      <!-- <td class="choose"  *ngIf="zNumber == 1">{{ item.x }}/{{ item.y }}</td> -->
+      <!-- <td class="choose" rowspan="2" *ngIf="i%2 == 0 && zNumber == 2">{{ i/2+1 }}</td> -->
+      <!-- <td class="choose" rowspan="2" *ngIf="i%2 == 0 && zNumber == 2">{{ item.x }}/{{ item.y }}</td> -->
+      <!-- <td class="choose" rowspan="3" *ngIf="i%3 == 0 && zNumber == 3">{{ i/2+1 }}</td> -->
+      <!-- <td class="choose" rowspan="3" *ngIf="i%3 == 0 && zNumber == 3">{{ item.x }}/{{ item.y }}</td> -->
+      <!-- <td class="choose">{{ item.width }}/{{item.height}}/{{ item.z }} {{ 'meter' | translate }}</td> -->
+      <!-- <td class="choose">{{ item.area }}</td> -->
+      <td class="choose">{{ item.z }}</td>
+      <td class="choose">{{ item.coverage }}%</td>
+      <td class="choose">{{ item.coverageRsrp }}%</td>
+      <td class="choose">{{ item.coverageSinr }}%</td>
+      <td class="choose">{{ item.quality }}dB</td>
+      <td class="choose">{{ item.rsrp }}dBm</td>
+      <!-- <td class="choose">{{ item.dltpt }}Mbps</td>0 -->
+      <!-- <td class="choose">{{ item.ultpt }}Mbps</td> -->
+      <!-- <td class="choose"><label>{{ item[0] }}</label></td>
+  <td class="choose">{{ item[1] }}</td>
+  <td class="choose">{{ item[2] }}</td>
+  <td class="choose">{{ item[3] }}</td> -->
+    </tr>
 	</tbody>	
 </table>

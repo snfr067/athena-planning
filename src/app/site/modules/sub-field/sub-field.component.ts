@@ -38,7 +38,8 @@ export class SubFieldComponent implements OnInit {
   /** 是否PDF頁面 */
   isPDF = false;
   zNumber = 1;
-  rsrpTh;
+  rsrpTh = -90;
+  sinrTh = 15;
 
   shapes = [];
   annotations = [];
@@ -128,17 +129,17 @@ export class SubFieldComponent implements OnInit {
     }
     let zResult;
     let valueArr;
-    let totalValue = 0, tempSinrValue = 0;
+    let totalValue = 0, tempValue = 0;
     let points = 0;
 
     if (type === 'quality') {
       valueArr = this.result['sinrMap'];
-    } else if (type === 'coverage') {
+    } else if (type === 'coverage' || type === 'coverageSinr') {
       valueArr = this.result['connectionMap'];
-      tempSinrValue = this.result['sinrMap'];
+      tempValue = this.result['sinrMap'];
     } else if (type === 'coverageRsrp') {
       valueArr = this.result['connectionMap'];
-      tempSinrValue = this.result['rsrpMap'];
+      tempValue = this.result['rsrpMap'];
     } else if (type === 'rsrp') {
       valueArr = this.result['rsrpMap'];
     } else if (type === 'dltpt') {
@@ -170,15 +171,20 @@ export class SubFieldComponent implements OnInit {
           for (let j = Math.floor(y_start/CooUnit);j < Math.ceil(y_end/CooUnit);j++) {
             // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
             if (type === 'coverage') {
-              if (Number(tempSinrValue[i][j][z]) > covTh) {
+              if (Number(tempValue[i][j][z]) > covTh) {
                 totalValue+=1;
               } else {
                 // console.log(Number(tempSinrValue[i][j][z])+" "+covTh);
               }
             } else if (type === 'coverageRsrp') {
               this.rsrpTh = Number(sessionStorage.getItem('rsrpThreshold'));
-              if (Number(tempSinrValue[i][j][z]) > Number(sessionStorage.getItem('rsrpThreshold'))) {
-                totalValue+=1;
+              if (Number(tempValue[i][j][z]) > Number(sessionStorage.getItem('rsrpThreshold'))) {
+                totalValue += 1;
+              }
+            } else if (type === 'coverageSinr') {
+              this.sinrTh = Number(sessionStorage.getItem('sinrThreshold'));
+              if (Number(tempValue[i][j][z]) > Number(sessionStorage.getItem('sinrThreshold'))) {
+                totalValue += 1;
               }
             } else {
               totalValue += Number(valueArr[i][j][z]);
@@ -343,8 +349,9 @@ export class SubFieldComponent implements OnInit {
             // height: el.height,
             // area: Math.round(Number(el.width)*Number(el.height)),
             coverage: this.calSubFieldSignalValue('coverage',z),
-            quality: this.calSubFieldSignalValue('quality',z),
-            coverageRsrp: this.calSubFieldSignalValue('coverageRsrp',z),
+            quality: this.calSubFieldSignalValue('quality', z),
+            coverageRsrp: this.calSubFieldSignalValue('coverageRsrp', z),
+            coverageSinr: this.calSubFieldSignalValue('coverageSinr', z),
             rsrp: this.calSubFieldSignalValue('rsrp',z),
             dltpt: this.calSubFieldSignalValue('dltpt',z),
             ultpt: this.calSubFieldSignalValue('ulptp',z),

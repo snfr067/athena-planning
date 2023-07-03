@@ -23,9 +23,12 @@ export class PerformanceComponent implements OnInit {
   bsTptList = [];
   bsTptAvg = [];
   isHst = false;
-  rsrpTh = 0;
+  rsrpTh = -90;
+  sinrTh = 15;
   zCoverageRsrp;
   avgCoverageRsrp = 0;
+  zCoverageSinr;
+  avgCoverageSinr = 0;
 
 
   ngOnInit(): void {
@@ -34,9 +37,11 @@ export class PerformanceComponent implements OnInit {
   /** set data */
   setData() {
     this.rsrpTh = Number(sessionStorage.getItem('rsrpThreshold'));
+    this.sinrTh = Number(sessionStorage.getItem('sinrThreshold'));
     // 地圖切面 list
     console.log(this.result);
-    this.zCoverageRsrp = [0,0,0];
+    this.zCoverageRsrp = [0, 0, 0];
+    this.zCoverageSinr = [0, 0, 0];
     this.avgCoverageRsrp = 0;
     const zValues = this.calculateForm.zValue.replace('[', '').replace(']', '').split(',');
     console.log(zValues.length);
@@ -51,7 +56,18 @@ export class PerformanceComponent implements OnInit {
         }
       }
     }
-    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el/(this.result['rsrpMap'].length*this.result['rsrpMap'][0].length)*100));
+    for (let i = 0; i < zValues.length; i++) {
+      // this.zCoverageRsrp.push(0);
+      for (let j = 0; j < this.result['sinrMap'].length; j++) {
+        for (let k = 0; k < this.result['sinrMap'][0].length; k++) {
+          if (this.result['sinrMap'][j][k][i] > this.sinrTh) {
+            this.zCoverageSinr[i]++;
+          }
+        }
+      }
+    }
+    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el / (this.result['rsrpMap'].length * this.result['rsrpMap'][0].length) * 100));
+    this.zCoverageSinr = this.zCoverageSinr.map(el => (el / (this.result['sinrMap'].length * this.result['sinrMap'][0].length) * 100));
     console.log(this.zCoverageRsrp);
     for (let i = 0; i < zValues.length; i++) {
       this.zValueList.push([
@@ -59,11 +75,14 @@ export class PerformanceComponent implements OnInit {
         this.result['layeredCoverage'][i],
         Number(this.result['layeredAverageSinr'][i]),
         Number(this.result['layeredAverageRsrp'][i]),
-        Number(this.floatToString(this.zCoverageRsrp[i]))
+        Number(this.floatToString(this.zCoverageRsrp[i])),
+        Number(this.floatToString(this.zCoverageSinr[i]))
       ]);
       this.avgCoverageRsrp += Number(this.zCoverageRsrp[i]);
+      this.avgCoverageSinr += Number(this.zCoverageSinr[i]);
     }
-    this.avgCoverageRsrp = Number(this.floatToString(this.avgCoverageRsrp/zValues.length));
+    this.avgCoverageRsrp = Number(this.floatToString(this.avgCoverageRsrp / zValues.length));
+    this.avgCoverageSinr = Number(this.floatToString(this.avgCoverageSinr / zValues.length));
     
     // console.log(totalServingUe);
     if (this.isHst) {

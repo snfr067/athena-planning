@@ -179,6 +179,7 @@ export class AuthService {
     localStorage.removeItem(`${this.userToken}planningObj`);
     localStorage.removeItem(`${this.userToken}for3d`);
     sessionStorage.removeItem('rsrpThreshold');
+    sessionStorage.removeItem('sinrThreshold');
     sessionStorage.removeItem('tempParamForSelect');
     sessionStorage.removeItem('calculateForm');
     sessionStorage.removeItem('tempParamForSelect');

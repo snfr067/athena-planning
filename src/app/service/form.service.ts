@@ -294,6 +294,8 @@ export class FormService {
     if (typeof result['candidatethroughput'] !== 'undefined') {
       output['candidateThroughput'] = JSON.parse(result['candidatethroughput']);
     }
+    //save user log id
+    output['userlogid'] = result['userlogid'];
 
     output['chosenCandidate'] = JSON.parse(result['chosecandidate']);
     output['connectionMap'] = JSON.parse(result['connectionmap']);

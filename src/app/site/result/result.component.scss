@@ -215,3 +215,33 @@ h2 + mat-button-toggle-group {
     font-size:.9em;
     // margin-top: .5rem;
 }
+
+.comTimeTable {
+  margin: 0;
+  display: table;
+  width: 100%;
+  vertical-align: top;
+
+  tr td {
+    border-bottom: 1.5px solid #5aa5e2;
+    line-height: 1.1;
+  }
+
+  tr td:first-child {
+    text-align: left;
+    padding-left: 0.5em;
+    background-color: #ddf1fc;
+    width: 250px;
+    height: 40px;
+  }
+
+  tr td:last-child {
+    padding-left: 0.5em;
+    width: 150px;
+    height: 40px;
+  }
+
+  select {
+    width: 200px;
+  }
+}

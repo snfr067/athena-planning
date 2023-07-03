@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -69,6 +69,18 @@ export class ResultComponent implements OnInit {
   realUECoverage = 0;
   realUEULThroughput = [];
   realUEDLThroughput = [];
+
+  //user log id
+  userlogid = "";
+
+  //computation time
+  init_data_time = "";
+  obst_calc_time = "";
+  mcts_time = "";
+  draw_heatmap_time = "";
+  ue_perf_analysis_time = "";
+  output_time = "";
+  total_time = "";
 
   /** 畫圖layout參數 */
   plotLayout;
@@ -192,6 +204,8 @@ export class ResultComponent implements OnInit {
   /** 下行傳輸速率圖 */
   @ViewChild('dlThroughputMap') dlThroughputMap: SignalDlThroughputComponent;
   @ViewChild('sitePlanningMap') sitePlanningMap: SitePlanningMapComponent;
+  /** 後端運算時間顯示燈箱 */
+  @ViewChild('comTimeModal') comTimeModal: TemplateRef<any>;
 
   ngOnInit() {
     sessionStorage.removeItem('form_blank_task');
@@ -245,7 +259,8 @@ export class ResultComponent implements OnInit {
           this.realFieldDLThroughput = this.formService.setHstToFieldDLThroughputRatio(res);
           this.realUECoverage = this.formService.setHstToUECoverageatio(res);
           this.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
-          this.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
+          this.realUEDLThroughput = this.formService.setHstToUEDLThroughputRatio(res);
+          this.userlogid = this.result['userlogid'];
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultidx'];
@@ -255,6 +270,7 @@ export class ResultComponent implements OnInit {
           }
           
         } else {
+          console.log(`res = ${res}`);
           this.calculateForm = res['input'];
           this.result = res['output'];
           this.unAchievedObj = this.formService.setHstToUnAch(res);
@@ -265,7 +281,8 @@ export class ResultComponent implements OnInit {
           this.realFieldDLThroughput = this.formService.setHstToFieldDLThroughputRatio(res);
           this.realUECoverage = this.formService.setHstToUECoverageatio(res);
           this.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
-          this.realUEDLThroughput  = this.formService.setHstToUEDLThroughputRatio(res);
+          this.realUEDLThroughput = this.formService.setHstToUEDLThroughputRatio(res);
+          this.userlogid = this.result['userlogid'];
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultIdx'];
@@ -1307,11 +1324,16 @@ export class ResultComponent implements OnInit {
   }
 
   exportRawData()
-  {        
+  {       
+    //console.log('resolution = '+this.calculateForm['resolution']);  
     // all
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     var z = 0, x = 0, y = 0;
     var sheetName = '';
+	var resolution = Number(this.calculateForm['resolution']);
+	
+	if(isNaN(resolution))
+		resolution = 1;
 
     for(z = 0; z < this.zValues.length; z++)
     {
@@ -1323,7 +1345,7 @@ export class ResultComponent implements OnInit {
 
       for(x = 0; x < this.result['sinrMap'].length; x++)
       {
-        value = 0.5 + x*1;
+        value = (resolution/2) + x*resolution;
         pushArr.push(String(value));
       }
       sinrData.push(pushArr);
@@ -1331,7 +1353,7 @@ export class ResultComponent implements OnInit {
 
       for(y = this.result['sinrMap'][0].length-1; y >= 0; y--)
       {
-        value = 0.5 + y*1;
+        value = (resolution/2) + y*resolution;
         pushArr.push(String(value));
         for(x = 0; x < this.result['sinrMap'].length; x++)
         {
@@ -1352,7 +1374,7 @@ export class ResultComponent implements OnInit {
 
       for(x = 0; x < this.result['rsrpMap'].length; x++)
       {
-        value = 0.5 + x*1;
+        value = (resolution/2) + x*resolution;
         pushArr.push(String(value));
       }
       rsrpData.push(pushArr);
@@ -1360,7 +1382,7 @@ export class ResultComponent implements OnInit {
 
       for(y = this.result['rsrpMap'][0].length-1; y >= 0; y--)
       {
-        value = 0.5 + y*1;
+        value = (resolution/2) + y*resolution;
         pushArr.push(String(value));
         for(x = 0; x < this.result['rsrpMap'].length; x++)
         {
@@ -1381,7 +1403,7 @@ export class ResultComponent implements OnInit {
 
       for(x = 0; x < this.result['connectionMap'].length; x++)
       {
-        value = 0.5 + x*1;
+        value = (resolution/2) + x*resolution;
         pushArr.push(String(value));
       }
       coverageData.push(pushArr);
@@ -1389,7 +1411,7 @@ export class ResultComponent implements OnInit {
 
       for(y = this.result['connectionMap'][0].length-1; y >= 0; y--)
       {
-        value = 0.5 + y*1;
+        value = (resolution/2) + y*resolution;
         pushArr.push(String(value));
         for(x = 0; x < this.result['connectionMap'].length; x++)
         {
@@ -1410,7 +1432,7 @@ export class ResultComponent implements OnInit {
 
       for(x = 0; x < this.result['ulThroughputMap'].length; x++)
       {
-        value = 0.5 + x*1;
+        value = (resolution/2) + x*resolution;
         pushArr.push(String(value));
       }
       ulThroughputData.push(pushArr);
@@ -1418,7 +1440,7 @@ export class ResultComponent implements OnInit {
 
       for(y = this.result['ulThroughputMap'][0].length-1; y >= 0; y--)
       {
-        value = 0.5 + y*1;
+        value = (resolution/2) + y*resolution;
         pushArr.push(String(value));
         for(x = 0; x < this.result['ulThroughputMap'].length; x++)
         {
@@ -1439,7 +1461,7 @@ export class ResultComponent implements OnInit {
 
       for(x = 0; x < this.result['throughputMap'].length; x++)
       {
-        value = 0.5 + x*1;
+        value = (resolution/2) + x*resolution;
         pushArr.push(String(value));
       }
       dlThroughputData.push(pushArr);
@@ -1447,7 +1469,7 @@ export class ResultComponent implements OnInit {
 
       for(y = this.result['throughputMap'][0].length-1; y >= 0; y--)
       {
-        value = 0.5 + y*1;
+        value = (resolution/2) + y*resolution;
         pushArr.push(String(value));
         for(x = 0; x < this.result['throughputMap'].length; x++)
         {
@@ -1464,5 +1486,47 @@ export class ResultComponent implements OnInit {
     //save
     XLSX.writeFile(wb, `${this.calculateForm.taskName}-Rawdata.xlsx`);    
 
+  }
+
+
+
+  caltime()
+  {
+    console.log(`userlogId = ${this.userlogid}`);
+    console.log(`userToken = ${this.authService.userToken}`);
+
+    var url = `${this.authService.API_URL}/getComputationTime/${this.authService.userToken}/${this.userlogid}`;
+    console.log(`url = ${url}`);
+
+    this.http.get(url).subscribe(
+      res => {
+
+        try
+        {
+          this.init_data_time = res[0]['init_data_time'];
+          this.obst_calc_time = res[0]['obst_calc_time'];
+          this.mcts_time = res[0]['mcts_time'];
+          this.draw_heatmap_time = res[0]['draw_heatmap_time'];
+          this.ue_perf_analysis_time = res[0]['ue_perf_analysis_time'];
+          this.output_time = res[0]['output_time'];
+          this.total_time = res[0]['total_time'];
+          console.log(`total_time = ${this.total_time}`);
+        }
+        catch (error)
+        {
+          var errorlog = "未能取得資料";
+          this.init_data_time = errorlog;
+          this.obst_calc_time = errorlog;
+          this.mcts_time = errorlog;
+          this.draw_heatmap_time = errorlog;
+          this.ue_perf_analysis_time = errorlog;
+          this.output_time = errorlog;
+          this.total_time = errorlog;
+        }
+
+      }
+    );
+
+    this.matDialog.open(this.comTimeModal);
   }
 }
