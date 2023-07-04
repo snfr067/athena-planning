@@ -1125,7 +1125,11 @@
 
                 <li>
                   <p>{{ 'rsrp_coverage_th' | translate }}	</p>
-                  <input type="number" class="inputNum" step="0.1" min="0" max="1" [(ngModel)]="rsrpThreshold" (change)="changeRsrpThreshold()">dbm
+                  <input type="number" class="inputNum" step="1" min="-140" max="-44" [(ngModel)]="rsrpThreshold" (change)="changeRsrpThreshold()">dbm
+                </li>
+                <li>
+                  <p>{{ 'sinr_coverage_th' | translate }}	</p>
+                  <input type="number" class="inputNum" step="1" min="-23" max="40" [(ngModel)]="sinrThreshold" (change)="changeSinrThreshold()">dbm
                 </li>
 
                 <!-- <li *ngIf="calculateForm.objectiveIndex !== '2'">
