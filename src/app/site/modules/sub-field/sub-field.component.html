@@ -1,10 +1,10 @@
 <table #subFieldTbody id="subField" style="table-layout: fixed">
   <tbody>
 		<tr>
-				<th class="panel center" colspan="5"><label class="bold">{{ 'subfield.coverage.analysis' | translate }}</label></th>
+				<th class="panel center" colspan="6"><label class="bold">{{ 'subfield.coverage.analysis' | translate }}</label></th>
 		</tr>
 		<tr>
-				<td id="layout_td" colspan="5" class="mapType">
+				<td id="layout_td" colspan="6" class="mapType">
 					<div id="layout_chart2" #layoutChart style="z-index:1;position: relative;">
 						<span *ngFor="let item of rectList; let i = index" [attr.data-index]="i" [ngStyle]="item.style">
 							<!-- <span *ngFor="let item of rectList" [ngStyle]="item.style"> -->

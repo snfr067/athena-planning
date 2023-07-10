@@ -513,12 +513,13 @@
   "target.unachieved": "The function targets are unachieved, do you still want to show result?",
   "unachieved": "(Unachieved)",
   "achieved": "(Achieved)",
-  "com.time.show": "顯示後端運算時間",
-  "com.time.init": "參數初始化時間",
-  "com.time.obst": "障礙物Line of sight計算時間",
-  "com.time.mcts": "蒙地卡羅演算法計算時間",
-  "com.time.heatmap": "熱點圖計算時間",
-  "com.time.ue": "UE效能分析時間",
-  "com.time.output": "計算結果統整時間",
-  "com.time.total": "總運算時間"
+  "com.time.show": "Show computation time of backend",
+  "param.setting": "Parameter setting",
+  "com.time.init": "Time of parameter initial",
+  "com.time.obst": "Computation time of obstacle line of sight",
+  "com.time.mcts": "Computation time of mcts",
+  "com.time.heatmap": "Computation time of heatmap",
+  "com.time.ue": "Time of ue performance analysis",
+  "com.time.output": "Time of esult summary",
+  "com.time.total": "Total time"
 }

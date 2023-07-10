@@ -608,8 +608,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.rsrpThreshold = Number(sessionStorage.getItem('rsrpThreshold'));
     }
     if (!sessionStorage.getItem('sinrThreshold')) {
-      sessionStorage.setItem('sinrThreshold', JSON.stringify(10));
-      this.sinrThreshold = 10;
+      sessionStorage.setItem('sinrThreshold', JSON.stringify(15));
+      this.sinrThreshold = 15;
     } else {
       this.sinrThreshold = Number(sessionStorage.getItem('sinrThreshold'));
     }
@@ -7829,12 +7829,54 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   /** 更改RSRP閥值 */
   changeRsrpThreshold() {
-    sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
+
+    var msg = '';
+
+    if (this.rsrpThreshold < this.rsrpLowerLimit || this.rsrpThreshold > this.rsrpUpperLimit || isNaN(Number(this.rsrpThreshold)))
+      msg = this.translateService.instant('rsrp_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      this.rsrpThreshold = Number(sessionStorage.getItem('rsrpThreshold'));
+    }
+    else
+    {
+      this.rsrpThreshold = Number(this.rsrpThreshold);
+      sessionStorage.setItem('rsrpThreshold', JSON.stringify(this.rsrpThreshold));
+    }
+    
   }
 
   /** 更改SINR閥值 */
   changeSinrThreshold() {
-    sessionStorage.setItem('sinrThreshold', JSON.stringify(this.sinrThreshold));
+
+    var msg = '';
+
+    console.log(Number(this.sinrThreshold));
+
+    if (this.sinrThreshold < this.sinrLowerLimit || this.sinrThreshold > this.sinrUpperLimit || isNaN(Number(this.sinrThreshold)))
+      msg = this.translateService.instant('sinr_fault');
+
+    if (msg != '') {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      this.sinrThreshold = Number(sessionStorage.getItem('sinrThreshold'));
+    }
+    else
+    {
+      this.sinrThreshold = Number(this.sinrThreshold);
+      sessionStorage.setItem('sinrThreshold', JSON.stringify(this.sinrThreshold));
+    }
+    
   }
 
   /**
@@ -8804,7 +8846,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check area:'+ area);
     let msg = '';
 
-    if(area < 1 || area > 100 || isNaN(Number(area)))
+    if (area < 1 || area > 100 || isNaN(Number(area)) || area == '')
     {
       msg = this.translateService.instant('percent_fault');
     }
@@ -8827,7 +8869,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check sinr:'+ sinr);
     let msg = '';
 
-    if(sinr < this.sinrLowerLimit || sinr > this.sinrUpperLimit || isNaN(Number(sinr)))
+    if(sinr < this.sinrLowerLimit || sinr > this.sinrUpperLimit || isNaN(Number(sinr)) || sinr == '')
       msg = this.translateService.instant('sinr_fault');
 
     if (msg != '') {
@@ -8838,7 +8880,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       this.getStorageEvaluationFuncForm();    //還原舊參數
     }
-    else{      
+    else {
       this.setStorageEvaluationFuncForm();
     }
   }
@@ -8847,7 +8889,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log('Check rsrp:'+ rsrp);
     let msg = '';
 
-    if(rsrp < this.rsrpLowerLimit || rsrp > this.rsrpUpperLimit || isNaN(Number(rsrp)))
+    if (rsrp < this.rsrpLowerLimit || rsrp > this.rsrpUpperLimit || isNaN(Number(rsrp)) || rsrp == '')
       msg = this.translateService.instant('rsrp_fault');
 
     if (msg != '') {

@@ -52,7 +52,15 @@ export class PdfComponent implements OnInit {
     isFieldCoverageUnAchieved: false,
     isUEThroughputByRsrpUnAchieved: false,
     isUECoverageUnAchieved: false
-  };  
+  };
+  /** RSRP and SINR Threashold **/
+  rsrpTh = -90;
+  sinrTh = 15;
+  zCoverageRsrp;
+  avgCoverageRsrp = 0;
+  zCoverageSinr;
+  avgCoverageSinr = 0;
+
   realFieldCoverage = 0;
   realFieldSINR = [];
   realFieldRSRP = [];
@@ -123,6 +131,12 @@ export class PdfComponent implements OnInit {
     // this.calculateForm = JSON.parse(sessionStorage.getItem('calculateForm'));
     // console.log(this.result);
 
+    this.rsrpTh = Number(sessionStorage.getItem('rsrpThreshold'));
+    this.sinrTh = Number(sessionStorage.getItem('sinrThreshold'));
+    this.zCoverageRsrp = [0, 0, 0];
+    this.zCoverageSinr = [0, 0, 0];
+    this.avgCoverageRsrp = 0;
+    this.avgCoverageSinr = 0;
   }
 
   /**
@@ -1398,24 +1412,66 @@ export class PdfComponent implements OnInit {
     const p1Title = [
       this.translateService.instant('result.img.section'),
       this.translateService.instant('result.coverage'),
+      this.translateService.instant('result.coverage.usersrp') + this.rsrpTh + 'dBm\n' + this.translateService.instant('result.coverage.calculate'),
+      this.translateService.instant('result.coverage.usesinr') + this.sinrTh + 'dB\n' +this.translateService.instant('result.coverage.calculate'),
       this.translateService.instant('result.averageSinr'),
       this.translateService.instant('result.averageRsrp'),
       ''
     ];
+
+    for (let i = 0; i < this.zValues.length; i++) {
+      // this.zCoverageRsrp.push(0);
+      for (let j = 0; j < this.result['rsrpMap'].length; j++) {
+        for (let k = 0; k < this.result['rsrpMap'][0].length; k++) {
+          if (this.result['rsrpMap'][j][k][i] > this.rsrpTh) {
+            this.zCoverageRsrp[i]++;
+          }
+        }
+      }
+    }
+    for (let i = 0; i < this.zValues.length; i++) {
+      // this.zCoverageRsrp.push(0);
+      for (let j = 0; j < this.result['sinrMap'].length; j++) {
+        for (let k = 0; k < this.result['sinrMap'][0].length; k++) {
+          if (this.result['sinrMap'][j][k][i] > this.sinrTh) {
+            this.zCoverageSinr[i]++;
+          }
+        }
+      }
+    }
+    this.zCoverageRsrp = this.zCoverageRsrp.map(el => (el / (this.result['rsrpMap'].length * this.result['rsrpMap'][0].length) * 100));
+    this.zCoverageSinr = this.zCoverageSinr.map(el => (el / (this.result['sinrMap'].length * this.result['sinrMap'][0].length) * 100));
+    
+    
 
     let p1Data = [];
     for (let k = 0; k < this.zValues.length; k++) {
       p1Data.push([
         `${this.zValues[k]}m`,
         `${this.result['layeredCoverage'][k]}%`,
-        `${Math.round(this.result['layeredAverageSinr'][k] * 1000) / 1000}db`,
+        `${this.zCoverageRsrp[k].toFixed(2)}dBm`,
+        `${this.zCoverageSinr[k].toFixed(2)}dB`,
+        `${Math.round(this.result['layeredAverageSinr'][k] * 1000) / 1000}dB`,
         `${Math.round(this.result['layeredAverageRsrp'][k] * 1000) / 1000}dBm`
       ]);
+
+      this.avgCoverageRsrp += Number(this.zCoverageRsrp[k]);
+      this.avgCoverageSinr += Number(this.zCoverageSinr[k]);
+
     }
+    console.log("rsrpavg = " + this.avgCoverageRsrp);
+    console.log("sinravg = " + this.avgCoverageSinr);
+    this.avgCoverageRsrp = this.avgCoverageRsrp / this.zValues.length;
+    this.avgCoverageSinr = this.avgCoverageSinr / this.zValues.length;
+    console.log("rsrpavg = " + this.avgCoverageRsrp);
+    console.log("sinravg = " + this.avgCoverageSinr);
+
     p1Data.push([
       this.translateService.instant('result.average'),
-      this.result['coverage']+'%',
-      `${Number(this.result['averageSinr'])}db`,
+      this.result['coverage'] + '%',
+      this.avgCoverageRsrp.toFixed(2) + 'dBm',
+      this.avgCoverageSinr.toFixed(2) + 'dB',
+      `${Number(this.result['averageSinr'])}dB`,
       `${Number(this.result['averageRsrp'])}dBm`
     ]);
     
@@ -2000,5 +2056,9 @@ export class PdfComponent implements OnInit {
       }
     );
     return result;
+  }
+
+  floatToString(x) {
+    return Number.parseFloat(x).toString().slice(0, 5);
   }
 }

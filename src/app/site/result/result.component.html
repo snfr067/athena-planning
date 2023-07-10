@@ -370,47 +370,46 @@
   <table class="comTimeTable">
     <tbody>
       <tr>
-        <td>{{ 'com.time.init' | translate }}</td>
+        <td rowspan="2" style="width: 3em; background-color: #ACD6FF">{{ 'param.setting' | translate }}</td>
+        <td style="padding-left: 0.5em; background-color: #ddf1fc">{{ 'com.time.init' | translate }}</td>
         <td>
           {{ init_data_time }}
         </td>
       </tr>
       <tr>
-        <td>{{ 'com.time.obst' | translate }}</td>
+        <td style="padding-left: 0.5em">{{ 'com.time.obst' | translate }}</td>
         <td>
           {{ obst_calc_time }}
         </td>
       </tr>
       <tr>
-        <td>{{ 'com.time.mcts' | translate }}</td>
+        <td colspan="2">{{ 'com.time.mcts' | translate }}</td>
         <td>
           {{ mcts_time }}
         </td>
       </tr>
       <tr>
-        <td>{{ 'com.time.heatmap' | translate }}</td>
+        <td colspan="2">{{ 'com.time.heatmap' | translate }}</td>
         <td>
           {{ draw_heatmap_time }}
         </td>
       </tr>
       <tr>
-        <td>{{ 'com.time.ue' | translate }}</td>
+        <td colspan="2">{{ 'com.time.ue' | translate }}</td>
         <td>
           {{ ue_perf_analysis_time }}
         </td>
       </tr>
       <tr>
-        <td>{{ 'com.time.output' | translate }}</td>
+        <td colspan="2">{{ 'com.time.output' | translate }}</td>
         <td>
           {{ output_time }}
         </td>
       </tr>
       <tr>
-        <td style="background-color: #84C1FF;"><strong>{{ 'com.time.total' | translate }}</strong></td>
+        <td colspan="2">{{ 'com.time.total' | translate }}</td>
         <td>
-          <strong>
             {{ total_time }}
-          </strong>
         </td>
       </tr>
     </tbody>

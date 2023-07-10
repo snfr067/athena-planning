@@ -515,12 +515,13 @@
   "unachieved": "(未達標)",
   "achieved": "(達標)",
   "com.time.show": "後端運算時間",
+  "param.setting": "參數設定",
   "com.time.init": "參數初始化時間",
   "com.time.obst": "障礙物Line of sight計算時間",
   "com.time.mcts": "蒙地卡羅演算法計算時間",
   "com.time.heatmap": "熱點圖計算時間",
   "com.time.ue": "UE效能分析時間",
   "com.time.output": "計算結果統整時間",
-  "com.time.total": "總運算時間"
+  "com.time.total": "後端總運行時間"
 
 }
