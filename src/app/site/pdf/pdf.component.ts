@@ -1078,7 +1078,7 @@ export class PdfComponent implements OnInit {
         if (this.authService.lang == 'zh-TW'){
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
         } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
         }
         let bsNoiseFigure = 0;
         if (this.calculateForm.bsNoiseFigure != ""){
@@ -1141,7 +1141,7 @@ export class PdfComponent implements OnInit {
         if (this.authService.lang == 'zh-TW'){
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
         } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
         }
         let bsNoiseFigure = 0;
         if (this.calculateForm.bsNoiseFigure != ""){
@@ -1222,7 +1222,7 @@ export class PdfComponent implements OnInit {
         if (this.authService.lang == 'zh-TW'){
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
         } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
         }
         let bsNoiseFigure = 0;
         if (this.calculateForm.bsNoiseFigure != ""){
@@ -1281,7 +1281,7 @@ export class PdfComponent implements OnInit {
         if (this.authService.lang == 'zh-TW'){
           antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
         } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
         }
         let bsNoiseFigure = 0;
         if (this.calculateForm.bsNoiseFigure != ""){
@@ -2010,7 +2010,7 @@ export class PdfComponent implements OnInit {
         let result = res;
         this.antennaList = Object.values(result);
         for (let i = 0;i < this.antennaList.length;i++) {
-          let id = this.antennaList[i]['antenna_id'];
+          let id = this.antennaList[i]['antennaID'];
           this.AntennaIdToIndex[id]=i;
         }
         // console.log(result);

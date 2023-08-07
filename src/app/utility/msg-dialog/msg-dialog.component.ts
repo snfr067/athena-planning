@@ -15,7 +15,8 @@ export class MsgDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<MsgDialogComponent>,
     @Inject(MAT_DIALOG_DATA) data) {
       this.title = data.title;
-      this.infoMessage = data.infoMessage;
+    this.infoMessage = data.infoMessage;
+    console.log(this.infoMessage);
       if (typeof data.closeTime !== 'undefined') {
         this.closeTime = data.closeTime;
       }

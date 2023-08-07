@@ -75,4 +75,9 @@ export class AppComponent {
   showpdf() {
     this.spinner.showpdf();
   }
+
+  showUploadData()
+  {
+    this.spinner.showUploadData();
+  }
 }

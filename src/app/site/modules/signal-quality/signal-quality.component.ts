@@ -15,7 +15,8 @@ declare var Plotly: any;
   templateUrl: './signal-quality.component.html',
   styleUrls: ['./signal-quality.component.scss']
 })
-export class SignalQualityComponent implements OnInit {
+export class SignalQualityComponent implements OnInit
+{
 
   constructor(
     private authService: AuthService,
@@ -69,13 +70,16 @@ export class SignalQualityComponent implements OnInit {
   /** 障礙物element */
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
 
-  @HostListener('window:resize') windowResize() {
-    const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
+  @HostListener('window:resize') windowResize()
+  {
+    const leftArea = <HTMLDivElement>document.querySelector('.leftArea');
     const maxWidth = leftArea.clientWidth - this.chartService.leftSpace;
     Plotly.relayout(this.chartId, {
       width: maxWidth
-    }).then(gd => {
-      this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res => {
+    }).then(gd =>
+    {
+      this.chartService.calResultSize(this.calculateForm, gd, maxWidth).then(res =>
+      {
         const layoutOption = {
           width: res[0],
           height: res[1]
@@ -83,10 +87,11 @@ export class SignalQualityComponent implements OnInit {
         this.reLayout(this.chartId, layoutOption, false);
       });
     });
-    
+
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void
+  {
   }
 
   /**
@@ -94,14 +99,17 @@ export class SignalQualityComponent implements OnInit {
    * @param isPDF 
    * @param zValue 
    */
-  draw(isPDF, zValue,scalemin,scalemax) {
+  draw(isPDF, zValue, scalemin, scalemax)
+  {
     zValue = Number(zValue);
     this.zValue = zValue;
     const images = [];
-    if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
+    if (!this.authService.isEmpty(this.calculateForm.mapImage))
+    {
       const reader = new FileReader();
       reader.readAsDataURL(this.authService.dataURLtoBlob(this.calculateForm.mapImage));
-      reader.onload = (e) => {
+      reader.onload = (e) =>
+      {
 
         images.push({
           source: reader.result,
@@ -117,10 +125,11 @@ export class SignalQualityComponent implements OnInit {
           layer: 'below'
         });
 
-        this.drawChart(isPDF, images,scalemin,scalemax);
+        this.drawChart(isPDF, images, scalemin, scalemax);
       };
-    } else {
-      this.drawChart(isPDF, images,scalemin,scalemax);
+    } else
+    {
+      this.drawChart(isPDF, images, scalemin, scalemax);
     }
   }
 
@@ -129,7 +138,8 @@ export class SignalQualityComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images,scalemin,scalemax) {
+  drawChart(isPDF, images, scalemin, scalemax)
+  {
     // draw background image chart
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -165,7 +175,7 @@ export class SignalQualityComponent implements OnInit {
         ticks: 'inside',
         ticksuffix: 'm'
       },
-      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50)},
+      margin: { t: 20, b: 20, l: 40, r: (!this.authService.isEmpty(this.calculateForm.mapImage) ? 20 : 50) },
       images: images,
       hovermode: 'closest',
       shapes: [],
@@ -178,9 +188,11 @@ export class SignalQualityComponent implements OnInit {
     //   CooUnit = 2;
     // }
     let id;
-    if (isPDF) {
+    if (isPDF)
+    {
       id = document.querySelector('#pdf_area').querySelectorAll(`.quality_chart`)[zValues.indexOf(this.zValue)];
-    } else {
+    } else
+    {
       id = document.querySelectorAll(`.quality_chart`)[0];
     }
     this.chartId = id;
@@ -189,13 +201,15 @@ export class SignalQualityComponent implements OnInit {
     const zData = [];
     const allZ = [];
     const zText = [];
-    for (let i = 0; i < zLen; i++) {
+    for (let i = 0; i < zLen; i++)
+    {
       zData.push([]);
       allZ.push([]);
       zText.push([]);
     }
     let xIndex = 0;
-    for (let i = 0;i < this.result['sinrMap'][0][0].length;i++) {
+    for (let i = 0; i < this.result['sinrMap'][0][0].length; i++)
+    {
       this.maxZ.push(this.result['sinrMap'][0][0][i]);
       this.minZ.push(this.result['sinrMap'][0][0][i]);
     }
@@ -205,28 +219,35 @@ export class SignalQualityComponent implements OnInit {
     const mapColor = [];
     const mapText = [];
     */
-    for (const item of this.result['sinrMap']) {
-      for (let i = 0; i < zLen; i++) {
+    for (const item of this.result['sinrMap'])
+    {
+      for (let i = 0; i < zLen; i++)
+      {
         let yIndex = 0;
-        for (const yData of item) {
+        for (const yData of item)
+        {
           // if (CooUnit == 2){
           //   if ((yIndex >= this.calculateForm.height/2 || xIndex >= this.calculateForm.width/2)){
           //     continue;
           //   }
           // }
-          if (typeof zData[i][yIndex] === 'undefined') {
+          if (typeof zData[i][yIndex] === 'undefined')
+          {
             zData[i][yIndex] = [];
             zText[i][yIndex] = [];
           }
           zData[i][yIndex][xIndex] = yData[i];
-          if (Number(zData[i][yIndex][xIndex]) > this.maxZ[i]) {
+          if (Number(zData[i][yIndex][xIndex]) > this.maxZ[i])
+          {
             this.maxZ[i] = Number(zData[i][yIndex][xIndex]);
           }
-          if (Number(zData[i][yIndex][xIndex]) < this.minZ[i]) {
+          if (Number(zData[i][yIndex][xIndex]) < this.minZ[i])
+          {
             this.minZ[i] = Number(zData[i][yIndex][xIndex]);
             // console.log('無馱無馱無馱無馱無馱無馱無馱'+this.minZ[i]);
           }
-          if (yData[i] == null) {
+          if (yData[i] == null)
+          {
             console.log(`x:${xIndex}, y:${yIndex}, z:${i}, ${yData[i]}`);
             console.log(item);
           }
@@ -260,34 +281,40 @@ export class SignalQualityComponent implements OnInit {
     // 取z的最大值
     const zMax = [];
     const zMin = [];
-    for (const item of allZ) {
+    for (const item of allZ)
+    {
       zMax.push(Plotly.d3.max(item));
       zMin.push(Plotly.d3.min(item));
     }
 
     const x = [];
     const y = [];
-    let xval = CooUnit/2;
-    while(xval - CooUnit/2 < this.calculateForm.width){
+    let xval = CooUnit / 2;
+    while (xval - CooUnit / 2 < this.calculateForm.width)
+    {
       x.push(xval);
       xval += CooUnit;
     }
-    let yval = CooUnit/2;
-    while(yval - CooUnit/2 < this.calculateForm.height){
+    let yval = CooUnit / 2;
+    while (yval - CooUnit / 2 < this.calculateForm.height)
+    {
       y.push(yval);
       yval += CooUnit;
     }
     const traces = [];
     // UE
-    if (this.calculateForm.ueCoordinate !== '') {
+    if (this.calculateForm.ueCoordinate !== '')
+    {
       const list = this.calculateForm.ueCoordinate.split('|');
       const cx = [];
       const cy = [];
       const text = [];
 
-      for (const item of list) {
+      for (const item of list)
+      {
         const oData = JSON.parse(item);
-        if (oData[2] !== this.zValue) {
+        if (oData[2] !== this.zValue)
+        {
           continue;
         }
         cx.push(oData[0]);
@@ -313,9 +340,11 @@ export class SignalQualityComponent implements OnInit {
     this.shapes.length = 0;
 
     // 障礙物
-    if (this.calculateForm.obstacleInfo !== '') {
+    if (this.calculateForm.obstacleInfo !== '')
+    {
       const obstacle = this.calculateForm.obstacleInfo.split('|');
-      for (const item of obstacle) {
+      for (const item of obstacle)
+      {
         const oData = JSON.parse(item);
         const xdata = oData[0];
         const ydata = oData[1];
@@ -336,10 +365,12 @@ export class SignalQualityComponent implements OnInit {
         ${this.translateService.instant('altitude')}: ${altitude}
         `;
 
-        if (typeof material !== 'undefined') {
+        if (typeof material !== 'undefined')
+        {
           text += `${this.translateService.instant('material')}: ${this.authService.parseMaterial(material)}`;
         }
-        if (typeof shape === 'undefined') {
+        if (typeof shape === 'undefined')
+        {
           shape = '0';
         }
 
@@ -385,12 +416,15 @@ export class SignalQualityComponent implements OnInit {
     //   hovertemplate: `X: %{x}<br>Y: %{y}<br>${this.translateService.instant('signalStrength')}: %{text}<extra></extra>`,
     // };
     // traces.push(trace);
-    
+
     // ucwor
     const sinrAry = [];
-    this.result['sinrMap'].map(v => {
-      v.map(m => {
-        m.map(d => {
+    this.result['sinrMap'].map(v =>
+    {
+      v.map(m =>
+      {
+        m.map(d =>
+        {
           sinrAry.push(d);
         });
       });
@@ -399,8 +433,8 @@ export class SignalQualityComponent implements OnInit {
     // let scalemin = Number(this.financial(Plotly.d3.min(sinrAry)));
     // let scalemax = 29.32;
     // let scalemin = -1.889;
-    let unit = Number(this.financial((scalemax-scalemin)))/4;
-    let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
+    let unit = Number(this.financial((scalemax - scalemin))) / 4;
+    let scaleunit = [scalemax, scalemax - unit, scalemax - 2 * unit, scalemax - 3 * unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));
     let scaleunitText = scaleunit.map(el => `${el}dB`);
 
@@ -444,14 +478,16 @@ export class SignalQualityComponent implements OnInit {
 
     // 現有基站
     // if (0) {
-    if (this.calculateForm.defaultBs !== '') {
+    if (this.calculateForm.defaultBs !== '')
+    {
       const list = this.calculateForm.defaultBs.split('|');
       const cx = [];
       const cy = [];
       const ctext = [];
       let num = 1;
 
-      for (const item of list) {
+      for (const item of list)
+      {
         const oData = JSON.parse(item);
         const xdata = oData[0];
         const ydata = oData[1];
@@ -503,12 +539,14 @@ export class SignalQualityComponent implements OnInit {
     }
 
     // 新增基站
-    if (this.calculateForm.candidateBs !== '') {
+    if (this.calculateForm.candidateBs !== '')
+    {
       const list = this.calculateForm.candidateBs.split('|');
       const cx = [];
       const cy = [];
       const chosenCandidate = [];
-      for (let i = 0; i < this.result['chosenCandidate'].length; i++) {
+      for (let i = 0; i < this.result['chosenCandidate'].length; i++)
+      {
         chosenCandidate.push(this.result['chosenCandidate'][i].toString());
       }
       let num = 1;
@@ -517,9 +555,11 @@ export class SignalQualityComponent implements OnInit {
       const candidateY = [];
       const candidateText = [];
       const hoverText = [];
-      for (const item of list) {
+      for (const item of list)
+      {
         const oData = JSON.parse(item);
-        if (chosenCandidate.includes(oData.toString())) {
+        if (chosenCandidate.includes(oData.toString()))
+        {
           const xdata = oData[0];
           const ydata = oData[1];
           const zdata = oData[2];
@@ -576,24 +616,27 @@ export class SignalQualityComponent implements OnInit {
       data: traces,
       layout: layout,
       config: defaultPlotlyConfiguration
-    }).then((gd) => {
-      
+    }).then((gd) =>
+    {
+
       const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
       const rect = xy.getBoundingClientRect();
       let layoutOption = {};
-      
+
       this.annotations.length = 0;
       // 新增基站
-      if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '') {
+      if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '')
+      {
         const xLinear = Plotly.d3.scale.linear()
-        .domain([0, rect.width])
-        .range([0, this.calculateForm.width]);
+          .domain([0, rect.width])
+          .range([0, this.calculateForm.width]);
 
         const yLinear = Plotly.d3.scale.linear()
           .domain([0, rect.height])
           .range([0, this.calculateForm.height]);
-        
-        for (const item of this.candidateList) {
+
+        for (const item of this.candidateList)
+        {
           this.shapes.push({
             type: 'rect',
             xref: 'x',
@@ -621,7 +664,8 @@ export class SignalQualityComponent implements OnInit {
           });
         }
 
-        for (const item of this.defaultBsList) {
+        for (const item of this.defaultBsList)
+        {
           this.shapes.push({
             type: 'circle',
             xref: 'x',
@@ -651,8 +695,9 @@ export class SignalQualityComponent implements OnInit {
         }
       }
       // 場域尺寸計算
-      const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
-      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
+      const leftArea = <HTMLDivElement>document.querySelector('.leftArea');
+      this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res =>
+      {
         layoutOption = {
           width: res[0],
           height: res[1],
@@ -661,7 +706,7 @@ export class SignalQualityComponent implements OnInit {
         };
         // resize layout
         this.reLayout(id, layoutOption, isPDF);
-      });      
+      });
 
     });
 
@@ -678,7 +723,8 @@ export class SignalQualityComponent implements OnInit {
     // });
   }
 
-  financial(x) {
+  financial(x)
+  {
     return Number.parseFloat(x).toFixed(2);
   }
 
@@ -688,19 +734,24 @@ export class SignalQualityComponent implements OnInit {
    * @param layoutOption 
    * @param isPDF 
    */
-  reLayout(id, layoutOption, isPDF) {
-    Plotly.relayout(id, layoutOption).then((gd2) => {
+  reLayout(id, layoutOption, isPDF)
+  {
+    Plotly.relayout(id, layoutOption).then((gd2) =>
+    {
       this.setChartObjectSize(gd2);
-      if (isPDF) {
+      if (isPDF)
+      {
         // pdf轉成png，避免colorbar空白
         this.showImg = true;
-        Plotly.toImage(gd2, {width: layoutOption.width, height: layoutOption.height}).then(dataUri => {
+        Plotly.toImage(gd2, { width: layoutOption.width, height: layoutOption.height }).then(dataUri =>
+        {
           this.imageSRC = dataUri;
           Plotly.d3.select(gd2.querySelector('.plotly')).remove();
           this.style['z-index'] = 0;
           this.style['opacity'] = 0.2;
           this.divStyle['text-align'] = 'left';
-          for (const item of this.rectList) {
+          for (const item of this.rectList)
+          {
             item.color = item['svgStyle'].fill = 'rgba(0, 0, 0, 0.2)';
           }
         });
@@ -708,7 +759,8 @@ export class SignalQualityComponent implements OnInit {
     });
   }
 
-  setChartObjectSize(gd2) {
+  setChartObjectSize(gd2)
+  {
 
     this.divStyle.opacity = 1;
     const xy2: SVGRectElement = gd2.querySelector('.draglayer > .xy').querySelectorAll('rect')[0];
@@ -731,7 +783,8 @@ export class SignalQualityComponent implements OnInit {
       .domain([0, this.calculateForm.height])
       .range([0, rect2.height]);
 
-    for (const item of this.rectList) {
+    for (const item of this.rectList)
+    {
       // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
       let width = pixelXLinear(item.width);
       // if (width < 5) {
@@ -750,11 +803,13 @@ export class SignalQualityComponent implements OnInit {
       item['style'].height = `${height}px`;
       item['svgStyle'].width = `${width}px`;
       item['svgStyle'].height = `${height}px`;
-      if (item.shape === 1) {
+      if (item.shape === 1)
+      {
         const points = `${width / 2},0 ${width}, ${height} 0, ${height}`;
         item['points'] = points;
         // console.log(item);
-      } else if (item.shape === 2) {
+      } else if (item.shape === 2)
+      {
         item['ellipseStyle'] = {
           cx: width / 2,
           cy: width / 2,
@@ -764,13 +819,15 @@ export class SignalQualityComponent implements OnInit {
       }
 
       // 延遲轉角度，讓位置正確
-      window.setTimeout(() => {
+      window.setTimeout(() =>
+      {
         item['style']['transform'] = `rotate(${item.rotate}deg)`;
         item['style'].opacity = 1;
       }, 0);
     }
 
-    for (const item of this.defaultBsList) {
+    for (const item of this.defaultBsList)
+    {
       item['style'] = {
         left: `${pixelXLinear(item.x)}px`,
         bottom: `${pixelYLinear(item.y)}px`,
@@ -794,7 +851,8 @@ export class SignalQualityComponent implements OnInit {
     const candisateYLinear = Plotly.d3.scale.linear()
       .domain([0, this.calculateForm.height])
       .range([0, rect3.height]);
-    for (const item of this.candidateList) {
+    for (const item of this.candidateList)
+    {
       item['style'] = {
         left: `${pixelXLinear(item.x)}px`,
         bottom: `${candisateYLinear(item.y)}px`,
@@ -814,7 +872,8 @@ export class SignalQualityComponent implements OnInit {
    * show/hide UE
    * @param visible 
    */
-  switchUE(visible) {
+  switchUE(visible)
+  {
     Plotly.restyle(this.chartId, {
       visible: visible
     }, [0]);
@@ -824,7 +883,8 @@ export class SignalQualityComponent implements OnInit {
    * show/hide 障礙物
    * @param visible 
    */
-  switchShowObstacle(visible) {
+  switchShowObstacle(visible)
+  {
     this.chartService.switchShowObstacle(visible, this.rectList, this.shapes, this.annotations, this.chartId);
   }
 
@@ -832,22 +892,27 @@ export class SignalQualityComponent implements OnInit {
    * show/hide BS
    * @param visible 
    */
-  switchShowBs(visible) {
+  switchShowBs(visible)
+  {
 
-    if (visible == 'visible') {visible = true;} else {visible = false;}
+    if (visible == 'visible') { visible = true; } else { visible = false; }
 
     Plotly.restyle(this.chartId, {
       visible: visible
     }, [2]);
 
-    for (const item of this.shapes) {
+    for (const item of this.shapes)
+    {
       // 顏色區分障礙物與BS
-      if (item.type == 'circle' && item.fillcolor === '#005959') {
+      if (item.type == 'circle' && item.fillcolor === '#005959')
+      {
         item.visible = visible;
       }
     }
-    for (const item of this.annotations) {
-      if (item.text[0] == '既' || item.text[0] == 'D') {
+    for (const item of this.annotations)
+    {
+      if (item.text[0] == '既' || item.text[0] == 'D')
+      {
         item.visible = visible;
       }
     }
@@ -867,18 +932,23 @@ export class SignalQualityComponent implements OnInit {
    * show/hide AP
    * @param visible 
    */
-  switchShowCandidate(visible) {
+  switchShowCandidate(visible)
+  {
     Plotly.restyle(this.chartId, {
       visible: visible
     }, [2]);
 
-    for (const item of this.shapes) {
-      if (item.type == 'rect') {
+    for (const item of this.shapes)
+    {
+      if (item.type == 'rect')
+      {
         item.visible = visible;
       }
     }
-    for (const item of this.annotations) {
-      if (item.text[0] == '待' || item.text[0] == 'C') {
+    for (const item of this.annotations)
+    {
+      if (item.text[0] == '待' || item.text[0] == 'C')
+      {
         item.visible = visible;
       }
     }
@@ -892,10 +962,12 @@ export class SignalQualityComponent implements OnInit {
   /**
    * heatmap透明度
    */
-  changeOpacity() {
+  changeOpacity()
+  {
     const chartElm = document.querySelectorAll(`.quality_chart`)[0];
     let traceNum = 1;
-    if (this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
+    if (this.authService.isEmpty(this.calculateForm.ueCoordinate))
+    {
       traceNum = 0;
     }
     Plotly.restyle(chartElm, {

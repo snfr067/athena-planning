@@ -426,9 +426,14 @@ export class ResultComponent implements OnInit {
                 let antennaName = "";
                 if(this.authService.lang =='zh-TW'){
                   antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+                  if (antennaName == null || antennaName == '')
+                  {
+                    antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+                  }
                 }else{
-                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
                 }
+                console.log(JSON.stringify(this.antennaList));
                 const obj = JSON.parse(item);
                 this.defaultBSList5gTdd.push({
                   x: obj[0],
@@ -454,9 +459,16 @@ export class ResultComponent implements OnInit {
                 let antennaName = "";
                 if(this.authService.lang =='zh-TW'){
                   antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+                  if (antennaName == null || antennaName == '')
+                  {
+                    antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+                  }
                 }else{
-                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+                  antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
                 }
+                console.log(JSON.stringify(this.antennaList));
+                console.log(JSON.stringify(antObj[0]));
+                console.log(JSON.stringify(this.AntennaIdToIndex));
                 const obj = JSON.parse(item);
                 this.defaultBSList5gFdd.push({
                   x: obj[0],
@@ -855,9 +867,14 @@ export class ResultComponent implements OnInit {
           let antennaName = "";
           if(this.authService.lang =='zh-TW'){
             antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+            if (antennaName == null || antennaName == '')
+            {
+              antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+            }
           }else{
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
           }
+          console.log(JSON.stringify(this.antennaList));
           this.candidateTable5gTdd.push({
             num: item,
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
@@ -881,9 +898,15 @@ export class ResultComponent implements OnInit {
           let antennaName = "";
           if(this.authService.lang =='zh-TW'){
             antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+            if (antennaName == null || antennaName == '')
+            {
+              antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+            }
           }else{
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antenna_name'];
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
           }
+          console.log(JSON.stringify(this.antennaList));
+          console.log(JSON.stringify(this.antennaList));
           this.candidateTable5gFdd.push({
             num: item,
             x: xyMap[this.result['chosenCandidate'][i].toString()].x,
@@ -1312,7 +1335,7 @@ export class ResultComponent implements OnInit {
         let result = res;
         this.antennaList = Object.values(result);
         for (let i = 0;i < this.antennaList.length;i++) {
-          let id = this.antennaList[i]['antenna_id'];
+          let id = this.antennaList[i]['antennaID'];
           this.AntennaIdToIndex[id]=i;
         }
         console.log(result);
@@ -1425,7 +1448,7 @@ export class ResultComponent implements OnInit {
       XLSX.utils.book_append_sheet(wb, coverageWS, sheetName);
 
       //ul throughput
-      sheetName = "(Uplink Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      sheetName = "(UL Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")"; //Uplink在英文版中加上meter會超過31chars，因此修短
       var ulThroughputData = [];
       pushArr = [" "];
       value = 0;
@@ -1454,7 +1477,7 @@ export class ResultComponent implements OnInit {
       XLSX.utils.book_append_sheet(wb, ulThroughputWS, sheetName);
       
       //dl throughput 
-      sheetName = "(Downlink Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")";
+      sheetName = "(DL Throughput Map " + this.zValues[z] + this.translateService.instant('meter') + ")";//Downloadlink在英文版中加上meter會超過31chars，因此修短
       var dlThroughputData = [];
       pushArr = [" "];
       value = 0;

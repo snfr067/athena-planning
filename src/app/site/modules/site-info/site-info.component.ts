@@ -22,7 +22,7 @@ export class SiteInfoComponent implements OnInit {
   result = {};
   /** 結果form */
   calculateForm = new CalculateForm();
-  /** 待選基站數量 */
+  /** 候選基站位置數量 */
   inputBsListCount = 0;
   /** 現有基站數量 */
   defaultBsCount = 0;
@@ -88,7 +88,7 @@ export class SiteInfoComponent implements OnInit {
     }
   }
 
-  /** i18n replace 待選基站位置( 共{0}處 ) */
+  /** i18n replace 候選基站位置位置( 共{0}處 ) */
   getWaitSelect() {
     return this.translateService.instant('result.propose.wait_select_2')
     .replace('{0}', this.inputBsListCount);

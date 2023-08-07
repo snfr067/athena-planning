@@ -19,6 +19,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import {MatInputModule} from '@angular/material/input';
 import { MsgDialogModule } from '../../utility/msg-dialog/msg-dialog.module';
 import { MatButtonModule } from '@angular/material/button';
+import { StatisticsModule } from '../modules/statistics/statistics.module';
 
 @NgModule({
   imports: [
@@ -40,7 +41,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatRadioModule,
     MatInputModule,
     MsgDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    StatisticsModule
   ],
   declarations: [SitePlanningComponent],
   exports: [SitePlanningComponent],

@@ -3,7 +3,7 @@ import { OnPinch, OnScale, OnDrag, OnRotate, OnResize, OnWarp, MoveableGroupInte
 import { Frame } from 'scenejs';
 import { NgxMoveableComponent } from 'ngx-moveable';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatRadioChange, MatRadioButton } from '@angular/material/radio';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDailogComponent } from '../../utility/confirm-dailog/confirm-dailog.component';
 import { HttpClient } from '@angular/common/http';
@@ -25,6 +25,8 @@ import  booleanContains from "@turf/boolean-contains";
 import { polygon } from "@turf/helpers";
 import circle from '@turf/circle';
 import CryptoJS from 'crypto-js';
+import * as echarts from 'echarts';
+import { transcode } from 'buffer';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
@@ -53,12 +55,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     private translateService: TranslateService,
     private chartService: ChartService,
     private http: HttpClient) {
-    }
-  
+  }
+
+
   // UC 新增變數使用
   selected = -1; //將checkbox改成單選
   // changePlanningTarget();
-
+  
   /**
    * NgxMoveableComponent
    */
@@ -66,7 +69,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * MatMenuTrigger
    */
-  @ViewChild(MatMenuTrigger, {static: true}) matMenuTrigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, { static: true }) matMenuTrigger: MatMenuTrigger;
   /**
    * moveable target
    */
@@ -84,7 +87,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * moveable 設定值
    */
-  
+
   frame = new Frame({
     width: '30px',
     height: '30px',
@@ -119,6 +122,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   modelList = [];
   /** antenna list */
   antennaList = [];
+  /** new antenna list */
+  allAntennaList = [];
+  filterAntennaList = [];
+  defaultAntennaList = [];
+  customizedAntennaList = [];
   /** new material & new model */
   materialId: number = 0;
   materialName: string = null;
@@ -253,11 +261,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** ue height */
   ueHeight = 14.5;
   /** candidate width */
-  candidateWidth = 28;
+  candidateWidth = 32;
   /** candidate height */
-  candidateHeight = 18;
+  candidateHeight = 32;
   /** 右鍵選單position */
-  menuTopLeftStyle = {top: '0', left: '0'};
+  menuTopLeftStyle = { top: '0', left: '0' };
   /** 障礙物顏色 */
   color;
   /** mouseover target */
@@ -271,7 +279,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     'availableNewBsNumber', 'addFixedBsNumber', 'sinrRatio',
     'throughputRatio', 'coverageRatio', 'ueAvgSinrRatio', 'ueAvgThroughputRatio', 'ueTpByDistanceRatio',
     'mctsC', 'mctsMimo', 'ueCoverageRatio', 'ueTpByRsrpRatio',
-    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime','resolution','maxConnectionNum','geographicalNorth'];
+    'mctsTemperature', 'mctsTime', 'mctsTestTime', 'mctsTotalTime', 'resolution', 'maxConnectionNum', 'geographicalNorth'];
 
   /** task id */
   taskid = '';
@@ -381,7 +389,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   isDefaultSINRSetting = "custom";
   isDefaultRSRPSetting = "custom";
   isDefaultThroughputSetting = "custom";
-  isDefaultUEThroughputSetting = "custom";
+  isDefaultUEThroughputSetting = "customized";
   defaultArea = 95;
   defaultSINRSetting = 15;
   sinrUpperLimit = 40;
@@ -397,6 +405,80 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   dlThroughputLowerLimit = 0;
   defaultUEULThroughputSetting = 5;
   defaultUEDLThroughputSetting = 5;
+
+  firstLayerDialogRef = null;
+  secondLayerDialogRef = null;
+  thirdLayerDialogRef = null;
+  confirmDialogConfig = null;
+
+  isAntennaDefault = "default";
+  addAntenna = {
+    antennaID: 1,
+    name: "",
+    type: "Directional",
+    band: [],
+    port: 1,
+    model: "",
+    manufactor: "",
+    file: null,
+    fileName: "",
+    sha256sum: "",
+    property: "customized"
+  };
+  editAntenna = {
+    antennaID: 1,
+    name: "",
+    type: "",
+    band: [],
+    port: 1,
+    model: "",
+    manufactor: "",
+    fileName: "",
+    file: null,
+    sha256sum: "",
+    property: "customized",
+    isNewFile: false
+  };
+  checkRawdataAntenna = {
+    antennaID: 1,
+    name: "",
+    type: "",
+    property: "customized",
+    rawData: [],
+    portList: [],
+    freqList: [],
+    selectPort: '',
+    selectFreq: 0,
+    selectPortGain: 0
+  };
+  selectAntenna = {
+    antennaID: 1,
+    name: '',
+    type: '',
+    property: "customized",
+    manufactor: '',
+    availableFrequency: [],
+    availablePorts: [],
+    selectPortID: 0,
+    selectFreqId: 0,
+    selectFreq: 0,
+    selectPort: '',
+  };
+  dftOmiAntSimulationTxGain = 0;
+  antennaWarnMsg = {
+    name: "",
+    band: "",
+    port: "",
+    model: "",
+    manufactor: "",
+    file: "",
+    changePortFreqTitle: "",
+    changePort: "",
+    changeFreq: ""
+  }
+  defaultAntennaPage = 1;
+  customizedAntennaPage = 1;
+  maxAntRowInPage = 10;
 
   fieldStr = {
     coverage: "field.coverage",
@@ -429,6 +511,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('ThroughputModalTable') ThroughputModalTable: TemplateRef<any>;
   @ViewChild('UECoverageModalTable') UECoverageModalTable: TemplateRef<any>;
   @ViewChild('UEThroughputModalTable') UEThroughputModalTable: TemplateRef<any>;
+  @ViewChild('AntennaModalTable') AntennaModalTable: TemplateRef<any>;
+  @ViewChild('AddAntennaModalTable') AddAntennaModalTable: TemplateRef<any>;
+  @ViewChild('EditAntennaModalTable') EditAntennaModalTable: TemplateRef<any>;
+  @ViewChild('CheckAntennaRawdataModalTable') CheckAntennaRawdataModalTable: TemplateRef<any>;
+  @ViewChild('AntennaWarnMsgModalTable') AntennaWarnMsgModalTable: TemplateRef<any>;
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
@@ -441,10 +528,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
   @ViewChild('deleteModal2') deleteModal2: TemplateRef<any>;
   @ViewChild('changeToSimulationModal') changeToSimulationModal: TemplateRef<any>;
+  /** 統計圖 效能分析 */
+  @ViewChild('dftOmiAntGain') dftOmiAntGain: any; 
   // @ViewChild('deleteModal3') deleteModal3: TemplateRef<any>;
   // @ViewChild('deleteModal4') deleteModal4: TemplateRef<any>;
   // @ViewChild('deleteModal5') deleteModal5: TemplateRef<any>;
-  
+
+
   // WiFi頻段:2.4G+5G
   wifiFreqList2_4g = [
     2412,
@@ -499,7 +589,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   scalingFactor = 1;
   rsrpThreshold = -90;
   sinrThreshold = 15;
-  
+
   tempCalParamSet = {
     txpower: 0,
     beampattern: '0',
@@ -526,12 +616,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     wifiFrequency: 2412,
     bsTxGain: 0,
     bsNoiseFigure: 0,
-    AntennaId:1,
-    theta:0,
-    phi:0
+    AntennaId: 1,
+    theta: 0,
+    phi: 0,
+    isAntennaDefault: 'default'
   }
 
-  
+
   /** click外部取消moveable */
   @HostListener('document:click', ['$event'])
   clickout(event) {
@@ -577,7 +668,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @HostListener('window:resize') windowResize() {
     try {
       this.moveable.ngOnDestroy();
-    } catch (error) {}
+    }
+    catch (error)
+    {
+      console.log(JSON.stringify(error));
+    }
     this.chartResize();
   }
 
@@ -594,12 +689,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.chart.nativeElement.style.opacity = 0;
     this.resetChartWidth();
     // 隱藏規劃目標及場域設定的button位置跑掉
-    const matSidenav: HTMLElement = <HTMLElement> document.querySelector('.mat-sidenav');
+    const matSidenav: HTMLElement = <HTMLElement>document.querySelector('.mat-sidenav');
     const matSidenavContent: HTMLElement = document.querySelector('.mat-sidenav-content');
     matSidenav.style.width = matSidenavContent.style.marginRight;
+
+    this.getAntenna();
+
+    /*this.dftOmiAntGain.nativeElement.valueChanges.subscribe((value: any) =>
+    {
+      this.changedftOmiAntRawdataPattern(value);
+    });*/
   }
 
-  ngOnInit() {
+  ngOnInit()
+  {
+       
     window.sessionStorage.removeItem('tempParamForSelect');
     if (!sessionStorage.getItem('rsrpThreshold')) {
       sessionStorage.setItem('rsrpThreshold', JSON.stringify(-90));
@@ -643,9 +747,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // console.log('this.materialList',this.materialList);
           // let sorted = this.materialList.sort((a,b) => a.id - b.id);
           this.materialId = this.materialList[0]['id'];
-          for (let i = 0;i < this.materialList.length;i++) {
+          for (let i = 0; i < this.materialList.length; i++) {
             let id = this.materialList[i]['id'];
-            this.materialIdToIndex[id]=i;
+            this.materialIdToIndex[id] = i;
           }
           resolve(res);
         },
@@ -666,16 +770,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let result = res;
           this.modelList = Object.values(result);
           // let sorted = this.modelList.sort((a,b) => a.id - b.id);
-          for (let i = 0;i < this.modelList.length;i++) {
+          for (let i = 0; i < this.modelList.length; i++) {
             // if( this.modelList[i]['name'].includes("Pegatron") ){
             //   this.modelList[i]['name'] = this.modelList[i]['name'].replace("Pegatron","P")
             //   this.modelList[i]['chineseName'] = this.modelList[i]['chineseName'].replace("和碩","P")
             // }
             let id = this.modelList[i]['id'];
-            this.modelIdToIndex[id]=i;
+            this.modelIdToIndex[id] = i;
           }
           resolve(res);
-        },err => {
+        }, err => {
           console.log(err);
           return reject(err);
         }
@@ -688,22 +792,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         res => {
           let result = res;
           this.antennaList = Object.values(result);
-          for (let i = 0;i < this.antennaList.length;i++) {
-            let id = this.antennaList[i]['antenna_id'];
-            this.AntennaIdToIndex[id]=i;
-            // if( this.antennaList[i]['antenna_name'].includes("Pegatron") ){
-            //   this.antennaList[i]['antenna_name'] = this.antennaList[i]['antenna_name'].replace("Pegatron","P")
+          for (let i = 0; i < this.antennaList.length; i++) {
+            let id = this.antennaList[i]['antennaID'];
+            this.AntennaIdToIndex[id] = i;
+            // if( this.antennaList[i]['antennaName'].includes("Pegatron") ){
+            //   this.antennaList[i]['antennaName'] = this.antennaList[i]['antennaName'].replace("Pegatron","P")
             //   this.antennaList[i]['chinese_name'] = this.antennaList[i]['chinese_name'].replace("Pegatron","P")
             //   this.antennaList[i]['manufactor'] = this.antennaList[i]['manufactor'].replace("Pegatron","P")
             // }
           }
           for (let item of this.antennaList) {
-            if(!(this.AntennaManufactorList.includes(item['manufactor']))){
+            if (!(this.AntennaManufactorList.includes(item['manufactor']))) {
               this.AntennaManufactorList.push(item['manufactor']);
             }
           }
           console.log(result);
-        },err => {
+        }, err => {
           console.log(err);
         }
       );
@@ -719,9 +823,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
         sessionStorage.removeItem('importFile');
 
-      // Not import File
+        // Not import File
       } else {
-        if (this.taskid !== '' ) {
+        if (this.taskid !== '') {
           // 編輯場域
           let url;
           if (this.isHst) {
@@ -740,33 +844,45 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 const output = this.formService.setHstOutputToResultOutput(result['output']);
                 // delete result['output'];
                 // 大小寫不同，各自塞回form
-                 console.log(result);
+                console.log(result);
                 // console.log(output);
                 this.dlRatio = result['tddframeratio'];
                 this.calculateForm = this.formService.setHstToForm(result);
+
+
+                //this.statistics.result = output;
+                //this.statistics.drawChart(false);
+                //console.log("this.statistics.drawChart");
+
+
+
                 this.isBsNumberOptimization = this.formService.setHstToBsNumOpt(result);
                 console.log("isBsNumOpt = " + this.isBsNumberOptimization);
                 this.evaluationFuncForm = this.calculateForm.evaluationFunc;
+                this.checkEvaluationFuncForm();
+                console.log("this.evaluationFuncForm = " + JSON.stringify(this.evaluationFuncForm));
                 this.oldFormatEvaluation();
                 this.changeAreaFormatToPercent();
+                console.log("this.evaluationFuncForm = " + JSON.stringify(this.evaluationFuncForm));
                 this.setThroughputTypeAndValue();
+                this.setStorageEvaluationFuncForm();
 
-                if (!(Number(this.calculateForm.maxConnectionNum)>0)){
+                if (!(Number(this.calculateForm.maxConnectionNum) > 0)) {
                   this.calculateForm['maxConnectionNum'] = 32;
                 }
-                if (!(Number(this.calculateForm.resolution)>0)){
+                if (!(Number(this.calculateForm.resolution) > 0)) {
                   this.calculateForm['resolution'] = 1;
                 }
-                if (this.authService.isEmpty(this.calculateForm.geographicalNorth)){
+                if (this.authService.isEmpty(this.calculateForm.geographicalNorth)) {
                   this.calculateForm['geographicalNorth'] = 0;
                 }
                 // this.calculateForm.defaultBs = output['defaultBs'];
                 // this.calculateForm.bsList = output['defaultBs'];
-                if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
-                  if(this.calculateForm.pathLossModelId < this.modelList.length){
+                if (!(this.calculateForm.pathLossModelId in this.modelIdToIndex)) {
+                  if (this.calculateForm.pathLossModelId < this.modelList.length) {
                     this.calculateForm.pathLossModelId = this.modelList[this.calculateForm.pathLossModelId]['id'];
                   }
-                  else{
+                  else {
                     this.calculateForm.pathLossModelId = this.modelList[0]['id'];
                   }
                 }
@@ -784,20 +900,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 this.hstOutput['gaResult']['rsrpMap'] = output['rsrpMap'];
                 this.hstOutput['gaResult']['ulThroughputMap'] = output['ulThroughputMap'];
                 this.hstOutput['gaResult']['dlThroughputMap'] = output['throughputMap'];
-                if (this.calculateForm.isSimulation === true) 
-                {
+                if (this.calculateForm.isSimulation === true) {
                   this.planningIndex = '3';
-                } 
-                else 
-                {
+                }
+                else {
                   var isFieldOrUEActive = this.changePlaningIndexByEvaluationForm();
+                  this.setPlanningIndex();
+                  console.log("this.planningIndex = " + this.planningIndex);
 
                   // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                   // if(!isFieldOrUEActive)
                   // {
                   //   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) 
                   //   {                  
-                  //     this.planningIndex = '1';
+                  //     this.planningIndex = '1';console.log(this.planningIndex);
                   //     // 此if的block是為了相容舊版本產生的場域，若以後開放sinr相關目標請拿掉
                   //     if (this.calculateForm.isAverageSinr == true) 
                   //     {
@@ -852,10 +968,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                       });
                     });
                   });
-                } catch(e) {
+                } catch (e) {
                   // console.log('No ulThorughput data, it may be an old record');
                 }
-        
+
                 const dlThroughputAry = [];
                 try {
                   this.result['throughputMap'].map(v => {
@@ -865,7 +981,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                       });
                     });
                   });
-                } catch(e){
+                } catch (e) {
                   // console.log('No dlThorughput data, it may be an old record');
                 }
 
@@ -886,8 +1002,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   this.planningIndex = '3';
                 } else {
                   if (this.calculateForm.isCoverage || this.calculateForm.isAverageSinr) {
-                  // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
-                    this.planningIndex = '1';                    
+                    // if (this.calculateForm.isCoverage || this.calculateForm.isAvgThroughput || this.calculateForm.isAverageSinr) {
+                    this.planningIndex = '1';console.log(this.planningIndex);
                   } else {
                     this.planningIndex = '2';
                   }
@@ -935,41 +1051,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // this.calculateForm.bandwidth = '[1]';
           }
           this.initData(false, false, '');
-          if(!(this.calculateForm.pathLossModelId in this.modelIdToIndex)){ 
-              this.calculateForm.pathLossModelId = this.modelList[0]['id'];
+          if (!(this.calculateForm.pathLossModelId in this.modelIdToIndex)) {
+            this.calculateForm.pathLossModelId = this.modelList[0]['id'];
           }
 
           // evaluationForm初始值
-          this.planningIndex = '1';
+          this.planningIndex = '1';console.log(this.planningIndex);
           this.evaluationFuncForm = new EvaluationFuncForm();
-          if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
-          this.addSINR();
-      
-          if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
+          if (this.evaluationFuncForm.field.sinr.ratio.length == 0)
+            this.addSINR();
+
+          if (this.evaluationFuncForm.field.rsrp.ratio.length == 0)
             this.addRSRP();
-          
-          if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
+
+          if (this.evaluationFuncForm.field.throughput.ratio.length == 0)
             this.addThroughput();
-        
-          if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+
+          if (this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
             this.addUEThroughput();
         }
+
+
         // setTimeout(()=> {
         //   if (this.calculateForm.defaultBs !== "") {
         //     this.planningIndex = '3';
-            
+
         //     console.log('Simulation')
         //   } else {
-        //     this.planningIndex = '1';
+        //     this.planningIndex = '1';console.log(this.planningIndex);
         //     console.log('Calculation')
         //   }
         // }, 1000);
 
 
       }
+
     })
-    .catch(err => console.log(err))
+      .catch(err => console.log(err))
     )
+
+
   }
 
   checkHeiWidAlt(fieldOrId , altitude, zValueArr) {
@@ -1101,8 +1222,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * 離開頁面
    */
-  ngOnDestroy(): void {
+  ngOnDestroy(): void
+  {
+    console.log("Test");
     this.setForm();
+    console.log("Test");
     // 暫存
     // window.sessionStorage.clear();
     if (this.taskid !== '') {
@@ -1110,16 +1234,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       window.sessionStorage.setItem(`form_blank_task`, JSON.stringify(this.calculateForm));
     }
+    console.log("Test");
     if (typeof this.progressInterval !== 'undefined') {
       window.clearInterval(this.progressInterval);
       for (let i = 0; i < this.progressInterval; i++) {
         window.clearInterval(i);
       }
     }
-    try {
+    console.log("Test");
+    try
+    {
       this.moveable.destroy();
-    } catch (error) {}
+    }
+    catch (error)
+    {
+      console.log(JSON.stringify(error));
+    }
     document.querySelector('body').style.overflow = 'auto';
+    console.log("Test");
   }
 
   tempParamStorageForSelect (temp) {
@@ -1631,7 +1763,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         bsNoiseFigure: 0,
         AntennaId:1,
         theta:0,
-        phi:0
+        phi: 0,
+        isAntennaDefault: 'default'
       };
       if (this.calculateForm.objectiveIndex === '0') {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1681,7 +1814,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         bsNoiseFigure: 0,
         AntennaId:1,
         theta:0,
-        phi:0
+        phi: 0,
+        isAntennaDefault: 'default'
       };
       if (Number(this.calculateForm.objectiveIndex) === 0) {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -2601,7 +2735,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * 開啟RF設定燈箱
   */
-  openRfParamSetting(item, i, isNav) {
+  openRfParamSetting(item, i, isNav)
+  {
     this.svgId = item;
     if (isNav) {
       this.svgNum = i + 1;
@@ -2613,37 +2748,75 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // console.log(this.svgNum);
     // this.matDialog.open(this.rfModal);
     this.manufactor = 'All';
+
+
+    if (this.bsListRfParam[this.svgId].isAntennaDefault == 'default')
+    {
+      if (this.bsListRfParam[this.svgId].AntennaId == null)
+        this.bsListRfParam[this.svgId].AntennaId = this.defaultAntennaList[0].antennaID;
+    }
+    else
+    {
+      if (this.bsListRfParam[this.svgId].AntennaId == null)
+        this.bsListRfParam[this.svgId].AntennaId = this.customizedAntennaList[0].antennaID;
+    }
+    this.antennaChangeCheck(this.svgId);
     this.matDialog.open(this.rfModalTable);
+    
   }
   /**
-   * 開啟多目標函數設定燈箱
+   *
+   *開啟多目標函數設定燈箱
   */
   openFieldCoverageSetting() {    
-    this.matDialog.open(this.FieldCoverageModalTable);    
+    this.matDialog.open(this.FieldCoverageModalTable, { disableClose: true }); 
   }
   openSINRSetting() {
     if(this.evaluationFuncForm.field.sinr.ratio.length == 0)
       this.addSINR();
-    this.matDialog.open(this.SINRModalTable);
+    this.matDialog.open(this.SINRModalTable, { disableClose: true });
   }  
-  openRSRPSetting() {
+  openRSRPSetting()
+  {
+    console.log(JSON.stringify(this.evaluationFuncForm.field.rsrp));
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
-    this.matDialog.open(this.RSRPModalTable);
+    this.matDialog.open(this.RSRPModalTable, { disableClose: true });
   }  
   openThroughputSetting() {
     if(this.evaluationFuncForm.field.throughput.ratio.length == 0)
       this.addThroughput();
-    this.matDialog.open(this.ThroughputModalTable);
+    this.matDialog.open(this.ThroughputModalTable, { disableClose: true });
   }  
   openUEThroughputSetting() {
     if(this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
       this.addUEThroughput();
-    this.matDialog.open(this.UEThroughputModalTable);
+    this.matDialog.open(this.UEThroughputModalTable, { disableClose: true });
   }
   openUECoverageSetting() {    
-    this.matDialog.open(this.UECoverageModalTable);    
+    this.matDialog.open(this.UECoverageModalTable, { disableClose: true });  
   }
+
+  openAntennaSetting() {
+    this.getAntenna();
+    this.firstLayerDialogRef = this.matDialog.open(this.AntennaModalTable);  
+  }
+
+  openAddAntennaSetting() {
+    this.secondLayerDialogRef = this.matDialog.open(this.AddAntennaModalTable, { disableClose: true });
+  }
+
+  openEditAntennaSetting(index) {
+    this.editAntenna = this.customizedAntennaList[index];
+    this.editAntenna.isNewFile = false;
+    this.secondLayerDialogRef = this.matDialog.open(this.EditAntennaModalTable, { disableClose: true });
+  }
+
+  openAntennaRawdata(index, isDefault)
+  {
+    this.getAntennaRawdata(index, false, isDefault);
+  }
+
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
     if (isNav) { // 右方障礙物資訊id與左方平面圖障礙物id序號差1
@@ -2735,7 +2908,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // this.initData(false, true, false, false);
     };
   }
-
   /**
    * 數量物件移動position
    * @param svgId 
@@ -4232,6 +4404,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.evaluationFuncForm = JSON.parse(window.sessionStorage.getItem(`evaluationFuncForm`));
     }
+    this.setThroughputTypeAndValue();
   }
 
   changeBsNumOpti() {
@@ -5597,6 +5770,168 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // 不知為何，只開一次dialog位置會偏移
     this.matDialog.closeAll();
     this.matDialog.open(View3dComponent, this.view3dDialogConfig);
+  }  
+
+  getAntennaRawdata(index, isDownload, isDefault)
+  {
+    console.log(index);
+    console.log(JSON.stringify(this.defaultAntennaList));
+    if (isDefault == 'default')
+    {
+      this.checkRawdataAntenna.name = this.defaultAntennaList[index].name;
+      this.checkRawdataAntenna.antennaID = this.defaultAntennaList[index].antennaID;
+      this.checkRawdataAntenna.type = this.defaultAntennaList[index].type;
+      this.checkRawdataAntenna.property = this.defaultAntennaList[index].property;
+    }
+    else
+    {
+      console.log(JSON.stringify(this.customizedAntennaList));
+      this.checkRawdataAntenna.name = this.customizedAntennaList[index].name;
+      this.checkRawdataAntenna.antennaID = this.customizedAntennaList[index].antennaID;
+      this.checkRawdataAntenna.type = this.customizedAntennaList[index].type;
+      this.checkRawdataAntenna.property = this.customizedAntennaList[index].property; 
+    }
+    console.log(JSON.stringify(this.checkRawdataAntenna));
+
+
+    var isSame = false;
+
+    if (this.checkRawdataAntenna.property == 'default' && this.checkRawdataAntenna.type == 'Omnidirectional')
+    {
+      this.secondLayerDialogRef = this.matDialog.open(this.CheckAntennaRawdataModalTable);
+      this.changedftOmiAntRawdataPattern(this.dftOmiAntSimulationTxGain);
+    }
+    else
+    {
+      let url = `${this.authService.API_URL}/getAntennaRawData/${this.checkRawdataAntenna.antennaID}/${this.authService.userToken}`;
+      this.http.get(url).subscribe(
+        res =>
+        {
+          this.checkRawdataAntenna.rawData = res['rawData'];
+          this.checkRawdataAntenna.portList = [];
+          this.checkRawdataAntenna.freqList = [];
+          console.log(JSON.stringify(this.checkRawdataAntenna.rawData));
+          for (var r = 0; r < this.checkRawdataAntenna.rawData.length; r++)
+          {
+            isSame = false;
+            for (var p = 0; p < this.checkRawdataAntenna.portList.length; p++)
+            {
+              if (this.checkRawdataAntenna.portList[p] == this.checkRawdataAntenna.rawData[r].portName)
+              {
+                isSame = true;
+                break;
+              }
+            }
+            if (!isSame)
+              this.checkRawdataAntenna.portList.push(this.checkRawdataAntenna.rawData[r].portName);
+            isSame = false;
+            for (var f = 0; f < this.checkRawdataAntenna.freqList.length; f++)
+            {
+              if (this.checkRawdataAntenna.freqList[f] == this.checkRawdataAntenna.rawData[r].frequency)
+              {
+                isSame = true;
+                break;
+              }
+            }
+            if (!isSame)
+              this.checkRawdataAntenna.freqList.push(this.checkRawdataAntenna.rawData[r].frequency);
+          }
+          this.checkRawdataAntenna.selectPort = this.checkRawdataAntenna.portList[0];
+          this.checkRawdataAntenna.selectFreq = this.checkRawdataAntenna.freqList[0];
+          console.log(JSON.stringify(this.checkRawdataAntenna.portList));
+          console.log(JSON.stringify(this.checkRawdataAntenna.freqList));
+
+          if (isDownload)
+            this.exportAntData();
+          else
+          {
+            this.secondLayerDialogRef = this.matDialog.open(this.CheckAntennaRawdataModalTable);
+            this.changeAntennaRawdataPattern();
+          }
+        },
+        err =>
+        {
+          this.checkRawdataAntenna.rawData = [];
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: this.translateService.instant('antenna.get.error')
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        }
+      );
+    }
+
+  }
+
+  exportAntData()
+  {
+    var portName = "";
+    var frequency = 0;
+    var portGain = 0;
+    var pattern = [];
+
+    let PORT_NAME_CELL = 'B1';
+    let FREQ_CELL = 'B2';
+    let GAIN_CELL = 'B3';
+    let HORI_COL = 'C';
+    let VERT_COL = 'F';
+    let ANGLE0_ROW = 6;
+
+    var horiCell = '';
+    var vertCell = '';
+
+    fetch("../../assets/file/ITRI_antenna_template.xlsx")
+      .then(res => res.blob()) // returns URL data a blob
+      .then((blob) =>
+      {
+        console.log(blob);
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) =>
+        {
+          const bstr: string = e.target.result;
+
+          const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+          const ws: XLSX.WorkSheet = wb.Sheets[wb.SheetNames[0]]; // get original worksheet
+
+          var copy_ws = JSON.parse(JSON.stringify(ws)); // make a copy of the object
+          for (var i = 0; i < this.checkRawdataAntenna.rawData.length; i++)
+          {
+            portName = this.checkRawdataAntenna.rawData[i].portName;
+            frequency = this.checkRawdataAntenna.rawData[i].frequency;
+            portGain = this.checkRawdataAntenna.rawData[i].portGain;
+
+            copy_ws = JSON.parse(JSON.stringify(wb.Sheets[wb.SheetNames[0]]));  //複製樣本sheet
+            XLSX.utils.book_append_sheet(wb, copy_ws, `${portName}_${frequency}`);
+            const wsToWrite: XLSX.WorkSheet = wb.Sheets[wb.SheetNames[i]];
+
+            pattern = this.checkNullAngle(this.checkRawdataAntenna.rawData[i].pattern);
+            console.log(pattern);
+            // 在 myPromise 被 resolve 時執行
+            XLSX.utils.sheet_add_aoa(wsToWrite, [[portName]], { origin: PORT_NAME_CELL });
+            XLSX.utils.sheet_add_aoa(wsToWrite, [[frequency]], { origin: FREQ_CELL });
+            XLSX.utils.sheet_add_aoa(wsToWrite, [[portGain]], { origin: GAIN_CELL });
+            for (var j = 0; j < pattern.length; j++)
+            {
+              horiCell = HORI_COL + (pattern[j][0] + ANGLE0_ROW);
+              vertCell = VERT_COL + (pattern[j][0] + ANGLE0_ROW);
+              XLSX.utils.sheet_add_aoa(wsToWrite, [[pattern[j][1]]], { origin: horiCell });
+              XLSX.utils.sheet_add_aoa(wsToWrite, [[pattern[j][2]]], { origin: vertCell });
+            }
+            console.log(wsToWrite);
+          }
+
+          //刪除樣本sheet
+          delete wb.Sheets[wb.SheetNames[0]];
+          delete wb.SheetNames[0];
+          wb.SheetNames.splice(0, 1);
+
+          //save
+          XLSX.writeFile(wb, `${this.checkRawdataAntenna.name}.xlsx`);
+        };
+        reader.readAsBinaryString(blob);
+      })
+      .catch((e) => console.error(e));
+
   }
 
   /** export xlsx */
@@ -5937,7 +6272,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   import(event) {
     /* wire up file reader */
-    const target: DataTransfer = <DataTransfer> (event.target);
+    const target: DataTransfer = <DataTransfer>(event.target);
+    console.log(event.target);
     if (target.files.length !== 1) 
     {
       this.msgDialogConfig.data = {
@@ -6170,7 +6506,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
       const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
       if (candidateData.length > 1) {
-        this.planningIndex = '1';     //if there is any candidate, planning index should be 1 or 2
+        this.planningIndex = '1';console.log(this.planningIndex);     //if there is any candidate, planning index should be 1 or 2
         for (let i = 1; i < candidateData.length; i++) {
           const id = `candidate_${(i - 1)}`;
           this.candidateList.push(id);
@@ -6496,7 +6832,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }       
         
         if (this.calculateForm.isAverageSinr || this.calculateForm.isCoverage) {
-          this.planningIndex = '1';
+          this.planningIndex = '1';console.log(this.planningIndex);
         } else if (this.calculateForm.isUeAvgSinr || this.calculateForm.isUeAvgThroughput || this.calculateForm.isUeCoverage) {
           this.planningIndex = '2';
         } else {
@@ -6587,11 +6923,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (mutilFunctionSettingData.length > 1) 
         {
           this.planningIndex = mutilFunctionSettingData[1][0];
-          if(this.planningIndex = '0')
+          if(this.planningIndex == '0')
           {
-            this.planningIndex = '1';
+            this.planningIndex = '1';console.log(this.planningIndex);
           }
-          console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
+          console.log("mutilFunctionSettingData[1][0]: " + mutilFunctionSettingData[1][0]);
+          console.log("mutilFunctionSettingData[1][1]: " + mutilFunctionSettingData[1][1]);
           console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
           this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
           this.evaluationFuncForm.field.sinr.activate = JSON.parse(mutilFunctionSettingData[1][2]);
@@ -7036,6 +7373,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
       // defaultBs
       this.calculateForm.defaultBs = this.calculateForm.bsList;
+      this.manufactor = 'All';
       if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
         const defaultBS = this.calculateForm.defaultBs.split('|');
         const txpower = JSON.parse(this.calculateForm.txPower);
@@ -7068,6 +7406,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             // scalingFact: 1,
             subcarrier: 15,
             scsBandwidth: 10,
+            isAntennaDefault: 'default'
           };
           if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
             this.bsListRfParam[id].bsNoiseFigure = 0
@@ -7196,6 +7535,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // window.setTimeout(() => {
       //   this.checkCircle();
       // }, 0);
+
+      console.log(this.bsListRfParam);
     }
   }
 
@@ -7401,7 +7742,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else {
       // if (this.calculateForm.isCoverage) {
-      //   this.planningIndex = '1';
+      //   this.planningIndex = '1';console.log(this.planningIndex);
       //   this.getPlanningIndex();
       // } else {
       //   this.planningIndex = '2';
@@ -8521,7 +8862,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let firstAntenna = 0;
       for (let item of this.antennaList) {
         if(item['manufactor'] == manufactor){
-          firstAntenna = item['antenna_id'];
+          firstAntenna = item['antennaID'];
           break;
         }
       }
@@ -8534,97 +8875,206 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
   }
 
+  antennaProptypeChangeCheck(svgid)
+  {
+    //this.filterAntennaByProperty(this.bsListRfParam[svgid].isAntennaDefault);
+    if (this.bsListRfParam[svgid].isAntennaDefault == 'default')
+    {
+      this.bsListRfParam[svgid].AntennaId = this.defaultAntennaList[0].antennaID;
+    }
+    else if (this.customizedAntennaList.length != 0)
+    {
+      this.bsListRfParam[svgid].AntennaId = this.customizedAntennaList[0].antennaID;
+    }
+    else
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('antenna.no.data.in.custom')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      setTimeout(() =>
+      {
+        this.bsListRfParam[svgid].isAntennaDefault = 'default';
+        this.bsListRfParam[svgid].AntennaId = this.defaultAntennaList[0].antennaID;
+      }, 10);
+    }
+    this.antennaChangeCheck(svgid);
+  }
+
   /**
    * 根據檢查天線相關欄位
    * @param svgid 既有基站的id
    */
   antennaChangeCheck(svgid){
+    var antId = 1;
+    if (svgid == null)
+      antId = this.tempCalParamSet.AntennaId;
+    else
+      antId = this.bsListRfParam[svgid].AntennaId;
+    var antenna = this.getAntennaById(antId, this.bsListRfParam[svgid].isAntennaDefault);
+
+    this.selectAntenna =
+    {
+      antennaID: antenna.antennaID,
+      name: antenna.name,
+      type: antenna.type,
+      property: antenna.property,
+      manufactor: antenna.manufactor,
+      availableFrequency: antenna.availableFrequency,
+      availablePorts: antenna.availableFrequency[0].ports,
+      selectFreqId: antenna.availableFrequency[0].frequencyId,
+      selectPortID: antenna.availableFrequency[0].ports[0].portID,
+      selectFreq: antenna.availableFrequency[0].frequency,
+      selectPort: antenna.availableFrequency[0].ports[0].portName,
+      };
+
+    if (this.bsListRfParam[svgid].AntennaId != antenna.antennaID)   //選到了已經被刪掉的天線
+      this.bsListRfParam[svgid].AntennaId = antenna.antennaID;
+
+    //console.log(JSON.stringify(this.selectAntenna));
+
+    this.antennaFreqPortChangeCheck(svgid);
+  }
+
+  antennaFreqPortChangeCheck(svgid)
+  {
     let thershold = 100;
     let error = false;
     let msg = "";
     let multiple = false;
-    // TDD
-    if (svgid != null){
-      // 根據天線類型將欄位歸零
-      if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antenna_type'] == 'Omnidirectional') {
-        this.bsListRfParam[svgid].theta = 0;
-        this.bsListRfParam[svgid].phi = 0;
-      } else {
-        this.bsListRfParam[svgid].bsTxGain = 0;
-        // 檢查天線frequency與基站frequency是否一致(+-100)
-        var Antfrequency = this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['frequency'];
-        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].tddfrequency))) {
-          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].tddfrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].tddfrequency))) {
-            msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[svgid].tddfrequency+ ' ';
-            error = true;
-          }
-        } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddUlFrequency)) && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddDlFrequency))) {
-          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddUlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddUlFrequency))) {
-            msg += this.translateService.instant('uplink.frequency')+ ' ' + this.bsListRfParam[svgid].fddUlFrequency+ ' ';
-            error = true;
-          } 
-          if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddDlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddDlFrequency))) {
-            if (error) {
-              if (this.checkIfChinese()){ 
-                msg += ' 和 '; 
-              } else {
-                 msg += ' and the '; 
-              }
-              multiple = true;
-            }
-            msg += this.translateService.instant('downlink.frequency')+ ' ' + this.bsListRfParam[svgid].fddDlFrequency+ ' ';
-            error = true;
-          }
-        }
+
+    for (var f = 0; f < this.selectAntenna.availableFrequency.length; f++)
+    {
+      if (this.selectAntenna.availableFrequency[f].frequencyId == this.selectAntenna.selectFreqId)
+      {
+        this.selectAntenna.selectFreq = this.selectAntenna.availableFrequency[f].frequency;
+        this.selectAntenna.availablePorts = this.selectAntenna.availableFrequency[f].ports;
       }
-    } else { //FDD
-      if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antenna_type'] == 'Omnidirectional') {
-        this.tempCalParamSet.theta = 0;
-        this.tempCalParamSet.phi = 0;
-      } else {
-        this.tempCalParamSet.bsTxGain = 0;
-        var Antfrequency = this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['frequency'];
-        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.tempCalParamSet.tddfrequency))) {
-          if (!((Antfrequency - thershold <= this.tempCalParamSet.tddfrequency) && (Antfrequency + thershold >= this.tempCalParamSet.tddfrequency))) {
-            msg += this.translateService.instant('tddfrequency') + ' ' + this.tempCalParamSet.tddfrequency+ ' ';
-            error = true;
-          }
-        } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.tempCalParamSet.fddUlFrequency)) && !(this.authService.isEmpty(this.tempCalParamSet.fddDlFrequency))){
-          if(!((Antfrequency - thershold <= this.tempCalParamSet.fddUlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddUlFrequency))) {
-            msg += this.translateService.instant('uplink.frequency')+ ' ' + this.tempCalParamSet.fddUlFrequency+ ' ';
-            error = true;
-          }
-          if (!((Antfrequency - thershold <= this.tempCalParamSet.fddDlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddDlFrequency))) {
-            if (error){
-              if (this.checkIfChinese()) { 
-                  msg += ' 和 '; 
-              } else { 
-                msg += ' and the '; 
-              }
-              multiple = true;
-            }
-            msg += this.translateService.instant('downlink.frequency')+ ' ' + this.tempCalParamSet.fddDlFrequency+ ' ';
-            error = true;
-          }
+      for (var p = 0; p < this.selectAntenna.availableFrequency[f].ports.length; p++)
+      {
+        if (this.selectAntenna.availableFrequency[f].ports[p].portID == this.selectAntenna.selectPortID)
+        {
+          this.selectAntenna.selectPort = this.selectAntenna.availableFrequency[f].ports[p].portName;
         }
       }
     }
-    if (error){
-      if(this.checkIfChinese()){
-        this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + Antfrequency + " 差異較大, 可能導致計算結果不準確";
-      } else {
-        let msgString = "you set is ";
-        if (multiple) {
-          msgString = "you set are ";
+
+    var Antfrequency = this.selectAntenna.selectFreq;
+
+    /*if (this.selectAntenna.type != 'Omnidirectional' || this.selectAntenna.property != 'default')
+    {
+      // TDD
+      if (svgid != null)
+      {
+        // 根據天線類型將欄位歸零
+        if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antennaType'] == 'Omnidirectional')
+        {
+          this.bsListRfParam[svgid].theta = 0;
+          this.bsListRfParam[svgid].phi = 0;
+        } else
+        {
+          this.bsListRfParam[svgid].bsTxGain = 0;
+          // 檢查天線frequency與基站frequency是否一致(+-100)
+
+          if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].tddfrequency)))
+          {
+            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].tddfrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].tddfrequency)))
+            {
+              msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[svgid].tddfrequency + ' ';
+              error = true;
+            }
+          } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddUlFrequency)) && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddDlFrequency)))
+          {
+            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddUlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddUlFrequency)))
+            {
+              msg += this.translateService.instant('uplink.frequency') + ' ' + this.bsListRfParam[svgid].fddUlFrequency + ' ';
+              error = true;
+            }
+            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddDlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddDlFrequency)))
+            {
+              if (error)
+              {
+                if (this.checkIfChinese())
+                {
+                  msg += ' 和 ';
+                } else
+                {
+                  msg += ' and the ';
+                }
+                multiple = true;
+              }
+              msg += this.translateService.instant('downlink.frequency') + ' ' + this.bsListRfParam[svgid].fddDlFrequency + ' ';
+              error = true;
+            }
+          }
         }
-        this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + Antfrequency + ",<br> which may cause inaccurate calculation results.";
       }
-      this.msgDialogConfig.data = {
-        type: 'error',
-        infoMessage: this.infoMsg
-      };
-      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      else
+      { //FDD
+        if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antennaType'] == 'Omnidirectional')
+        {
+          this.tempCalParamSet.theta = 0;
+          this.tempCalParamSet.phi = 0;
+        } else
+        {
+          this.tempCalParamSet.bsTxGain = 0;
+          if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.tempCalParamSet.tddfrequency)))
+          {
+            if (!((Antfrequency - thershold <= this.tempCalParamSet.tddfrequency) && (Antfrequency + thershold >= this.tempCalParamSet.tddfrequency)))
+            {
+              msg += this.translateService.instant('tddfrequency') + ' ' + this.tempCalParamSet.tddfrequency + ' ';
+              error = true;
+            }
+          } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.tempCalParamSet.fddUlFrequency)) && !(this.authService.isEmpty(this.tempCalParamSet.fddDlFrequency)))
+          {
+            if (!((Antfrequency - thershold <= this.tempCalParamSet.fddUlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddUlFrequency)))
+            {
+              msg += this.translateService.instant('uplink.frequency') + ' ' + this.tempCalParamSet.fddUlFrequency + ' ';
+              error = true;
+            }
+            if (!((Antfrequency - thershold <= this.tempCalParamSet.fddDlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddDlFrequency)))
+            {
+              if (error)
+              {
+                if (this.checkIfChinese())
+                {
+                  msg += ' 和 ';
+                } else
+                {
+                  msg += ' and the ';
+                }
+                multiple = true;
+              }
+              msg += this.translateService.instant('downlink.frequency') + ' ' + this.tempCalParamSet.fddDlFrequency + ' ';
+              error = true;
+            }
+          }
+        }
+      }
+      if (error)
+      {
+        if (this.checkIfChinese())
+        {
+          this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + Antfrequency + " 差異較大, 可能導致計算結果不準確";
+        } else
+        {
+          let msgString = "you set is ";
+          if (multiple)
+          {
+            msgString = "you set are ";
+          }
+          this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + Antfrequency + ",<br> which may cause inaccurate calculation results.";
+        }
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.infoMsg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      }
     }
+    */
   }
 
   /**
@@ -8706,6 +9156,51 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     this.file = file;
     this.modelFileName = this.showPartName(file.name);
+  }
+
+  /**
+ * 上傳檔案
+ * @param event 
+ * @returns 無上傳檔案則終止
+ */
+  async importAntFile(event, isAdd)
+  {
+    const file = event.target.files[0];
+    event.target.value = null;
+    if (file == undefined)
+    {
+      return;
+    }
+    this.file = file;
+
+    if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls"))
+    {
+      if (isAdd == true)
+      {
+        this.addAntenna.file = file;
+        this.changeAntennaFreqAndPortCountByFile(this.addAntenna);
+        this.addAntenna.fileName = this.showPartName(file.name);
+      }
+      else
+      {
+        this.editAntenna.file = file;
+        this.editAntenna.isNewFile = true;
+        console.log(this.editAntenna.file);
+        this.changeAntennaFreqAndPortCountByFile(this.editAntenna);
+        this.editAntenna.fileName = this.showPartName(file.name);
+      }
+    }
+    else
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('antenna.file.error.not.excel')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+    }
+
+
+
   }
 
   /**
@@ -8849,6 +9344,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (area < 1 || area > 100 || isNaN(Number(area)) || area == '')
     {
       msg = this.translateService.instant('percent_fault');
+     
     }
 
     if (msg != '') {
@@ -8859,9 +9355,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
 
       this.getStorageEvaluationFuncForm();    //還原舊參數
-    }
-    else{      
-      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8880,9 +9373,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       this.getStorageEvaluationFuncForm();    //還原舊參數
     }
-    else {
-      this.setStorageEvaluationFuncForm();
-    }
   }
 
   checkRSRP(rsrp) {
@@ -8899,9 +9389,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       this.getStorageEvaluationFuncForm();    //還原舊參數
-    }
-    else{      
-      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8942,7 +9429,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.field.throughput.ratio[index].DLValue = throughput;
         this.evaluationFuncForm.field.throughput.ratio[index].ULValue = null;
       }
-      this.setStorageEvaluationFuncForm();
     }
   }
 
@@ -8982,47 +9468,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = throughput;
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = null;
       }
-      this.setStorageEvaluationFuncForm();
     }
   }
-
-  // checkULThroughput(throughput) {
-  //   console.log('Check throughput:'+ throughput);
-  //   let msg = '';
-
-  //   if(throughput < this.ulThroughputLowerLimit || throughput > this.ulThroughputUpperLimit || isNaN(Number(throughput)))
-  //     msg = this.translateService.instant('ulthroughput_fault');
-
-  //   if (msg != '') {
-  //     this.msgDialogConfig.data = {
-  //       type: 'error',
-  //       infoMessage: msg
-  //     };
-  //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-  //   }
-  //   else{      
-  //     this.setStorageEvaluationFuncForm();
-  //   }
-  // }
-
-  // checkDLThroughput(throughput) {
-  //   console.log('Check throughput:'+ throughput);
-  //   let msg = '';
-
-  //   if(throughput < this.dlThroughputLowerLimit || throughput > this.dlThroughputUpperLimit || isNaN(Number(throughput)))
-  //     msg = this.translateService.instant('dlthroughput_fault');
-
-  //   if (msg != '') {
-  //     this.msgDialogConfig.data = {
-  //       type: 'error',
-  //       infoMessage: msg
-  //     };
-  //     this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
-  //   }
-  //   else{      
-  //     this.setStorageEvaluationFuncForm();
-  //   }
-  // }
 
   getPlanningIndex()
   {
@@ -9041,6 +9488,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   setPlanningIndex()
   {
     window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
+    console.log("this.planningIndex = " + this.planningIndex);
   }
 
 
@@ -9050,22 +9498,29 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                   this.evaluationFuncForm.field.rsrp.activate || this.evaluationFuncForm.field.throughput.activate);
     var isUe = (this.evaluationFuncForm.ue.coverage.activate || this.evaluationFuncForm.ue.throughputByRsrp.activate);
 
+    var isFieldOld = this.calculateForm.isAverageSinr || this.calculateForm.isCoverage;
+    var isOldUe = this.calculateForm.isUeCoverage || this.calculateForm.isUeAvgThroughput;
 
     console.log(this.evaluationFuncForm);
     
-    if(isField)
+    if (isField || isFieldOld)
     {
-      this.planningIndex = '1';
+      this.planningIndex = '1';console.log(this.planningIndex);
       return true;
     }
-    else if(isUe)
+    else if (isUe || isOldUe)
     {
       this.planningIndex = '2';
       return true;
     }
+    else if (this.calculateForm.isSimulation)
+    {
+      this.planningIndex = '3';
+      return true;
+    }
     else
     {
-      this.planningIndex = '1';
+      this.planningIndex = '1';console.log(this.planningIndex);console.log(this.planningIndex);
       return false;
     }
   }
@@ -9073,26 +9528,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   changeAreaFormatToPercent()
   {
     var i = 0;
-    this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
+    if (this.evaluationFuncForm.field.coverage.ratio * 100 <= 100)
+      this.evaluationFuncForm.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio * 100;
     for(i = 0; i < this.evaluationFuncForm.field.sinr.ratio.length; i++)
     {
-      if(this.evaluationFuncForm.field.sinr.ratio[i].areaRatio <= 1)
+      if (this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100 <= 100)
         this.evaluationFuncForm.field.sinr.ratio[i].areaRatio = this.evaluationFuncForm.field.sinr.ratio[i].areaRatio * 100;
     }
     for(i = 0; i < this.evaluationFuncForm.field.rsrp.ratio.length; i++)
     {
-      if(this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio <= 1)
+      if (this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100 <= 100)
         this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio = this.evaluationFuncForm.field.rsrp.ratio[i].areaRatio * 100;
     }
     for(i = 0; i < this.evaluationFuncForm.field.throughput.ratio.length; i++)
     {
-      if(this.evaluationFuncForm.field.throughput.ratio[i].areaRatio <= 1)
+      if (this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100 <= 100)
         this.evaluationFuncForm.field.throughput.ratio[i].areaRatio = this.evaluationFuncForm.field.throughput.ratio[i].areaRatio * 100;
     }
-    this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
+    if (this.evaluationFuncForm.ue.coverage.ratio < 1)
+      this.evaluationFuncForm.ue.coverage.ratio = this.evaluationFuncForm.ue.coverage.ratio * 100;
     for(i = 0; i < this.evaluationFuncForm.ue.throughputByRsrp.ratio.length; i++)
     {
-      if(this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio <= 1)
+      if (this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100 <= 100)
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio = this.evaluationFuncForm.ue.throughputByRsrp.ratio[i].countRatio * 100;
     }
   }
@@ -9109,7 +9566,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.field.throughput.ratio[index].ULValue = null;
       this.evaluationFuncForm.field.throughput.ratio[index].DLValue = value;
     }
-    this.setStorageEvaluationFuncForm();
+    //this.setStorageEvaluationFuncForm();
   }
 
   changeUEULDL(index, value)
@@ -9124,7 +9581,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].ULValue = null;
       this.evaluationFuncForm.ue.throughputByRsrp.ratio[index].DLValue = value;
     }
-    this.setStorageEvaluationFuncForm();
+    //this.setStorageEvaluationFuncForm();
   }
 
   setThroughputTypeAndValue()
@@ -9224,4 +9681,1079 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         console.log(this.evaluationFuncForm);
        }
   }
+
+  evaluationOK()
+  {
+    this.setStorageEvaluationFuncForm();
+    this.matDialog.closeAll();
+  }
+
+  evaluationCancel()
+  {
+    this.getStorageEvaluationFuncForm();
+    this.matDialog.closeAll();
+  }
+
+  async EditAntennaOk()
+  {
+    var isWarn = this.checkEditAntennaForm();
+    var msg = '';
+    var type = 'error';
+
+    if (!isWarn)
+    {
+
+      let url = `${this.authService.API_URL}/updateAntenna/${this.authService.userToken}`;
+
+
+      this.authService.spinnerUploadData();
+
+      if (this.editAntenna.file != null && this.editAntenna.file != '')
+        this.editAntenna.sha256sum = await this.hashfile(this.editAntenna.file).then(res => res.toString());
+
+      let formData = new FormData();
+      formData.append('file', this.editAntenna.file);
+      formData.append('name', this.editAntenna.name);
+      formData.append('sha256sum', this.editAntenna.sha256sum);
+      formData.append('property', this.editAntenna.property);
+      formData.append('type', this.editAntenna.type);
+      formData.append('band', JSON.stringify(this.editAntenna.band));
+      formData.append('port', JSON.stringify(this.editAntenna.port));
+      formData.append('model', this.editAntenna.model);
+      formData.append('manufactor', this.editAntenna.manufactor);
+      formData.append('antennaID', JSON.stringify(this.editAntenna.antennaID));      
+
+      try
+      {
+        let status = await this.postRequest(url, formData);
+
+        console.log(status);
+
+
+
+        if (status['statusCode'] == '200')
+        {
+          type = 'success';
+          msg = this.translateService.instant('antenna.edit.success');
+          this.closeSecondLayer();
+        }
+        else
+        {
+          msg = this.translateService.instant('antenna.edit.failed');
+        }
+
+      }
+      catch (error)
+      {
+        msg = this.uploadAntRawdataErrorMsg(false, error);
+      }
+
+
+      this.msgDialogConfig.data = {
+        type: type,
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      this.authService.spinnerHide();
+      this.getAntenna();
+      
+    }
+    else
+    {
+      this.thirdLayerDialogRef = this.matDialog.open(this.AntennaWarnMsgModalTable);
+    }
+
+  }
+
+  EditAntennaCancel()
+  {
+    this.getAntenna();
+    this.closeSecondLayer();
+  }
+
+  async AddAntennaOk()
+  {
+    var isWarn = this.checkAddAntennaForm();
+    var msg = '';
+    var type = 'error';
+
+    if (!isWarn)
+    {
+
+      let url = `${this.authService.API_URL}/uploadAntenna/${this.authService.userToken}`;
+
+      this.authService.spinnerUploadData();
+      
+      this.addAntenna.sha256sum = await this.hashfile(this.addAntenna.file).then(res => res.toString());
+
+
+      let formData = new FormData();
+      formData.append('file', this.addAntenna.file);
+      formData.append('name', this.addAntenna.name);
+      formData.append('sha256sum', this.addAntenna.sha256sum);
+      formData.append('property', this.addAntenna.property);
+      formData.append('type', this.addAntenna.type);
+      formData.append('band', JSON.stringify(this.addAntenna.band));
+      formData.append('port', JSON.stringify(this.addAntenna.port));
+      formData.append('model', this.addAntenna.model);
+      formData.append('manufactor', this.addAntenna.manufactor);
+      formData.append('antennaID', JSON.stringify(this.addAntenna.antennaID));
+
+
+      try
+      {
+        let status = await this.postRequest(url, formData);
+
+        console.log(status);
+
+
+
+        if (status['statusCode'] == '200')
+        {
+          type = 'success';
+          msg = this.translateService.instant('antenna.add.success');
+          this.customizedAntennaPage = Math.floor(this.customizedAntennaList.length / this.maxAntRowInPage + 1);
+          this.closeSecondLayer();
+        }
+        else
+        {
+          msg = this.translateService.instant('antenna.add.failed');
+        }
+
+      }
+      catch (error)
+      {
+        msg = this.uploadAntRawdataErrorMsg(true, error);
+      }
+
+
+      this.msgDialogConfig.data = {
+        type: type,
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+      this.authService.spinnerHide();
+      this.getAntenna();
+    }
+    else
+    {
+      this.thirdLayerDialogRef = this.matDialog.open(this.AntennaWarnMsgModalTable);
+    }
+
+
+  }
+
+  AddAntennaCancel()
+  {
+    this.closeSecondLayer();
+  }
+
+  async delAntenna(index)
+  {
+    var msg = `${this.translateService.instant('confirm.delete')} ${this.customizedAntennaList[index].name}?`;
+    this.msgDialogConfig.data = {
+      infoMessage: msg
+    };
+    const dialogRef = this.matDialog.open(ConfirmDailogComponent, this.msgDialogConfig);
+
+    dialogRef.componentInstance.onOK.subscribe(async () => {
+      // done
+
+      let url = `${this.authService.API_URL}/deleteAntenna/${this.customizedAntennaList[index].antennaID}/${this.authService.userToken}`;
+      
+      this.http.get(url).subscribe(
+        res =>
+        {
+          let result = res;
+          console.log(result);
+          this.getAntenna();
+        },
+        err =>
+        {
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: this.translateService.instant('antenna.delete.error')
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        }
+      );
+
+      dialogRef.close();
+      
+    });
+  }
+
+  checkAddAntennaForm()
+  {
+    var isWarn = false;
+    if (this.addAntenna.name == null || this.addAntenna.name == '' || this.addAntenna.name.length > 16) {
+      this.antennaWarnMsg.name = this.translateService.instant('antenna.name.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.name = "";
+    }
+    if (this.addAntenna.band.length != 2 || !Number.isInteger(this.addAntenna.band[1]) || !Number.isInteger(this.addAntenna.band[0]) || 
+      (this.addAntenna.band.length == 2 && this.addAntenna.band[1] < this.addAntenna.band[0]) || this.addAntenna.band[0] < 0 || this.addAntenna.band[1] < 0)
+    {
+      this.antennaWarnMsg.band = this.translateService.instant('antenna.band.fault');
+      isWarn = true;
+    }
+    else {
+      this.antennaWarnMsg.band = "";
+    }
+    if (!Number.isInteger(this.addAntenna.port) || this.addAntenna.port <= 0)
+    {
+      this.antennaWarnMsg.port = this.translateService.instant('antenna.port.fault');
+      isWarn = true;
+    }
+    else {
+      this.antennaWarnMsg.port = "";
+    }
+    if (this.addAntenna.manufactor == null || this.addAntenna.manufactor == '' || this.addAntenna.manufactor.length > 16)
+    {
+      this.antennaWarnMsg.manufactor = this.translateService.instant('antenna.manufactor.fault');
+      isWarn = true;
+    }
+    else {
+      this.antennaWarnMsg.manufactor = "";
+    }
+    if (this.addAntenna.model == null || this.addAntenna.model == '' || this.addAntenna.model.length > 16)
+    {
+      this.antennaWarnMsg.model = this.translateService.instant('antenna.model.fault');
+      isWarn = true;
+    }
+    else {
+      this.antennaWarnMsg.model = "";
+    }
+    if (this.addAntenna.file == null)
+    {
+      this.antennaWarnMsg.file = this.translateService.instant('antenna.rawdata.empty');
+      isWarn = true;
+    }
+    else {
+      this.antennaWarnMsg.file = "";
+    }
+    
+
+    return isWarn;
+  }
+
+  checkEditAntennaForm()
+  {
+    var isWarn = false;
+    if (this.editAntenna.name == null || this.editAntenna.name == '' || this.editAntenna.name.length > 16)
+    {
+      this.antennaWarnMsg.name = this.translateService.instant('antenna.name.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.name = "";
+    }
+    if (this.editAntenna.band.length != 2 || !Number.isInteger(this.editAntenna.band[1]) || !Number.isInteger(this.editAntenna.band[0]) ||
+      (this.editAntenna.band.length == 2 && this.editAntenna.band[1] < this.editAntenna.band[0]))
+    {
+      this.antennaWarnMsg.band = this.translateService.instant('antenna.band.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.band = "";
+    }
+    if (!Number.isInteger(this.editAntenna.port) || this.editAntenna.port <= 0)
+    {
+      this.antennaWarnMsg.port = this.translateService.instant('antenna.port.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.port = "";
+    }
+    if (this.editAntenna.manufactor == null || this.editAntenna.manufactor == '' || this.editAntenna.manufactor.length > 16)
+    {
+      this.antennaWarnMsg.manufactor = this.translateService.instant('antenna.manufactor.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.manufactor = "";
+    }
+    if (this.editAntenna.model == null || this.editAntenna.model == '' || this.editAntenna.model.length > 16)
+    {
+      this.antennaWarnMsg.model = this.translateService.instant('antenna.model.fault');
+      isWarn = true;
+    }
+    else
+    {
+      this.antennaWarnMsg.model = "";
+    }
+    
+
+
+    return isWarn;
+  }
+
+  
+
+  changeOldAntToNew()
+  {
+    this.allAntennaList = [];
+    for (var ant = 0; ant < this.antennaList.length; ant++)
+    {
+      this.allAntennaList.push
+      (
+        {
+            antennaID: this.antennaList[ant].antennaID,
+            name: this.antennaList[ant].antennaName,
+            type: this.antennaList[ant].antennaType,
+            band: this.antennaList[ant].band,
+            availableFrequency: this.antennaList[ant].availableFrequency,
+            port: this.antennaList[ant].availableFrequency[0].ports.length,
+            model: this.antennaList[ant].model,
+            manufactor: this.antennaList[ant].manufactor,
+            fileName: `${this.antennaList[ant].antennaName}.xlsx`,
+            property: this.antennaList[ant].property
+        }
+      );
+    }
+    console.log(JSON.stringify(this.allAntennaList));
+  }
+
+  classifyAntenna()
+  {
+    this.defaultAntennaList = [];
+    this.customizedAntennaList = [];
+    for (var ant = 0; ant < this.allAntennaList.length; ant++)
+    {
+      if (this.allAntennaList[ant].property == 'default')
+      {
+        console.log(this.allAntennaList[ant]);
+        this.defaultAntennaList.push(this.allAntennaList[ant]);
+      }
+      else 
+      {
+        console.log(this.allAntennaList[ant]);
+        this.customizedAntennaList.push(this.allAntennaList[ant]);
+      }
+    }
+  }
+
+  filterAntennaByProperty(property)
+  {
+    //切換天線種類時，頁數應回到第一頁
+    this.customizedAntennaPage = 1;
+    console.log(property);
+    this.filterAntennaList = [];
+    for (var ant = 0; ant < this.allAntennaList.length; ant++)
+    {
+      if (this.allAntennaList[ant].property == property)
+      {
+        console.log(this.allAntennaList[ant]);
+        this.filterAntennaList.push(this.allAntennaList[ant]);
+      }
+    }
+    
+    console.log(this.filterAntennaList);
+  }
+
+  getAntenna()
+  {
+
+    let url = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+    this.http.get(url).subscribe(
+      res =>
+      {
+        let result = res;
+        console.log(JSON.stringify(result));
+
+        const promise = new Promise((resolve, reject) =>
+        {
+          this.antennaList = Object.values(result);
+          console.log(JSON.stringify(this.antennaList));
+          resolve();
+        });
+        promise.then(() => new Promise((resolve, reject) =>
+        {
+          this.changeOldAntToNew();
+          resolve();
+        }).then(() => new Promise((resolve, reject) =>
+        {
+          this.classifyAntenna();
+          console.log(result);
+          console.log(this.antennaList);
+          console.log(this.defaultAntennaList);
+          console.log(this.customizedAntennaList);
+          return true;
+        })));
+
+      },
+      err =>
+      {
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('antenna.get.error')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      }
+    );
+    return false;
+  }
+
+  changeAntPage(index, isDefault)
+  {
+    if (isDefault == 'default')
+    {
+      this.defaultAntennaPage = index;
+    }
+    else
+      this.customizedAntennaPage = index;
+  }
+
+  setEditAntStorage()
+  {
+    window.sessionStorage.setItem(`editAntenna`, JSON.stringify(this.editAntenna));
+  }
+
+  getEditAntStorage()
+  {
+    this.editAntenna = JSON.parse(window.sessionStorage.getItem(`editAntenna`));
+  }
+
+  checkNullAngle(pattern)
+  {
+    let MIN_ANGLE = 0;
+    let MAX_ANGLE = 359;
+    var hori = pattern[0][1];
+    var vert = pattern[0][2];
+    var angle = pattern[0][0];
+    var len = pattern.length;
+    var changeAngle = 0;
+    var changeTimes = 0;
+    var retPattern = [];
+
+    if (len >= 2)
+      changeAngle = Math.round((angle + pattern[1][0]) / 2);
+    else
+      changeAngle = MAX_ANGLE+1;
+
+    for (var i = MIN_ANGLE; i <= MAX_ANGLE; i++)
+    {
+      if (i <= changeAngle)
+      {
+        retPattern.push([i, hori, vert]);
+      }
+
+      if (i == changeAngle)
+      {
+        changeTimes++;
+        if (len >= 2 + changeTimes)
+        {
+          changeAngle = Math.round((pattern[changeTimes][0] + pattern[changeTimes+1][0]) / 2);
+        }
+        else
+          changeAngle = MAX_ANGLE + 1;
+
+
+        hori = pattern[changeTimes][1];
+        vert = pattern[changeTimes][2];
+        angle = pattern[changeTimes][0];
+      }
+    }
+
+    return retPattern;
+  }
+
+  getAntennaById(antennaID, isDefault)
+  {
+    for (var ant = 0; ant < this.allAntennaList.length; ant++)
+    {
+      if (antennaID == this.allAntennaList[ant].antennaID)
+      {
+        return this.allAntennaList[ant];
+      }
+    }
+
+    if (isDefault == 'default')
+      return this.defaultAntennaList[0];
+    else
+      return this.customizedAntennaList[0];
+  }
+
+  getAntennaIndexById(antennaID)
+  {
+    for (var ant = 0; ant < this.allAntennaList.length; ant++)
+    {
+      if (antennaID == this.allAntennaList[ant].antennaID)
+      {
+        return ant;
+      }
+    }
+  }
+
+  getCusAntennaIndexById(antennaID)
+  {
+    for (var ant = 0; ant < this.customizedAntennaList.length; ant++)
+    {
+      if (antennaID == this.customizedAntennaList[ant].antennaID)
+      {
+        return ant;
+      }
+    }
+    
+  }
+
+  changeAntennaRawdataPattern()
+  {
+    var pattern = [];
+    console.log(this.checkRawdataAntenna.selectPort);
+    console.log(this.checkRawdataAntenna.selectFreq);
+
+    for (var r = 0; r < this.checkRawdataAntenna.rawData.length; r++)
+    {
+      if (this.checkRawdataAntenna.rawData[r].portName == this.checkRawdataAntenna.selectPort &&
+        this.checkRawdataAntenna.rawData[r].frequency == this.checkRawdataAntenna.selectFreq)
+      {
+        pattern = this.checkRawdataAntenna.rawData[r].pattern;
+        this.checkRawdataAntenna.selectPortGain = this.checkRawdataAntenna.rawData[r].portGain;
+        break;
+      }
+    }
+
+    this.drawAntennaRawdata(pattern);
+  }
+
+  changedftOmiAntRawdataPattern(value)
+  {
+    this.dftOmiAntSimulationTxGain = value;
+    var pattern = [];
+
+    let MIN_ANGLE = 0;
+    let MAX_ANGLE = 360;
+
+    for (var p = MIN_ANGLE; p < MAX_ANGLE; p++)
+    {
+      pattern.push([p, this.dftOmiAntSimulationTxGain, this.dftOmiAntSimulationTxGain]);     
+    }
+
+    this.drawAntennaRawdata(pattern);
+  }
+
+  drawAntennaRawdata(pattern)
+  {
+    var theta = [];
+    var phi = [];
+    let THETA_RADAR_ID = 'thetaRawdata';
+    let PHI_RADAR_ID = 'phiRawdata';
+    let MAX_ANGLE = 360;
+
+
+    theta.push(Number(pattern[0][1]));
+    phi.push(Number(pattern[0][2]));
+    for (var k = 1; k < MAX_ANGLE; k++)
+    {
+      //為符合套件繪圖方向(套件不能改順逆時針繪圖)，除零度外首尾對調
+      theta.push(Number(pattern[MAX_ANGLE - k][1]));
+      phi.push(Number(pattern[MAX_ANGLE - k][2]));
+    }
+
+    this.drawRadarByEcharts(theta, THETA_RADAR_ID);
+    this.drawRadarByEcharts(phi, PHI_RADAR_ID);
+
+  }
+
+  drawRadarByEcharts(gainArray, radarID)
+  {
+    var MIN_ANGLE = 0;
+    var MAX_ANGLE = 360;
+    var el = echarts.init(document.getElementById(radarID) as HTMLDivElement);
+    const dataRange = [];                         //雷達圖每個方向的資料範圍
+
+    for (var v = MIN_ANGLE; v < MAX_ANGLE; v++)
+    {
+      if (v == 0)
+      {
+        dataRange.push(
+          {
+            name: `${v}°`,
+            max: Math.max.apply(Math, gainArray),
+            min: Math.min.apply(Math, gainArray),
+            axisLabel: {
+              show: true,
+              formatter: function (v)
+              {
+                return Number(v).toFixed(2);
+              },
+              color: '#000000',   //black
+              z: 2
+            },
+            axisLine: { show: true },
+            fontSize: 15,
+            color: '#0541f5',   //blue
+          });
+      }
+      else if (v % 90 == 0)//在30、60...度角顯示軸線、label，順逆對調
+      {
+        dataRange.push(
+          {
+            name: `${Math.abs(v-360)}°`,
+            max: Math.max.apply(Math, gainArray),
+            min: Math.min.apply(Math, gainArray),
+            axisLine:
+            {
+              show: true,
+              color: '#000000'
+            },
+            fontSize: 15,
+            color: '#0541f5',   //blue
+          });
+      }
+      else if (v % 30 == 0)//在10、20、...度角顯示軸線
+      {
+        dataRange.push(
+          {
+            name: ``,
+            max: Math.max.apply(Math, gainArray),
+            min: Math.min.apply(Math, gainArray),
+            axisLine:
+            {
+              show: true,
+              color: '#cccccc'
+            }
+          });
+      }
+      else
+      {
+        dataRange.push(
+          {
+            name: '',
+            max: Math.max.apply(Math, gainArray),
+            min: Math.min.apply(Math, gainArray),
+            axisLine: { show: false }
+          });
+      }
+    }    
+
+    var option: any ={
+
+      //legend: {
+      //  right: 10,
+      //  bottom: 5,
+      //  data: [this.translateService.instant('antenna.gain')],
+      //  itemGap: 20,
+      //  textStyle: {
+      //    color: '#000',
+      //    fontSize: 14
+      //  },
+      //  icon: 'none'                            //取消顯示圖標
+      //},
+      radar: {
+        indicator: dataRange, //雷達各方向的範圍
+        shape: 'circle',      //圓形雷達圖，多邊形為polygon
+        splitNumber: 5,
+        splitArea: {
+          show: true,
+          areaStyle: {          //背景            
+            color: ['rgba(255,255,255,1)'],   //white
+          }
+        },
+
+        splitLine: {
+          lineStyle: {          //圈圈分隔線      
+            color: '#ECEDEF',              //gray 
+            width: 1,
+          },
+        },
+        axisLine: { show: false },
+      },
+      
+      series: [
+        {
+          type: 'radar', 
+          label:
+          {
+            show: false, //不顯示每個緯度的數值(360個太多)
+          },
+          symbol: "none",
+          itemStyle: {
+            color: 'rgba(32, 183, 234, 0.7)'
+          },
+          data: [
+            {
+              name: this.translateService.instant('antenna.gain'),
+              value: gainArray,
+              lineStyle:
+              {
+                normal:
+                {
+                  color: 'rgba(32, 183, 234, 0.7)'
+                }
+              },
+              areaStyle:
+              {
+                normal:
+                {
+                  color: 'rgba(0,0,0,0)'
+                }
+              }
+            },
+          ]
+        }
+      ],
+    };
+    el.setOption(option);
+  }
+
+  changeAntennaFreqAndPortCountByFile(antenna)
+  {
+    var isChange = false;
+    var freqList = [];
+    var portList = [];
+    var isSame = false;
+    var cell = '';
+    var changePort = 0;
+    var changeBand = [];
+
+    let PORT_NAME_LABEL_CELL = 'A1';
+    let FREQ_LABEL_CELL = 'A2';
+    let PORT_NAME_CELL = 'B1';
+    let FREQ_CELL = 'B2';
+
+    if (antenna.file != null)
+    {
+      const promise = new Promise((resolve, reject) =>
+      {
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) =>
+        {
+          const bstr: string = e.target.result;
+
+          const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+          var ws: XLSX.WorkSheet = wb.Sheets[wb.SheetNames[0]]; // get original worksheet
+
+          var sh = 0, p = 0, f = 0;
+
+          for (sh = 0; sh < wb.SheetNames.length; sh++)
+          {
+            ws = wb.Sheets[wb.SheetNames[sh]];
+
+            isSame = false;
+            cell = ws[PORT_NAME_CELL].v;
+            console.log(cell);
+            for (p = 0; p < portList.length; p++)
+            {
+              if (portList[p] == cell)
+              {
+                isSame = true;
+                break;
+              }
+            }
+            if (!isSame)
+              portList.push(cell);
+
+            isSame = false;
+            cell = ws[FREQ_CELL].v;
+            console.log(cell);
+            for (f = 0; f < freqList.length; f++)
+            {
+              if (freqList[f] == cell)
+              {
+                isSame = true;
+                break;
+              }
+            }
+            if (!isSame)
+              freqList.push(Number(cell));
+            
+          }
+          console.log('read over');
+          resolve();
+        };
+        console.log('reader start');
+        reader.readAsBinaryString(antenna.file);
+        console.log('reader over');
+      });
+      promise.then(() => new Promise((resolve, reject) =>
+      {
+        if (portList.length != 0 && freqList.length != 0)
+        {
+          changePort = JSON.parse(JSON.stringify(antenna.port));
+          if (antenna.port != portList.length)
+          {
+            isChange = true;
+            changePort = portList.length;
+          }
+          
+          if (antenna.band[0] == null || antenna.band[0] == '')
+            changeBand[0] = Number.MAX_SAFE_INTEGER;
+          else
+            changeBand[0] = antenna.band[0];
+          if (antenna.band[1] == null || antenna.band[1] == '')
+            changeBand[1] = 0;
+          else
+            changeBand[1] = antenna.band[1];
+          
+
+          if (changeBand[0] > Math.min.apply(Math, freqList))
+          {
+            isChange = true;
+            changeBand[0] = Math.min.apply(Math, freqList);
+          }
+          
+          if (changeBand[1] < Math.max.apply(Math, freqList))
+          {
+            isChange = true;
+            changeBand[1] = Math.max.apply(Math, freqList);   
+          }       
+        }
+
+        resolve(isChange);
+      }).then((result) => new Promise((resolve, reject) =>
+      {
+        if (result)
+        {
+          var msg = this.translateService.instant('auto.modify.port.freq');
+          this.msgDialogConfig.data = {
+            infoMessage: msg
+          };
+
+          const dialogRef = this.matDialog.open(ConfirmDailogComponent, this.msgDialogConfig);
+
+          dialogRef.componentInstance.onOK.subscribe(() =>
+          {
+            antenna.port = changePort;
+            antenna.band = changeBand;
+          });
+        }
+      })));
+
+    }
+  }
+
+  closeFirstLayer()
+  {
+    this.firstLayerDialogRef.close();
+  }
+
+  closeSecondLayer()
+  {
+    this.secondLayerDialogRef.close();
+  }
+
+  closeThirdLayer()
+  {
+    this.thirdLayerDialogRef.close();
+  }
+
+  uploadAntRawdataErrorMsg(isAdd, error)
+  {
+    var msg = '';
+
+    let PORT_NAME_CELL = 'B1';
+    let FREQ_CELL = 'B2';
+    let GAIN_CELL = 'B3';
+
+    if (error.error['statusCode'] == '422_001')
+    {
+      msg = this.translateService.instant('antenna.file.error.empty');
+    }
+    else if (error.error['statusCode'] == '422_002')
+    {
+      if (error.error['errorLocation'].cell == PORT_NAME_CELL)
+      {
+        msg = this.translateService.instant('antenna.file.error.port.empty')
+          .replace('{0}', error.error['errorLocation'].page)
+          .replace('{1}', error.error['errorLocation'].cell);
+      }
+      else if (error.error['errorLocation'].cell == FREQ_CELL)
+      {
+        msg = this.translateService.instant('antenna.file.error.freq.fault')
+          .replace('{0}', error.error['errorLocation'].page)
+          .replace('{1}', error.error['errorLocation'].cell);
+      }
+      else if (error.error['errorLocation'].cell == GAIN_CELL)
+      {
+        msg = this.translateService.instant('antenna.file.error.gain.fault')
+          .replace('{0}', error.error['errorLocation'].page)
+          .replace('{1}', error.error['errorLocation'].cell);
+      }
+      else
+      {
+        msg = this.translateService.instant('antenna.add.failed');
+      }
+    }
+    else if (error.error['statusCode'] == '422_003')
+    {
+      msg = this.translateService.instant('antenna.file.error.angle.gain.fault')
+        .replace('{0}', error.error['errorLocation'].page)
+        .replace('{1}', error.error['errorLocation'].cell);
+    }
+    else if (error.error['statusCode'] == '422_004')
+    {
+      msg = this.translateService.instant('antenna.file.error.no.gain')
+        .replace('{0}', error.error['errorLocation'].page);
+    }
+    else if (error.error['statusCode'] == '422_005')
+    {
+      msg = this.translateService.instant('antenna.file.error.band.out.range')
+        .replace('{0}', error.error['errorLocation'].page)
+        .replace('{1}', error.error['errorLocation'].cell);
+    }
+    else if (error.error['statusCode'] == '422_006')
+    {
+      msg = this.translateService.instant('antenna.file.error.port.no.equal');
+    }
+    else if (error.error['statusCode'] == '422_007')
+    {
+      msg = this.translateService.instant('antenna.file.error.port.count.fault');
+    }
+    else if (error.error['statusCode'] == '400_010')      //File 與 SHA256碼不和
+    {
+      msg = this.translateService.instant('antenna.file.sha256.error');
+    }
+    else if (error.error['statusCode'] == '401')          //登入過期
+    {
+      msg = this.translateService.instant('antenna.api.session.fault');
+    }
+    else if (error.error['statusCode'] == '415')          //非excel
+    {
+      msg = this.translateService.instant('antenna.file.error.not.excel');
+    }
+    else if (error.error['statusCode'] == '422')          
+    {
+      msg = this.translateService.instant('antenna.rawdata.empty');
+    }
+    else if (error.error['statusCode'].startsWith('400'))      //API欄位缺漏，通常不會發生
+    {
+      msg = this.translateService.instant('antenna.api.error')
+        .replace('{0}', error.error['statusCode']);
+    }
+    else
+    {
+      if(isAdd)
+        msg = this.translateService.instant('antenna.add.failed');
+      else
+        msg = this.translateService.instant('antenna.edit.failed');
+    }
+    return msg;
+  }
+
+  checkEvaluationFuncForm()
+  {
+    try
+    {
+      if (this.evaluationFuncForm.field == null)
+      {
+        this.evaluationFuncForm.field = new FieldForm();
+      }
+      if (this.evaluationFuncForm.ue == null)
+      {
+        this.evaluationFuncForm.ue = new UEForm();
+      }
+
+      if (this.evaluationFuncForm.field.sinr == null)
+      {
+        this.evaluationFuncForm.field.sinr = new SINRForm();
+      }
+      if (this.evaluationFuncForm.field.rsrp == null)
+      {
+        this.evaluationFuncForm.field.rsrp = new RSRPForm();
+      }
+      if (this.evaluationFuncForm.field.throughput == null)
+      {
+        this.evaluationFuncForm.field.throughput = new ThroughputForm();
+      }
+      if (this.evaluationFuncForm.field.coverage == null)
+      {
+        this.evaluationFuncForm.field.coverage = new CoverageForm();
+      }
+      if (this.evaluationFuncForm.ue.coverage == null)
+      {
+        this.evaluationFuncForm.ue.coverage = new CoverageForm();
+      }
+      if (this.evaluationFuncForm.ue.throughputByRsrp == null)
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp = new UEThroughputForm();
+      }
+      if (this.evaluationFuncForm.field.sinr.ratio == null || this.evaluationFuncForm.field.sinr.ratio.length == 0 ||
+        this.evaluationFuncForm.field.sinr.ratio[0].compliance == null ||
+        this.evaluationFuncForm.field.sinr.ratio[0].areaRatio == null ||
+        this.evaluationFuncForm.field.sinr.ratio[0].value == null)
+      {
+        this.evaluationFuncForm.field.rsrp.ratio.push
+          (
+          {
+            compliance: "moreThan",
+            areaRatio: this.defaultArea,
+            value: this.defaultSINRSetting
+          }
+          )
+      }
+      if (this.evaluationFuncForm.field.rsrp.ratio == null || this.evaluationFuncForm.field.rsrp.ratio.length == 0 ||
+        this.evaluationFuncForm.field.rsrp.ratio[0].compliance == null ||
+        this.evaluationFuncForm.field.rsrp.ratio[0].areaRatio == null ||
+        this.evaluationFuncForm.field.rsrp.ratio[0].areaRatio == null)
+      {
+        this.evaluationFuncForm.field.rsrp.ratio.push
+          (
+          {
+            compliance: "moreThan",
+            areaRatio: this.defaultArea,
+            value: this.defaultRSRPSetting
+          }
+          )
+      }
+      if (this.evaluationFuncForm.field.throughput.ratio == null || this.evaluationFuncForm.field.throughput.ratio.length == 0 ||
+        this.evaluationFuncForm.field.throughput.ratio[0].compliance == null ||
+        this.evaluationFuncForm.field.throughput.ratio[0].areaRatio == null ||
+        this.evaluationFuncForm.field.throughput.ratio[0].ULValue == null ||
+        this.evaluationFuncForm.field.throughput.ratio[0].DLValue == null)
+      {
+        this.evaluationFuncForm.field.throughput.ratio.push
+          (
+          {
+            compliance: "moreThan",
+            areaRatio: this.defaultArea,
+            ULValue: this.isDefaultThroughputSetting,
+            DLValue: this.isDefaultThroughputSetting
+          }
+          )
+      }
+
+      if (this.evaluationFuncForm.ue.throughputByRsrp.ratio == null || this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0 ||
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].compliance == null ||
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].countRatio == null ||
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].ULValue == null ||
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].DLValue == null)
+      {
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio.push
+          (
+          {
+            compliance: "moreThan",
+            countRatio: this.defaultArea,
+            ULValue: this.isDefaultThroughputSetting,
+            DLValue: this.isDefaultThroughputSetting
+          }
+          )
+      }
+    }
+    catch
+    {
+      this.evaluationFuncForm = new EvaluationFuncForm();
+      if (this.evaluationFuncForm.field.sinr.ratio.length == 0)
+        this.addSINR();
+      if (this.evaluationFuncForm.field.rsrp.ratio.length == 0)
+        this.addRSRP();
+      if (this.evaluationFuncForm.field.throughput.ratio.length == 0)
+        this.addThroughput();
+      if (this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0)
+        this.addUEThroughput();
+    }
+
+
+  }
+  
 }

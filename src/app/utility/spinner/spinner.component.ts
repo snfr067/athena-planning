@@ -29,6 +29,9 @@ export class SpinnerComponent implements OnInit {
   showPercentage = false;
   isFinish = false;
 
+  /** 等待檔案上傳 */
+  showUpFile = false;
+
   time;
 
   ngOnInit(): void {
@@ -125,6 +128,20 @@ export class SpinnerComponent implements OnInit {
     this.showRes = false;
     this.showHome = false;
     this.showPercentage = false;
+    this.showUpFile = false;
+    this.spinner.show();
+  }
+
+  /** show upload file */
+  showUploadData()
+  {
+    this.showCal = false;
+    this.showLoad = false;
+    this.showPdf = false;
+    this.showRes = false;
+    this.showHome = false;
+    this.showPercentage = false;
+    this.showUpFile = true;
     this.spinner.show();
   }
 
@@ -143,6 +160,7 @@ export class SpinnerComponent implements OnInit {
     this.showRes = false;
     this.percentageVal = 0;
     this.showPercentage = true;
+    this.showUpFile = false;
     window.clearTimeout(this.time);
     this.addTime();
     this.spinner.show();
@@ -163,6 +181,7 @@ export class SpinnerComponent implements OnInit {
     this.showRes = false;
     this.percentageVal = 0;
     this.showPercentage = true;
+    this.showUpFile = false;
     this.addTime();
     this.spinner.show();
   }
@@ -176,6 +195,7 @@ export class SpinnerComponent implements OnInit {
     this.showRes = false;
     this.percentageVal = 0;
     this.showPercentage = false;
+    this.showUpFile = false;
     this.addTime();
     this.spinner.show();
   }
@@ -190,6 +210,7 @@ export class SpinnerComponent implements OnInit {
     this.showRes = true;
     // this.percentageVal = 0;
     this.showPercentage = false;
+    this.showUpFile = false;
     // this.addTime();
     this.spinner.show();
   }
