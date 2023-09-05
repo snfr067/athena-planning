@@ -33,6 +33,8 @@ export class SignalCoverComponent implements OnInit {
   candidateList = [];
   /** 現有基站 list */
   defaultBsList = [];
+  /** 天線 list */
+  antList = [];
   /** UE list */
   ueList = [];
   /** 外框style */
@@ -68,6 +70,10 @@ export class SignalCoverComponent implements OnInit {
   showImg = false;
   /** 圖轉換的image src */
   imageSRC = '';
+  /** 覆蓋率計算方式 */
+  coverageCalculateFunction = 'default';
+  sinrTh = 0;
+  rsrpTh = 0;
 
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
@@ -138,6 +144,7 @@ export class SignalCoverComponent implements OnInit {
 
     this.rectList.length = 0;
     this.defaultBsList.length = 0;
+    this.antList.length = 0;
     this.candidateList.length = 0;
     this.ueList.length = 0;
 
@@ -184,18 +191,45 @@ export class SignalCoverComponent implements OnInit {
     const defaultBs = [];
     // 現有基站
     if (this.calculateForm.defaultBs !== '') {
-      let num = 1;
+      let list = null;
+      let isDASFormat = (this.calculateForm.isSimulation &&
+        this.calculateForm.bsList != null && this.calculateForm.bsList.defaultBs != null);
 
-      const list = this.calculateForm.defaultBs.split('|');
+      if (isDASFormat)
+      {
+        list = this.calculateForm.bsList.defaultBs;
+      }
+      else
+      {
+        list = this.calculateForm.defaultBs.split('|');
+      }
+
       const cx = [];
       const cy = [];
       const ctext = [];
+      let num = 1;      
       for (const item of list) {
-        const oData = JSON.parse(item);
+        let oData;
+        let antData = [];
+        let xdata;
+        let ydata;
+        let zdata;
+        if (isDASFormat)
+        {
+          oData = item.position;
+          antData = item.antenna;
+          xdata = Number(oData[0]);
+          ydata = Number(oData[1]);
+          zdata = Number(oData[2]);
+        }
+        else
+        {
+          oData = JSON.parse(item);
+          xdata = oData[0];
+          ydata = oData[1];
+          zdata = oData[2];
+        }
         defaultBs.push(oData);
-        const xdata = oData[0];
-        const ydata = oData[1];
-        const zdata = oData[2];
         cx.push(xdata);
         cy.push(ydata);
 
@@ -218,6 +252,25 @@ export class SignalCoverComponent implements OnInit {
             // visibility: this.showBs
           }
         });
+
+        for (let a = 0; a < antData.length; a++)
+        {
+          this.antList.push({
+            x: Number(antData[a].position[0]),
+            y: Number(antData[a].position[1]),
+            color: item.color[1],
+            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
+            style: {
+              // visibility: this.showBs,
+              visibility: 'hidden',
+              opacity: 0
+            },
+            circleStyle: {
+              // visibility: this.showBs
+              visibility: 'hidden',
+            }
+          });
+        }
         num++;
       }
     }
@@ -232,8 +285,8 @@ export class SignalCoverComponent implements OnInit {
       zText.push([]);
     }
     let xIndex = 0;
-    // console.log(this.result['connectionMap']);
-    for (const item of this.result['connectionMap']) {
+    console.log(this.result);
+    /*for (const item of this.result['connectionMap']) {
       for (let i = 0; i < zLen; i++) {
         // console.log(item)
         let yIndex = 0;
@@ -257,7 +310,70 @@ export class SignalCoverComponent implements OnInit {
         }
       }
       xIndex++;
+    }*/
+
+    let coverageSum = 0;
+    let allPosition = 0;
+
+    console.log(`${this.rsrpTh}/${this.sinrTh}`);
+
+    for (let con = 0; con < this.result['connectionMap'].length; con++)
+    {
+      for (let i = 0; i < zLen; i++)
+      {
+        // console.log(item)
+        let isCoverage = false;
+        let yIndex = 0;
+        for (const yData of this.result['connectionMap'][con])
+        {
+          if (typeof zData[i][yIndex] == 'undefined')
+          {
+            zData[i][yIndex] = [];
+            zText[i][yIndex] = [];
+          }
+
+          if (this.coverageCalculateFunction == 'default')
+          {
+            isCoverage = true;
+          }
+          else if (this.coverageCalculateFunction == 'rsrp')
+          {
+            if (this.result['rsrpMap'][xIndex][yIndex][i] >= this.rsrpTh)
+            {
+              isCoverage = true;
+            }
+          }
+          else if (this.coverageCalculateFunction == 'sinr')
+          {
+            if (this.result['sinrMap'][xIndex][yIndex][i] >= this.sinrTh)
+            {
+              isCoverage = true;
+            }
+          }
+          if (isCoverage)
+          {
+            zData[i][yIndex][xIndex] = yData[i];
+            zText[i][yIndex][xIndex] = yData[i];
+
+            coverageSum++;
+          }
+          else
+          {
+            zData[i][yIndex][xIndex] = null;
+            zText[i][yIndex][xIndex] = null;
+          }
+          allPosition++;
+          yIndex++;
+          if (!allZ[i].includes(yData[i]) && yData[i] != null)
+          {
+            allZ[i].push(yData[i]);
+          }
+        }
+      }
+      xIndex++;
     }
+
+    console.log(`cover Ratio = ${coverageSum}/${allPosition} = ${coverageSum / allPosition}`);
 
     // 取z的最大值
     const zMax = [];
@@ -487,7 +603,60 @@ export class SignalCoverComponent implements OnInit {
 
       // 重新指定連線對象tooltip
       xIndex = 0;
-      for (const item of this.result['connectionMap']) {
+
+      for (let con = 0; con < this.result['connectionMap'].length; con++)
+      {
+        for (let i = 0; i < zLen; i++)
+        {
+          // console.log(item)
+          let isCoverage = false;
+          let yIndex = 0;
+          for (const yData of this.result['connectionMap'][con])
+          {
+            if (typeof zData[i][yIndex] == 'undefined')
+            {
+              zData[i][yIndex] = [];
+              zText[i][yIndex] = [];
+            }
+
+            if (this.coverageCalculateFunction == 'default')
+            {
+              isCoverage = true;
+            }
+            else if (this.coverageCalculateFunction == 'rsrp')
+            {
+              if (this.result['rsrpMap'][xIndex][yIndex][i] >= this.rsrpTh)
+              {
+                isCoverage = true;
+              }
+            }
+            else if (this.coverageCalculateFunction == 'sinr')
+            {
+              if (this.result['sinrMap'][xIndex][yIndex][i] >= this.sinrTh)
+              {
+                isCoverage = true;
+              }
+            }
+            if (isCoverage && typeof apMap[yData[i]] != 'undefined')
+            {
+              zText[i][yIndex][xIndex] = apMap[yData[i]];              
+            }
+            else
+            {
+              zText[i][yIndex][xIndex] = '無';
+            }
+            allPosition++;
+            yIndex++;
+            if (!allZ[i].includes(yData[i]) && yData[i] != null)
+            {
+              allZ[i].push(yData[i]);
+            }
+          }
+        }
+        xIndex++;
+      }
+
+      /*for (const item of this.result['connectionMap']) {
         for (let i = 0; i < zLen; i++) {
           let yIndex = 0;
           for (const yData of item) {
@@ -507,7 +676,7 @@ export class SignalCoverComponent implements OnInit {
           }
         }
         xIndex++;
-      }
+      }*/
     }
 
     
@@ -605,16 +774,16 @@ export class SignalCoverComponent implements OnInit {
 
       let layoutOption = {};
       this.annotations.length = 0;
-
-      const xLinear = Plotly.d3.scale.linear()
+      // 新增基站
+      if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '') {
+        const xLinear = Plotly.d3.scale.linear()
         .domain([0, rect.width])
         .range([0, this.calculateForm.width]);
 
-      const yLinear = Plotly.d3.scale.linear()
-        .domain([0, rect.height])
-        .range([0, this.calculateForm.height]);
-      // 新增基站
-      if (this.calculateForm.candidateBs !== '') {
+        const yLinear = Plotly.d3.scale.linear()
+          .domain([0, rect.height])
+          .range([0, this.calculateForm.height]);
+        
         for (const item of this.candidateList) {
           this.shapes.push({
             type: 'rect',
@@ -642,10 +811,9 @@ export class SignalCoverComponent implements OnInit {
             visible: this.showCandidate
           });
         }
-      }
 
-      if (this.calculateForm.defaultBs !== '') {
-        for (const item of this.defaultBsList) {
+        /*有了天線就不顯示"既有基站"
+        /*for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',
             xref: 'x',
@@ -672,9 +840,38 @@ export class SignalCoverComponent implements OnInit {
             },
             visible: this.showBs
           });
+        }*/
+
+        for (const item of this.antList)
+        {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(70)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: item.color,
+            bordercolor: item.color,
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(35)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
         }
       }
-
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
       this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
@@ -782,6 +979,22 @@ export class SignalCoverComponent implements OnInit {
           position: 'absolute'
         };
       }
+
+      for (const item of this.antList)
+      {
+        item['style'] = {
+          left: `${pixelXLinear(item.x)}px`,
+          bottom: `${pixelYLinear(item.y)}px`,
+          position: 'absolute',
+          // visibility: this.showBs
+        };
+        item['circleStyle'] = {
+          left: `${pixelXLinear(item.x) + 15}px`,
+          bottom: `${pixelYLinear(item.y) + 25}px`,
+          position: 'absolute',
+          // visibility: this.showBs
+        };
+      }
       // 新增基站
       const xy3: SVGRectElement = gd2.querySelector('.xy');
       const rect3 = xy3.getBoundingClientRect();
@@ -881,6 +1094,38 @@ export class SignalCoverComponent implements OnInit {
     });
   }
 
+  switchShowAnt(visible)
+  {
+
+    if (visible == 'visible') { visible = true; } else { visible = false; }
+
+    for (const item of this.shapes)
+    {
+      // 顏色區分障礙物與BS
+      if (item.type == 'circle' && item.fillcolor === '#3C0000')
+      {
+        item.visible = visible;
+      }
+    }
+    for (const item of this.annotations)
+    {
+      console.log(JSON.stringify(item));
+      if (item.text[0] == '天' || item.text[0] == 'A')
+      {
+        item.visible = visible;
+      }
+    }
+
+    Plotly.relayout(this.chartId, {
+      shapes: this.shapes,
+      annotations: this.annotations
+    });
+
+    // for (const item of this.defaultBsList) {
+    //   item.style['visibility'] = visible;
+    //   item.circleStyle['visibility'] = visible;
+    // }
+  }
   /**
    * show/hide AP
    * @param visible 

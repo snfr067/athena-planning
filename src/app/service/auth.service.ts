@@ -23,7 +23,7 @@ export class AuthService {
 
   /** API URL */
     public API_URL = 'http://211.20.94.215:3000/son'; 
-  // public API_URL = 'http://192.168.1.120:3000/son';
+  // public API_URL = 'http://192.168.125.129:3000/son';
   /** 登入後的session_id */
   public userToken = null;
   /** 語系 */

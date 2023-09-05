@@ -34,6 +34,8 @@ export class SignalDlThroughputComponent implements OnInit {
   candidateList = [];
   /** 現有基站 list */
   defaultBsList = [];
+  /** 天線 list */
+  antList = [];
   /** 外框style */
   style = {};
   /** 高度 */
@@ -131,7 +133,9 @@ export class SignalDlThroughputComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images, scalemin, scalemax) {
+  drawChart(isPDF, images, scalemin, scalemax)
+  {
+    console.log(`${scalemin},${scalemax}`);
     // draw background image chart
     const defaultPlotlyConfiguration = {
       displaylogo: false,
@@ -143,6 +147,7 @@ export class SignalDlThroughputComponent implements OnInit {
 
     this.rectList.length = 0;
     this.defaultBsList.length = 0;
+    this.antList.length = 0;
     this.candidateList.length = 0;
 
     const layout = {
@@ -355,17 +360,47 @@ export class SignalDlThroughputComponent implements OnInit {
     traces.push(trace);
 
     // 現有基站
-    if (this.calculateForm.defaultBs !== '') {
-      const list = this.calculateForm.defaultBs.split('|');
-      let num = 1;
+    if (this.calculateForm.defaultBs !== '')
+    {
+      let list = null;
+      let isDASFormat = (this.calculateForm.isSimulation &&
+        this.calculateForm.bsList != null && this.calculateForm.bsList.defaultBs != null);
+
+      if (isDASFormat)
+      {
+        list = this.calculateForm.bsList.defaultBs;
+      }
+      else
+      {
+        list = this.calculateForm.defaultBs.split('|');
+      }
+
       const cx = [];
       const cy = [];
       const ctext = [];
-      for (const item of list) {
-        const oData = JSON.parse(item);
-        const xdata = oData[0];
-        const ydata = oData[1];
-        const zdata = oData[2];
+      let num = 1;    
+      for (const item of list)
+      {
+        let oData;
+        let antData = [];
+        let xdata;
+        let ydata;
+        let zdata;
+        if (isDASFormat)
+        {
+          oData = item.position;
+          antData = item.antenna;
+          xdata = Number(oData[0]);
+          ydata = Number(oData[1]);
+          zdata = Number(oData[2]);
+        }
+        else
+        {
+          oData = JSON.parse(item);
+          xdata = oData[0];
+          ydata = oData[1];
+          zdata = oData[2];
+        }
         cx.push(xdata);
         cy.push(ydata);
 
@@ -388,6 +423,24 @@ export class SignalDlThroughputComponent implements OnInit {
             visibility: this.showBs
           }
         });
+        for (let a = 0; a < antData.length; a++)
+        {
+          this.antList.push({
+            x: Number(antData[a].position[0]),
+            y: Number(antData[a].position[1]),
+            color: item.color[1],
+            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
+            style: {
+              // visibility: this.showBs,
+              visibility: 'hidden',
+              opacity: 0
+            },
+            circleStyle: {
+              // visibility: this.showBs
+              visibility: 'hidden',
+            }
+          });
+        }
         num++;
       }
     }
@@ -570,7 +623,7 @@ export class SignalDlThroughputComponent implements OnInit {
       }
 
       if (this.calculateForm.defaultBs !== '') {
-        for (const item of this.defaultBsList) {
+        /*for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',
             xref: 'x',
@@ -597,9 +650,39 @@ export class SignalDlThroughputComponent implements OnInit {
             },
             visible: this.showBs
           });
+        }*/
+      
+
+        for (const item of this.antList)
+        {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(70)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: item.color,
+            bordercolor: item.color,
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(35)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
         }
       }
-
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
       this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
@@ -746,6 +829,22 @@ export class SignalDlThroughputComponent implements OnInit {
           position: 'absolute'
         };
       }
+
+      for (const item of this.antList)
+      {
+        item['style'] = {
+          left: `${pixelXLinear(item.x)}px`,
+          bottom: `${pixelYLinear(item.y)}px`,
+          position: 'absolute',
+          // visibility: this.showBs
+        };
+        item['circleStyle'] = {
+          left: `${pixelXLinear(item.x) + 15}px`,
+          bottom: `${pixelYLinear(item.y) + 25}px`,
+          position: 'absolute',
+          // visibility: this.showBs
+        };
+      }
       // 新增基站
       const xy3: SVGRectElement = gd2.querySelector('.xy');
       const rect3 = xy3.getBoundingClientRect();
@@ -833,6 +932,38 @@ export class SignalDlThroughputComponent implements OnInit {
       shapes: this.shapes,
       annotations: this.annotations
     });
+  }
+  switchShowAnt(visible)
+  {
+
+    if (visible == 'visible') { visible = true; } else { visible = false; }
+    
+
+    for (const item of this.shapes)
+    {
+      // 顏色區分障礙物與BS
+      if (item.type == 'circle' && item.fillcolor === '#3C0000')
+      {
+        item.visible = visible;
+      }
+    }
+    for (const item of this.annotations)
+    {
+      if (item.text[0] == '天' || item.text[0] == 'A')
+      {
+        item.visible = visible;
+      }
+    }
+
+    Plotly.relayout(this.chartId, {
+      shapes: this.shapes,
+      annotations: this.annotations
+    });
+
+    // for (const item of this.defaultBsList) {
+    //   item.style['visibility'] = visible;
+    //   item.circleStyle['visibility'] = visible;
+    // }
   }
 
   /**

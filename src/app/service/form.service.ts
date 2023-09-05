@@ -16,7 +16,7 @@ export class FormService {
    * @param result 
    */
   setHstToForm(result) {
-    // console.log(result);
+    console.log(result);
     const calculateForm = new CalculateForm();
     calculateForm.addFixedBsNumber = result['addfixedbsnumber'];
     calculateForm.availableNewBsNumber = result['availablenewbsnumber'];
@@ -63,7 +63,7 @@ export class FormService {
       calculateForm.beamId = result['defaultbeamid'];
     }
     
-    calculateForm.bsList = result['defaultbs'];
+    calculateForm.bsList = result['bsList'];
     calculateForm.duplex = result['duplex'];
 
     calculateForm.iteration = result['iteration'];

@@ -964,8 +964,8 @@ export class PdfComponent implements OnInit {
     let statistics;
     if (this.calculateForm.isSimulation) {
       statistics = [
-        [this.translateService.instant('pdf.total.defaultBs'),this.defaultBs.length],
-        [this.translateService.instant('pdf.total.ue'),this.ueList.length],
+        [this.translateService.instant('pdf.total.defaultBs'), this.defaultBs.length],
+        [this.translateService.instant('pdf.total.ue'), this.ueList.length],
       ];
     } else {
       statistics = [
@@ -976,7 +976,8 @@ export class PdfComponent implements OnInit {
       ];
     }
 
-    pdf.autoTable([this.translateService.instant('pdf.total.item'),this.translateService.instant('pdf.total')], statistics, {
+    pdf.autoTable([this.translateService.instant('pdf.total.item'),
+    this.translateService.instant('pdf.total')], statistics, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
       headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
       beforePageContent: specDataHeader,
@@ -1023,282 +1024,655 @@ export class PdfComponent implements OnInit {
     let specData2 = [];
     let tableTitle;
     let tableTitle2;
-    // console.log(this.result);
-    if (this.calculateForm.duplex == 'tdd') {
-      const defaultBs = this.calculateForm.defaultBs.split('|');
-      const defaultBsLen = defaultBs.length;
-      var defaultAnt = [];
-      // 填舊版無天線功能的欄位
-      if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
-        defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-      } else {
-        for (let i = 0; i < defaultBsLen; i++) {
-          defaultAnt.push("[1,0,0,0]");
+    let antTableTitle;
+    let antData = [];
+
+    let isDASFormat = this.calculateForm.isSimulation && this.calculateForm.bsList != null && this.calculateForm.bsList.length != 0 && this.calculateForm.bsList.defaultBs != null;
+
+    if (!isDASFormat)
+    {
+      if (this.calculateForm.duplex == 'tdd')
+      {
+        const defaultBs = this.calculateForm.defaultBs.split('|');
+        const defaultBsLen = defaultBs.length;
+        var defaultAnt = [];
+        // 填舊版無天線功能的欄位
+        if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt))
+        {
+          defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        } else
+        {
+          for (let i = 0; i < defaultBsLen; i++)
+          {
+            defaultAnt.push("[1,0,0,0]");
+          }
         }
-      }
-      let candidateLen = this.result['candidateIdx'].length;
-      var candidateAnt = [];
-      if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
-        let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
-        let candidateindex = this.result['candidateIdx'];
-        for (let i = 0; i < candidateLen; i++) {
-          candidateAnt.push(candidateAntList[candidateindex[i]]);
+        let candidateLen = this.result['candidateIdx'].length;
+        var candidateAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt))
+        {
+          let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+          let candidateindex = this.result['candidateIdx'];
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push(candidateAntList[candidateindex[i]]);
+          }
+        } else
+        {
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push("[1,0,0,0]");
+          }
         }
-      } else {
-        for (let i = 0; i < candidateLen; i++) {
-          candidateAnt.push("[1,0,0,0]");
+        let ulmsc = this.calculateForm.ulMcsTable;
+        let dlmsc = this.calculateForm.dlMcsTable;
+        let ulMcsTable = ulmsc.substring(1, (ulmsc.length) - 1).split(',');
+        // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+        let dlMcsTable = dlmsc.substring(1, (dlmsc.length) - 1).split(',');
+        // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+        // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+        // '下行調變能力','上行資料串流層數','下行資料串流層數'];
+        tableTitle = ['#', 'X/Y', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
+        tableTitle2 = ['#', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+        // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+        // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
+        for (let i = 0; i < candidateLen; i++)
+        {
+          const antObj = JSON.parse(candidateAnt[i]);
+          specData.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+            `${this.result['candidateBsPower'][i]}`,
+            // `${this.result['candidateBeamId'][i]}`,
+            `${JSON.parse(this.calculateForm.frequencyList)[0]}`,
+            `${JSON.parse(this.calculateForm.scs)[0]}`,
+            `${JSON.parse(this.calculateForm.bandwidth)[0]}`,
+            `${ulMcsTable[0]}`,
+            `${dlMcsTable[0]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+          }
+          specData2.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
         }
-      }
-      let ulmsc = this.calculateForm.ulMcsTable;
-      let dlmsc = this.calculateForm.dlMcsTable;
-      let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
-      // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
-      let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
-      // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
-      // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
-      // '下行調變能力','上行資料串流層數','下行資料串流層數'];
-      tableTitle = ['#','X/Y','dBm','Frequency','SCS(kHz)','Bandwidth','UL MCStable','DL MCStable'];
-      tableTitle2 = ['#','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure','Antenna','Theta','Phi','Txgain'];
-      // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
-      // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
-      for (let i=0;i < candidateLen;i++) {
-        const antObj = JSON.parse(candidateAnt[i]);
-        specData.push([
-          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
-          `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
-          `${this.result['candidateBsPower'][i]}`,
-          // `${this.result['candidateBeamId'][i]}`,
-          `${JSON.parse(this.calculateForm.frequencyList)[0]}`,
-          `${JSON.parse(this.calculateForm.scs)[0]}`,
-          `${JSON.parse(this.calculateForm.bandwidth)[0]}`,
-          `${ulMcsTable[0]}`,
-          `${dlMcsTable[0]}`
-        ]);
-        let antennaName = "";
-        if (this.authService.lang == 'zh-TW'){
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-        } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-        }
-        let bsNoiseFigure = 0;
-        if (this.calculateForm.bsNoiseFigure != ""){
-          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
-        }
-        specData2.push([
-          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
-          `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${bsNoiseFigure}`,
-          `${antennaName}`,
-          `${antObj[1]}`,
-          `${antObj[2]}`,
-          `${antObj[3]}`
-        ]);
-      }
-      let unsorttxpower = [];
-      let unsortbeamid = [];
-      let txpower = [];
-      let beamid = [];
-      if (this.calculateForm.isSimulation) {
-        txpower = JSON.parse(this.calculateForm.txPower);
-        beamid = JSON.parse(this.calculateForm.beamId);
-      } else {
-        unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
-        unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
-        for (let i = 0;i < this.result['defaultIdx'].length;i++) {
-          for (let j = 0;j < this.result['defaultIdx'].length;j++) {
-            if (i == this.result['defaultIdx'][j]) {
-              txpower.push(unsorttxpower[j]);
-              beamid.push(unsortbeamid[j]);
+        let unsorttxpower = [];
+        let unsortbeamid = [];
+        let txpower = [];
+        let beamid = [];
+        if (this.calculateForm.isSimulation)
+        {
+          //舊格式
+          if (this.calculateForm.bsList == null || this.calculateForm.bsList.length == 0 || this.calculateForm.bsList.defaultBs == null)
+          {
+            txpower = JSON.parse(this.calculateForm.txPower);
+          }
+          beamid = JSON.parse(this.calculateForm.beamId);
+        } else
+        {
+          unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+          for (let i = 0; i < this.result['defaultIdx'].length; i++)
+          {
+            for (let j = 0; j < this.result['defaultIdx'].length; j++)
+            {
+              if (i == this.result['defaultIdx'][j])
+              {
+                txpower.push(unsorttxpower[j]);
+                beamid.push(unsortbeamid[j]);
+              }
             }
           }
         }
-      }
-      let defaultLen;
-      if (defaultBs[0] == '') {
-        defaultLen = 0;
-      } else {
-        defaultLen = defaultBs.length;
-      }
-      for (let i=0;i < defaultLen;i++) {
-        const antObj = JSON.parse(defaultAnt[i]);
-        specData.push([
-          `${this.translateService.instant('default')}${i+1}`,
-          `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
-          `${txpower[i]}`,
-          // `${beamid[i]}`,
-          `${JSON.parse(this.calculateForm.frequency)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.scs)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.bandwidth)[i+this.inputBsList.length]}`,
-          `${ulMcsTable[i+this.inputBsList.length]}`,
-          `${dlMcsTable[i+this.inputBsList.length]}`,
-          // `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
-          // `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          // `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
-          // `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
-        ]);
-        let antennaName = "";
-        if (this.authService.lang == 'zh-TW'){
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-        } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+        let defaultLen;
+        if (defaultBs[0] == '')
+        {
+          defaultLen = 0;
+        } else
+        {
+          defaultLen = defaultBs.length;
         }
-        let bsNoiseFigure = 0;
-        if (this.calculateForm.bsNoiseFigure != ""){
-          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]
-        }
-        specData2.push([
-          `${this.translateService.instant('default')}${i+1}`,
-          `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${bsNoiseFigure}`,
-          `${antennaName}`,
-          `${antObj[1]}`,
-          `${antObj[2]}`,
-          `${antObj[3]}`,
-        ]);
-      }
-    } else {
-      let defaultBs = this.calculateForm.defaultBs.split('|');
-      // const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-      // const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
-      if (defaultBs.length == 1 && defaultBs[0] == '') {
-        defaultBs = [];
-      }
-      const defaultBsLen = defaultBs.length;
-      var defaultAnt = [];
-      // 填舊版無天線功能的欄位
-      if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
-        defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-      } else {
-        for (let i = 0; i < defaultBsLen; i++) {
-          defaultAnt.push("[1,0,0,0]");
+        for (let i = 0; i < defaultLen; i++)
+        {
+          const antObj = JSON.parse(defaultAnt[i]);
+          specData.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
+            `${txpower[i]}`,
+            // `${beamid[i]}`,
+            `${JSON.parse(this.calculateForm.frequency)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.scs)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.bandwidth)[i + this.inputBsList.length]}`,
+            `${ulMcsTable[i + this.inputBsList.length]}`,
+            `${dlMcsTable[i + this.inputBsList.length]}`,
+            // `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
+            // `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
+            // `${JSON.parse(this.calculateForm.bsTxGain)[i+this.inputBsList.length]}`,
+            // `${JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length]}`,
+          ]);
+
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i + this.inputBsList.length]
+          }
+          specData2.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[i + this.inputBsList.length]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`,
+          ]);
+
         }
       }
-      let candidateLen = this.result['candidateIdx'].length;
-      var candidateAnt = [];
-      if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt)){
-        let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
-        let candidateindex = this.result['candidateIdx'];
-        for (let i = 0; i < candidateLen; i++) {
-          candidateAnt.push(candidateAntList[candidateindex[i]]);
+      else
+      {
+        let defaultBs = this.calculateForm.defaultBs.split('|');
+        // const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        // const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+        if (defaultBs.length == 1 && defaultBs[0] == '')
+        {
+          defaultBs = [];
         }
-      } else {
-        for (let i = 0; i < candidateLen; i++) {
-          candidateAnt.push("[1,0,0,0]");
+        const defaultBsLen = defaultBs.length;
+        var defaultAnt = [];
+        // 填舊版無天線功能的欄位
+        if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt))
+        {
+          defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        } else
+        {
+          for (let i = 0; i < defaultBsLen; i++)
+          {
+            defaultAnt.push("[1,0,0,0]");
+          }
         }
-      }
-      let ulmsc = this.calculateForm.ulMcsTable;
-      let dlmsc = this.calculateForm.dlMcsTable;
-      let ulMcsTable = ulmsc.substring(1,(ulmsc.length)-1).split(',');
-      // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
-      let dlMcsTable = dlmsc.substring(1,(dlmsc.length)-1).split(',');
-      // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
-      // Candidate
-      // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
-      // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
-      // tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
-      // 'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
-      // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
-      // 'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
-      tableTitle = ['#','X/Y','dBm','UL Freq','DL Freq','UL Bandwidth','DL Bandwidth','UL MCStable','DL MCStable',];
-      tableTitle2 = ['#','UL SCS(kHz)','DL SCS(kHz)','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure','Antenna','Theta','Phi','Txgain'];
-      
-      for (let i=0;i < candidateLen;i++) {
-        const antObj = JSON.parse(candidateAnt[i]);
-        specData.push([
-          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
-          `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
-          `${this.result['candidateBsPower'][i]}`,
-          // `${this.result['candidateBeamId'][i]}`,
-          `${JSON.parse(this.calculateForm.ulFrequency)[0]}`,
-          `${JSON.parse(this.calculateForm.dlFrequency)[0]}`,
-          `${JSON.parse(this.calculateForm.ulBandwidth)[0]}`,
-          `${JSON.parse(this.calculateForm.dlBandwidth)[0]}`,
-          `${ulMcsTable[0]}`,
-          `${dlMcsTable[0]}`
-        ]);
-        let antennaName = "";
-        if (this.authService.lang == 'zh-TW'){
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-        } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+        let candidateLen = this.result['candidateIdx'].length;
+        var candidateAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt))
+        {
+          let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+          let candidateindex = this.result['candidateIdx'];
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push(candidateAntList[candidateindex[i]]);
+          }
+        } else
+        {
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push("[1,0,0,0]");
+          }
         }
-        let bsNoiseFigure = 0;
-        if (this.calculateForm.bsNoiseFigure != ""){
-          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+        let ulmsc = this.calculateForm.ulMcsTable;
+        let dlmsc = this.calculateForm.dlMcsTable;
+        let ulMcsTable = ulmsc.substring(1, (ulmsc.length) - 1).split(',');
+        // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+        let dlMcsTable = dlmsc.substring(1, (dlmsc.length) - 1).split(',');
+        // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+        // Candidate
+        // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
+        // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
+        // tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
+        // 'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
+        // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+        // 'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
+        tableTitle = ['#', 'X/Y', 'dBm', 'UL Freq', 'DL Freq', 'UL Bandwidth', 'DL Bandwidth', 'UL MCStable', 'DL MCStable',];
+        tableTitle2 = ['#', 'UL SCS(kHz)', 'DL SCS(kHz)', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+
+        for (let i = 0; i < candidateLen; i++)
+        {
+          const antObj = JSON.parse(candidateAnt[i]);
+          specData.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+            `${this.result['candidateBsPower'][i]}`,
+            // `${this.result['candidateBeamId'][i]}`,
+            `${JSON.parse(this.calculateForm.ulFrequency)[0]}`,
+            `${JSON.parse(this.calculateForm.dlFrequency)[0]}`,
+            `${JSON.parse(this.calculateForm.ulBandwidth)[0]}`,
+            `${JSON.parse(this.calculateForm.dlBandwidth)[0]}`,
+            `${ulMcsTable[0]}`,
+            `${dlMcsTable[0]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+          }
+          specData2.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${JSON.parse(this.calculateForm.ulScs)[0]}`,
+            `${JSON.parse(this.calculateForm.dlScs)[0]}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
         }
-        specData2.push([
-          `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i]+1}`,
-          `${JSON.parse(this.calculateForm.ulScs)[0]}`,
-          `${JSON.parse(this.calculateForm.dlScs)[0]}`,
-          `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
-          `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
-          `${bsNoiseFigure}`,
-          `${antennaName}`,
-          `${antObj[1]}`,
-          `${antObj[2]}`,
-          `${antObj[3]}`
-        ]);
-      }
-      
-      let unsorttxpower = [];
-      let unsortbeamid = [];
-      let txpower = [];
-      let beamid = [];
-      if (this.calculateForm.isSimulation) {
-        txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
-        beamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
-      } else {
-        unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
-        unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
-        for (let i = 0;i < this.result['defaultIdx'].length;i++) {
-          for (let j = 0;j < this.result['defaultIdx'].length;j++) {
-            if (i == this.result['defaultIdx'][j]) {
-              txpower.push(unsorttxpower[j]);
-              beamid.push(unsortbeamid[j]);
+
+        let unsorttxpower = [];
+        let unsortbeamid = [];
+        let txpower = [];
+        let beamid = [];
+        if (this.calculateForm.isSimulation)
+        {
+          txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          beamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+        } else
+        {
+          unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+          for (let i = 0; i < this.result['defaultIdx'].length; i++)
+          {
+            for (let j = 0; j < this.result['defaultIdx'].length; j++)
+            {
+              if (i == this.result['defaultIdx'][j])
+              {
+                txpower.push(unsorttxpower[j]);
+                beamid.push(unsortbeamid[j]);
+              }
             }
           }
         }
+        // console.log(defaultBs);
+        let defaultLen = defaultBs.length;
+        for (let i = 0; i < defaultLen; i++)
+        {
+          const antObj = JSON.parse(defaultAnt[i]);
+          specData.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
+            `${txpower[i]}`,
+            // `${beamid[i]}`,
+            `${JSON.parse(this.calculateForm.ulFrequency)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlFrequency)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.ulBandwidth)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlBandwidth)[i + this.inputBsList.length]}`,
+            `${ulMcsTable[i + this.inputBsList.length]}`,
+            `${dlMcsTable[i + this.inputBsList.length]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i + this.inputBsList.length];
+          }
+          specData2.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(this.calculateForm.ulScs)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlScs)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[i + this.inputBsList.length]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
+        }
       }
-      // console.log(defaultBs);
-      let defaultLen = defaultBs.length;
-      for (let i=0;i < defaultLen;i++) {
-        const antObj = JSON.parse(defaultAnt[i]);
-        specData.push([
-          `${this.translateService.instant('default')}${i+1}`,
-          `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
-          `${txpower[i]}`,
-          // `${beamid[i]}`,
-          `${JSON.parse(this.calculateForm.ulFrequency)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.dlFrequency)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.ulBandwidth)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.dlBandwidth)[i+this.inputBsList.length]}`,
-          `${ulMcsTable[i+this.inputBsList.length]}`,
-          `${dlMcsTable[i+this.inputBsList.length]}`
-        ]);
-        let antennaName = "";
-        if (this.authService.lang == 'zh-TW'){
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-        } else {
-          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+    }
+    else
+    {
+      if (this.calculateForm.duplex == 'tdd')
+      {
+
+        let candidateLen = this.result['candidateIdx'].length;
+        var candidateAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt))
+        {
+          let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+          let candidateindex = this.result['candidateIdx'];
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push(candidateAntList[candidateindex[i]]);
+          }
+        } else
+        {
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push("[1,0,0,0]");
+          }
         }
+        let ulmsc = this.calculateForm.ulMcsTable;
+        let dlmsc = this.calculateForm.dlMcsTable;
+        let ulMcsTable = ulmsc.substring(1, (ulmsc.length) - 1).split(',');
+        let dlMcsTable = dlmsc.substring(1, (dlmsc.length) - 1).split(',');
+        // tableTitle = ['基站編號','X/Y','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+        // '下行調變能力','上行資料串流層數','下行資料串流層數'];
+        tableTitle = ['Bs#', 'X/Y', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
+        tableTitle2 = ['Bs#', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure'];
+
+        antTableTitle = ['Ant#', 'Name', 'Type', 'Manufacturer', 'X/Y', 'Frequency', 'Theta', 'Phi', 'Gain'];
+        for (let i = 0; i < candidateLen; i++)
+        {
+          const antObj = JSON.parse(candidateAnt[i]);
+          specData.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+            `${this.result['candidateBsPower'][i]}`,
+            // `${this.result['candidateBeamId'][i]}`,
+            `${JSON.parse(this.calculateForm.frequencyList)[0]}`,
+            `${JSON.parse(this.calculateForm.scs)[0]}`,
+            `${JSON.parse(this.calculateForm.bandwidth)[0]}`,
+            `${ulMcsTable[0]}`,
+            `${dlMcsTable[0]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+          }
+          specData2.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
+        }
+        let unsorttxpower = [];
+        let unsortbeamid = [];
+        let txpower = 0;
+        let beamid = [];
         let bsNoiseFigure = 0;
-        if (this.calculateForm.bsNoiseFigure != ""){
-          bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+this.inputBsList.length];
+        
+
+
+        // tableTitle = ['基站編號','X/Y','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+        // '下行調變能力','上行資料串流層數','下行資料串流層數'];
+
+        for (let i = 0; i < this.calculateForm.bsList.defaultBs.length; i++)
+        {
+          //DAS格式
+          txpower = this.calculateForm.bsList.defaultBs[i].txPower;
+          specData.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${this.calculateForm.bsList.defaultBs[i].position[0]}/${this.calculateForm.bsList.defaultBs[i].position[1]}`,
+            `${txpower}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.frequency}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.scs}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.bandwidth}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.mcsTable}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.dl.mcsTable}`,
+          ]);
+
+
+          let bsNoiseFigure = this.calculateForm.bsList.defaultBs[i].noiseFigure;
+
+          specData2.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.mimo}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.dl.mimo}`,
+            `${bsNoiseFigure}`
+          ]);
+
+          let antenna = this.calculateForm.bsList.defaultBs[i].antenna;
+          let antennaIndex = this.getAntIndexById(antenna[0].antennaID);
+          let antennaName = '-';
+          let antennaType = '-';
+          let antennaManufactor = '-';
+
+          if (antennaIndex != -1)
+          {
+            antennaName = this.antennaList[antennaIndex]['antennaName'];
+            antennaType = this.antennaList[antennaIndex]['antennaType'];
+            antennaManufactor = this.antennaList[antennaIndex]['manufactor'];
+
+          }
+
+          console.log(`antenna = ${JSON.stringify(antenna)}`);
+          console.log(`id = ${antennaIndex}`);
+          console.log(`antennaList = ${JSON.stringify(this.antennaList)}`);
+          console.log(`antennaName = ${antennaName}`);
+
+          for (let a = 0; a < antenna.length; a++)
+          {
+           // antTableTitle = ['Ant#', 'Name', 'Type', 'Manufacturer', 'X/Y', 'Frequency', 'Theta', 'Phi', 'Gain'];
+
+            
+            antData.push(
+              [
+                `${this.translateService.instant('antenna')}${i + 1}.${a + 1}`,
+                this.formatValue(`${antennaName}`),
+                this.formatValue(`${antennaType}`),
+                this.formatValue(`${antennaManufactor}`),
+                this.formatValue(`${antenna[a].position[0]}/${antenna[a].position[1]}`),
+                this.formatValue(`${antenna[a].ulFrequency}`),
+                this.formatValue(`${antenna[a].theta}`),
+                this.formatValue(`${antenna[a].phi}`),
+                this.formatValue(`${antenna[a].gain}`),
+              ]);
+          }
+
         }
-        specData2.push([
-          `${this.translateService.instant('default')}${i+1}`,
-          `${JSON.parse(this.calculateForm.ulScs)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.dlScs)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.ulMimoLayer)[i+this.inputBsList.length]}`,
-          `${JSON.parse(this.calculateForm.dlMimoLayer)[i+this.inputBsList.length]}`,
-          `${bsNoiseFigure}`,
-          `${antennaName}`,
-          `${antObj[1]}`,
-          `${antObj[2]}`,
-          `${antObj[3]}`
-        ]);
+
+       
+      }
+      else
+      {
+        let defaultBs = this.calculateForm.defaultBs.split('|');
+        // const defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        // const candidateAnt = this.calculateForm.candidateBsAnt.split('|');
+        if (defaultBs.length == 1 && defaultBs[0] == '')
+        {
+          defaultBs = [];
+        }
+        const defaultBsLen = defaultBs.length;
+        var defaultAnt = [];
+        // 填舊版無天線功能的欄位
+        if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt))
+        {
+          defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+        } else
+        {
+          for (let i = 0; i < defaultBsLen; i++)
+          {
+            defaultAnt.push("[1,0,0,0]");
+          }
+        }
+        let candidateLen = this.result['candidateIdx'].length;
+        var candidateAnt = [];
+        if (!this.authService.isEmpty(this.calculateForm.candidateBsAnt))
+        {
+          let candidateAntList = this.calculateForm.candidateBsAnt.split('|');
+          let candidateindex = this.result['candidateIdx'];
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push(candidateAntList[candidateindex[i]]);
+          }
+        } else
+        {
+          for (let i = 0; i < candidateLen; i++)
+          {
+            candidateAnt.push("[1,0,0,0]");
+          }
+        }
+        let ulmsc = this.calculateForm.ulMcsTable;
+        let dlmsc = this.calculateForm.dlMcsTable;
+        let ulMcsTable = ulmsc.substring(1, (ulmsc.length) - 1).split(',');
+        // ulMcsTable = ulMcsTable.slice(-(defaultBs.length))
+        let dlMcsTable = dlmsc.substring(1, (dlmsc.length) - 1).split(',');
+        // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
+        // Candidate
+        // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','上行中心頻率','下行中心頻率','上行頻寬',
+        // '下行頻寬','上行子載波間距(kHz)','下行子載波間距(kHz)','上行調變能力','下行調變能力','上行資料串流層數','下行資料串流層數'];
+        // tableTitle = ['#','X/Y','dBm','BeamId','UL Freq','DL Freq','UL Bandwidth',
+        // 'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
+        // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
+        // 'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
+        tableTitle = ['#', 'X/Y', 'dBm', 'UL Freq', 'DL Freq', 'UL Bandwidth', 'DL Bandwidth', 'UL MCStable', 'DL MCStable',];
+        tableTitle2 = ['#', 'UL SCS(kHz)', 'DL SCS(kHz)', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+
+        for (let i = 0; i < candidateLen; i++)
+        {
+          const antObj = JSON.parse(candidateAnt[i]);
+          specData.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${this.result['chosenCandidate'][i][0]}/${this.result['chosenCandidate'][i][1]}`,
+            `${this.result['candidateBsPower'][i]}`,
+            // `${this.result['candidateBeamId'][i]}`,
+            `${JSON.parse(this.calculateForm.ulFrequency)[0]}`,
+            `${JSON.parse(this.calculateForm.dlFrequency)[0]}`,
+            `${JSON.parse(this.calculateForm.ulBandwidth)[0]}`,
+            `${JSON.parse(this.calculateForm.dlBandwidth)[0]}`,
+            `${ulMcsTable[0]}`,
+            `${dlMcsTable[0]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[0];
+          }
+          specData2.push([
+            `${this.translateService.instant('candidate')}${this.result['candidateIdx'][i] + 1}`,
+            `${JSON.parse(this.calculateForm.ulScs)[0]}`,
+            `${JSON.parse(this.calculateForm.dlScs)[0]}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[0]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[0]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
+        }
+
+        let unsorttxpower = [];
+        let unsortbeamid = [];
+        let txpower = [];
+        let beamid = [];
+        if (this.calculateForm.isSimulation)
+        {
+          txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          beamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+        } else
+        {
+          unsorttxpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
+          unsortbeamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
+          for (let i = 0; i < this.result['defaultIdx'].length; i++)
+          {
+            for (let j = 0; j < this.result['defaultIdx'].length; j++)
+            {
+              if (i == this.result['defaultIdx'][j])
+              {
+                txpower.push(unsorttxpower[j]);
+                beamid.push(unsortbeamid[j]);
+              }
+            }
+          }
+        }
+        // console.log(defaultBs);
+        let defaultLen = defaultBs.length;
+        for (let i = 0; i < defaultLen; i++)
+        {
+          const antObj = JSON.parse(defaultAnt[i]);
+          specData.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(defaultBs[i])[0]}/${JSON.parse(defaultBs[i])[1]}`,
+            `${txpower[i]}`,
+            // `${beamid[i]}`,
+            `${JSON.parse(this.calculateForm.ulFrequency)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlFrequency)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.ulBandwidth)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlBandwidth)[i + this.inputBsList.length]}`,
+            `${ulMcsTable[i + this.inputBsList.length]}`,
+            `${dlMcsTable[i + this.inputBsList.length]}`
+          ]);
+          let antennaName = "";
+          if (this.authService.lang == 'zh-TW')
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
+          } else
+          {
+            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          }
+          let bsNoiseFigure = 0;
+          if (this.calculateForm.bsNoiseFigure != "")
+          {
+            bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i + this.inputBsList.length];
+          }
+          specData2.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${JSON.parse(this.calculateForm.ulScs)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlScs)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.ulMimoLayer)[i + this.inputBsList.length]}`,
+            `${JSON.parse(this.calculateForm.dlMimoLayer)[i + this.inputBsList.length]}`,
+            `${bsNoiseFigure}`,
+            `${antennaName}`,
+            `${antObj[1]}`,
+            `${antObj[2]}`,
+            `${antObj[3]}`
+          ]);
+        }
       }
     }
 
@@ -1310,10 +1684,17 @@ export class PdfComponent implements OnInit {
       halign: 'center'
     });
     pdf.autoTable(tableTitle2, specData2, {
-      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal', valign: 'middle', halign: 'center', fontSize:8},
-      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold'},
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal', valign: 'middle', halign: 'center', fontSize: 8 },
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold' },
       beforePageContent: specDataHeader,
-      startY: pdf.autoTable.previous.finalY+4,
+      startY: pdf.autoTable.previous.finalY + 4,
+      halign: 'center'
+    });
+    pdf.autoTable(antTableTitle, antData, {
+      styles: { font: 'NotoSansCJKtc', fontStyle: 'normal', valign: 'middle', halign: 'center', fontSize: 8 },
+      headStyles: { font: 'NotoSansCJKtc', fontStyle: 'bold' },
+      beforePageContent: specDataHeader,
+      startY: pdf.autoTable.previous.finalY + 4,
       halign: 'center'
     });
     
@@ -1912,43 +2293,66 @@ export class PdfComponent implements OnInit {
     //   ]);
     // }
     let candidateLen = this.result['candidateIdx'].length;
-    for (let i=0;i < candidateLen;i++) {
-      ueData.push([`${this.translateService.instant('result.propose.candidateBs')}${this.result['candidateIdx'][i]+1}`]);
-      for (let k = 0; k < this.ueList.length; k++) {
-        if (ueConInfo[k] == this.result['candidateIdx'][i]) {
-          let ueRxGain = 0;
-          if (this.calculateForm.ueRxGain != ""){
-            ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+
+    if (this.ueList.length != 0)
+    {
+      for (let i = 0; i < candidateLen; i++)
+      {
+        ueData.push([
+          `${this.translateService.instant('result.propose.candidateBs')}${this.result['candidateIdx'][i] + 1}`]);
+
+
+        for (let k = 0; k < this.ueList.length; k++)
+        {
+          if (ueConInfo[k] == this.result['candidateIdx'][i])
+          {
+            let ueRxGain = 0;
+            if (this.calculateForm.ueRxGain != "")
+            {
+              ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+            }
+            ueData.push([
+              this.formatValue(`${k + 1}`),
+              this.formatValue(this.ueList[k][0]),
+              this.formatValue(this.ueList[k][1]),
+              this.formatValue(this.ueList[k][2]),
+              this.formatValue(`${this.financial(this.result['ueRsrp'][k])} dBm`),
+              this.formatValue(`${this.financial(this.result['ueSinr'][k])} dB`),
+              this.formatValue(`${this.financial(uedlTpt[k])} Mbps`),
+              this.formatValue(`${this.financial(ueulTpt[k])} Mbps`),
+              this.formatValue(`${ueRxGain} dB`)
+            ]);
           }
-          ueData.push([
-            (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-            , `${this.financial(this.result['ueRsrp'][k])} dBm`
-            , `${this.financial(this.result['ueSinr'][k])} dB`
-            , `${this.financial(uedlTpt[k])} Mbps`
-            , `${this.financial(ueulTpt[k])} Mbps`
-            , `${ueRxGain} dB`
-          ]);
         }
       }
-    }
-    let defaultLen = defaultBs.length;
+      let defaultLen = defaultBs.length;
 
-    for (let i=0;i < defaultLen;i++) {
-      ueData.push([`${this.translateService.instant('result.propose.defaultBs')}${i+1}`]);
-      for (let k = 0; k < this.ueList.length; k++) {
-        if (ueConInfo[k] == i+this.inputBsList.length) {
-          let ueRxGain = 0;
-          if (this.calculateForm.ueRxGain != ""){
-            ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+      for (let i = 0; i < defaultLen; i++)
+      {
+        ueData.push([`${this.translateService.instant('result.propose.defaultBs')}${i + 1}`]);
+
+
+        for (let k = 0; k < this.ueList.length; k++)
+        {
+          if (ueConInfo[k] == i + this.inputBsList.length)
+          {
+            let ueRxGain = 0;
+            if (this.calculateForm.ueRxGain != "")
+            {
+              ueRxGain = JSON.parse(this.calculateForm.ueRxGain)[k]
+            }
+            ueData.push([
+              this.formatValue(`${k + 1}`),
+              this.formatValue(this.ueList[k][0]),
+              this.formatValue(this.ueList[k][1]),
+              this.formatValue(this.ueList[k][2]),
+              this.formatValue(`${this.financial(this.result['ueRsrp'][k])} dBm`),
+              this.formatValue(`${this.financial(this.result['ueSinr'][k])} dB`),
+              this.formatValue(`${this.financial(uedlTpt[k])} Mbps`),
+              this.formatValue(`${this.financial(ueulTpt[k])} Mbps`),
+              this.formatValue(`${ueRxGain} dB`)
+            ]);
           }
-          ueData.push([
-            (k + 1), this.ueList[k][0], this.ueList[k][1], this.ueList[k][2]
-            , `${this.financial(this.result['ueRsrp'][k])} dBm`
-            , `${this.financial(this.result['ueSinr'][k])} dB`
-            , `${this.financial(uedlTpt[k])} Mbps`
-            , `${this.financial(ueulTpt[k])} Mbps`
-            , `${ueRxGain} dB`
-          ]);
         }
       }
     }
@@ -2060,5 +2464,23 @@ export class PdfComponent implements OnInit {
 
   floatToString(x) {
     return Number.parseFloat(x).toString().slice(0, 5);
+  }
+
+  formatValue(value)
+  {
+    if (value == null || value == '' || value.length == 0)
+      return "-";
+    else
+      return value;
+  }
+
+  getAntIndexById(id)
+  {
+    for (let a = 0; a < this.antennaList.length; a++)
+    {
+      if (id == this.antennaList[a].antennaID)
+        return a;
+    }
+    return -1;
   }
 }

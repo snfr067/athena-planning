@@ -4,6 +4,7 @@ import { ResultComponent } from './result.component';
 import { RouterModule } from '@angular/router';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 // import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
 import { SitePlanningMapModule } from '../modules/site-planning-map/site-planning-map.module';
 import { PerformanceModule } from '../modules/performance/performance.module';
 import { ProposeModule } from '../modules/propose/propose.module';
@@ -42,7 +43,8 @@ import { SignalUlThroughputModule } from '../modules/signal-ul-throughput/signal
     MatCheckboxModule,
     NgxSliderModule,
     SignalDlThroughputModule,
-    SignalUlThroughputModule
+    SignalUlThroughputModule,
+    MatRadioModule
   ],
   declarations: [ResultComponent]
 })

@@ -55,9 +55,6 @@ export class PerformanceComponent implements OnInit {
           }
         }
       }
-    }
-    for (let i = 0; i < zValues.length; i++) {
-      // this.zCoverageRsrp.push(0);
       for (let j = 0; j < this.result['sinrMap'].length; j++) {
         for (let k = 0; k < this.result['sinrMap'][0].length; k++) {
           if (this.result['sinrMap'][j][k][i] > this.sinrTh) {

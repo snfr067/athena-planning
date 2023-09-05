@@ -134,12 +134,17 @@ export class SubFieldComponent implements OnInit {
 
     if (type === 'quality') {
       valueArr = this.result['sinrMap'];
-    } else if (type === 'coverage' || type === 'coverageSinr') {
+    } else if (type === 'coverage') {
       valueArr = this.result['connectionMap'];
       tempValue = this.result['sinrMap'];
-    } else if (type === 'coverageRsrp') {
+    } else if (type === 'coverageRsrp')
+    {
       valueArr = this.result['connectionMap'];
       tempValue = this.result['rsrpMap'];
+    } else if (type === 'coverageSinr')
+    {
+      valueArr = this.result['connectionMap'];
+      tempValue = this.result['sinrMap'];
     } else if (type === 'rsrp') {
       valueArr = this.result['rsrpMap'];
     } else if (type === 'dltpt') {
@@ -198,7 +203,7 @@ export class SubFieldComponent implements OnInit {
     // console.log("points",points);
     if (type === 'coverage') {
       zResult = this.financial(Number(totalValue/points)*100, 2);
-    } else if (type === 'coverageRsrp') {
+    } else if (type === 'coverageRsrp' || type === 'coverageSinr') {
       zResult = this.financial(Number(totalValue/points)*100, 2);
     } else {
       zResult = this.financial(totalValue/points, 2);

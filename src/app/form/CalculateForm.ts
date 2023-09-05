@@ -68,7 +68,7 @@ export class CalculateForm {
   mctsTotalTime: number = 500;
 
   //Simulation
-  bsList: string = null;
+  bsList;
   txPower: string = null;
   beamId: string = null;
   frequencyList: string = null;

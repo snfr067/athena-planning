@@ -159,6 +159,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   dragObject = {};
   /** 基站RF參數 */
   bsListRfParam = {};
+  /** color list */
+  colorList = {};
   /** 現有基站 */
   defaultBSList = [];
   /** 新增基站 */
@@ -236,11 +238,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // title: '子場域',
       type: 'subField',
       element: '4'
+    },
+    antenna: {
+      id: 'svg_9',
+      title: this.translateService.instant('antenna'),
+      type: 'antenna',
+      element: ''
     }
   };
+
+  /** 用來判斷是否讀取完成 */
+  isMovingNumber = true;
+
   /** 當下互動物件的id */
   svgId;
-  svgNum;
+  svgNum = 1;
+  svgAntNum = '1.1';
+  selectBsSvgId = '';
+  selectAntSvgId = '';
   /** 新增物件的起始pixel位置 */
   initpxl = 50;
   /** 互動物件的真實id，避免互動時id錯亂用 */
@@ -300,6 +315,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   };
   /** span互動物件 style */
   spanStyle = {};
+  antSpanStyle = {};
   /** 方形互動物件 style */
   rectStyle = {};
   /** 圓形互動物件 style */
@@ -312,8 +328,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   svgStyle = {};
   /** svg path互動物件 style */
   pathStyle = {};
-  /** defaultBs編號 style */
+  /** candidate、Ant編號 style */
   circleStyle = {};
+  /** defaultBs編號 style */
+  dfBsCircleStyle = {};
   /** workbook */
   wb: XLSX.WorkBook;
   /** 互動區域範圍 */
@@ -335,6 +353,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   OBSTACLE_COLOR = '#73805c';
   /** defaultBs預設顏色 */
   DEFAULT_BS_COLOR = '#2958be';
+  /** defaultBs的號碼預設顏色 */
+  DEFAULT_BS_CIRCLE_COLOR = '#338aee';
   /** candidate預設顏色 */
   CANDIDATE_COLOR = '#d00a67';
   /** UE預設顏色 */
@@ -405,6 +425,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   dlThroughputLowerLimit = 0;
   defaultUEULThroughputSetting = 5;
   defaultUEDLThroughputSetting = 5;
+  antCountOfBS = 1;
 
   firstLayerDialogRef = null;
   secondLayerDialogRef = null;
@@ -451,19 +472,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     selectFreq: 0,
     selectPortGain: 0
   };
-  selectAntenna = {
-    antennaID: 1,
-    name: '',
-    type: '',
-    property: "customized",
-    manufactor: '',
-    availableFrequency: [],
-    availablePorts: [],
-    selectPortID: 0,
-    selectFreqId: 0,
-    selectFreq: 0,
-    selectPort: '',
-  };
   dftOmiAntSimulationTxGain = 0;
   antennaWarnMsg = {
     name: "",
@@ -495,6 +503,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     ue: this.ueStr
   };
 
+  testColor = 'background-color: #FF0000 !important;';
+  root = document.documentElement;
+
   // useSmartAntenna = "false";
   /** 畫圖物件 */
   @ViewChild('chart') chart: ElementRef;
@@ -504,6 +515,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+  @ViewChild('AntRfModalTable') antRfModalTable: TemplateRef<any>;
   @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
   @ViewChild('SINRModalTable') SINRModalTable: TemplateRef<any>;
   @ViewChild('FieldCoverageModalTable') FieldCoverageModalTable: TemplateRef<any>;
@@ -516,6 +528,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   @ViewChild('EditAntennaModalTable') EditAntennaModalTable: TemplateRef<any>;
   @ViewChild('CheckAntennaRawdataModalTable') CheckAntennaRawdataModalTable: TemplateRef<any>;
   @ViewChild('AntennaWarnMsgModalTable') AntennaWarnMsgModalTable: TemplateRef<any>;
+  @ViewChild('AntCountOfBSModal') AntCountOfBSModal: TemplateRef<any>;
   /** 新增自訂材質 */
   @ViewChild('materialCustomizeModal') materialCustomizeModal: TemplateRef<any>;
   @ViewChild('modelCustomizeModal') modelCustomizeModal: TemplateRef<any>;
@@ -684,7 +697,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log(changes);
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void
+  {
+    this.pollingLoading();
     // 物件就位後再顯示
     this.chart.nativeElement.style.opacity = 0;
     this.resetChartWidth();
@@ -693,17 +708,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const matSidenavContent: HTMLElement = document.querySelector('.mat-sidenav-content');
     matSidenav.style.width = matSidenavContent.style.marginRight;
 
+    //取得天線資料
     this.getAntenna();
-
-    /*this.dftOmiAntGain.nativeElement.valueChanges.subscribe((value: any) =>
-    {
-      this.changedftOmiAntRawdataPattern(value);
-    });*/
+    
   }
+
+  pollingLoading()
+  {
+    //此處方法為每5秒檢查一次是否還有執行this.moveNumber()，若有則代表還在讀取，若無則代表已經有至少5秒沒有執行this.moveNumber()，視為讀取完畢
+    this.authService.spinnerShow();
+    if (this.isMovingNumber)
+    {
+      setTimeout(() =>
+      {
+        this.pollingLoading();
+      }, 2000);
+      this.isMovingNumber = false;
+    }
+    else
+    {
+      this.authService.spinnerHide();
+    }
+  }
+  
 
   ngOnInit()
   {
-       
     window.sessionStorage.removeItem('tempParamForSelect');
     if (!sessionStorage.getItem('rsrpThreshold')) {
       sessionStorage.setItem('rsrpThreshold', JSON.stringify(-90));
@@ -857,10 +887,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
 
                 this.isBsNumberOptimization = this.formService.setHstToBsNumOpt(result);
-                console.log("isBsNumOpt = " + this.isBsNumberOptimization);
                 this.evaluationFuncForm = this.calculateForm.evaluationFunc;
                 this.checkEvaluationFuncForm();
-                console.log("this.evaluationFuncForm = " + JSON.stringify(this.evaluationFuncForm));
                 this.oldFormatEvaluation();
                 this.changeAreaFormatToPercent();
                 console.log("this.evaluationFuncForm = " + JSON.stringify(this.evaluationFuncForm));
@@ -1035,6 +1063,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 type: 'error',
                 infoMessage: this.translateService.instant('cant_get_result')
               };
+              this.authService.spinnerHide();
               this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
             }
           );
@@ -1224,9 +1253,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   ngOnDestroy(): void
   {
-    console.log("Test");
     this.setForm();
-    console.log("Test");
     // 暫存
     // window.sessionStorage.clear();
     if (this.taskid !== '') {
@@ -1234,14 +1261,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       window.sessionStorage.setItem(`form_blank_task`, JSON.stringify(this.calculateForm));
     }
-    console.log("Test");
     if (typeof this.progressInterval !== 'undefined') {
       window.clearInterval(this.progressInterval);
       for (let i = 0; i < this.progressInterval; i++) {
         window.clearInterval(i);
       }
     }
-    console.log("Test");
     try
     {
       this.moveable.destroy();
@@ -1251,7 +1276,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       console.log(JSON.stringify(error));
     }
     document.querySelector('body').style.overflow = 'auto';
-    console.log("Test");
   }
 
   tempParamStorageForSelect (temp) {
@@ -1348,7 +1372,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     try
     {
-      console.log(this.defaultBSList);
       this.createResolutionList();
       //檢查有沒有場域長寬高被改成負數
       if (this.calculateForm.height < 0 || this.calculateForm.altitude <= 0 || this.calculateForm.width < 0) {
@@ -1680,10 +1703,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 新增互動物件
    * @param id 
    */
-  addMoveable(id) {
-    try {
+  addMoveable(id)
+  {
+    if (this.planningIndex == '3')
+    {
+      if (id == 'defaultBS' && this.antCountOfBS <= 0)
+      {
+        let msg = this.translateService.instant('bs.antenna.count.error.msg');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+    }
+
+    try
+    {
       this.moveable.destroy();
-    } catch (error) {}
+    }
+    catch (error) { }
+
+
+    
+    this.closeFirstLayer();
+
     // delete keycode生效
     window.setTimeout(() => {
       this.live = true;
@@ -1721,14 +1766,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         points: '15,0 30,30 0,30',
         fill: this.OBSTACLE_COLOR
       };
-    } else if (id === 'defaultBS') {
-      color = this.DEFAULT_BS_COLOR;
+    } else if (id === 'defaultBS')
+    {
       this.svgId = `${id}_${this.generateString(10)}`;
-      console.log(this.defaultBSList);
+      this.selectBsSvgId = this.svgId;
+      this.colorList[this.svgId] = this.generateRandomColorSet();
       this.defaultBSList.push(this.svgId);
-      console.log(this.defaultBSList);
+      color = this.colorList[this.svgId][1];
       this.pathStyle[this.svgId] = {
-        fill: this.DEFAULT_BS_COLOR
+        fill: this.colorList[this.svgId][1]
       };
       //Add bs RF param
       this.bsListRfParam[this.svgId] = {
@@ -1738,8 +1784,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         fddUlFrequency: 1950,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
-        dlMimoLayer: '1',
-        ulMimoLayer: '1',
+        dlMimoLayer: this.allAntennaList[0].availableFrequency[0].ports.length,
+        ulMimoLayer: this.allAntennaList[0].availableFrequency[0].ports.length,
         //TDD 5G
         tddscs: '15',
         tddbandwidth: '5',
@@ -1761,10 +1807,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         wifiBandwidth: '20',
         bsTxGain: 0,
         bsNoiseFigure: 0,
-        AntennaId:1,
-        theta:0,
+
+        isAntennaDefault: this.allAntennaList[0].property,
+        AntennaId: this.allAntennaList[0].antennaID,
+        antennaType: this.allAntennaList[0].type,
+        antennaManufactor: this.allAntennaList[0].manufactor,
+        ulAntFreq: this.allAntennaList[0].availableFrequency[0].frequency,
+        dlAntFreq: this.allAntennaList[0].availableFrequency[0].frequency,
+
+        theta: 0,
         phi: 0,
-        isAntennaDefault: 'default'
+        antenna:[]
       };
       if (this.calculateForm.objectiveIndex === '0') {
         this.bsListRfParam[this.svgId].dlBandwidth = '1.4';
@@ -1772,7 +1825,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else if (this.calculateForm.objectiveIndex == '2') {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20'
       }
-    } else if (id === 'candidate') {
+      if (this.planningIndex == '3')
+      {
+        this.addBSAntenna(this.antCountOfBS - 1);
+        this.antCountOfBS = 1;   
+      }   
+    }
+    else if (id === 'candidate')
+    {
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.candidateList.push(this.svgId);
@@ -1812,7 +1872,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         // wifiBandwidth: 20
         bsTxGain: 0,
         bsNoiseFigure: 0,
-        AntennaId:1,
+        AntennaId: 1,
+        antennaType: 'Omnidirectional',
+        antennaManufactor: '',
+        ulAntFreq: -1,
+        dlAntFreq: -1,
         theta:0,
         phi: 0,
         isAntennaDefault: 'default'
@@ -1890,7 +1954,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       top: `${this.initpxl}px`,
       width: `${width}px`,
       height: `${height}px`
-    };
+    };    
 
     this.svgStyle[this.svgId] = {
       display: 'inherit',
@@ -1903,14 +1967,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }else{
       materialName = this.materialList[0]['name'];
     }
+
+    let altitude = 0;
+    let z = 0;
+    if (id !== 'defaultBS')
+    {
+      altitude = this.calculateForm.altitude;
+      z = 0;
+    }
+    else
+    {
+      altitude = 0;
+      z = this.calculateForm.altitude;
+    }
+
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
       // z: this.zValues[0],
-      z: 0,
+      z: z,
       width: width,
       height: height,
-      altitude: this.calculateForm.altitude,
+      altitude: altitude,
       rotate: 0,
       title: this.svgMap[id].title,
       type: this.svgMap[id].type,
@@ -1919,6 +1997,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       element: this.parseElement(id),
       materialName: materialName
     };
+
 
     if (id == 'UE'){
       this.dragObject[this.svgId].z = this.zValues[0];
@@ -1988,13 +2067,127 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }, 0);
       
     }, 0);
-
+    
   }
+
+  addBSAntenna(count)
+  {
+    let id = 'antenna';
+    let antSvgIdArray = [];
+
+    let antLeft = ``;
+    let antTop = ``;
+    let shift = 0;
+
+    const SHIFT_PX = 50;
+    const ANT_WIDTH = 30;
+    const ANT_HEIGHT = 30;
+   
+    
+    for (let a = 0; a < count; a++)                     
+    {
+      this.svgId = `${id}_${this.generateString(10)}`;
+
+      this.bsListRfParam[this.selectBsSvgId].antenna.push
+      (
+        {
+            svgId: this.svgId,
+            gain: 0, 
+            theta: 0,
+            phi: 0
+        }
+      );
+
+      antSvgIdArray.push(this.svgId);
+      shift = (a + 1) * SHIFT_PX;
+      antLeft = `${this.initpxl + shift}px`;
+      antTop = `${this.initpxl}px`;
+
+      this.spanStyle[this.svgId] = {
+        left: antLeft,
+        top: antTop,
+        width: `${ANT_WIDTH}px`,
+        height: `${ANT_HEIGHT}px`
+      };
+
+      this.svgStyle[this.svgId] = {
+        display: 'inherit',
+        width: ANT_WIDTH,
+        height: ANT_HEIGHT
+      };
+      let materialName = '';
+      if (this.authService.lang == 'zh-TW')
+      {
+        materialName = this.materialList[0]['chineseName'];
+      } else
+      {
+        materialName = this.materialList[0]['name'];
+      }
+
+
+      this.dragObject[this.svgId] = {
+        x: this.roundFormat(this.xLinear(this.initpxl + shift)),
+        y: this.roundFormat(this.yLinear(this.initpxl)),
+        z: this.calculateForm.altitude,
+        width: ANT_WIDTH,
+        height: ANT_HEIGHT,
+        altitude: 0,
+        rotate: 0,
+        title: this.svgMap[id].title,
+        type: this.svgMap[id].type,
+        color: this.colorList[this.selectBsSvgId][1],
+        material: this.materialList[0]['id'],
+        element: this.parseElement(id),
+        materialName: materialName,
+        belongWhichBS: this.selectBsSvgId
+      };
+
+      this.realId = _.cloneDeep(this.svgId);
+
+      // 圖加透明蓋子，避免產生物件過程滑鼠碰到其他物件
+      this.bgdivStyle.width = `${window.innerWidth}px`;
+      this.bgdivStyle.height = `${window.innerHeight}px`;
+      this.bgdivStyle['z-index'] = `999999999999`;
+      // 還原蓋子
+      this.bgdivStyle.width = `0px`;
+      this.bgdivStyle.height = `0px`;
+      this.bgdivStyle['z-index'] = `0`;
+
+      this.svgAntNum = `${this.getBsIndexFromBsSvgId(this.selectBsSvgId)}.${a + 2}`;
+      this.setLabel();
+      
+    }
+
+    //設定場域天線座標
+    for (let a = 0; a < antSvgIdArray.length; a++)
+    {
+      window.setTimeout(() =>
+      {
+        this.moveNumber(antSvgIdArray[a]);
+      }, 0);
+
+      window.setTimeout(() =>
+      {
+        this.setAntPosition(antSvgIdArray[a], this.selectBsSvgId);
+        this.setAntSize(antSvgIdArray[a]);
+      }, 100);
+    }
+
+
+    console.log("this.svgId = " + this.svgId);
+    console.log(`bf[${this.selectBsSvgId}] = ${JSON.stringify(this.bsListRfParam[this.selectBsSvgId])}`);
+    console.log(`this.dragObject[${this.svgId}] = ${JSON.stringify(this.dragObject[this.svgId])}`);
+    
+    this.svgId = this.selectBsSvgId;
+  }
+
   changeZvalue(id){
     try {
       this.moveable.destroy();
-    } catch (error) {}
-    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) + Number(this.dragObject[id].altitude) > Number(this.calculateForm.altitude)) {
+    } catch (error) { }
+
+    //基站在計算上，不將本體高度(Height)納入考量
+    if (Number(this.dragObject[id].z) < 0 || Number(this.dragObject[id].z) > Number(this.calculateForm.altitude)) {
       // this.dragObject[svgId].x = Number(window.sessionStorage.getItem('tempParam'));
       this.recoverParam(id,'z');
       let msg = this.translateService.instant('z_greater_then_field_altitude');
@@ -2027,17 +2220,34 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * @param id 
    */
   moveClick(id) {
-    try {
+    try
+    {
       this.moveable.destroy();
-    } catch (error) {}
+    }
+    catch (error)
+    {
+      console.log(error);
+    }
     // delete keycode生效
     window.setTimeout(() => {
       this.live = true;
     }, 0);
-    // console.log(id);
+    console.log(id);
     this.moveError = false;
     this.target = document.getElementById(id);
     this.svgId = id;
+
+    if (id.includes('defaultBs'))
+    {
+      this.selectBsSvgId = id;
+      this.selectAntSvgId = '';
+    }
+    else if (id.includes('antenna'))
+    {
+      this.selectBsSvgId = this.dragObject[id].belongWhichBS;
+      this.selectAntSvgId = id;
+    }
+
     this.realId = _.cloneDeep(id);
     this.frame = new Frame({
       width: this.spanStyle[id].width,
@@ -2110,7 +2320,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** tooltip 文字 */
   getTooltip() {
     const id = this.hoverObj.id;
-    let title = `${this.dragObject[id].title}: ${this.svgNum}`;
+    let title = '';
+    let antTitle = '';
+    console.log(id);
+    let antBsSvgId = '';
+    let bsIndex = 0;
+    let antIndex = 0;
+    let antNum = '';
+
+
+    if (id.includes('antenna'))
+    {
+      antBsSvgId = this.dragObject[id].belongWhichBS;
+      bsIndex = this.getBsIndexFromBsSvgId(antBsSvgId);
+      antIndex = this.getBsAntIndexBySvgId(id, antBsSvgId);
+      antNum = `${bsIndex}.${antIndex + 2}`;
+      antTitle = `${this.translateService.instant('antenna')}: ${antNum}`;
+      title = antTitle;
+    }
+    else if (id.includes('defaultBS'))
+    {
+      bsIndex = this.getBsIndexFromBsSvgId(id);
+      antNum = `${bsIndex}.${1}`;
+      antTitle = `${this.translateService.instant('antenna')}: ${antNum}`;
+      title = `${this.dragObject[id].title}: ${this.svgNum}<br>` + antTitle;
+    }
+    else
+    {
+      title = `${this.dragObject[id].title}: ${this.svgNum}`;
+    }
+
     let overlappedIdList = this.checkObstacleIsOverlaped(id);
     if (overlappedIdList.length > 0){
       title += `<br>${this.translateService.instant('overlap')}: ${overlappedIdList}`;  
@@ -2142,7 +2381,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // }
       
     } else if (this.dragObject[id].type != 'subField') {
-      title += `Z: ${this.dragObject[id].altitude}<br>`;
+      title += `Z: ${this.dragObject[id].z}<br>`;
     }
     /*
     if (this.dragObject[id].type === 'UE') {
@@ -2342,7 +2581,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     const type = this.dragObject[this.svgId].element;
     let wVal;
     let hVal;
-
     if (this.dragObject[this.svgId].type === 'obstacle' || this.dragObject[this.svgId].type === 'subField') {
       // 障礙物才需取長寬
       if (Number(type) === 0) {
@@ -2368,7 +2606,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     }
     const mOrigin = document.querySelector('.moveable-origin');
-    // console.log(mOrigin)
+    console.log(mOrigin)
     if (mOrigin != null) {
       // 有找到中心點
       const moveableOrigin = mOrigin.getBoundingClientRect();
@@ -2376,6 +2614,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[this.svgId].height / 2) - this.scrollTop;
       this.dragObject[this.svgId].x = this.roundFormat(this.xLinear(x));
       this.dragObject[this.svgId].y = this.roundFormat(this.yLinear(y));
+      
       
       if (this.dragObject[this.svgId].type === 'obstacle' || this.dragObject[this.svgId].type === 'subField') {
         this.dragObject[this.svgId].width = wVal;
@@ -2422,6 +2661,41 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
   }
 
+  setAntPosition(svgId, bsSvgId)
+  {
+    const mOrigin = document.querySelector('.moveable-origin');
+    console.log(mOrigin)
+    if (mOrigin != null)
+    {
+      // 有找到中心點
+      const moveableOrigin = mOrigin.getBoundingClientRect();
+      const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[svgId].height / 2) - this.scrollTop;
+      this.dragObject[svgId].y = this.roundFormat(this.yLinear(y));
+      console.log(`y = ${y}`);
+      console.log(`moveableOrigin = ${moveableOrigin}`);
+      console.log(`this.chartBottom = ${this.chartBottom}`);
+      console.log(`moveableOrigin.top = ${moveableOrigin.top}`);
+      console.log(`moveableOrigin.height = ${moveableOrigin.height}`);
+      console.log(`this.svgStyle[${svgId}].height = ${this.svgStyle[svgId].height}`);
+      console.log(`scrollTop = ${this.scrollTop}`);
+    }
+    console.log(`this.dragObject[${svgId}].y = ${this.dragObject[svgId].y}`);
+
+    //this.bsListRfParam[bsSvgId].antenna[this.getBsAntIndexBySvgId(svgId, bsSvgId)].position =
+    //  [this.dragObject[svgId].x, this.dragObject[svgId].y, this.dragObject[svgId].z];
+  }
+
+  getBsAntIndexBySvgId(antSvgId, bsSvgId)
+  {
+    for (let a = 0; a < this.bsListRfParam[bsSvgId].antenna.length; a++)
+    {
+      if (this.bsListRfParam[bsSvgId].antenna[a].svgId == antSvgId)
+        return a;
+    }
+
+    return -1;
+  }
+
   /**
    * moveable移動開始
    * @param e 
@@ -2456,11 +2730,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.spanStyle[this.svgId].top = `${top}px`;
 
       this.setDragData();
-      if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate') {
+      if (this.dragObject[this.svgId].type === 'defaultBS' || this.dragObject[this.svgId].type === 'candidate'
+        || this.dragObject[this.svgId].type === 'antenna')
+      {
         this.circleStyle[this.svgId] = {
           top: `${top - 20}px`,
-          left: `${left + 20}px`
+          left: `${left + 20}px`,
         };
+        this.dfBsCircleStyle[this.svgId] = {
+          top: `${top + 5}px`,
+          left: `${left + 20}px`,
+        };
+        
       }
       this.setLabel();
 
@@ -2571,8 +2852,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else if (Number(shape) === 3) {
       this.trapezoidStyle[this.svgId].width = width;
       this.trapezoidStyle[this.svgId].height = height;
-    } else if (Number(shape) === 4) {
-      console.log('subFieldddddd');
+    } else if (Number(shape) === 4)
+    {
       this.subFieldStyle[this.svgId].width = width;
       this.subFieldStyle[this.svgId].height = height;
     }
@@ -2652,7 +2933,39 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   onRightClick(event: MouseEvent, svgId, i) {
     this.svgId = svgId;
-    this.svgNum = i+1;
+    this.selectBsSvgId = svgId;
+
+    if (svgId.includes('defaultBS'))
+    {
+      this.selectBsSvgId = svgId;
+      this.selectAntSvgId = '';
+    }
+
+    this.svgNum = i + 1;
+    this.svgAntNum = (i + 1) + '.' + 1;
+    // console.log('this.svgNum',this.svgNum);
+    // preventDefault avoids to show the visualization of the right-click menu of the browser
+    event.preventDefault();
+    // we record the mouse position in our object
+    this.menuTopLeftStyle.left = event.clientX + 'px';
+    this.menuTopLeftStyle.top = event.clientY + 'px';
+    // we open the menu
+    this.matMenuTrigger.openMenu();
+  }
+
+  /**
+ * 天線右鍵選單
+ * @param event 
+ * @param svgId 
+ */
+  onRightClickForAnt(event: MouseEvent, svgId, bsIndex, antIndex)
+  {
+    this.svgId = svgId;
+    this.selectBsSvgId = this.dragObject[svgId].belongWhichBS;
+    this.selectAntSvgId = svgId;
+
+    this.svgAntNum = (bsIndex + 1) + '.' + (antIndex + 2);
+    
     // console.log('this.svgNum',this.svgNum);
     // preventDefault avoids to show the visualization of the right-click menu of the browser
     event.preventDefault();
@@ -2672,7 +2985,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.obstacleList.splice(this.obstacleList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'defaultBS') {
         this.defaultBSList.splice(this.defaultBSList.indexOf(this.svgId), 1);
-      } else if (this.dragObject[this.svgId].type === 'candidate') {
+      } else if (this.dragObject[this.svgId].type === 'antenna')
+      {
+        let antennaIndex = -1;
+        for (let a = 0; a < this.bsListRfParam[this.dragObject[this.svgId].belongWhichBS].antenna.length; a++)
+        {
+          if (this.bsListRfParam[this.dragObject[this.svgId].belongWhichBS].antenna[a].svgId == this.svgId)
+            antennaIndex = a;
+        }
+
+        if (antennaIndex == -1)
+        {
+          let msg = this.translateService.instant('delete.fail');
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: msg
+          };
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          return;
+        }
+
+        this.bsListRfParam[this.dragObject[this.svgId].belongWhichBS]
+          .antenna.splice(antennaIndex, 1);
+
+      } else if (this.dragObject[this.svgId].type === 'candidate')
+      {
         this.candidateList.splice(this.candidateList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'UE') {
         this.ueList.splice(this.ueList.indexOf(this.svgId), 1);
@@ -2750,7 +3087,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.manufactor = 'All';
 
 
-    if (this.bsListRfParam[this.svgId].isAntennaDefault == 'default')
+    /*if (this.bsListRfParam[this.svgId].isAntennaDefault == 'default')
     {
       if (this.bsListRfParam[this.svgId].AntennaId == null)
         this.bsListRfParam[this.svgId].AntennaId = this.defaultAntennaList[0].antennaID;
@@ -2759,10 +3096,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       if (this.bsListRfParam[this.svgId].AntennaId == null)
         this.bsListRfParam[this.svgId].AntennaId = this.customizedAntennaList[0].antennaID;
+    }*/
+
+    //console.log(`bsListRfParam[${this.svgId}].ulAntFreq = ${this.bsListRfParam[this.svgId].ulAntFreq}`)
+    //this.antennaChangeCheck(this.svgId);
+
+    this.firstLayerDialogRef = this.matDialog.open(this.rfModalTable, { disableClose: true });
+
+    this.saveBsListRfParam(this.svgId);
+  }
+
+  /**
+ * 開啟Ant RF設定燈箱
+*/
+  openAntRfParamSetting(antSvgId, bsSvgId)
+  {
+    if (antSvgId == '')       //基站上天線
+    {
+      this.svgId = bsSvgId;
     }
-    this.antennaChangeCheck(this.svgId);
-    this.matDialog.open(this.rfModalTable);
+    else
+    {
+      this.svgId = antSvgId;
+    }
     
+    this.selectBsSvgId = bsSvgId;
+    this.selectAntSvgId = antSvgId;
+
+    let antIndex = this.getAntIndexFromAntSvgId(bsSvgId, antSvgId);
+    let bsIndex = this.getBsIndexFromBsSvgId(bsSvgId);
+    
+
+    this.svgAntNum = bsIndex + '.' + antIndex;
+    this.selectBsSvgId = bsSvgId;    
+    
+    this.manufactor = 'All';
+    
+    this.firstLayerDialogRef = this.matDialog.open(this.antRfModalTable, { disableClose: true });
+
+    //this.antennaChangeCheck(this.selectBsSvgId);
+    this.saveBsListRfParam(this.svgId);
   }
   /**
    *
@@ -2778,7 +3151,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   }  
   openRSRPSetting()
   {
-    console.log(JSON.stringify(this.evaluationFuncForm.field.rsrp));
     if(this.evaluationFuncForm.field.rsrp.ratio.length == 0)
       this.addRSRP();
     this.matDialog.open(this.RSRPModalTable, { disableClose: true });
@@ -2797,6 +3169,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.matDialog.open(this.UECoverageModalTable, { disableClose: true });  
   }
 
+  /**
+   *
+   *開啟Ant設定燈箱
+  */
   openAntennaSetting() {
     this.getAntenna();
     this.firstLayerDialogRef = this.matDialog.open(this.AntennaModalTable);  
@@ -2817,6 +3193,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.getAntennaRawdata(index, false, isDefault);
   }
 
+  openAntennaCountOfBSSetting()
+  {
+    if (this.planningIndex == '3')
+      this.firstLayerDialogRef = this.matDialog.open(this.AntCountOfBSModal);
+    else
+      this.addMoveable('defaultBS');
+  }
+
   openUEParamSetting(item, i, isNav) {
     this.svgId = item;
     if (isNav) { // 右方障礙物資訊id與左方平面圖障礙物id序號差1
@@ -2824,7 +3208,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } else {
       this.svgNum = i;
     }
-    this.matDialog.open(this.ueModalTable);
+
+    this.saveParam(this.ueListParam, item, 'ueListParam');
+    this.matDialog.open(this.ueModalTable, { disableClose: true});
   }
   openDeleteSetting() {
     this.matDialog.open(this.deleteModal);
@@ -2835,7 +3221,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   openHeightSetting() {
     // this.matDialog.open(this.materialModal);
-    this.matDialog.open(this.materialModal2);
+    this.saveParam(this.dragObject, this.svgId, 'material');
+    this.matDialog.open(this.materialModal2, { disableClose: true });
   }
 
   /** 變更材質 */
@@ -2912,18 +3299,54 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 數量物件移動position
    * @param svgId 
    */
-  moveNumber(svgId) {
+  moveNumber(svgId)
+  {
     const circleElement: HTMLSpanElement = document.querySelector(`#${svgId}_circle`);
-    if (circleElement != null) {
-      const top = `${Number(this.spanStyle[svgId].top.replace('px', '')) - 20}px`;
-      const width = Number(this.spanStyle[svgId].width.replace('px', ''));
-      const left = Number(this.spanStyle[svgId].left.replace('px', ''));
-      this.circleStyle[svgId] = {
-        top: top,
-        left: `${left + width - 10}px`
-      };
-      // console.log(this.spanStyle[svgId], this.circleStyle[svgId])
+    const bsCircleElement: HTMLSpanElement = document.querySelector(`#${svgId}_bs_circle`);
+
+    let colorId = '';
+    let circleColor = this.DEFAULT_BS_COLOR;
+
+    if (this.planningIndex == '3')
+    {
+      if (svgId.includes('antenna'))
+        colorId = this.dragObject[svgId].belongWhichBS;
+      else
+        colorId = svgId;
+
+      if (this.colorList[colorId] != null && this.colorList[colorId][0] != null)
+        circleColor = this.colorList[colorId][0];
+      else
+        circleColor = this.DEFAULT_BS_COLOR;
     }
+
+    if (circleElement != null)
+    {
+      const circleTop = `${Number(this.spanStyle[svgId].top.replace('px', '')) - 20}px`;
+      const dfBsCircleTop = `${Number(this.spanStyle[svgId].top.replace('px', '')) + 5}px`;
+      const itemWidth = Number(this.spanStyle[svgId].width.replace('px', ''));
+      const left = Number(this.spanStyle[svgId].left.replace('px', ''));
+      
+      
+      this.circleStyle[svgId] = {
+        top: circleTop,
+        left: `${left + itemWidth - 10}px`,
+      };
+      this.dfBsCircleStyle[svgId] = {
+        top: dfBsCircleTop,
+        left: `${left + itemWidth - 10}px`,
+      };
+
+      if (this.planningIndex == '3')
+      {
+        circleElement.style.backgroundColor = circleColor;
+      }
+    }
+
+    if (this.planningIndex == '3' && bsCircleElement != null)
+      bsCircleElement.style.backgroundColor = circleColor;
+
+    this.isMovingNumber = true;
   }
 
   /**
@@ -2975,7 +3398,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if (this.isEmpty(obj.tddbandwidth)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddbandwidth')}<br/>`;  }
           if (this.isEmpty(obj.tddscs)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddscs')}<br/>`;  }
           if (this.isEmpty(obj.ulModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulModulationCodScheme')}<br/>`;  }
-          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlModulationCodScheme')}<br/>`;  }
+          if (this.isEmpty(obj.dlModulationCodScheme)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlModulationCodScheme')}<br/>`; }
           if (this.isEmpty(obj.ulMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('ulMimoLayer')}<br/>`;  }
           if (this.isEmpty(obj.dlMimoLayer)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('dlMimoLayer')}<br/>`;  }
           if (this.isEmpty(obj.tddfrequency)) { bsMsg += `${this.translateService.instant('plz_fill')} ${this.translateService.instant('tddfrequency')}<br/>`;  }
@@ -3150,6 +3573,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   // 檢查是否有基地台的參數重疊
   checkRFParamIsOverlaped() {
     let warnmsg = "";
+    console.log('duplex = ' + this.duplexMode);
     if (this.duplexMode == 'tdd' || this.calculateForm.objectiveIndex == '2') {
       //模擬和規劃都會用到
       let freq, band, mainMax, mainMin, max, min;
@@ -3166,11 +3590,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         for (let j = i;  j < this.defaultBSList.length; j++) {
           if (this.defaultBSList[i] == this.defaultBSList[j]) {continue;}
           if (this.calculateForm.objectiveIndex == '2') {
-            max = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency + this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth/2;
-            min = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency - this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth/2;
+            max = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency +
+              this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth / 2;
+            min = this.bsListRfParam[this.defaultBSList[j]].wifiFrequency -
+              this.bsListRfParam[this.defaultBSList[j]].wifiBandwidth / 2;
           } else {
-            max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency + this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
-            min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency - this.bsListRfParam[this.defaultBSList[j]].tddbandwidth/2;
+            max = this.bsListRfParam[this.defaultBSList[j]].tddfrequency +
+              this.bsListRfParam[this.defaultBSList[j]].tddbandwidth / 2;
+            min = this.bsListRfParam[this.defaultBSList[j]].tddfrequency -
+              this.bsListRfParam[this.defaultBSList[j]].tddbandwidth / 2;
           }
           
           if (mainMax == max && mainMin == min) {
@@ -3189,7 +3617,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
       //規劃才需要比較Candidate
-      if (!this.calculateForm.isSimulation) {
+      if (!this.calculateForm.isSimulation) {                    
         let freq, band;
         if (this.calculateForm.objectiveIndex == '2') {
           freq = this.tempCalParamSet.wifiFrequency;
@@ -3550,15 +3978,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.moveable.destroy();
     } catch (error) {}
 
-
-    console.log(this.evaluationFuncForm);
+    
 
     // 檢查既有基地台是否有參數未被填入
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return; }
     // 檢查待選基地台參數 Todo
     if (this.checkCandidateRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return;}
     //檢查是否有基地台頻寬重疊
-    if (this.checkRFParamIsOverlaped()) {return;}
+    //if (this.checkRFParamIsOverlaped()) {return;}
     //檢查子場域是否重疊
     if (this.checkSubFieldOverlaped()) {return;} 
 
@@ -3688,16 +4115,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.progressNum = 0;
       // console.log(this.calculateForm.bandwidth);
       // console.log(this.calculateForm.frequency);
-
-      console.log(this.evaluationFuncForm);
+      
       this.setForm();
-
-      console.log(this.evaluationFuncForm);
+      
       // 規劃目標
       this.setPlanningObj();
 
       // let apiBody = JSON.parse(JSON.stringify(this.calculateForm));
-      console.log(this.calculateForm);
 
 
       let url = '';
@@ -3769,9 +4193,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     console.log(this.evaluationFuncForm);
     this.calculateForm.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
     // this.calculateForm.evaluationFunc = this.evaluationFuncForm;
-
-    console.log("this.evaluationFuncForm.field.coverage.activate = "+this.evaluationFuncForm.field.coverage.activate);
-    console.log("this.evaluationFuncForm.field.sinr.activate = "+this.evaluationFuncForm.field.sinr.activate);
+    
 
     this.calculateForm.evaluationFunc = new EvaluationFuncForm();
 
@@ -3779,7 +4201,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.calculateForm.evaluationFunc.field.coverage.activate = true;
       this.calculateForm.evaluationFunc.field.coverage.ratio = this.evaluationFuncForm.field.coverage.ratio / 100;
-      console.log("this.calculateForm.evaluationFunc = "+this.calculateForm.evaluationFunc);
     }
     else
     {
@@ -3883,43 +4304,30 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.evaluationFunc.ue.coverage.activate = false;
       this.calculateForm.evaluationFunc.ue.coverage.ratio = this.defaultArea / 100;
     }
-
-    console.log(this.evaluationFuncForm);
-    console.log(this.calculateForm);
-    //this.calculateForm.SINRSettingList = this.evaluationFuncForm.field.sinr;
-    // this.calculateForm.RSRPSettingList = this.RSRPSettingList;
-    // this.calculateForm.ThroughputSettingList = this.ThroughputSettingList;
-    // this.calculateForm.UEThroughputSettingList = this.UEThroughputSettingList;
-
-
-    // const planningObj = {
-    //   isAverageSinr: this.calculateForm.isAverageSinr,
-    //   isCoverage: this.calculateForm.isCoverage,
-    //   isUeAvgSinr: this.calculateForm.isUeAvgSinr,
-    //   isUeAvgThroughput: this.calculateForm.isUeAvgThroughput,
-    //   isUeCoverage: this.calculateForm.isUeCoverage
-    // };
-    // localStorage.setItem(`${this.authService.userToken}planningObj`, JSON.stringify(planningObj));
   }
 
   /** 組form */
-  setForm() {
+  setForm()
+  {
     // if (typeof this.calculateForm.isAverageSinr === 'undefined') {
     this.calculateForm.isAverageSinr = false;
     // }
     // if (typeof this.calculateForm.isAvgThroughput === 'undefined') {
     this.calculateForm.isAvgThroughput = false;
     // }
-    if (typeof this.calculateForm.isCoverage === 'undefined') {
+    if (typeof this.calculateForm.isCoverage === 'undefined')
+    {
       this.calculateForm.isCoverage = false;
     }
     // if (typeof this.calculateForm.isUeAvgSinr === 'undefined') {
     this.calculateForm.isUeAvgSinr = false;
     // }
-    if (typeof this.calculateForm.isUeAvgThroughput === 'undefined') {
+    if (typeof this.calculateForm.isUeAvgThroughput === 'undefined')
+    {
       this.calculateForm.isUeAvgThroughput = false;
     }
-    if (typeof this.calculateForm.isUeCoverage === 'undefined') {
+    if (typeof this.calculateForm.isUeCoverage === 'undefined')
+    {
       this.calculateForm.isUeCoverage = false;
     }
     // if (typeof this.calculateForm.isUeTpByDistance === 'undefined') {
@@ -3934,13 +4342,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // this.calculateForm.ueAvgThroughputRatio = this.calculateForm.isUeCoverage ? 100 : null;
 
     //FP 
-    if (this.calculateForm.isCoverage == true) {
+    if (this.calculateForm.isCoverage == true)
+    {
       this.calculateForm.isUeAvgThroughput = false;
       this.calculateForm.isUeCoverage = false;
-    } else if (this.calculateForm.isUeAvgThroughput == true) {
+    } else if (this.calculateForm.isUeAvgThroughput == true)
+    {
       this.calculateForm.isCoverage = false;
       this.calculateForm.isUeCoverage = false;
-    } else {
+    } else
+    {
       this.calculateForm.isCoverage = false;
       this.calculateForm.isUeAvgThroughput = false;
     }
@@ -3954,13 +4365,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // this.calculateForm.zValue = `[${zValue.toString()}]`;
     let obstacleInfo = '';
     this.calculateForm.obstacleInfo = obstacleInfo;
-    if (this.obstacleList.length > 0) {
+    if (this.obstacleList.length > 0)
+    {
       // 障礙物資訊
-      for (let i = 0; i < this.obstacleList.length; i++) {
+      for (let i = 0; i < this.obstacleList.length; i++)
+      {
         const obj = this.dragObject[this.obstacleList[i]];
         const shape = this.parseElement(obj.element);
         obstacleInfo += `[${obj.x},${obj.y},${obj.z},${obj.width},${obj.height},${obj.altitude},${obj.rotate},${Number(obj.material)},${shape}]`;
-        if (i < this.obstacleList.length - 1) {
+        if (i < this.obstacleList.length - 1)
+        {
           obstacleInfo += '|';
         }
       }
@@ -3969,30 +4383,39 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let ueCoordinate = '';
     let ueRxGain = [];
     this.calculateForm.ueCoordinate = ueCoordinate;
-    if (this.ueList.length > 0) {
-      for (let i = 0; i < this.ueList.length; i++) {
+    if (this.ueList.length > 0)
+    {
+      for (let i = 0; i < this.ueList.length; i++)
+      {
         const obj = this.dragObject[this.ueList[i]];
         // ueCoordinate += `[${obj.x},${obj.y},${obj.z},${obj.material}]`;
         ueCoordinate += `[${obj.x},${obj.y},${obj.z}]`;
         ueRxGain.push(this.ueListParam[this.ueList[i]].ueRxGain);
-        if (i < this.ueList.length - 1) {
+        if (i < this.ueList.length - 1)
+        {
           ueCoordinate += '|';
         }
       }
-    } else {
+    } else
+    {
       ueCoordinate = '';
     }
     this.calculateForm.ueCoordinate = ueCoordinate;
-    this.calculateForm.ueRxGain = `[${ueRxGain.toString()}]`;;
+    this.calculateForm.ueRxGain = `[${ueRxGain.toString()}]`;
+
+    /******舊格式先保留******/
     let defaultBs = '';
     this.calculateForm.defaultBs = defaultBs;
-    if (this.defaultBSList.length > 0) {
+    if (this.defaultBSList.length > 0)
+    {
       // 現有基站
-      for (let i = 0; i < this.defaultBSList.length; i++) {
+      for (let i = 0; i < this.defaultBSList.length; i++)
+      {
         const obj = this.dragObject[this.defaultBSList[i]];
-        defaultBs += `[${obj.x},${obj.y},${obj.altitude}]`;
-        // defaultBs += `[${obj.x},${obj.y},${obj.z}]`;
-        if (i < this.defaultBSList.length - 1) {
+        // defaultBs += `[${obj.x},${obj.y},${obj.altitude}]`;
+        defaultBs += `[${obj.x},${obj.y},${obj.z}]`;
+        if (i < this.defaultBSList.length - 1)
+        {
           defaultBs += '|';
         }
       }
@@ -4004,11 +4427,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let beamId = [];
     // let freqList = [];
     let mapProtocol = '';
-    if (Number(this.calculateForm.objectiveIndex) === 0) {
+    if (Number(this.calculateForm.objectiveIndex) === 0)
+    {
       mapProtocol = '4g';
-    } else if (Number(this.calculateForm.objectiveIndex) === 1) {
+    } else if (Number(this.calculateForm.objectiveIndex) === 1)
+    {
       mapProtocol = '5g';
-    } else {
+    } else
+    {
       mapProtocol = 'wifi';
     }
     //4G and 5G
@@ -4038,28 +4464,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let wifiProtocol = []; //Array
     let guardInterval = []; //Array
     let wifiMimo = []; //Array
-    
-    if(this.defaultBSList.length > 0 || this.candidateList.length > 0) {
+
+    if (this.defaultBSList.length > 0 || this.candidateList.length > 0)
+    {
 
       let candidate = '';
       let candidateBsAnt = '';
-      if (this.candidateList.length > 0) {
-        for (let i = 0; i < this.candidateList.length; i++) {
+      if (this.candidateList.length > 0)
+      {
+        for (let i = 0; i < this.candidateList.length; i++)
+        {
           const canObj = this.dragObject[this.candidateList[i]];
           bsNoiseFigure.push(this.tempCalParamSet.bsNoiseFigure);
           candidate += `[${canObj.x},${canObj.y},${canObj.altitude}]`;
           // candidate += `[${canObj.x},${canObj.y},${canObj.z}]`;
-          if (i < this.candidateList.length - 1) {
+          if (i < this.candidateList.length - 1)
+          {
             candidate += '|';
           }
           candidateBsAnt += `[${this.tempCalParamSet.AntennaId},${this.tempCalParamSet.theta},${this.tempCalParamSet.phi},${this.tempCalParamSet.bsTxGain}]`;
-          if (i < this.candidateList.length - 1) {
+          if (i < this.candidateList.length - 1)
+          {
             candidateBsAnt += '|';
           }
           // const obj = this.bsListRfParam[this.candidateList[i]];
           // console.log(`obj: ${JSON.stringify(obj)}`);
-          if (mapProtocol !== 'wifi') {
-            if (mapProtocol === '5g') {
+          if (mapProtocol !== 'wifi')
+          {
+            if (mapProtocol === '5g')
+            {
               ulMcsTable.push(this.tempCalParamSet.ulModulationCodScheme);
               dlMcsTable.push(this.tempCalParamSet.dlModulationCodScheme);
               ulMimoLayer.push(this.tempCalParamSet.ulMimoLayer);
@@ -4070,14 +4503,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               // ulMimoLayer.push(obj.ulMimoLayer);
               // dlMimoLayer.push(obj.dlMimoLayer);
               // scs.push(obj.tddscs);
-            } else {
+            } else
+            {
               mimoNumber.push(this.tempCalParamSet.mimoNumber4G);
               // mimoNumber.push(obj.mimoNumber4G);
             }
-            if (duplex === 'tdd') {
+            if (duplex === 'tdd')
+            {
               bandwidthList.push(this.tempCalParamSet.tddbandwidth);
               frequencyList.push(this.tempCalParamSet.tddfrequency);
-            } else {
+            } else
+            {
               dlFrequency.push(this.tempCalParamSet.fddDlFrequency);
               ulFrequency.push(this.tempCalParamSet.fddUlFrequency);
               dlScs.push(this.tempCalParamSet.dlScs);
@@ -4085,7 +4521,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               dlBandwidth.push(this.tempCalParamSet.dlBandwidth);
               ulBandwidth.push(this.tempCalParamSet.ulBandwidth);
             }
-          } else {
+          } else
+          {
             frequencyList.push(this.tempCalParamSet.wifiFrequency);
             guardInterval.push(this.tempCalParamSet.guardInterval);
             wifiProtocol.push(this.tempCalParamSet.wifiProtocol);
@@ -4098,32 +4535,38 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.candidateBsAnt = candidateBsAnt;
 
       let defaultBsAnt = '';
-      for (let i = 0; i < this.defaultBSList.length; i++) {
+      for (let i = 0; i < this.defaultBSList.length; i++)
+      {
         const obj = this.bsListRfParam[this.defaultBSList[i]];
-        console.log(`obj: ${JSON.stringify(obj)}`)
         txpower.push(obj.txpower);
         beamId.push(obj.beampattern);
         bsNoiseFigure.push(obj.bsNoiseFigure);
         // freqList.push(obj.frequency);
         defaultBsAnt += `[${obj.AntennaId},${obj.theta},${obj.phi},${obj.bsTxGain}]`;
-        if (i < this.defaultBSList.length - 1) {
+        if (i < this.defaultBSList.length - 1)
+        {
           defaultBsAnt += '|';
         }
-        if (mapProtocol !== 'wifi') {
-          if (mapProtocol === '5g') {
+        if (mapProtocol !== 'wifi')
+        {
+          if (mapProtocol === '5g')
+          {
             ulMcsTable.push(obj.ulModulationCodScheme);
             dlMcsTable.push(obj.dlModulationCodScheme);
             ulMimoLayer.push(obj.ulMimoLayer);
             dlMimoLayer.push(obj.dlMimoLayer);
             scs.push(obj.tddscs);
             // scs.push(obj.subcarrier);
-          } else {
+          } else
+          {
             mimoNumber.push(obj.mimoNumber4G);
           }
-          if (duplex === 'tdd') {
+          if (duplex === 'tdd')
+          {
             bandwidthList.push(obj.tddbandwidth);
             frequencyList.push(obj.tddfrequency);
-          } else {
+          } else
+          {
             dlFrequency.push(obj.fddDlFrequency);
             ulFrequency.push(obj.fddUlFrequency);
             dlScs.push(obj.dlScs);
@@ -4131,7 +4574,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             dlBandwidth.push(obj.dlBandwidth);
             ulBandwidth.push(obj.ulBandwidth);
           }
-        } else {
+        } else
+        {
           frequencyList.push(obj.wifiFrequency);
           guardInterval.push(obj.guardInterval);
           wifiProtocol.push(obj.wifiProtocol);
@@ -4140,11 +4584,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
       this.calculateForm.defaultBsAnt = defaultBsAnt;
+
       //API body
       this.calculateForm.mapProtocol = mapProtocol;
-      if (this.calculateForm.mapProtocol != 'wifi') {
+      if (this.calculateForm.mapProtocol != 'wifi')
+      {
         this.calculateForm.duplex = duplex;
-      } else {
+      } else
+      {
         this.calculateForm.duplex = '';
       }
       this.calculateForm.scalingFactor = scalingFactor;
@@ -4169,19 +4616,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       let tempWifiProtocol = '';
       let tempGuardInterval = '';
       let tempWifiMimo = '';
-      for (let i = 0;i < wifiProtocol.length;i++) {
-        if (i == 0) {
-          tempWifiProtocol += "["+wifiProtocol[i]+",";
-          tempGuardInterval += "["+guardInterval[i]+",";
-          tempWifiMimo += "["+wifiMimo[i]+",";
-        } else if (i < wifiProtocol.length-1) {
-          tempWifiProtocol += ""+wifiProtocol[i]+",";
-          tempGuardInterval += ""+guardInterval[i]+",";
-          tempWifiMimo += ""+wifiMimo[i]+",";
-        } else {
-          tempWifiProtocol += ""+wifiProtocol[i]+"]";
-          tempGuardInterval += ""+guardInterval[i]+"]";
-          tempWifiMimo += ""+wifiMimo[i]+"]";
+      for (let i = 0; i < wifiProtocol.length; i++)
+      {
+        if (i == 0)
+        {
+          tempWifiProtocol += "[" + wifiProtocol[i] + ",";
+          tempGuardInterval += "[" + guardInterval[i] + ",";
+          tempWifiMimo += "[" + wifiMimo[i] + ",";
+        } else if (i < wifiProtocol.length - 1)
+        {
+          tempWifiProtocol += "" + wifiProtocol[i] + ",";
+          tempGuardInterval += "" + guardInterval[i] + ",";
+          tempWifiMimo += "" + wifiMimo[i] + ",";
+        } else
+        {
+          tempWifiProtocol += "" + wifiProtocol[i] + "]";
+          tempGuardInterval += "" + guardInterval[i] + "]";
+          tempWifiMimo += "" + wifiMimo[i] + "]";
         }
       }
       this.calculateForm.wifiProtocol = tempWifiProtocol;
@@ -4197,9 +4648,168 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.frequencyList = `[${frequencyList.toString()}]`;
       this.calculateForm.frequency = `[${frequencyList.toString()}]`;
       this.calculateForm.bandwidth = `[${bandwidthList.toString()}]`;
-
-      console.log(this.calculateForm);
+      
     }
+    /************/
+
+    /*******DAS格式*******/
+    if (this.planningIndex == '3')
+    {
+      let dfBsSvgId = '';
+      let bsID = 0;
+      let bsPosition = [];
+      let bsTxPower = 0;
+      let bsNoiseFigure = 0;
+      let bsDuplex = {};
+      let bsIsTdd = true;
+      let bsIsFdd = false;
+      let bsTddParam = {
+      };
+      let bsFddParam = {
+        ul:
+        {
+          frequency: 0,
+          bandwidth: 0,
+          scs: 0,
+          mcsTable: '',
+          mimo: 8
+        },
+        dl:
+        {
+          frequency: 0,
+          bandwidth: 0,
+          scs: 0,
+          mcsTable: '',
+          mimo: 8
+        }
+      };
+      let bsAntenna = [];
+      let antennaBsSelect = null;
+      let antennaSvgId = '';
+      let defaultBs = [];
+
+
+      for (let bs = 0; bs < this.defaultBSList.length; bs++)
+      {
+        bsAntenna = [];
+        dfBsSvgId = this.defaultBSList[bs];
+        antennaBsSelect = this.getAntennaById(this.bsListRfParam[dfBsSvgId].AntennaId);
+        bsID = bs;
+        bsPosition = [Number(this.dragObject[dfBsSvgId].x), Number(this.dragObject[dfBsSvgId].y), Number(this.dragObject[dfBsSvgId].z)];
+        bsTxPower = this.bsListRfParam[dfBsSvgId].txpower;
+        bsNoiseFigure = this.bsListRfParam[dfBsSvgId].bsNoiseFigure;
+        bsIsTdd = (this.duplexMode == 'tdd');
+        bsIsFdd = (this.duplexMode == 'fdd');
+        if (bsIsTdd)
+        {
+          bsTddParam ={
+            ul:
+            {
+              frameRatio: this.dlRatio,
+              frequency: this.bsListRfParam[dfBsSvgId].tddfrequency,
+              bandwidth: this.bsListRfParam[dfBsSvgId].tddbandwidth,
+              scs: this.bsListRfParam[dfBsSvgId].tddscs,
+              mcsTable: this.bsListRfParam[dfBsSvgId].ulModulationCodScheme,    
+              mimo: this.bsListRfParam[dfBsSvgId].ulMimoLayer
+            },
+            dl:
+            {
+              frameRatio: this.dlRatio,
+              frequency: this.bsListRfParam[dfBsSvgId].tddfrequency,
+              bandwidth: this.bsListRfParam[dfBsSvgId].tddbandwidth,
+              scs: this.bsListRfParam[dfBsSvgId].tddscs,
+              mcsTable: this.bsListRfParam[dfBsSvgId].dlModulationCodScheme,
+              mimo: this.bsListRfParam[dfBsSvgId].dlMimoLayer
+            }
+			        /*frameRatio: this.dlRatio,
+              frequency: this.bsListRfParam[dfBsSvgId].tddfrequency,
+              bandwidth: this.bsListRfParam[dfBsSvgId].tddbandwidth,
+              scs: this.bsListRfParam[dfBsSvgId].tddscs,
+              mcsTable: this.bsListRfParam[dfBsSvgId].dlModulationCodScheme,    
+              mimo: antennaBsSelect.port*/
+         };
+        }
+        else if (bsIsFdd)
+        {
+          bsFddParam = {
+            ul:
+            {
+              frequency: this.bsListRfParam[dfBsSvgId].fddUlFrequency,
+              bandwidth: this.bsListRfParam[dfBsSvgId].ulBandwidth,
+              scs: this.bsListRfParam[dfBsSvgId].ulScs,
+              mcsTable: this.bsListRfParam[dfBsSvgId].ulModulationCodScheme,
+              mimo: this.bsListRfParam[dfBsSvgId].ulMimoLayer
+            },
+            dl:
+            {
+              frequency: this.bsListRfParam[dfBsSvgId].fddDlFrequency,
+              bandwidth: this.bsListRfParam[dfBsSvgId].dlBandwidth,
+              scs: this.bsListRfParam[dfBsSvgId].dlScs,
+              mcsTable: this.bsListRfParam[dfBsSvgId].dlModulationCodScheme,
+              mimo: this.bsListRfParam[dfBsSvgId].dlMimoLayer
+            }
+          };
+        }
+
+
+        //加入基站上的天線
+        bsAntenna.push(
+          {
+            antennaID: this.bsListRfParam[dfBsSvgId].AntennaId,
+            position: [Number(this.dragObject[dfBsSvgId].x), Number(this.dragObject[dfBsSvgId].y),
+            Number(this.dragObject[dfBsSvgId].z)],
+            gain: this.bsListRfParam[dfBsSvgId].bsTxGain,
+            ulFrequency: this.bsListRfParam[dfBsSvgId].ulAntFreq,
+            dlFrequency: this.bsListRfParam[dfBsSvgId].dlAntFreq,
+            theta: this.bsListRfParam[dfBsSvgId].theta,
+            phi: this.bsListRfParam[dfBsSvgId].phi,
+          }
+        );
+        for (let a = 0; a < this.bsListRfParam[dfBsSvgId].antenna.length; a++)
+        {
+          antennaSvgId = this.bsListRfParam[dfBsSvgId].antenna[a].svgId;
+          bsAntenna.push(
+            {
+              antennaID: this.bsListRfParam[dfBsSvgId].AntennaId,
+              position: [Number(this.dragObject[antennaSvgId].x),
+                Number(this.dragObject[antennaSvgId].y), Number(this.dragObject[antennaSvgId].z)],
+              gain: this.bsListRfParam[dfBsSvgId].antenna[a].gain,
+              ulFrequency: this.bsListRfParam[dfBsSvgId].ulAntFreq,   //全部天線上行頻率都相同
+              dlFrequency: this.bsListRfParam[dfBsSvgId].dlAntFreq,   //全部天線下行頻率都相同
+              theta: this.bsListRfParam[dfBsSvgId].antenna[a].theta,
+              phi: this.bsListRfParam[dfBsSvgId].antenna[a].phi,
+            }
+          );
+        }
+
+        defaultBs.push
+        (
+          {
+            ID: bsID,
+            color: this.colorList[dfBsSvgId],
+            position: bsPosition,
+            txPower: bsTxPower,
+            noiseFigure: bsNoiseFigure,
+            duplex:
+            {
+              isTdd: bsIsTdd,
+              isFdd: bsIsFdd,
+              tddParam: bsTddParam,
+              fddParam: bsFddParam
+            },
+            antenna: bsAntenna
+          }
+        );
+
+      }
+      this.calculateForm.bsList =
+      {
+        defaultBs: defaultBs
+      };
+      
+    }
+    /**************/
+
 
     // number type to number
     Object.keys(this.calculateForm).forEach((key) => {
@@ -4355,6 +4965,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             }
           );
         }
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: this.translateService.instant('cant_get_result')
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
         
       }
     );
@@ -4585,6 +5200,95 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         };
         this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
         return;
+      }
+
+      console.log(`${JSON.stringify(this.bsListRfParam[this.selectBsSvgId])}`);
+
+      if (this.getAntennaById(this.bsListRfParam[this.selectBsSvgId].AntennaId).type != 'Omnidirectional' ||
+        this.getAntennaById(this.bsListRfParam[this.selectBsSvgId].AntennaId).property != 'default')
+      {
+        let AntULfrequency = this.bsListRfParam[this.selectBsSvgId].ulAntFreq;
+        let AntDLfrequency = this.bsListRfParam[this.selectBsSvgId].dlAntFreq;
+        let thershold = 100;
+        let error = false;
+        let multiple = false;
+
+        // 檢查天線frequency與基站frequency是否一致(+-100);
+
+        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[this.selectBsSvgId].tddfrequency)))
+        {
+          if (((AntULfrequency + thershold <= this.bsListRfParam[this.selectBsSvgId].tddfrequency) ||
+            (AntULfrequency - thershold >= this.bsListRfParam[this.selectBsSvgId].tddfrequency)) )
+          {
+            msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[this.selectBsSvgId].tddfrequency + ' ';
+            error = true;
+          }
+        }
+        else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[this.selectBsSvgId].fddUlFrequency))
+          && !(this.authService.isEmpty(this.bsListRfParam[this.selectBsSvgId].fddDlFrequency)))
+        {
+          if (((AntULfrequency + thershold <= this.bsListRfParam[this.selectBsSvgId].fddUlFrequency) ||
+            (AntULfrequency - thershold >= this.bsListRfParam[this.selectBsSvgId].fddUlFrequency)))
+          {
+            msg += this.translateService.instant('uplink.frequency') + ' ' + this.bsListRfParam[this.selectBsSvgId].fddUlFrequency + ' ';
+            error = true;
+          }
+          if (((AntDLfrequency + thershold <= this.bsListRfParam[this.selectBsSvgId].fddDlFrequency) ||
+            (AntDLfrequency - thershold >= this.bsListRfParam[this.selectBsSvgId].fddDlFrequency)))
+          {
+            if (error)
+            {
+              if (this.checkIfChinese())
+              {
+                msg += ' 和 ';
+              } else
+              {
+                msg += ' and the ';
+              }
+              multiple = true;
+            }
+            msg += this.translateService.instant('downlink.frequency') + ' ' + this.bsListRfParam[this.selectBsSvgId].fddDlFrequency + ' ';
+            error = true;
+          }
+        }
+
+        
+        if (error)
+        {
+          if (this.checkIfChinese())
+          {
+            if (this.duplexMode == 'tdd')
+              this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + AntULfrequency + " 差異較大, 可能導致計算結果不準確";
+            else if (this.duplexMode == 'fdd')
+              this.infoMsg = "您所設置的" + msg + " 與天線頻率 (" + AntULfrequency + "/" + AntDLfrequency
+                + ") 差異較大, 可能導致計算結果不準確";
+
+          } else
+          {
+            let msgString = "you set is ";
+            if (multiple)
+            {
+              msgString = "you set are ";
+            }
+            if (this.duplexMode == 'tdd')
+              this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + AntULfrequency + ",<br> which may cause inaccurate calculation results.";
+            else if (this.duplexMode == 'fdd')
+              this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency (" +
+                AntDLfrequency + "/" + "),<br> which may cause inaccurate calculation results.";
+
+
+
+          }
+          this.msgDialogConfig.data = {
+            type: 'error',
+            infoMessage: this.infoMsg
+          };
+
+          window.setTimeout(() =>
+          {
+            this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+          }, 100);
+        }
       }
     }
     
@@ -5339,7 +6043,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   changePosition(type,svgId) {
     // 先進行檢查，數字不可為負數，且不可超過場域長寬
-    const isOb = (svgId.split('_')[0]!='UE' && svgId.split('_')[0]!='defaultBS' && svgId.split('_')[0]!='candidate') ? true : false;
+    //有一些專案在轉換後可能有大小寫問題，目前未知為什麼會有大小寫問題
+    const isOb = (svgId.split('_')[0].toLowerCase() != 'UE'.toLowerCase() &&
+      svgId.split('_')[0].toLowerCase() != 'defaultBS'.toLowerCase() &&
+      svgId.split('_')[0].toLowerCase() != 'antenna'.toLowerCase() &&
+      svgId.split('_')[0].toLowerCase() != 'candidate'.toLowerCase()) ? true : false;
+    console.log(`svgId = ${svgId}`);
     if (type != 'y') {
     // if (type == 'x') {
       // console.log(typeof this.calculateForm.width);
@@ -5677,11 +6386,15 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.spanStyle[svgId].top = `${this.chartHeight - this.ueHeight - this.pixelYLinear(this.dragObject[svgId].y)}px`;
     } else if (this.dragObject[svgId].type === 'candidate') {
       this.spanStyle[svgId].top = `${this.chartHeight - this.candidateHeight - this.pixelYLinear(this.dragObject[svgId].y)}px`;
-    } else if (this.dragObject[svgId].type === 'defaultBS') {
+    } else if (this.dragObject[svgId].type === 'defaultBS')
+    {
+      this.spanStyle[svgId].top = `${this.chartHeight - 30 - this.pixelYLinear(this.dragObject[svgId].y)}px`;
+    } else if (this.dragObject[svgId].type === 'antenna')
+    {
       this.spanStyle[svgId].top = `${this.chartHeight - 30 - this.pixelYLinear(this.dragObject[svgId].y)}px`;
     }
 
-    if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate') {
+    if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate' || this.dragObject[svgId].type === 'antenna') {
       this.moveNumber(svgId);
     }
     // this.setTransform(this.target);
@@ -5725,7 +6438,60 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 切換tdd fdd 4G 5G時補上參數
    * @param type 物件類別
    */
-  changeProtoOrDuplex() {
+  changeProtoOrDuplex()
+  {
+    for (let bs = 0; bs < this.defaultBSList.length; bs++)
+    {
+      if (this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency == null || this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency == '')
+        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = 100;
+      if (this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == null || this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == '')
+        this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency = 0;
+
+      if (this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency + 100;
+      }
+
+      if (this.bsListRfParam[this.defaultBSList[bs]].ulScs == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].ulScs = 15;
+      }
+      if (this.bsListRfParam[this.defaultBSList[bs]].dlScs == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].dlScs = 15;
+      }
+
+      if (this.bsListRfParam[this.defaultBSList[bs]].ulBandwidth == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].ulBandwidth = 5;
+      }
+      if (this.bsListRfParam[this.defaultBSList[bs]].dlBandwidth == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].dlBandwidth = 5;
+      }
+
+      if (this.bsListRfParam[this.defaultBSList[bs]].ulScs == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].ulScs = 15;
+      }
+      if (this.bsListRfParam[this.defaultBSList[bs]].dlScs == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].dlScs = 15;
+      }
+
+      if (this.bsListRfParam[this.defaultBSList[bs]].tddbandwidth == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].tddbandwidth = 5;
+      }
+      if (this.bsListRfParam[this.defaultBSList[bs]].tddscs == 0)
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].tddscs = 15;
+      }
+      
+    }
+
+
+
     let msg = this.translateService.instant('switch_duplex_hint');
     this.msgDialogConfig.data = {
       type: 'error',
@@ -5987,16 +6753,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     XLSX.utils.book_append_sheet(wb, ws, 'map');
 
     // defaultBS
-    const baseStationData = [['x', 'y', 'z','material','color','txpower','beamId','tddfrequency', 'tddbandwidth',
-    'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
-    '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
-    'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers', 
-    'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency',
-    'bsTxGain','bsNoiseFigure','AntennaId','theta','phi']];
+    const baseStationData = [['x', 'y', 'z', 'material', 'color', 'txpower', 'beamId', 'tddfrequency', 'tddbandwidth',
+      'fddDlBandwidth', 'fddUlBandwidth', 'fddDlFrequency', 'fddUlFrequency',
+      '4GMimoNumber', 'Subcarriers', 'dlModulationCodScheme', 'ulModulationCodScheme',
+      'dlMimoLayer', 'ulMimoLayer', 'dlSubcarriers', 'ulSubcarriers',
+      'wifiProtocol', 'guardInterval', 'wifiMimo', 'wifiBandwidth', 'wifiFrequency',
+      'bsTxGain', 'bsNoiseFigure', 'AntennaId', 'theta', 'phi', 'gain',
+      'ulAntFreq', 'dlAntFreq']];
     for (const item of this.defaultBSList) {
       baseStationData.push([
         this.dragObject[item].x, this.dragObject[item].y,
-        this.dragObject[item].altitude,'','',
+        this.dragObject[item].z, '', '',
         // this.dragObject[item].color,
         this.bsListRfParam[item].txpower,
         this.bsListRfParam[item].beampattern,
@@ -6017,7 +6784,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].ulModulationCodScheme,
         this.bsListRfParam[item].dlMimoLayer,
         this.bsListRfParam[item].ulMimoLayer,
-        
+
         //5g fdd only
         this.bsListRfParam[item].dlScs,
         this.bsListRfParam[item].ulScs,
@@ -6029,13 +6796,51 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.bsListRfParam[item].wifiFrequency,
         this.bsListRfParam[item].bsTxGain,
         this.bsListRfParam[item].bsNoiseFigure,
+
+        //Base station Antenna
         this.bsListRfParam[item].AntennaId,
         this.bsListRfParam[item].theta,
-        this.bsListRfParam[item].phi
+        this.bsListRfParam[item].phi,
+        this.bsListRfParam[item].bsTxGain,
+        this.bsListRfParam[item].ulAntFreq,
+        this.bsListRfParam[item].dlAntFreq,
       ]);
     }
     const baseStationWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationData);
     XLSX.utils.book_append_sheet(wb, baseStationWS, 'base_station');
+
+    // bs ant
+    const baseStationAntData = [['positionX', 'positionY', 'positionZ', 'gain', 'theta', 'phi', 'isOnBs']];
+    for (const item of this.defaultBSList)
+    {
+      baseStationAntData.push([
+        this.dragObject[item].x,
+        this.dragObject[item].y,
+        this.dragObject[item].z,
+        this.bsListRfParam[item].bsTxGain,
+        this.bsListRfParam[item].theta,
+        this.bsListRfParam[item].phi,
+        true
+      ]);
+      if (this.bsListRfParam[item].antenna != null)
+      {
+        for (let a = 0; a < this.bsListRfParam[item].antenna.length; a++)
+        {
+          baseStationAntData.push([
+            this.dragObject[this.bsListRfParam[item].antenna[a].svgId].x,
+            this.dragObject[this.bsListRfParam[item].antenna[a].svgId].y,
+            this.dragObject[this.bsListRfParam[item].antenna[a].svgId].z,
+            this.bsListRfParam[item].antenna[a].gain,
+            this.bsListRfParam[item].antenna[a].theta,
+            this.bsListRfParam[item].antenna[a].phi,
+            false
+          ]);
+        }
+      }
+    }
+    const baseStationAntWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(baseStationAntData);
+    XLSX.utils.book_append_sheet(wb, baseStationAntWS, 'base_station_ant');
+
     // candidate
     const candidateData = [['x', 'y', 'z','material','color',
     'tddfrequency', 'tddbandwidth',
@@ -6270,7 +7075,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 匯入xlsx
    * @param event file
    */
-  import(event) {
+  import(event)
+  {
     /* wire up file reader */
     const target: DataTransfer = <DataTransfer>(event.target);
     console.log(event.target);
@@ -6292,6 +7098,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const name = file.name;
       sessionStorage.setItem('taskName', name);
 
+      this.pollingLoading();
       this.readXls(bstr);
 
       event.target.value = ''; // 清空
@@ -6415,92 +7222,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         sheetNameIndex[this.wb.SheetNames[i]] = i;
       }
 
-      const baseStation: string = this.wb.SheetNames[sheetNameIndex['base_station']];
-      const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
-      const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, {header: 1}));
-      if (baseStationData.length > 1) {
-        // this.planningIndex = '3';
-        for (let i = 1; i < baseStationData.length; i++) {
-          const id = `defaultBS_${(i - 1)}`;
-          // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
-          // 不在清單內，指定為木頭
-          // if (!materialReg.test(material)) {
-            // material = '0';
-          // }
-          // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
-          this.dragObject[id] = {
-            x: baseStationData[i][0],
-            y: baseStationData[i][1],
-            z: baseStationData[i][2],
-            width: this.xLinear(30),
-            height: this.yLinear(30),
-            altitude: baseStationData[i][2],
-            rotate: 0,
-            title: this.svgMap['defaultBS'].title,
-            type: this.svgMap['defaultBS'].type,
-            color: this.DEFAULT_BS_COLOR,
-            // material: material,
-            element: this.svgMap['defaultBS'].element
-          };
-          if (this.dragObject[id].altitude > this.calculateForm.altitude) {
-            this.dragObject[id].altitude = this.calculateForm.altitude;
-          }
-          // RF parameter import
-          const offset = 2;
-          let bsTxGain = 0;
-          let bsNoiseFigure = 0;
-          let AntennaId = 1;
-          let theta = 0;
-          let phi = 0;
-          if (Object.values(baseStationData[0]).includes("bsTxGain")){
-            bsTxGain= baseStationData[i][24+offset];
-          }
-          if (Object.values(baseStationData[0]).includes("bsNoiseFigure")){
-            bsNoiseFigure= baseStationData[i][25+offset];
-          }
-          if (Object.values(baseStationData[0]).includes("AntennaId")){
-            AntennaId= baseStationData[i][26+offset];
-          }
-          if (Object.values(baseStationData[0]).includes("theta")){
-            theta= baseStationData[i][27+offset];
-          }
-          if (Object.values(baseStationData[0]).includes("phi")){
-            phi= baseStationData[i][28+offset];
-          }
-          this.bsListRfParam[id] = {
-            txpower: baseStationData[i][3+offset],
-            beampattern: baseStationData[i][4+offset],
-            tddfrequency: baseStationData[i][5+offset],
-            tddbandwidth: baseStationData[i][6+offset],
-            dlBandwidth: baseStationData[i][7+offset],
-            ulBandwidth: baseStationData[i][8+offset],
-            fddDlFrequency: baseStationData[i][9+offset],
-            fddUlFrequency: baseStationData[i][10+offset],
-            mimoNumber4G: baseStationData[i][11+offset],
-            tddscs: baseStationData[i][12+offset],
-            dlModulationCodScheme: baseStationData[i][13+offset],
-            ulModulationCodScheme: baseStationData[i][14+offset],
-            dlMimoLayer: baseStationData[i][15+offset],
-            ulMimoLayer: baseStationData[i][16+offset],
-            dlScs: baseStationData[i][17+offset],
-            ulScs: baseStationData[i][18+offset],
-            wifiProtocol: baseStationData[i][19+offset],
-            guardInterval: baseStationData[i][20+offset],
-            wifiMimo: baseStationData[i][21+offset],
-            wifiBandwidth: baseStationData[i][22+offset],
-            wifiFrequency: baseStationData[i][23+offset],
-            bsTxGain: bsTxGain,
-            bsNoiseFigure: bsNoiseFigure,
-            AntennaId :AntennaId,
-            theta:theta,
-            phi:phi
-          };
-          
-          this.defaultBSList.push(id);
-          // set 既有基站位置
-          // this.setDefaultBsSize(id);
-        }
-      }
+
+
       /* candidate sheet */
       const candidate: string = this.wb.SheetNames[sheetNameIndex['candidate']];
       const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
@@ -6585,10 +7308,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             AntennaId= candidateData[i][24+offset];
           }
           if (Object.values(candidateData[0]).includes("theta")){
-            theta= candidateData[i][25+offset];
+            theta = candidateData[i][25+offset];
           }
           if (Object.values(candidateData[0]).includes("phi")){
-            phi= candidateData[i][26+offset];
+            phi = candidateData[i][26+offset];
           }
           this.tempCalParamSet.bsTxGain = bsTxGain;
           this.tempCalParamSet.bsNoiseFigure = bsNoiseFigure;
@@ -7098,6 +7821,229 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
         window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
       }
+
+      this.calculateForm.isSimulation = (this.planningIndex == '3');
+
+      /* 必須先取得planningIndex才能畫基地台 */
+      const baseStation: string = this.wb.SheetNames[sheetNameIndex['base_station']];
+      const baseStationWS: XLSX.WorkSheet = this.wb.Sheets[baseStation];
+      const baseStationData = (XLSX.utils.sheet_to_json(baseStationWS, { header: 1 }));
+      if (baseStationData.length > 1)
+      {
+        // this.planningIndex = '3';
+        for (let i = 1; i < baseStationData.length; i++)
+        {
+          const id = `defaultBS_${(i - 1)}`;
+          // let material = (typeof baseStationData[i][3] === 'undefined' ? '0' : baseStationData[i][3]);
+          // 不在清單內，指定為木頭
+          // if (!materialReg.test(material)) {
+          // material = '0';
+          // }
+          // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
+          this.colorList[id] = this.generateRandomColorSet();
+          console.log(`this.colorList = ${JSON.stringify(this.colorList)}`);
+          this.dragObject[id] = {
+            x: baseStationData[i][0],
+            y: baseStationData[i][1],
+            z: baseStationData[i][2],
+            width: this.xLinear(30),
+            height: this.yLinear(30),
+            altitude: baseStationData[i][2],
+            rotate: 0,
+            title: this.svgMap['defaultBS'].title,
+            type: this.svgMap['defaultBS'].type,
+            color: this.colorList[id][1],
+            // material: material,
+            element: this.svgMap['defaultBS'].element
+          };
+          if (this.dragObject[id].altitude > this.calculateForm.altitude)
+          {
+            this.dragObject[id].altitude = this.calculateForm.altitude;
+          }
+          // RF parameter import
+          const offset = 2;
+          let bsTxGain = 0;
+          let bsNoiseFigure = 0;
+          let AntennaId = 1;
+          let theta = 0;
+          let phi = 0;
+          let isAntennaDefault = '';
+          let ulAntFreq = 0;
+          let dlAntFreq = 0;
+          let antennaType = 0;
+          let antennaManufactor = 0;
+          let gain = 0;
+          if (Object.values(baseStationData[0]).includes("bsTxGain"))
+          {
+            bsTxGain = baseStationData[i][24 + offset];
+          }
+          if (Object.values(baseStationData[0]).includes("bsNoiseFigure"))
+          {
+            bsNoiseFigure = baseStationData[i][25 + offset];
+          }
+
+          if (Object.values(baseStationData[0]).includes("AntennaId"))
+          {
+            AntennaId = baseStationData[i][26 + offset];
+            if (!this.checkAntennaExist(AntennaId))
+            {
+              AntennaId = this.allAntennaList[0].antennaID;
+            }
+          }
+          else
+            AntennaId = this.allAntennaList[0].antennaID;
+
+          isAntennaDefault = this.getAntennaById(AntennaId).property;
+          antennaType = this.getAntennaById(AntennaId).type;
+          antennaManufactor = this.getAntennaById(AntennaId).manufactor;
+
+          if (Object.values(baseStationData[0]).includes("theta"))
+          {
+            theta = baseStationData[i][27 + offset];
+          }
+          if (Object.values(baseStationData[0]).includes("phi"))
+          {
+            phi = baseStationData[i][28 + offset];
+          }
+          if (Object.values(baseStationData[0]).includes("gain"))
+          {
+            gain = baseStationData[i][29 + offset];
+          }
+          if (Object.values(baseStationData[0]).includes("ulAntFreq"))
+          {
+            ulAntFreq = baseStationData[i][30 + offset];
+          }
+          if (Object.values(baseStationData[0]).includes("dlAntFreq"))
+          {
+            dlAntFreq = baseStationData[i][31 + offset];
+          }
+
+
+          if (isAntennaDefault != 'default' && isAntennaDefault != 'customized')
+          {
+            isAntennaDefault = 'default';
+          }
+
+          this.bsListRfParam[id] = {
+            txpower: baseStationData[i][3 + offset],
+            beampattern: baseStationData[i][4 + offset],
+            tddfrequency: baseStationData[i][5 + offset],
+            tddbandwidth: baseStationData[i][6 + offset],
+            dlBandwidth: baseStationData[i][7 + offset],
+            ulBandwidth: baseStationData[i][8 + offset],
+            fddDlFrequency: baseStationData[i][9 + offset],
+            fddUlFrequency: baseStationData[i][10 + offset],
+            mimoNumber4G: baseStationData[i][11 + offset],
+            tddscs: baseStationData[i][12 + offset],
+            dlModulationCodScheme: baseStationData[i][13 + offset],
+            ulModulationCodScheme: baseStationData[i][14 + offset],
+            dlMimoLayer: baseStationData[i][15 + offset],
+            ulMimoLayer: baseStationData[i][16 + offset],
+            dlScs: baseStationData[i][17 + offset],
+            ulScs: baseStationData[i][18 + offset],
+            wifiProtocol: baseStationData[i][19 + offset],
+            guardInterval: baseStationData[i][20 + offset],
+            wifiMimo: baseStationData[i][21 + offset],
+            wifiBandwidth: baseStationData[i][22 + offset],
+            wifiFrequency: baseStationData[i][23 + offset],
+            bsTxGain: bsTxGain,
+            bsNoiseFigure: bsNoiseFigure,
+
+            isAntennaDefault: isAntennaDefault,
+            AntennaId: AntennaId,
+            antennaType: antennaType,
+            antennaManufactor: antennaManufactor,
+            ulAntFreq: ulAntFreq,
+            dlAntFreq: dlAntFreq,
+            gain: gain,
+            theta: theta,
+            phi: phi,
+            antenna: [],
+          };
+
+          this.defaultBSList.push(id);
+          // set 既有基站位置
+          // this.setDefaultBsSize(id);
+        }
+      }
+
+      const baseStationAnt: string = this.wb.SheetNames[sheetNameIndex['base_station_ant']];
+      if (baseStationAnt != null)
+      {
+        const baseStationAntWS: XLSX.WorkSheet = this.wb.Sheets[baseStationAnt];
+        const baseStationAntData = (XLSX.utils.sheet_to_json(baseStationAntWS, { header: 1 }));
+        if (baseStationAntData.length > 1)
+        {
+          let bsId = -1;
+          let bsSvgId = `defaultBS_${(bsId + 1)}`;
+
+          const IS_ON_BS_COL = 6;
+          const PHI_COL = 5;
+          const THETA_COL = 4;
+          const GAIN_COL = 3;
+          const Z_COL = 2;
+          const Y_COL = 1;
+          const X_COL = 0;
+          const ANT_WIDTH = 30;
+          const ANT_HEIGHT = 30;
+
+
+
+
+          for (let i = 1; i < baseStationAntData.length; i++)
+          {
+
+            if (baseStationAntData[i][IS_ON_BS_COL] == true)     //是基站上的天線
+            {
+              bsId++;
+              bsSvgId = `defaultBS_${bsId}`;
+              this.bsListRfParam[bsSvgId].gain = baseStationAntData[i][GAIN_COL];
+              this.bsListRfParam[bsSvgId].theta = baseStationAntData[i][THETA_COL];
+              this.bsListRfParam[bsSvgId].phi = baseStationAntData[i][PHI_COL];
+            }
+            else
+            {
+              this.bsListRfParam[bsSvgId].antenna.push
+                (
+                {
+                  svgId: `antenna_${i}`,
+                  //position: [baseStationAntData[i][X_COL], baseStationAntData[i][Y_COL], baseStationAntData[i][Z_COL]],
+                  gain: baseStationAntData[i][GAIN_COL],
+                  theta: baseStationAntData[i][THETA_COL],
+                  phi: baseStationAntData[i][PHI_COL]
+                }
+                );
+
+
+              this.dragObject[`antenna_${i}`] = {
+                x: baseStationAntData[i][X_COL],
+                y: baseStationAntData[i][Y_COL],
+                z: baseStationAntData[i][Z_COL],
+                width: ANT_WIDTH,
+                height: ANT_HEIGHT,
+                altitude: 0,
+                rotate: 0,
+                title: this.svgMap['antenna'].title,
+                type: this.svgMap['antenna'].type,
+                color: this.colorList[bsSvgId][1],
+                material: this.materialList[0]['id'],
+                element: this.parseElement('antenna'),
+                materialName: '',
+                belongWhichBS: bsSvgId
+              };
+
+              this.svgAntNum = `${this.getBsIndexFromBsSvgId(bsSvgId)}.${i + 1}`;
+              this.setLabel();
+              this.setAntSize(`antenna_${i}`);
+
+            }
+          }
+
+
+          console.log(`this.bsListRfParam=${JSON.stringify(this.bsListRfParam)}`);
+          console.log(`this.dragObject=${JSON.stringify(this.dragObject)}`);
+        }
+      }
     }
     catch (error) {
       console.log(error);
@@ -7371,118 +8317,282 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
+      
       // defaultBs
-      this.calculateForm.defaultBs = this.calculateForm.bsList;
-      this.manufactor = 'All';
-      if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
-        const defaultBS = this.calculateForm.defaultBs.split('|');
-        const txpower = JSON.parse(this.calculateForm.txPower);
-        const beamId = JSON.parse(this.calculateForm.beamId);
-        // this.dlRatio = this.calculateForm.tddFrameRatio;
-        let candidateNum = 0;
-        if (this.candidateList.length != 0) {candidateNum = this.candidateList.length;}
-        const defaultBSLen = defaultBS.length;
-        var defaultAnt = [];
-        if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt)){
-          defaultAnt = this.calculateForm.defaultBsAnt.split('|');
-        } else {
-          for (let i = 0; i < defaultBSLen; i++) {
-            defaultAnt.push("[1,0,0,0]");
+      if (this.calculateForm.bsList == null || this.calculateForm.bsList.length == 0 || this.calculateForm.bsList.defaultBs == null)     
+      {
+        //舊版本
+        this.manufactor = 'All';
+        if (!this.authService.isEmpty(this.calculateForm.defaultBs))
+        {
+          console.log(`this.calculateForm.defaultBs = ${JSON.stringify(this.calculateForm.defaultBs)}`);
+          const defaultBS = this.calculateForm.defaultBs.split('|');
+          const txpower = JSON.parse(this.calculateForm.txPower);
+          const beamId = JSON.parse(this.calculateForm.beamId);
+          // this.dlRatio = this.calculateForm.tddFrameRatio;
+          let candidateNum = 0;
+          if (this.candidateList.length != 0) { candidateNum = this.candidateList.length; }
+          const defaultBSLen = defaultBS.length;
+          var defaultAnt = [];
+          if (!this.authService.isEmpty(this.calculateForm.defaultBsAnt))
+          {
+            defaultAnt = this.calculateForm.defaultBsAnt.split('|');
+          } else
+          {
+            for (let i = 0; i < defaultBSLen; i++)
+            {
+              defaultAnt.push("[1,0,0,0]");
+            }
+          }
+          for (let i = 0; i < defaultBSLen; i++)
+          {
+            const item = JSON.parse(defaultBS[i]);
+            const id = `defaultBS_${this.generateString(10)}`;
+            this.colorList[id] = this.generateRandomColorSet();
+            this.defaultBSList.push(id);
+            const antObj = JSON.parse(defaultAnt[i]);
+            //20210521
+            this.bsListRfParam[id] = {
+              txpower: txpower[i + candidateNum],
+              beampattern: beamId[i + candidateNum],
+              // frequency: frequencyList[i],
+              // ulModulationCodScheme: "64QAM-table",
+              // dlModulationCodScheme: "64QAM-table",
+              mimoLayer: 1,
+              // scalingFact: 1,
+              subcarrier: 15,
+              scsBandwidth: 10,
+              isAntennaDefault: 'default',
+              antenna: []
+            };
+            console.log(JSON.stringify(this.bsListRfParam));
+            if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure))
+            {
+              this.bsListRfParam[id].bsNoiseFigure = 0
+            } else
+            {
+              this.bsListRfParam[id].bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i + candidateNum];
+            }
+            if (antObj[0] != null && this.checkAntennaExist(antObj[0]))
+              this.bsListRfParam[id].AntennaId = antObj[0];
+            else
+              this.bsListRfParam[id].AntennaId = this.allAntennaList[0].antennaID;
+
+            this.bsListRfParam[id].antennaType = this.getAntennaById(this.bsListRfParam[id].AntennaId).type;
+            this.bsListRfParam[id].antennaManufactor = this.getAntennaById(this.bsListRfParam[id].AntennaId).manufactor,
+
+
+            this.bsListRfParam[id].theta = antObj[1] != null ? antObj[1] : 0;
+            this.bsListRfParam[id].phi = antObj[2] != null ? antObj[2] : 0;
+            this.bsListRfParam[id].bsTxGain = antObj[3] != null ? antObj[3] : 0;
+            if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g')
+            {
+              this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i + candidateNum];
+              this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i + candidateNum];
+            }
+            if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '5g')
+            {
+              this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i + candidateNum];
+            }
+            if (this.calculateForm.duplex === 'fdd')
+            {
+              this.duplexMode = 'fdd';
+              this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i + candidateNum];
+              this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i + candidateNum];
+              this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i + candidateNum];
+              this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i + candidateNum];
+              // console.log(this.bsListRfParam[id].dlScs);
+              // console.log(this.bsListRfParam[id].dlBandwidth);
+              // console.log(this.bsListRfParam[id].ulScs);
+              // console.log(this.bsListRfParam[id].ulBandwidth);
+            } else
+            {
+              this.duplexMode = 'tdd';
+              this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i + candidateNum];
+              this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i + candidateNum];
+              // this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
+            }
+            if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g')
+            {
+              // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
+            }
+            if (this.calculateForm.mapProtocol === '4g')
+            {
+              this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i + candidateNum];
+            }
+            if (this.calculateForm.mapProtocol === '5g')
+            {
+              let ulmsc = this.calculateForm.ulMcsTable;
+              let dlmsc = this.calculateForm.dlMcsTable;
+              this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1, (ulmsc.length) - 1).split(',')[i + candidateNum];
+              this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1, (dlmsc.length) - 1).split(',')[i + candidateNum];
+              this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i + candidateNum].toString();
+              this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i + candidateNum].toString();
+              // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
+              // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
+              this.scalingFactor = this.calculateForm.scalingFactor;
+            }
+            if (this.calculateForm.mapProtocol === 'wifi')
+            {
+              this.bsListRfParam[id].wifiFrequency = JSON.parse(this.calculateForm.frequencyList)[i + candidateNum];
+              this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i + candidateNum];
+              let wifiProtocol = this.calculateForm.wifiProtocol;
+              let guardInterval = this.calculateForm.guardInterval;
+              let wifiMimo = this.calculateForm.wifiMimo;
+              this.bsListRfParam[id].wifiProtocol = wifiProtocol.substring(1, (wifiProtocol.length) - 1).split(',')[i + candidateNum];
+              this.bsListRfParam[id].guardInterval = guardInterval.substring(1, (guardInterval.length) - 1).split(',')[i + candidateNum];
+              this.bsListRfParam[id].wifiMimo = wifiMimo.substring(1, (wifiMimo.length) - 1).split(',')[i + candidateNum];
+            }
+            this.dragObject[id] = {
+              x: item[0],
+              y: item[1],
+              z: item[2],
+              width: 30,
+              height: 30,
+              altitude: item[2],
+              rotate: 0,
+              title: this.svgMap['defaultBS'].title,
+              type: this.svgMap['defaultBS'].type,
+              color: this.colorList[id][1],
+              material: '0',
+              element: 'defaultBS'
+            };
+            // set 既有基站位置
+            this.setDefaultBsSize(id);
+
           }
         }
-        for (let i = 0; i < defaultBSLen; i++) {
-          const item = JSON.parse(defaultBS[i]);
-          const id = `defaultBS_${this.generateString(10)}`;
-          this.defaultBSList.push(id);
-          const antObj = JSON.parse(defaultAnt[i]);
-          //20210521
-          this.bsListRfParam[id] = {
-            txpower: txpower[i+candidateNum],
-            beampattern: beamId[i+candidateNum],
-            // frequency: frequencyList[i],
-            // ulModulationCodScheme: "64QAM-table",
-            // dlModulationCodScheme: "64QAM-table",
-            mimoLayer: 1,
-            // scalingFact: 1,
-            subcarrier: 15,
-            scsBandwidth: 10,
-            isAntennaDefault: 'default'
+      }
+      else
+      {
+        //DAS版本
+        const beamId = JSON.parse(this.calculateForm.beamId);
+        for (let bs = 0; bs < this.calculateForm.bsList.defaultBs.length; bs++)
+        {
+          let svgId = `defaultBS_${this.generateString(10)}`;
+          let ulMCS = '';
+          let dlMCS = '';
+          let antennaID = -1;
+          let bsTxGain = 0;
+          let freq = '', bandwith = '', ulBandwidth = '', dlBandwidth = '', ulFreq = '',
+            dlFreq = '', scs = '', ulscs = '', dlscs = '', dlMimo = '', ulMimo = '';
+
+          if (this.checkAntennaExist(this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID))
+            antennaID = this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID;
+          else
+            antennaID = this.allAntennaList[0].antennaID;
+
+          this.colorList[svgId] = this.generateRandomColorSet();
+
+          if (this.calculateForm.bsList.defaultBs[bs].duplex.isTdd)
+          {
+            ulMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.mcsTable;
+            dlMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.dl.mcsTable;
+            freq = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.frequency;
+            bandwith = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.bandwidth;
+            scs = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.scs;
+            dlMimo = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.dl.mimo;
+            ulMimo = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.mimo;
+
+            //ulMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.mcsTable;
+            //dlMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.mcsTable;
+          }
+          else
+          {
+            ulMCS = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.mcsTable;
+            dlMCS = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.mcsTable;
+            dlBandwidth = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.bandwidth;
+            ulBandwidth = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.bandwidth;
+            ulFreq = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.frequency;
+            dlFreq = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.frequency;
+            ulscs = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.scs;
+            dlscs = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.scs;
+            dlMimo = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.mimo;
+            ulMimo = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.mimo;
+          }
+
+          
+
+          this.bsListRfParam[svgId] =
+          {
+            txpower: this.calculateForm.bsList.defaultBs[bs].txPower,
+            beampattern: beamId,
+            tddfrequency: freq,
+            tddbandwidth: bandwith,
+            dlBandwidth: dlBandwidth,
+            ulBandwidth: ulBandwidth,
+            fddDlFrequency: dlFreq,
+            fddUlFrequency: ulFreq,
+            ulModulationCodScheme: ulMCS,
+            dlModulationCodScheme: dlMCS,
+            tddscs: scs,
+            dlMimoLayer: dlMimo,
+            ulMimoLayer: ulMimo,
+            dlScs: dlscs,
+            ulScs: ulscs,
+            bsTxGain: this.calculateForm.bsList.defaultBs[bs].antenna[0].gain,
+            bsNoiseFigure: this.calculateForm.bsList.defaultBs[bs].noiseFigure,
+            isAntennaDefault: this.getAntennaById(antennaID).property,
+            AntennaId: antennaID,
+            antennaType: this.getAntennaById(antennaID).type,
+            antennaManufactor: this.getAntennaById(antennaID).manufactor,
+            ulAntFreq: this.calculateForm.bsList.defaultBs[bs].antenna[0].ulFrequency,
+            dlAntFreq: this.calculateForm.bsList.defaultBs[bs].antenna[0].dlFrequency,
+            theta: this.calculateForm.bsList.defaultBs[bs].antenna[0].theta,
+            phi: this.calculateForm.bsList.defaultBs[bs].antenna[0].phi,
+            antenna: [],
           };
-          if (this.authService.isEmpty(this.calculateForm.bsNoiseFigure)){ 
-            this.bsListRfParam[id].bsNoiseFigure = 0
-          } else {
-            this.bsListRfParam[id].bsNoiseFigure = JSON.parse(this.calculateForm.bsNoiseFigure)[i+candidateNum];
-          }
-          this.bsListRfParam[id].AntennaId = antObj[0];
-          this.bsListRfParam[id].theta = antObj[1];
-          this.bsListRfParam[id].phi = antObj[2];
-          this.bsListRfParam[id].bsTxGain = antObj[3];
-          if (this.calculateForm.duplex === 'fdd' && this.calculateForm.mapProtocol === '5g') {
-            this.bsListRfParam[id].dlScs = JSON.parse(this.calculateForm.dlScs)[i+candidateNum];
-            this.bsListRfParam[id].ulScs = JSON.parse(this.calculateForm.ulScs)[i+candidateNum];
-          }
-          if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '5g') {
-            this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum];
-          }
-          if (this.calculateForm.duplex === 'fdd') {
-            this.duplexMode = 'fdd';
-            this.bsListRfParam[id].fddDlFrequency = JSON.parse(this.calculateForm.dlFrequency)[i+candidateNum];
-            this.bsListRfParam[id].fddUlFrequency = JSON.parse(this.calculateForm.ulFrequency)[i+candidateNum];
-            this.bsListRfParam[id].dlBandwidth = JSON.parse(this.calculateForm.dlBandwidth)[i+candidateNum];
-            this.bsListRfParam[id].ulBandwidth = JSON.parse(this.calculateForm.ulBandwidth)[i+candidateNum];
-            // console.log(this.bsListRfParam[id].dlScs);
-            // console.log(this.bsListRfParam[id].dlBandwidth);
-            // console.log(this.bsListRfParam[id].ulScs);
-            // console.log(this.bsListRfParam[id].ulBandwidth);
-          } else {
-            this.duplexMode = 'tdd';
-            this.bsListRfParam[id].tddfrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
-            this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
-            // this.bsListRfParam[id].tddscs = JSON.parse(this.calculateForm.scs)[i+candidateNum].toString();
-          }
-          if (this.calculateForm.duplex === 'tdd' && this.calculateForm.mapProtocol === '4g') {
-            // this.bsListRfParam[id].tddbandwidth = JSON.parse(this.calculateForm.bandwidthList)[i];
-          }
-          if (this.calculateForm.mapProtocol === '4g') {
-            this.bsListRfParam[id].mimoNumber4G = JSON.parse(this.calculateForm.mimoNumber)[i+candidateNum];
-          }
-          if (this.calculateForm.mapProtocol === '5g') {
-            let ulmsc = this.calculateForm.ulMcsTable;
-            let dlmsc = this.calculateForm.dlMcsTable;
-            this.bsListRfParam[id].ulModulationCodScheme = ulmsc.substring(1,(ulmsc.length)-1).split(',')[i+candidateNum];
-            this.bsListRfParam[id].dlModulationCodScheme = dlmsc.substring(1,(dlmsc.length)-1).split(',')[i+candidateNum];
-            this.bsListRfParam[id].ulMimoLayer = JSON.parse(this.calculateForm.ulMimoLayer)[i+candidateNum].toString();
-            this.bsListRfParam[id].dlMimoLayer = JSON.parse(this.calculateForm.dlMimoLayer)[i+candidateNum].toString();
-            // this.bsListRfParam[id].ulMcsTable = JSON.parse(this.calculateForm.ulMcsTable)[i].toString();
-            // this.bsListRfParam[id].dlMcsTable = JSON.parse(this.calculateForm.dlMcsTable)[i].toString();
-            this.scalingFactor = this.calculateForm.scalingFactor;
-          }
-          if (this.calculateForm.mapProtocol === 'wifi') {
-            this.bsListRfParam[id].wifiFrequency = JSON.parse(this.calculateForm.frequencyList)[i+candidateNum];
-            this.bsListRfParam[id].wifiBandwidth = JSON.parse(this.calculateForm.bandwidthList)[i+candidateNum];
-            let wifiProtocol = this.calculateForm.wifiProtocol;
-            let guardInterval = this.calculateForm.guardInterval;
-            let wifiMimo = this.calculateForm.wifiMimo;
-            this.bsListRfParam[id].wifiProtocol = wifiProtocol.substring(1,(wifiProtocol.length)-1).split(',')[i+candidateNum];
-            this.bsListRfParam[id].guardInterval = guardInterval.substring(1,(guardInterval.length)-1).split(',')[i+candidateNum];
-            this.bsListRfParam[id].wifiMimo = wifiMimo.substring(1,(wifiMimo.length)-1).split(',')[i+candidateNum];
-          }
-          this.dragObject[id] = {
-            x: item[0],
-            y: item[1],
-            z: item[2],
+
+          this.dragObject[svgId] = {
+            x: this.calculateForm.bsList.defaultBs[bs].position[0],
+            y: this.calculateForm.bsList.defaultBs[bs].position[1],
+            z: this.calculateForm.bsList.defaultBs[bs].position[2],
             width: 30,
             height: 30,
-            altitude: item[2],
+            altitude: 0,
             rotate: 0,
             title: this.svgMap['defaultBS'].title,
             type: this.svgMap['defaultBS'].type,
-            color: this.DEFAULT_BS_COLOR,
+            color: this.colorList[svgId][1],
             material: '0',
             element: 'defaultBS'
           };
           // set 既有基站位置
-          // this.setDefaultBsSize(id);
+          this.defaultBSList.push(svgId);
+          this.setDefaultBsSize(svgId);
+
+          for (let a = 1; a < this.calculateForm.bsList.defaultBs[bs].antenna.length; a++)
+          {
+            let antSvgId = `antenna_${this.generateString(10)}`;
+            this.bsListRfParam[svgId].antenna.push(
+              {
+                svgId: antSvgId,
+                gain: this.calculateForm.bsList.defaultBs[bs].antenna[a].gain,
+                theta: this.calculateForm.bsList.defaultBs[bs].antenna[a].theta,
+                phi: this.calculateForm.bsList.defaultBs[bs].antenna[a].phi,
+              }
+            );
+            this.dragObject[antSvgId] = {
+              x: this.calculateForm.bsList.defaultBs[bs].antenna[a].position[0],
+              y: this.calculateForm.bsList.defaultBs[bs].antenna[a].position[1],
+              z: this.calculateForm.bsList.defaultBs[bs].antenna[a].position[2],
+              width: 30,
+              height: 30,
+              altitude: 0,
+              rotate: 0,
+              title: this.svgMap['antenna'].title,
+              type: this.svgMap['antenna'].type,
+              color: this.colorList[svgId][1],
+              material: this.materialList[0]['id'],
+              element: this.parseElement('antenna'),
+              materialName: '',
+              belongWhichBS: svgId
+            };
+
+            this.svgAntNum = `${this.getBsIndexFromBsSvgId(svgId)}.${a + 1}`;
+            this.setLabel();
+            this.setAntSize(antSvgId);
+          }
         }
       }
       
@@ -7538,6 +8648,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
       console.log(this.bsListRfParam);
     }
+    
   }
 
   /** 運算結果 */
@@ -7724,7 +8835,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.calculateForm.isUeAvgSinr = false;
         this.calculateForm.isUeAvgThroughput = false;
       }
-      
+    }
+    for (let bs = 0; bs < this.defaultBSList.length; bs++)
+    {
+      if (this.planningIndex == '3')
+        this.colorList[this.defaultBSList[bs]] = this.generateRandomColorSet();
+      else
+        this.colorList[this.defaultBSList[bs]] = [this.DEFAULT_BS_CIRCLE_COLOR, this.DEFAULT_BS_COLOR];
+      this.dragObject[this.defaultBSList[bs]].color = this.colorList[this.defaultBSList[bs]][1];
+      this.setDefaultBsSize(this.defaultBSList[bs]);
+      this.moveNumber(this.defaultBSList[bs]);
+      for (let a = 0; a < this.bsListRfParam[this.defaultBSList[bs]].antenna.length; a++)
+      {
+        this.setAntSize(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+        this.moveNumber(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+      }
     }
   }
 
@@ -7928,6 +9053,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               // set 既有基站位置
               for (const id of this.defaultBSList) {
                 this.setDefaultBsSize(id);
+                for (let a = 0; a < this.bsListRfParam[id].antenna.length; a++)
+                {
+                  this.setAntSize(this.bsListRfParam[id].antenna[a].svgId);
+                }
               }
               // set 既有基站位置
               for (const id of this.ueList) {
@@ -8135,6 +9264,33 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       fill: this.dragObject[id].color
     };
     window.setTimeout(() => {
+      this.moveNumber(id);
+    }, 0);
+  }
+
+  /**
+ * set 天線位置
+ * @param id 
+ */
+  setAntSize(id)
+  {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - 30 - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `30px`,
+      height: `30px`
+    };
+    console.log(`this.spanStyle[${id}] = ${JSON.stringify(this.spanStyle[id])}`);
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: 30,
+      height: 30
+    };
+    this.pathStyle[id] = {
+      fill: this.dragObject[id].color
+    };
+    window.setTimeout(() =>
+    {
       this.moveNumber(id);
     }, 0);
   }
@@ -8881,10 +10037,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (this.bsListRfParam[svgid].isAntennaDefault == 'default')
     {
       this.bsListRfParam[svgid].AntennaId = this.defaultAntennaList[0].antennaID;
+      this.antennaChangeCheck(svgid);
     }
     else if (this.customizedAntennaList.length != 0)
     {
       this.bsListRfParam[svgid].AntennaId = this.customizedAntennaList[0].antennaID;
+      this.antennaChangeCheck(svgid);
     }
     else
     {
@@ -8898,9 +10056,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       {
         this.bsListRfParam[svgid].isAntennaDefault = 'default';
         this.bsListRfParam[svgid].AntennaId = this.defaultAntennaList[0].antennaID;
+        this.antennaChangeCheck(svgid);
       }, 10);
     }
-    this.antennaChangeCheck(svgid);
   }
 
   /**
@@ -8909,155 +10067,125 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   antennaChangeCheck(svgid){
     var antId = 1;
-    if (svgid == null)
-      antId = this.tempCalParamSet.AntennaId;
-    else
-      antId = this.bsListRfParam[svgid].AntennaId;
-    var antenna = this.getAntennaById(antId, this.bsListRfParam[svgid].isAntennaDefault);
-
-    this.selectAntenna =
-    {
-      antennaID: antenna.antennaID,
-      name: antenna.name,
-      type: antenna.type,
-      property: antenna.property,
-      manufactor: antenna.manufactor,
-      availableFrequency: antenna.availableFrequency,
-      availablePorts: antenna.availableFrequency[0].ports,
-      selectFreqId: antenna.availableFrequency[0].frequencyId,
-      selectPortID: antenna.availableFrequency[0].ports[0].portID,
-      selectFreq: antenna.availableFrequency[0].frequency,
-      selectPort: antenna.availableFrequency[0].ports[0].portName,
-      };
+    antId = this.bsListRfParam[svgid].AntennaId;
+    let antenna = this.getAntennaById(antId);
 
     if (this.bsListRfParam[svgid].AntennaId != antenna.antennaID)   //選到了已經被刪掉的天線
       this.bsListRfParam[svgid].AntennaId = antenna.antennaID;
 
-    //console.log(JSON.stringify(this.selectAntenna));
+    this.bsListRfParam[svgid].isAntennaDefault = antenna.property;
+    this.bsListRfParam[svgid].antennaManufactor = antenna.manufactor;
+    this.bsListRfParam[svgid].antennaType = antenna.type;
+    this.bsListRfParam[svgid].ulMimoLayer = antenna.availableFrequency[0].ports.length;
+    this.bsListRfParam[svgid].dlMimoLayer = antenna.availableFrequency[0].ports.length;
+    this.bsListRfParam[svgid].ulAntFreq = antenna.availableFrequency[0].frequency;
+    this.bsListRfParam[svgid].dlAntFreq = antenna.availableFrequency[0].frequency;
+
+    console.log(`this.bsListRfParam[${svgid}] = ` + JSON.stringify(this.bsListRfParam[svgid]));
 
     this.antennaFreqPortChangeCheck(svgid);
   }
 
-  antennaFreqPortChangeCheck(svgid)
+  antennaFreqPortChangeCheck(bsSvgId)
   {
+    let noFindULFreq = true;
+    let noFindDLFreq = true;
     let thershold = 100;
+    let msg = '';
     let error = false;
-    let msg = "";
     let multiple = false;
-
-    for (var f = 0; f < this.selectAntenna.availableFrequency.length; f++)
+    for (var f = 0; f < this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).availableFrequency.length; f++)
     {
-      if (this.selectAntenna.availableFrequency[f].frequencyId == this.selectAntenna.selectFreqId)
+      if (this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).availableFrequency[f].frequency ==
+        this.bsListRfParam[bsSvgId].ulAntFreq)
       {
-        this.selectAntenna.selectFreq = this.selectAntenna.availableFrequency[f].frequency;
-        this.selectAntenna.availablePorts = this.selectAntenna.availableFrequency[f].ports;
+        noFindULFreq = false;        
       }
-      for (var p = 0; p < this.selectAntenna.availableFrequency[f].ports.length; p++)
+      if (this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).availableFrequency[f].frequency ==
+        this.bsListRfParam[bsSvgId].dlAntFreq)
       {
-        if (this.selectAntenna.availableFrequency[f].ports[p].portID == this.selectAntenna.selectPortID)
-        {
-          this.selectAntenna.selectPort = this.selectAntenna.availableFrequency[f].ports[p].portName;
-        }
+        noFindDLFreq = false;    
       }
+
+      if (!noFindULFreq && !noFindDLFreq)
+        break;
     }
 
-    var Antfrequency = this.selectAntenna.selectFreq;
-
-    /*if (this.selectAntenna.type != 'Omnidirectional' || this.selectAntenna.property != 'default')
+    if (noFindULFreq)
     {
-      // TDD
-      if (svgid != null)
-      {
-        // 根據天線類型將欄位歸零
-        if (this.antennaList[this.AntennaIdToIndex[this.bsListRfParam[svgid].AntennaId]]['antennaType'] == 'Omnidirectional')
-        {
-          this.bsListRfParam[svgid].theta = 0;
-          this.bsListRfParam[svgid].phi = 0;
-        } else
-        {
-          this.bsListRfParam[svgid].bsTxGain = 0;
-          // 檢查天線frequency與基站frequency是否一致(+-100)
+      this.bsListRfParam[bsSvgId].ulAntFreq = this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).availableFrequency[0].frequency;
+    }
+    if (noFindDLFreq)
+    {
+      this.bsListRfParam[bsSvgId].dlAntFreq = this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).availableFrequency[0].frequency;
+    }
+    
+    if (this.duplexMode == 'tdd')
+    {
+      this.bsListRfParam[bsSvgId].dlAntFreq = this.bsListRfParam[bsSvgId].ulAntFreq;
+    }
+    
+    let AntULfrequency = this.bsListRfParam[bsSvgId].ulAntFreq;
+    let AntDLfrequency = this.bsListRfParam[bsSvgId].dlAntFreq;
 
-          if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].tddfrequency)))
+    if (this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).type != 'Omnidirectional' ||
+      this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).property != 'default')
+    {
+      if (bsSvgId != null)
+      {
+        this.bsListRfParam[bsSvgId].bsTxGain = 0;
+        // 檢查天線frequency與基站frequency是否一致(+-100)
+        console.log(`this.bsListRfParam[bsSvgId].tddfrequency = ${JSON.stringify(this.bsListRfParam[bsSvgId].tddfrequency)}`);
+        console.log(`AntULfrequency = ${AntULfrequency}`);
+
+        if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.bsListRfParam[bsSvgId].tddfrequency)))
+        {
+          if (((AntULfrequency + thershold <= this.bsListRfParam[bsSvgId].tddfrequency) ||
+            (AntULfrequency - thershold >= this.bsListRfParam[bsSvgId].tddfrequency)))
           {
-            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].tddfrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].tddfrequency)))
-            {
-              msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[svgid].tddfrequency + ' ';
-              error = true;
-            }
-          } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddUlFrequency)) && !(this.authService.isEmpty(this.bsListRfParam[svgid].fddDlFrequency)))
-          {
-            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddUlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddUlFrequency)))
-            {
-              msg += this.translateService.instant('uplink.frequency') + ' ' + this.bsListRfParam[svgid].fddUlFrequency + ' ';
-              error = true;
-            }
-            if (!((Antfrequency - thershold <= this.bsListRfParam[svgid].fddDlFrequency) && (Antfrequency + thershold >= this.bsListRfParam[svgid].fddDlFrequency)))
-            {
-              if (error)
-              {
-                if (this.checkIfChinese())
-                {
-                  msg += ' 和 ';
-                } else
-                {
-                  msg += ' and the ';
-                }
-                multiple = true;
-              }
-              msg += this.translateService.instant('downlink.frequency') + ' ' + this.bsListRfParam[svgid].fddDlFrequency + ' ';
-              error = true;
-            }
+            msg += this.translateService.instant('tddfrequency') + ' ' + this.bsListRfParam[bsSvgId].tddfrequency + ' ';
+            error = true;
           }
         }
-      }
-      else
-      { //FDD
-        if (this.antennaList[this.AntennaIdToIndex[this.tempCalParamSet.AntennaId]]['antennaType'] == 'Omnidirectional')
+        else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.bsListRfParam[bsSvgId].fddUlFrequency)) &&
+          !(this.authService.isEmpty(this.bsListRfParam[bsSvgId].fddDlFrequency)))
         {
-          this.tempCalParamSet.theta = 0;
-          this.tempCalParamSet.phi = 0;
-        } else
-        {
-          this.tempCalParamSet.bsTxGain = 0;
-          if (this.duplexMode == 'tdd' && !(this.authService.isEmpty(this.tempCalParamSet.tddfrequency)))
+          if (((AntULfrequency + thershold <= this.bsListRfParam[bsSvgId].fddUlFrequency) ||
+            (AntULfrequency - thershold >= this.bsListRfParam[bsSvgId].fddUlFrequency)))
           {
-            if (!((Antfrequency - thershold <= this.tempCalParamSet.tddfrequency) && (Antfrequency + thershold >= this.tempCalParamSet.tddfrequency)))
-            {
-              msg += this.translateService.instant('tddfrequency') + ' ' + this.tempCalParamSet.tddfrequency + ' ';
-              error = true;
-            }
-          } else if (this.duplexMode == 'fdd' && !(this.authService.isEmpty(this.tempCalParamSet.fddUlFrequency)) && !(this.authService.isEmpty(this.tempCalParamSet.fddDlFrequency)))
+            msg += this.translateService.instant('uplink.frequency') + ' ' + this.bsListRfParam[bsSvgId].fddUlFrequency + ' ';
+            error = true;
+          }
+          if (((AntDLfrequency + thershold <= this.bsListRfParam[bsSvgId].fddDlFrequency) ||
+            (AntDLfrequency - thershold >= this.bsListRfParam[bsSvgId].fddDlFrequency)))
           {
-            if (!((Antfrequency - thershold <= this.tempCalParamSet.fddUlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddUlFrequency)))
+            if (error)
             {
-              msg += this.translateService.instant('uplink.frequency') + ' ' + this.tempCalParamSet.fddUlFrequency + ' ';
-              error = true;
-            }
-            if (!((Antfrequency - thershold <= this.tempCalParamSet.fddDlFrequency) && (Antfrequency + thershold >= this.tempCalParamSet.fddDlFrequency)))
-            {
-              if (error)
+              if (this.checkIfChinese())
               {
-                if (this.checkIfChinese())
-                {
-                  msg += ' 和 ';
-                } else
-                {
-                  msg += ' and the ';
-                }
-                multiple = true;
+                msg += ' 和 ';
+              } else
+              {
+                msg += ' and the ';
               }
-              msg += this.translateService.instant('downlink.frequency') + ' ' + this.tempCalParamSet.fddDlFrequency + ' ';
-              error = true;
+              multiple = true;
             }
+            msg += this.translateService.instant('downlink.frequency') + ' ' + this.bsListRfParam[bsSvgId].fddDlFrequency + ' ';
+            error = true;
           }
         }
+        
       }
       if (error)
       {
         if (this.checkIfChinese())
         {
-          this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + Antfrequency + " 差異較大, 可能導致計算結果不準確";
+          if (this.duplexMode == 'tdd')
+            this.infoMsg = "您所設置的" + msg + " 與天線頻率 " + AntULfrequency + " 差異較大, 可能導致計算結果不準確";
+          else if (this.duplexMode == 'fdd')
+            this.infoMsg = "您所設置的" + msg + " 與天線頻率 (" + AntULfrequency + "/" + AntDLfrequency 
+              + ") 差異較大, 可能導致計算結果不準確";
+
         } else
         {
           let msgString = "you set is ";
@@ -9065,16 +10193,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             msgString = "you set are ";
           }
-          this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + Antfrequency + ",<br> which may cause inaccurate calculation results.";
+          if (this.duplexMode == 'tdd')
+            this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency " + AntULfrequency + ",<br> which may cause inaccurate calculation results.";
+          else if (this.duplexMode == 'fdd')
+            this.infoMsg = "<br>The " + msg + msgString + "quite different from the antenna frequency (" +
+              AntDLfrequency + "/" + "),<br> which may cause inaccurate calculation results.";
+
+
+          
         }
         this.msgDialogConfig.data = {
           type: 'error',
           infoMessage: this.infoMsg
         };
-        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+
+        window.setTimeout(() =>
+        {
+          this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        }, 100);
       }
     }
-    */
+    
   }
 
   /**
@@ -9103,6 +10242,36 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       // return;
     }
+    console.log('theta = ' + msg);
+  }
+
+  /**
+ * 檢查天線theta改變後是否超出範圍
+ * @param svgId 既有基站的id
+ * @param antIndex 天線的index
+ */
+  changeAntTheta(svgId, antIndex)
+  {
+    let msg = '';
+    let max = 180;
+    let min = 0;
+
+    if ((Number(this.bsListRfParam[svgId].antenna[antIndex].theta) > max ||
+      Number(this.bsListRfParam[svgId].antenna[antIndex].theta) < min))
+    {
+      msg = this.translateService.instant('theta_out_of_range');
+      this.bsListRfParam[svgId].antenna[antIndex].theta = Number(window.sessionStorage.getItem('tempParam'))
+    }
+    if (msg != '')
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      // return;
+    }
+    console.log('theta = ' + msg);
   }
 
   /**
@@ -9131,6 +10300,35 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
       // return;
     }
+  }
+
+  /**
+* 檢查天線phi改變後是否超出範圍
+* @param svgId 既有基站的id
+* @param antIndex 天線的index
+*/
+  changeAntPhi(svgId, antIndex)
+  {
+    let msg = '';
+    let max = 360;
+    let min = 0;
+
+    if ((Number(this.bsListRfParam[svgId].antenna[antIndex].phi) > max ||
+      Number(this.bsListRfParam[svgId].antenna[antIndex].phi) < min))
+    {
+      msg = this.translateService.instant('phi_out_of_range');
+      this.bsListRfParam[svgId].antenna[antIndex].phi = Number(window.sessionStorage.getItem('tempParam'))
+    }
+    if (msg != '')
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      // return;
+    }
+    console.log('phi = ' + msg);
   }
 
   /** 將天線類型轉換為全向性 */
@@ -9852,6 +11050,28 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   async delAntenna(index)
   {
+    let isAntInUse = false;
+
+    for (let bs = 0; bs < this.defaultBSList.length; bs++)
+    {
+      if (this.bsListRfParam[this.defaultBSList[bs]].AntennaId == this.customizedAntennaList[index].antennaID)
+      {
+        isAntInUse = true;
+      }
+    }
+
+    if (isAntInUse)
+    {
+      let msg = this.translateService.instant('antenna.inuse.cant.delete');
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+
+
     var msg = `${this.translateService.instant('confirm.delete')} ${this.customizedAntennaList[index].name}?`;
     this.msgDialogConfig.data = {
       infoMessage: msg
@@ -10022,6 +11242,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     console.log(JSON.stringify(this.allAntennaList));
   }
+  
 
   classifyAntenna()
   {
@@ -10062,7 +11283,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   getAntenna()
   {
-
     let url = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
     this.http.get(url).subscribe(
       res =>
@@ -10167,7 +11387,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     return retPattern;
   }
 
-  getAntennaById(antennaID, isDefault)
+  getAntennaById(antennaID)
   {
     for (var ant = 0; ant < this.allAntennaList.length; ant++)
     {
@@ -10177,10 +11397,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       }
     }
 
-    if (isDefault == 'default')
-      return this.defaultAntennaList[0];
-    else
-      return this.customizedAntennaList[0];
+    //基地台選到A天線，若之後A天線被刪除，則給予第一個天線
+    return this.allAntennaList[0];
   }
 
   getAntennaIndexById(antennaID)
@@ -10535,17 +11753,20 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   closeFirstLayer()
   {
-    this.firstLayerDialogRef.close();
+    if (this.firstLayerDialogRef != null)
+      this.firstLayerDialogRef.close();
   }
 
   closeSecondLayer()
   {
-    this.secondLayerDialogRef.close();
+    if (this.secondLayerDialogRef != null)
+      this.secondLayerDialogRef.close();
   }
 
   closeThirdLayer()
   {
-    this.thirdLayerDialogRef.close();
+    if (this.thirdLayerDialogRef != null)
+      this.thirdLayerDialogRef.close();
   }
 
   uploadAntRawdataErrorMsg(isAdd, error)
@@ -10755,5 +11976,181 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
 
   }
+
+  getAntIndexFromSvgAntNum()
+  {
+    let index = parseInt(this.svgAntNum.substring(this.svgAntNum.indexOf('.') + 1)) - 2;
+    if (index < 0)
+      index = 0;
+    return index;
+  }
+
+  getAntIndexFromAntSvgId(bsSvgId, antSvgId)
+  {
+    let index = 1;
+
+    for (let a = 0; a < this.bsListRfParam[bsSvgId].antenna.length; a++)
+    {
+      if (antSvgId == this.bsListRfParam[bsSvgId].antenna[a].svgId)
+        index = a + 2;      //找到符合的，代表為場域上天線(.2+)；否則為基站天線(.1)
+    }
+
+    return index;
+  }
+
+  getBsIndexFromBsSvgId(bsSvgId)
+  {
+    let index = 0;
+
+    for (index = 0; index < this.defaultBSList.length; index++)
+    {
+      if (bsSvgId == this.defaultBSList[index])
+        return index+1;
+    }
+
+    return 0;
+  }
   
+
+  closeRfDialog(isOk, svgId)
+  {
+    if (isOk)
+      this.saveBsListRfParam(svgId);
+    else
+    {
+      this.loadBsListRfParam(svgId);
+    }
+
+    this.closeFirstLayer();
+  }
+  
+
+  saveBsListRfParam(svgId)
+  {
+    sessionStorage.setItem('bsListRfParam', JSON.stringify(this.bsListRfParam));
+    let position = [this.dragObject[svgId].x, this.dragObject[svgId].y, this.dragObject[svgId].z];
+    sessionStorage.setItem('position', JSON.stringify(position));
+  }
+  
+
+  loadBsListRfParam(svgId)
+  {
+    if (sessionStorage.getItem('bsListRfParam') != null)
+    {
+      this.bsListRfParam = JSON.parse(sessionStorage.getItem('bsListRfParam'));
+      sessionStorage.removeItem('bsListRfParam');
+    }
+
+    let position = JSON.parse(sessionStorage.getItem('position'));
+    if (position != null)
+    {
+      this.dragObject[svgId].x = position[0];
+      this.dragObject[svgId].y = position[1];
+      this.dragObject[svgId].z = position[2];
+    }
+
+    if (this.selectAntSvgId != '')
+      this.setAntSize(this.selectAntSvgId);
+    this.setDefaultBsSize(this.selectBsSvgId);
+
+    for (let bs = 0; bs < this.defaultBSList.length; bs++)
+    {
+      this.setDefaultBsSize(this.defaultBSList[bs]);
+      this.moveNumber(this.defaultBSList[bs]);
+      for (let a = 0; a < this.bsListRfParam[this.defaultBSList[bs]].antenna.length; a++)
+      {
+        this.setAntSize(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+        this.moveNumber(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+      }
+    }
+  }
+
+  saveParam(obj, param, name)
+  {
+    sessionStorage.setItem(name, JSON.stringify(obj[param]));
+    this.matDialog.closeAll();
+  }
+
+  loadParam(obj, param, name)
+  {
+    if (sessionStorage.getItem(name) != null)
+    {
+      obj[param] = JSON.parse(sessionStorage.getItem(name));
+      sessionStorage.removeItem(name);
+    }
+    this.matDialog.closeAll();
+  }
+
+  checkAntennaExist(antId)
+  {
+    let isExist = false;
+    for (let ant = 0; ant < this.allAntennaList.length; ant++)
+    {
+      if (antId == this.allAntennaList[ant].antennaID)
+      {
+        isExist = true;
+        break;
+      }
+    }
+    return isExist;
+  }
+
+  generateRandomColorSet()
+  {
+    let lightColor = 'rgba(255,255,255,1)';
+    let darkColor = 'rgba(255,255,255,1)';
+    if (this.planningIndex == '3')
+    {
+      let index = this.defaultBSList.length % 3;
+
+      let lrgb = [];
+      let drgb = [];
+
+      let switchColor = Math.floor(Math.random() * 3);
+      let random = Math.floor(Math.random() * 2);
+      let zeroColor = 0;
+      let fullColor = 0;
+
+      console.log(`switchColor = ${switchColor}`);
+
+      lrgb[switchColor] = Math.floor(Math.random() * 85 + index * 85);
+      console.log(`lrgb[switchColor] = ${lrgb[switchColor]}`);
+      drgb[switchColor] = lrgb[switchColor];
+
+      if (random % 2 == 0)
+      {
+        zeroColor = switchColor - 1;
+        fullColor = switchColor + 1;
+        if (zeroColor < 0)
+          zeroColor += 3;
+        if (fullColor >= 3)
+          fullColor -= 3;
+      }
+      else
+      {
+        zeroColor = switchColor + 1;
+        fullColor = switchColor - 1;
+        if (zeroColor >= 3)
+          zeroColor -= 3;
+        if (fullColor < 0)
+          fullColor += 3;
+      }
+      drgb[zeroColor] = Math.floor(Math.random() * 51);
+      lrgb[zeroColor] = drgb[zeroColor] + 50;
+      drgb[fullColor] = 200;
+      lrgb[fullColor] = 200;
+
+      lightColor = `rgba(${lrgb[0]},${lrgb[1]},${lrgb[2]},1)`;
+      darkColor = `rgba(${drgb[0]},${drgb[1]},${drgb[2]},1)`;
+
+      console.log(`lightColor = ${lightColor}`);
+      console.log(`darkColor = ${darkColor}`);
+    }
+    else
+    {
+      lightColor = this.DEFAULT_BS_CIRCLE_COLOR;
+      darkColor = this.DEFAULT_BS_COLOR;
+    }
+    return [lightColor, darkColor];
+  }
 }

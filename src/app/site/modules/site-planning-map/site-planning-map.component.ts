@@ -28,6 +28,8 @@ export class SitePlanningMapComponent implements OnInit {
   candidateList = [];
   /** 現有基站 list */
   defaultBsList = [];
+  /** 天線 list */
+  antList = [];
   /** 外框style */
   style = {};
   /** 高度 */
@@ -96,6 +98,7 @@ export class SitePlanningMapComponent implements OnInit {
     this.rectList.length = 0;
     this.candidateList.length = 0;
     this.defaultBsList.length = 0;
+    this.antList.length = 0; 
     //
     zValue = Number(zValue);
     this.zValue = zValue;
@@ -416,18 +419,52 @@ export class SitePlanningMapComponent implements OnInit {
 
     // 現有基站
     // if (0) {
-    if (this.calculateForm.defaultBs !== '') {
-      const list = this.calculateForm.defaultBs.split('|');
+    if (this.calculateForm.defaultBs !== '')
+    {
+      let isDASFormat = (this.calculateForm.isSimulation &&
+        this.calculateForm.bsList != null && this.calculateForm.bsList.defaultBs != null);
+
+      let list = null;
+
+      if (isDASFormat)
+      {
+        list = this.calculateForm.bsList.defaultBs;
+      }
+      else
+      {
+        list = this.calculateForm.defaultBs.split('|');
+      }
+
       const cx = [];
       const cy = [];
       const ctext = [];
-      let num = 1;
+      let num = 1;      
 
-      for (const item of list) {
-        const oData = JSON.parse(item);
-        const xdata = oData[0];
-        const ydata = oData[1];
-        const zdata = oData[2];
+      for (const item of list)
+      {
+
+        let oData;
+        let antData = [];
+        let xdata;
+        let ydata;
+        let zdata;
+
+        if (isDASFormat)
+        {
+          oData = item.position;
+          antData = item.antenna;
+          xdata = Number(oData[0]);
+          ydata = Number(oData[1]);
+          zdata = Number(oData[2]);
+        }
+        else
+        {
+          oData = JSON.parse(item);
+          xdata = oData[0];
+          ydata = oData[1];
+          zdata = oData[2];
+        }
+
         cx.push(xdata);
         cy.push(ydata);
         const text = `${this.translateService.instant('defaultBs')}
@@ -451,6 +488,25 @@ export class SitePlanningMapComponent implements OnInit {
             visibility: 'hidden',
           }
         });
+
+        for (let a = 1; a < antData.length; a++)
+        {
+          this.antList.push({
+            x: Number(antData[a].position[0]),
+            y: Number(antData[a].position[1]),
+            color: '#000000',
+            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
+            style: {
+              // visibility: this.showBs,
+              visibility: 'hidden',
+              opacity: 0
+            },
+            circleStyle: {
+              // visibility: this.showBs
+              visibility: 'hidden',
+            }
+          });
+        }
         num++;
       }
       // traces.push({
@@ -623,6 +679,35 @@ export class SitePlanningMapComponent implements OnInit {
             layer: "above"
           });
         }
+        for (const item of this.antList)
+        {
+          this.shapes.push({
+            type: 'circle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x,
+            y0: item.y,
+            x1: item.x + Number(xLinear(50)),
+            y1: item.y + Number(yLinear(18)),
+            fillcolor: '#005959',
+            bordercolor: '#005959',
+            visible: this.showBs
+          });
+
+          this.annotations.push({
+            x: item.x + Number(xLinear(25)),
+            y: item.y + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: item.ap,
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 8
+            },
+            visible: this.showBs
+          });
+        }
       }
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
@@ -748,6 +833,22 @@ export class SitePlanningMapComponent implements OnInit {
     }
 
     for (const item of this.defaultBsList) {
+      item['style'] = {
+        left: `${pixelXLinear(item.x)}px`,
+        bottom: `${pixelYLinear(item.y)}px`,
+        position: 'absolute',
+        // visibility: this.showBs
+      };
+      item['circleStyle'] = {
+        left: `${pixelXLinear(item.x) + 15}px`,
+        bottom: `${pixelYLinear(item.y) + 25}px`,
+        position: 'absolute',
+        // visibility: this.showBs
+      };
+    }
+
+    for (const item of this.antList)
+    {
       item['style'] = {
         left: `${pixelXLinear(item.x)}px`,
         bottom: `${pixelYLinear(item.y)}px`,
