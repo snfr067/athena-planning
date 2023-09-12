@@ -178,6 +178,8 @@ export class ResultComponent implements OnInit {
   scaleMaxDL; 
   scaleMinDL; 
   scaleInputError = false;
+  /** ris列表 **/
+  risList = [];
   /** 天線列表 **/ 
   antennaList = [];
   AntennaIdToIndex = [];
@@ -261,6 +263,7 @@ export class ResultComponent implements OnInit {
           this.realUEULThroughput = this.formService.setHstToUEULThroughputRatio(res);
           this.realUEDLThroughput = this.formService.setHstToUEDLThroughputRatio(res);
           this.userlogid = this.result['userlogid'];
+          this.risList = this.calculateForm.ris;
           console.log(this.calculateForm);
           console.log(this.result);
           // defaultidx = this.result['defaultidx'];

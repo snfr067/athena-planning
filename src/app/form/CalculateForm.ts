@@ -109,6 +109,7 @@ export class CalculateForm {
   defaultBsAnt: string = null;
   evaluationFunc: EvaluationFuncForm = new EvaluationFuncForm();
   isBsNumberOptimization: boolean = false;
+  ris: [];
   // SINRSettingList = [{area: 0, condition: "moreThan", sinr: 0}];
   // RSRPSettingList = [{area: 0, condition: "moreThan", rsrp: 0}];
   // ThroughputSettingList = [{area: 0, ULCondition: "moreThan", ULThroughput: 0, DLCondition: "moreThan", DLThroughput: 0}];

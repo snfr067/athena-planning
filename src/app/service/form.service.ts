@@ -93,6 +93,7 @@ export class FormService {
     calculateForm.isCoverage = result['iscoverage'];
     calculateForm.isAverageSinr = result['isaveragesinr'];
     calculateForm.evaluationFunc = result['evaluationFunc'];
+    calculateForm.ris = result['ris'];
     // calculateForm.isAvgThroughput = JSON.parse(result['isaveragethroughput']);
 
     calculateForm.maxConnectionNum = Number(result['maxConnectionNum']);

@@ -31,6 +31,15 @@ export class SignalCoverComponent implements OnInit {
   rectList = [];
   /** AP list */
   candidateList = [];
+  risList = [
+    {
+      x: 0,
+      y: 2,
+      ap: "RIS 1",
+      refPhi: 135
+    }
+  ];
+  //risList = [];
   /** 現有基站 list */
   defaultBsList = [];
   /** UE list */
@@ -642,6 +651,74 @@ export class SignalCoverComponent implements OnInit {
             visible: this.showCandidate
           });
         }
+      }
+
+      for (const item of this.risList)
+      {
+        this.shapes.push({
+          type: 'rectangle',
+          xref: 'x',
+          yref: 'y',
+          x0: item.x,
+          y0: item.y,
+          x1: item.x + Number(xLinear(50)),
+          y1: item.y + Number(yLinear(18)),
+          fillcolor: '#4F81BD',
+          bordercolor: '#4F81BD',
+          visible: this.showBs,
+          rotate: 45
+        });
+
+        if (item.refPhi == 90)
+        {
+          //射線
+          this.shapes.push({
+            type: 'line',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x + Number(xLinear(25)),
+            y0: item.y + Number(yLinear(9)),
+            x1: item.x + Number(xLinear(25)) + 11,
+            y1: item.y + Number(yLinear(9)),
+            visible: this.showBs,
+            line:
+            {
+              color: '#ff0000'
+            }
+          });
+        }
+        else
+        {
+          //射線
+          this.shapes.push({
+            type: 'line',
+            xref: 'x',
+            yref: 'y',
+            x0: item.x + Number(xLinear(25)),
+            y0: item.y + Number(yLinear(9)),
+            x1: 11,
+            y1: item.y + Number(yLinear(9)),
+            visible: this.showBs,
+            line:
+            {
+              color: '#ff0000'
+            }
+          });
+        }
+
+        this.annotations.push({
+          x: item.x + Number(xLinear(25)),
+          y: item.y + Number(yLinear(9)),
+          xref: 'x',
+          yref: 'y',
+          text: item.ap,
+          showarrow: false,
+          font: {
+            color: '#fff',
+            size: 10
+          },
+          visible: this.showBs
+        });
       }
 
       if (this.calculateForm.defaultBs !== '') {

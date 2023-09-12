@@ -248,4 +248,28 @@ export class ChartService {
     return await this.checkSize1(calculateForm, gd, Math.round(layoutWidth), Math.round(layoutHeight));
   }
 
+  /*getPosByAngle(angleDeg, width, height)
+  {
+    let angleRad = angleDeg * Math.PI / 180;
+    let tan = 1;
+    let retX = width;
+    let retY = height;
+
+    if (angleRad == 90 || angleRad == 270)
+    {
+
+    }
+      Math.tan(angleRad);
+
+
+    retY = width * tan;
+
+    if (retY < height)
+    {
+      retY *= height / retY;
+      retX *= height / retY;
+    }
+
+    return [retX, retY];
+  }*/
 }

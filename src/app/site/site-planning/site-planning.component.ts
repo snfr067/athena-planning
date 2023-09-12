@@ -153,6 +153,27 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   bsListRfParam = {};
   /** 現有基站 */
   defaultBSList = [];
+  /** RIS */
+  risList = [];
+  DEFAULT_RIS = {
+    id: '',
+    II: 5,
+    JJ: 5,
+    width: 0.5,
+    height: 0.5,
+    thick: 0.1,
+    facePhi: 0,
+    faceTheta: 0,
+    refPhi: 0,
+    refTheta: 0,
+    minFreq: 410,
+    maxFreq: 7125
+  };
+  risWidth = 5;
+  risHeight = 30;
+  risLineWidth = 1;
+  risLineHeight = 800;
+  risWarnMsg = {};
   /** 新增基站 */
   candidateList = [];
   /** 新增ＵＥ */
@@ -228,6 +249,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // title: '子場域',
       type: 'subField',
       element: '4'
+    },
+    ris: {
+      id: 'svg_9',
+      title: this.translateService.instant('ris'),
+      type: 'ris',
+      element: ''
     }
   };
   /** 當下互動物件的id */
@@ -292,6 +319,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   };
   /** span互動物件 style */
   spanStyle = {};
+  risLineSpanStyle = {};
   /** 方形互動物件 style */
   rectStyle = {};
   /** 圓形互動物件 style */
@@ -327,6 +355,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   OBSTACLE_COLOR = '#73805c';
   /** defaultBs預設顏色 */
   DEFAULT_BS_COLOR = '#2958be';
+  /** ris預設顏色 */
+  DEFAULT_RIS_COLOR = '#00f0f0';
   /** candidate預設顏色 */
   CANDIDATE_COLOR = '#d00a67';
   /** UE預設顏色 */
@@ -422,6 +452,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /** RF設定燈箱 */
   @ViewChild('RfModal') rfModal: TemplateRef<any>;
   @ViewChild('RfModalTable') rfModalTable: TemplateRef<any>;
+  @ViewChild('RISModalTable') risModalTable: TemplateRef<any>;
   @ViewChild('UeModalTable') ueModalTable: TemplateRef<any>;
   @ViewChild('SINRModalTable') SINRModalTable: TemplateRef<any>;
   @ViewChild('FieldCoverageModalTable') FieldCoverageModalTable: TemplateRef<any>;
@@ -1639,7 +1670,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else if (this.calculateForm.objectiveIndex == '2') {
         this.bsListRfParam[this.svgId].wifiBandwidth = '20'
       }
-    } else if (id === 'candidate') {
+    } else if (id === 'ris')
+    {
+      color = this.DEFAULT_RIS_COLOR;
+      this.svgId = `${id}_${this.generateString(10)}`;
+      this.pathStyle[this.svgId] = {
+        fill: this.DEFAULT_RIS_COLOR
+      };
+      let ris = JSON.parse(JSON.stringify(this.DEFAULT_RIS));     //複製
+      ris.id = this.svgId;
+      this.risList.push(ris);
+      console.log(`risList = ${JSON.stringify(this.risList)}`);
+
+
+      width = this.risWidth;
+      height = this.risHeight;
+    }
+    else if (id === 'candidate')
+    {
       color = this.CANDIDATE_COLOR;
       this.svgId = `${id}_${this.generateString(10)}`;
       this.candidateList.push(this.svgId);
@@ -1769,10 +1817,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }else{
       materialName = this.materialList[0]['name'];
     }
+
     this.dragObject[this.svgId] = {
       x: 0,
       y: 0,
-      // z: this.zValues[0],
       z: 0,
       width: width,
       height: height,
@@ -1826,6 +1874,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
         }
         this.moveable.resizable = true;
+      } else if (this.svgMap[id].type === 'ris')
+      {
+        this.moveable.rotatable = true;
+        this.moveable.resizable = false;
       } else {
         this.moveable.rotatable = false;
         this.moveable.resizable = false;
@@ -1942,7 +1994,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
       }
       this.moveable.resizable = true;
-    } else {
+    } else if (this.dragObject[id].type === 'ris')
+    {
+      this.moveable.rotatable = true;
+      this.moveable.resizable = false;
+    }else {
       this.moveable.rotatable = false;
       this.moveable.resizable = false;
     }
@@ -2536,8 +2592,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     if (!all) {
       if (this.dragObject[this.svgId].type === 'obstacle') {
         this.obstacleList.splice(this.obstacleList.indexOf(this.svgId), 1);
-      } else if (this.dragObject[this.svgId].type === 'defaultBS') {
+      } else if (this.dragObject[this.svgId].type === 'defaultBS')
+      {
         this.defaultBSList.splice(this.defaultBSList.indexOf(this.svgId), 1);
+      } else if (this.dragObject[this.svgId].type === 'ris')
+      {
+        this.risList.splice(this.svgNum-1, 1);
       } else if (this.dragObject[this.svgId].type === 'candidate') {
         this.candidateList.splice(this.candidateList.indexOf(this.svgId), 1);
       } else if (this.dragObject[this.svgId].type === 'UE') {
@@ -2601,11 +2661,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   /**
    * 開啟RF設定燈箱
   */
-  openRfParamSetting(item, i, isNav) {
+  openRfParamSetting(item, i, isNav)
+  {
     this.svgId = item;
-    if (isNav) {
+    if (isNav)
+    {
       this.svgNum = i + 1;
-    } else {
+    } else
+    {
       this.svgNum = i;
     }
     // console.log(this.svgId);
@@ -2614,6 +2677,73 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     // this.matDialog.open(this.rfModal);
     this.manufactor = 'All';
     this.matDialog.open(this.rfModalTable);
+  }
+  /**
+   * 開啟RIS設定燈箱
+  */
+  openRISParamSetting(item, i, isNav)
+  {
+    this.svgId = item;
+    if (isNav)
+    {
+      this.svgNum = i + 1;
+    } else
+    {
+      this.svgNum = i;
+    }
+    this.manufactor = 'All';
+    this.saveParam(this.risList, i - 1, `risList[${i - 1}]`);
+    this.matDialog.open(this.risModalTable, { disableClose: true });
+  }
+  checkRISForm(ris)
+  {
+    let msg = '';
+
+    if (this.isEmpty(ris.II) || ris.II <= 0)
+      msg += `${this.translateService.instant('ris.II.title')} ${this.translateService.instant('ris.format.error')}<br/>`;
+    if (this.isEmpty(ris.JJ) || ris.JJ <= 0)
+      msg += `${this.translateService.instant('ris.JJ.title')} ${this.translateService.instant('ris.format.error')}<br/>`;
+    if (this.isEmpty(ris.width) || ris.width <= 0)
+      msg += `${this.translateService.instant('ris.width.title')} ${this.translateService.instant('ris.format.error')}<br/>`;
+    if (this.isEmpty(ris.height) || ris.height <= 0)
+      msg += `${this.translateService.instant('ris.height.title')} ${this.translateService.instant('ris.format.error')}<br/>`;
+    if (this.isEmpty(ris.facePhi) || ris.facePhi < 0 || ris.facePhi > 180)
+      msg += `${this.translateService.instant('ris.phi.angle.error')}<br/>`;
+    if (this.isEmpty(ris.faceTheta) || ris.faceTheta < 0 || ris.faceTheta > 360)
+      msg += `${this.translateService.instant('ris.theta.angle.error')}<br/>`;
+    if (this.isEmpty(ris.refPhi) || ris.refPhi < 0 || ris.refPhi > 180)
+      msg += `${this.translateService.instant('ris.phi.angle.error')}<br/>`;
+    if (this.isEmpty(ris.refTheta) || ris.refTheta < 0 || ris.refTheta > 360)
+      msg += `${this.translateService.instant('ris.theta.angle.error')}<br/>`;
+
+    
+    if (msg !== '')
+    {
+      msg += '</p>';
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return false;
+    }
+    return true;
+  }
+  closeRISDialog(isOk, risIndex)
+  {
+    if (!isOk)
+    {
+      this.loadParam(this.risList, risIndex, `risList[${risIndex}]`);
+      this.matDialog.closeAll();
+    }
+    else
+    {
+      let isCheckOk = this.checkRISForm(this.risList[risIndex]);
+      if (isCheckOk)
+      {
+        this.matDialog.closeAll();
+      }
+    }
   }
   /**
    * 開啟多目標函數設定燈箱
@@ -3540,8 +3670,33 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
       apiBody.availableNewBsNumber = apiBody.availableNewBsNumber + this.defaultBSList.length;
       // apiBody.isBsNumberOptimization = (this.isBsNumberOptimization == 'default');
-    
-      console.log(this.calculateForm);
+      if (this.planningIndex === '3')
+      {
+        for (let ris of this.risList)
+        {
+          ris.xPos = Number(this.dragObject[ris.id].x) + Number(ris.width / 2);
+          ris.yPos = Number(this.dragObject[ris.id].y) + Number(ris.height / 2);
+          ris.zPos = this.dragObject[ris.id].z;
+        }
+        apiBody.ris = this.risList;
+
+        /*apiBody.ris = [{
+          "id": 1,
+          "xPos": 0,
+          "yPos": 2.2,
+          "zPos": 1,
+          "width": 11,
+          "height": 11,
+          "II": 35,
+          "JJ": 35,
+          "faceTheta": 0,
+          "facePhi": 0,
+          "refTheta": 0,
+          "refPhi": 90
+        }];*/
+        //apiBody.ris = [];
+      }
+      console.log(apiBody);
 
 
 
@@ -5166,7 +5321,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   changePosition(type,svgId) {
     // 先進行檢查，數字不可為負數，且不可超過場域長寬
-    const isOb = (svgId.split('_')[0]!='UE' && svgId.split('_')[0]!='defaultBS' && svgId.split('_')[0]!='candidate') ? true : false;
+    const isOb = (svgId.split('_')[0] != 'UE' && svgId.split('_')[0] != 'defaultBS' && svgId.split('_')[0] != 'candidate' && svgId.split('_')[0] != 'ris') ? true : false;
     if (type != 'y') {
     // if (type == 'x') {
       // console.log(typeof this.calculateForm.width);
@@ -5329,9 +5484,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       }
     } 
-    if (type != 'x') { // Y coordination
-    // } else { // Y coordination
-      if (!isOb) {
+    if (type != 'x')
+    {
+      console.log(svgId);
+      console.log(isOb);
+      if (!isOb)
+      {
+        console.log(Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height));
         if (Number(this.dragObject[svgId].y) < 0 || Number(this.dragObject[svgId].y) > Number(this.calculateForm.height)) {
           // this.dragObject[svgId].y = Number(window.sessionStorage.getItem('tempParam'));
           this.recoverParam(svgId,type);
@@ -5506,7 +5665,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.spanStyle[svgId].top = `${this.chartHeight - this.candidateHeight - this.pixelYLinear(this.dragObject[svgId].y)}px`;
     } else if (this.dragObject[svgId].type === 'defaultBS') {
       this.spanStyle[svgId].top = `${this.chartHeight - 30 - this.pixelYLinear(this.dragObject[svgId].y)}px`;
+    } else if (this.dragObject[svgId].type === 'ris')
+    {
+
+      this.setRISSize(svgId);
     }
+
 
     if (this.dragObject[svgId].type === 'defaultBS' || this.dragObject[svgId].type === 'candidate') {
       this.moveNumber(svgId);
@@ -5536,8 +5700,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   clearAll(type) {
     if (type === 'obstacle') {
       this.obstacleList.length = 0;
-    } else if (type === 'defaultBS') {
+    } else if (type === 'defaultBS')
+    {
       this.defaultBSList.length = 0;
+    } else if (type === 'ris')
+    {
+      this.risList = [];
     } else if (type === 'candidate') {
       this.candidateList.length = 0;
     } else if (type === 'UE') {
@@ -5925,6 +6093,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     } 
     const mutilFunctionUEThroughputWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mutilFunctionUEThroughputData);
     XLSX.utils.book_append_sheet(wb, mutilFunctionUEThroughputWS, 'mutil function UE throughput');  
+
+
+    // RIS
+    const risData = [['ris.id', 'ris.x', 'ris.y', 'ris.z', 'ris.II', 'ris.JJ', 'ris.width', 'ris.height', 'ris.facePhi', 'ris.faceTheta',
+      'ris.refPhi', 'ris.refTheta', 'ris.minFreq', 'ris.maxFreq']];
+    for (let ris of this.risList)
+    {
+      risData.push([
+        String(ris.id),
+        String(this.dragObject[ris.id].x),
+        String(this.dragObject[ris.id].y ),
+        String(this.dragObject[ris.id].z),
+        String(ris.II),
+        String(ris.JJ),
+        String(ris.width),
+        String(ris.height),
+        String(ris.facePhi),
+        String(ris.faceTheta),
+        String(ris.refPhi),
+        String(ris.refTheta),
+        String(ris.minFreq),
+        String(ris.maxFreq)]);
+    }
+    const risDataWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(risData);
+    XLSX.utils.book_append_sheet(wb, risDataWS, 'ris');
 
     // console.log(wb);
     /* save to file */
@@ -6587,10 +6780,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         if (mutilFunctionSettingData.length > 1) 
         {
           this.planningIndex = mutilFunctionSettingData[1][0];
-          if(this.planningIndex = '0')
-          {
-            this.planningIndex = '1';
-          }
           console.log("mutilFunctionSettingData[1][1]: "+mutilFunctionSettingData[1][1]);
           console.log("b-mutilFunctionSettingData[1][1]: "+JSON.parse(mutilFunctionSettingData[1][1]));
           this.evaluationFuncForm.field.coverage.activate = JSON.parse(mutilFunctionSettingData[1][1]);
@@ -6760,6 +6949,46 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.setThroughputTypeAndValue();
         window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
         window.sessionStorage.setItem(`evaluationFuncForm`, JSON.stringify(this.evaluationFuncForm));
+
+
+      }
+
+      const ris: string = this.wb.SheetNames[sheetNameIndex['ris']];
+      const risWS: XLSX.WorkSheet = this.wb.Sheets[ris];
+      const risData = (XLSX.utils.sheet_to_json(risWS, { header: 1 }));
+      if (risData.length > 1)
+      {
+        this.risList = [];
+        for (let i = 1; i < risData.length; i++)
+        {
+          const id = risData[i][0];
+          this.dragObject[id] = {
+            x: risData[i][1],
+            y: risData[i][2],
+            z: risData[i][3],
+            width: this.risWidth,
+            height: this.risHeight,
+            altitude: 0,
+            rotate: 0,
+            title: this.svgMap['ris'].title,
+            type: this.svgMap['ris'].type,
+            color: this.DEFAULT_RIS_COLOR,
+            element: this.svgMap['ris'].element
+          };
+          this.risList.push({
+            id: id,
+            II: risData[i][4],
+            JJ: risData[i][5],
+            width: risData[i][6],
+            height: risData[i][7],
+            facePhi: risData[i][8],
+            faceTheta: risData[i][9],
+            refPhi: risData[i][10],
+            refTheta: risData[i][11],
+            minFreq: risData[i][12],
+            maxFreq: risData[i][13]
+          });
+        }
       }
     }
     catch (error) {
@@ -7034,6 +7263,26 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
+      //ris
+      this.risList = this.calculateForm.ris;
+      for (let ris of this.risList)
+      {
+        this.dragObject[ris.id] = {
+          x: ris.xPos - ris.width / 2,
+          y: ris.yPos - ris.height / 2,
+          z: ris.zPos,
+          width: this.risWidth,
+          height: this.risHeight,
+          altitude: 0,
+          rotate: 0,
+          title: this.svgMap['ris'].title,
+          type: this.svgMap['ris'].type,
+          color: this.DEFAULT_RIS_COLOR,
+          material: '0',
+          element: 'ris'
+        };
+      }
+
       // defaultBs
       this.calculateForm.defaultBs = this.calculateForm.bsList;
       if (!this.authService.isEmpty(this.calculateForm.defaultBs)) {
@@ -7588,9 +7837,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
               for (const id of this.defaultBSList) {
                 this.setDefaultBsSize(id);
               }
-              // set 既有基站位置
+              // set 既有UE位置
               for (const id of this.ueList) {
                 this.setUeSize(id);
+              }
+              // set ris位置
+              for (const ris of this.risList)
+              {
+                this.setRISSize(ris.id);
               }
               for (const id of this.subFieldList) {
                 this.setSubFieldSize(id);
@@ -7797,7 +8051,43 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.moveNumber(id);
     }, 0);
   }
+  /**
+ * set RIS位置
+ * @param id 
+ */
+  setRISSize(id)
+  {
+    this.spanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.risWidth}px`,
+      height: `${this.risHeight}px`
+    };
+    this.svgStyle[id] = {
+      display: 'inherit',
+      width: this.risWidth,
+      height: this.risHeight
+    };
+    console.log(`${JSON.stringify(this.dragObject[id])}`);
+    console.log(`${JSON.stringify(this.spanStyle[id])}`);
+    console.log(`${JSON.stringify(this.svgStyle[id])}`);
+    this.pathStyle[id] = {
+      fill: this.dragObject[id].color
+    };
 
+    this.risLineSpanStyle[id] = {
+      left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
+      top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${this.risLineWidth}px`,
+      height: `${this.risLineHeight}px`
+    };
+    // 延遲轉角度，讓位置正確
+    window.setTimeout(() =>
+    {
+      this.risLineSpanStyle[id]['transform'] = `rotate(${45}deg)`;
+      this.risLineSpanStyle[id].opacity = 1;
+    }, 0);
+  }
   /**
    * set UE位置
    * @param id 
@@ -9223,5 +9513,23 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           this.addUEThroughput();
         console.log(this.evaluationFuncForm);
        }
+  }
+
+  saveParam(obj, param, name)
+  {
+    sessionStorage.setItem(name, JSON.stringify(obj[param]));
+    this.matDialog.closeAll();
+  }
+
+  loadParam(obj, param, name)
+  {
+    console.log(name)
+    console.log(sessionStorage.getItem(name))
+    if (sessionStorage.getItem(name) != null)
+    {
+      obj[param] = JSON.parse(sessionStorage.getItem(name));
+      sessionStorage.removeItem(name);
+    }
+    this.matDialog.closeAll();
   }
 }

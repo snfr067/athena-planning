@@ -31,6 +31,9 @@ export class SignalQualityComponent implements OnInit {
   rectList = [];
   /** AP list */
   candidateList = [];
+  risList = [
+  ];
+  //risList = [];
   /** 現有基站 list */
   defaultBsList = [];
   /** 外框style */
@@ -569,6 +572,12 @@ export class SignalQualityComponent implements OnInit {
       });
     }
 
+    if (this.calculateForm.ris != null && this.calculateForm.ris.length > 0)
+    {
+      this.risList = this.calculateForm.ris;
+      console.log(this.risList);
+    }
+
     console.log(traces);
 
     Plotly.newPlot(id, {
@@ -621,6 +630,73 @@ export class SignalQualityComponent implements OnInit {
           });
         }
 
+        for (const item of this.risList)
+        {
+          this.shapes.push({
+            type: 'rectangle',
+            xref: 'x',
+            yref: 'y',
+            x0: item.xPos,
+            y0: item.yPos,
+            x1: item.xPos + Number(xLinear(50)),
+            y1: item.yPos + Number(yLinear(18)),
+            fillcolor: '#4F81BD',
+            bordercolor: '#4F81BD',
+            visible: this.showBs,
+            rotate: 45
+          });
+
+          if (item.refPhi == 90)
+          {
+            //射線
+            this.shapes.push({
+              type: 'line',
+              xref: 'x',
+              yref: 'y',
+              x0: item.xPos + Number(xLinear(25)),
+              y0: item.yPos + Number(yLinear(9)),
+              x1: item.xPos + Number(xLinear(25)) + 11,
+              y1: item.yPos + Number(yLinear(9)),
+              visible: this.showBs,
+              line:
+              {
+                color: '#ff0000'
+              }
+            });
+          }
+          else
+          {
+            //射線
+            this.shapes.push({
+              type: 'line',
+              xref: 'x',
+              yref: 'y',
+              x0: item.xPos + Number(xLinear(25)),
+              y0: item.yPos + Number(yLinear(9)),
+              x1: 11,
+              y1: item.yPos + Number(yLinear(9)),
+              visible: this.showBs,
+              line:
+              {
+                color: '#ff0000'
+              }
+            });
+          }
+
+          this.annotations.push({
+            x: item.xPos + Number(xLinear(25)),
+            y: item.yPos + Number(yLinear(9)),
+            xref: 'x',
+            yref: 'y',
+            text: "RIS",
+            showarrow: false,
+            font: {
+              color: '#fff',
+              size: 10
+            },
+            visible: this.showBs
+          });
+        }
         for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',

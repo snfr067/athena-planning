@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\form",
+    "\\app\\service",
+    "\\app\\site",
+    "\\app\\site\\modules",
+    "\\app\\site\\modules\\signal-cover",
+    "\\app\\site\\modules\\signal-quality",
+    "\\assets",
+    "\\assets\\i18n"
+  ],
+  "SelectedNode": "\\app\\site\\result\\result.component.ts",
+  "PreviewInSolutionExplorer": false
+}
