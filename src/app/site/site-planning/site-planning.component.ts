@@ -27,6 +27,7 @@ import circle from '@turf/circle';
 import CryptoJS from 'crypto-js';
 import * as echarts from 'echarts';
 import { transcode } from 'buffer';
+import { reject } from 'q';
 
 /** Plotly套件引用 */
 declare var Plotly: any;
@@ -359,6 +360,12 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   CANDIDATE_COLOR = '#d00a67';
   /** UE預設顏色 */
   UE_COLOR = '#0c9ccc';
+  /** 單一基站最多天線數 */
+  MAX_ANT_OF_BS = 10;
+  /** 基站預設頻率 */
+  DEFAULT_BS_FREQ = 4850;
+  DEFAULT_BS_FDD_UL_FREQ = 4700;
+  DEFAULT_BS_FDD_DL_FREQ = 4900;
   /** history output */
   hstOutput = {};
   /** 子載波間距 */
@@ -709,7 +716,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     matSidenav.style.width = matSidenavContent.style.marginRight;
 
     //取得天線資料
-    this.getAntenna();
+    //this.getAntenna();
     
   }
 
@@ -814,9 +821,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           return reject(err);
         }
       );
-    }).then(promiseResult => {
+    }).then(promiseResult => new Promise((resolve, reject) => {
       console.log(promiseResult);
-      let url_Ant = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+      /*let url_Ant = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
       // let url_model = `http://192.168.1.109:4444/antenna`;
       this.http.get(url_Ant).subscribe(
         res => {
@@ -840,8 +847,63 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }, err => {
           console.log(err);
         }
+      );*/
+      let url = `${this.authService.API_URL}/getAntenna/${this.authService.userToken}`;
+      console.log("1")
+      this.http.get(url).subscribe(
+        res =>
+        {
+          let result = res;
+
+          this.antennaList = Object.values(result);
+
+          this.allAntennaList = [];
+          for (var ant = 0; ant < this.antennaList.length; ant++)
+          {
+            this.allAntennaList.push
+              (
+              {
+                antennaID: this.antennaList[ant].antennaID,
+                name: this.antennaList[ant].antennaName,
+                type: this.antennaList[ant].antennaType,
+                band: this.antennaList[ant].band,
+                availableFrequency: this.antennaList[ant].availableFrequency,
+                port: this.antennaList[ant].availableFrequency[0].ports.length,
+                model: this.antennaList[ant].model,
+                manufactor: this.antennaList[ant].manufactor,
+                fileName: `${this.antennaList[ant].antennaName}.xlsx`,
+                property: this.antennaList[ant].property
+              }
+              );
+          }
+          
+          this.defaultAntennaList = [];
+          this.customizedAntennaList = [];
+          for (var ant = 0; ant < this.allAntennaList.length; ant++)
+          {
+            if (this.allAntennaList[ant].property == 'default')
+            {
+              console.log(this.allAntennaList[ant]);
+              this.defaultAntennaList.push(this.allAntennaList[ant]);
+            }
+            else 
+            {
+              console.log(this.allAntennaList[ant]);
+              this.customizedAntennaList.push(this.allAntennaList[ant]);
+            }
+          }
+
+          resolve(res);
+        },
+        err =>
+        {
+          reject(err);
+          console.log(err);
+        }
       );
-    }).then(() => {
+      })).then(() =>
+      {
+        console.log("2")
       if (sessionStorage.getItem('importFile') != null) {
         // from new-planning import file
         this.calculateForm = new CalculateForm();
@@ -1705,7 +1767,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    */
   addMoveable(id)
   {
-    if (this.planningIndex == '3')
+    /*if (this.planningIndex == '3')
     {
       if (id == 'defaultBS' && this.antCountOfBS <= 0)
       {
@@ -1717,7 +1779,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
         return;
       }
-    }
+    }*/
 
     try
     {
@@ -1768,9 +1830,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       };
     } else if (id === 'defaultBS')
     {
+
+      if (this.planningIndex == '3' && this.antCountOfBS > this.MAX_ANT_OF_BS)     //+1代表基站本身的天線
+      {
+        let msg = this.translateService.instant('antenna.greater.than.max').replace("{0}", this.MAX_ANT_OF_BS);
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+      else if (this.planningIndex == '3' && this.antCountOfBS <= 0)
+      {
+        let msg = this.translateService.instant('bs.antenna.count.error.msg');
+        this.msgDialogConfig.data = {
+          type: 'error',
+          infoMessage: msg
+        };
+        this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+        return;
+      }
+
       this.svgId = `${id}_${this.generateString(10)}`;
       this.selectBsSvgId = this.svgId;
-      this.colorList[this.svgId] = this.generateRandomColorSet();
+      this.colorList[this.svgId] = this.authService.getRandomColorByHsl(this.planningIndex, this.defaultBSList.length);
       this.defaultBSList.push(this.svgId);
       color = this.colorList[this.svgId][1];
       this.pathStyle[this.svgId] = {
@@ -1780,8 +1864,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.bsListRfParam[this.svgId] = {
         txpower: 0,
         beampattern: 0,
-        fddDlFrequency: 2140,
-        fddUlFrequency: 1950,
+        fddDlFrequency: this.DEFAULT_BS_FDD_DL_FREQ,
+        fddUlFrequency: this.DEFAULT_BS_FDD_UL_FREQ,
         ulModulationCodScheme: "64QAM-table",
         dlModulationCodScheme: "64QAM-table",
         dlMimoLayer: this.allAntennaList[0].availableFrequency[0].ports.length,
@@ -1789,7 +1873,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         //TDD 5G
         tddscs: '15',
         tddbandwidth: '5',
-        tddfrequency: 2350,
+        tddfrequency: this.DEFAULT_BS_FREQ,
         //FDD 5G
         dlScs: '15',
         ulScs: '15',
@@ -1931,7 +2015,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           x: 0,
           y: 0,
           width: 30,
-          height: 30
+          height: 30,
+          width_px: width,
+          height_px: height
         });
         console.log(sub_field_arr);
         sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
@@ -1942,7 +2028,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           x: 0,
           y: 0,
           width: 30,
-          height: 30
+          height: 30,
+          width_px: width,
+          height_px: height
         };
         
         sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
@@ -2028,15 +2116,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.target = document.getElementById(`${this.svgId}`);
       this.live = true;
       if (this.svgMap[id].type === 'obstacle' || this.svgMap[id].type === 'subField') {
-        if (this.dragObject[this.svgId].element === 2) {
+        if (this.dragObject[this.svgId].element === 2)
+        {
           // 圓形關閉旋轉
           this.moveable.rotatable = false;
           // 只開4個拖拉點
           this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
-        } else {
+        } else if (this.svgMap[id].type !== 'subField')
+        {
           this.moveable.rotatable = true;
           // 拖拉點全開
           this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
+        }
+        else if (this.svgMap[id].type === 'subField')
+        {
+          this.moveable.rotatable = false;
         }
         this.moveable.resizable = true;
       } else {
@@ -2074,15 +2168,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   {
     let id = 'antenna';
     let antSvgIdArray = [];
-
-    let antLeft = ``;
-    let antTop = ``;
-    let shift = 0;
-
     const SHIFT_PX = 50;
     const ANT_WIDTH = 30;
     const ANT_HEIGHT = 30;
-   
+
+    let antLeft = ``;
+    let antTop = ``;
+    let xShift = 0, yShift = 0;
+
+    const MAX_WIDTH = this.pixelXLinear(this.calculateForm.width);
+    const NEXT_LINE = Math.floor((MAX_WIDTH - this.initpxl) / SHIFT_PX);
+    console.log(NEXT_LINE)
+
+
+    if (this.bsListRfParam[this.selectBsSvgId].antenna.length + 1 + count > this.MAX_ANT_OF_BS)     //+1代表基站本身的天線
+    {
+      let msg = this.translateService.instant('antenna.greater.than.max').replace("{0}", this.MAX_ANT_OF_BS);
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: msg
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+
+    
     
     for (let a = 0; a < count; a++)                     
     {
@@ -2097,11 +2207,18 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             phi: 0
         }
       );
+      
 
       antSvgIdArray.push(this.svgId);
-      shift = (a + 1) * SHIFT_PX;
-      antLeft = `${this.initpxl + shift}px`;
-      antTop = `${this.initpxl}px`;
+
+      console.log(((a + 1)))
+      console.log(Math.floor((a + 1) / NEXT_LINE))
+      console.log("yShift = " + Math.floor((a + 1) / NEXT_LINE) * SHIFT_PX)
+      yShift = Math.floor((a + 1) / NEXT_LINE) * SHIFT_PX;
+      xShift = ((a + 1) % NEXT_LINE) * SHIFT_PX;      
+
+      antLeft = `${Number(this.initpxl + xShift)}px`;
+      antTop = `${Number(this.initpxl + yShift)}px`;
 
       this.spanStyle[this.svgId] = {
         left: antLeft,
@@ -2126,8 +2243,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
 
       this.dragObject[this.svgId] = {
-        x: this.roundFormat(this.xLinear(this.initpxl + shift)),
-        y: this.roundFormat(this.yLinear(this.initpxl)),
+        x: this.roundFormat(this.xLinear(this.initpxl + xShift)),
+        y: this.calculateForm.height - this.roundFormat(this.yLinear(this.initpxl + yShift + ANT_HEIGHT)),
         z: this.calculateForm.altitude,
         width: ANT_WIDTH,
         height: ANT_HEIGHT,
@@ -2168,7 +2285,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
       window.setTimeout(() =>
       {
-        this.setAntPosition(antSvgIdArray[a], this.selectBsSvgId);
+        //this.setAntPosition(antSvgIdArray[a], this.selectBsSvgId);
         this.setAntSize(antSvgIdArray[a]);
       }, 100);
     }
@@ -2279,11 +2396,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.moveable.rotatable = false;
         // 只開4個拖拉點
         this.moveable.renderDirections = ['nw', 'ne', 'sw', 'se'];
-      } else {
+      } else if (this.dragObject[id].type !== 'subField')
+      {
         // console.log('Resizeeeee!');
         this.moveable.rotatable = true;
         // 拖拉點全開
         this.moveable.renderDirections = ['nw', 'n', 'ne', 'w', 'e', 'sw', 'se'];
+      } else if (this.dragObject[id].type === 'subField')
+      {
+        // console.log('Resizeeeee!');
+        this.moveable.rotatable = false;
+        
       }
       this.moveable.resizable = true;
     } else {
@@ -2650,7 +2773,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
                 x: this.dragObject[this.svgId].x,
                 y: this.dragObject[this.svgId].y,
                 width: this.dragObject[this.svgId].width,
-                height: this.dragObject[this.svgId].height
+                height: this.dragObject[this.svgId].height,
+                width_px: this.subFieldStyle[this.svgId].width,
+                height_px: this.subFieldStyle[this.svgId].height
               });
               sessionStorage.setItem(`sub_field_coor`,JSON.stringify(sub_field_arr));
             }
@@ -2670,16 +2795,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       // 有找到中心點
       const moveableOrigin = mOrigin.getBoundingClientRect();
       const y = this.chartBottom - moveableOrigin.top - (moveableOrigin.height / 2) - (this.svgStyle[svgId].height / 2) - this.scrollTop;
-      this.dragObject[svgId].y = this.roundFormat(this.yLinear(y));
-      console.log(`y = ${y}`);
-      console.log(`moveableOrigin = ${moveableOrigin}`);
-      console.log(`this.chartBottom = ${this.chartBottom}`);
-      console.log(`moveableOrigin.top = ${moveableOrigin.top}`);
-      console.log(`moveableOrigin.height = ${moveableOrigin.height}`);
-      console.log(`this.svgStyle[${svgId}].height = ${this.svgStyle[svgId].height}`);
-      console.log(`scrollTop = ${this.scrollTop}`);
+      //this.dragObject[svgId].y = this.roundFormat(this.yLinear(y));
+      //console.log(`y = ${y}`);
+      //console.log(`moveableOrigin = ${moveableOrigin}`);
+      //console.log(`this.chartBottom = ${this.chartBottom}`);
+      //console.log(`moveableOrigin.top = ${moveableOrigin.top}`);
+      //console.log(`moveableOrigin.height = ${moveableOrigin.height}`);
+      //console.log(`this.svgStyle[${svgId}].height = ${this.svgStyle[svgId].height}`);
+      //console.log(`scrollTop = ${this.scrollTop}`);
     }
-    console.log(`this.dragObject[${svgId}].y = ${this.dragObject[svgId].y}`);
+    //console.log(`this.dragObject[${svgId}].y = ${this.dragObject[svgId].y}`);
 
     //this.bsListRfParam[bsSvgId].antenna[this.getBsAntIndexBySvgId(svgId, bsSvgId)].position =
     //  [this.dragObject[svgId].x, this.dragObject[svgId].y, this.dragObject[svgId].z];
@@ -3175,15 +3300,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   */
   openAntennaSetting() {
     this.getAntenna();
-    this.firstLayerDialogRef = this.matDialog.open(this.AntennaModalTable);  
+    this.firstLayerDialogRef = this.matDialog.open(this.AntennaModalTable, { disableClose: true });  
   }
 
   openAddAntennaSetting() {
     this.secondLayerDialogRef = this.matDialog.open(this.AddAntennaModalTable, { disableClose: true });
   }
 
-  openEditAntennaSetting(index) {
-    this.editAntenna = this.customizedAntennaList[index];
+  openEditAntennaSetting(index)
+  {
+    this.editAntenna = JSON.parse(JSON.stringify(this.customizedAntennaList[index]));     //用複製的
     this.editAntenna.isNewFile = false;
     this.secondLayerDialogRef = this.matDialog.open(this.EditAntennaModalTable, { disableClose: true });
   }
@@ -3196,7 +3322,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   openAntennaCountOfBSSetting()
   {
     if (this.planningIndex == '3')
-      this.firstLayerDialogRef = this.matDialog.open(this.AntCountOfBSModal);
+      this.firstLayerDialogRef = this.matDialog.open(this.AntCountOfBSModal, { disableClose: true });
     else
       this.addMoveable('defaultBS');
   }
@@ -3271,6 +3397,17 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     
     // 載入圖檔
     const file = event.target.files[0];
+
+    if (!/\.(jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name))
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('planning.image.file.error')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return ;
+    }
+
     this.calculateForm.mapName = file.name;
     this.showFileName = false;
     const reader = new FileReader();
@@ -3974,11 +4111,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
    * 開始運算
    */
   async calculate() {
-    try {
+    try
+    {
       this.moveable.destroy();
-    } catch (error) {}
-
-    
+    }
+    catch (error)
+    {
+    }
 
     // 檢查既有基地台是否有參數未被填入
     if (this.checkRFParamIsEmpty(this.calculateForm.objectiveIndex, this.duplexMode)) { return; }
@@ -4806,6 +4945,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       {
         defaultBs: defaultBs
       };
+
       
     }
     /**************/
@@ -5202,13 +5342,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         return;
       }
 
-      console.log(`${JSON.stringify(this.bsListRfParam[this.selectBsSvgId])}`);
+      console.log(`${this.bsListRfParam[this.selectBsSvgId].AntennaId}`);
+      console.log(`${JSON.stringify(this.getAntennaById(this.bsListRfParam[this.selectBsSvgId].AntennaId))}`);
 
       if (this.getAntennaById(this.bsListRfParam[this.selectBsSvgId].AntennaId).type != 'Omnidirectional' ||
         this.getAntennaById(this.bsListRfParam[this.selectBsSvgId].AntennaId).property != 'default')
       {
-        let AntULfrequency = this.bsListRfParam[this.selectBsSvgId].ulAntFreq;
-        let AntDLfrequency = this.bsListRfParam[this.selectBsSvgId].dlAntFreq;
+        let AntULfrequency = Number(this.bsListRfParam[this.selectBsSvgId].ulAntFreq);
+        let AntDLfrequency = Number(this.bsListRfParam[this.selectBsSvgId].dlAntFreq);
         let thershold = 100;
         let error = false;
         let multiple = false;
@@ -6443,13 +6584,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (let bs = 0; bs < this.defaultBSList.length; bs++)
     {
       if (this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency == null || this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency == '')
-        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = 100;
+        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = this.DEFAULT_BS_FDD_UL_FREQ;
       if (this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == null || this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == '')
-        this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency = 0;
+        this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency = this.DEFAULT_BS_FDD_DL_FREQ;
 
       if (this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency == this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency)
       {
-        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency + 100;
+        this.bsListRfParam[this.defaultBSList[bs]].fddUlFrequency = this.bsListRfParam[this.defaultBSList[bs]].fddDlFrequency + 200;
       }
 
       if (this.bsListRfParam[this.defaultBSList[bs]].ulScs == 0)
@@ -6557,7 +6698,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.checkRawdataAntenna.type = this.customizedAntennaList[index].type;
       this.checkRawdataAntenna.property = this.customizedAntennaList[index].property; 
     }
-    console.log(JSON.stringify(this.checkRawdataAntenna));
 
 
     var isSame = false;
@@ -6570,13 +6710,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     else
     {
       let url = `${this.authService.API_URL}/getAntennaRawData/${this.checkRawdataAntenna.antennaID}/${this.authService.userToken}`;
+
       this.http.get(url).subscribe(
         res =>
         {
           this.checkRawdataAntenna.rawData = res['rawData'];
           this.checkRawdataAntenna.portList = [];
           this.checkRawdataAntenna.freqList = [];
-          console.log(JSON.stringify(this.checkRawdataAntenna.rawData));
           for (var r = 0; r < this.checkRawdataAntenna.rawData.length; r++)
           {
             isSame = false;
@@ -6604,8 +6744,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
           this.checkRawdataAntenna.selectPort = this.checkRawdataAntenna.portList[0];
           this.checkRawdataAntenna.selectFreq = this.checkRawdataAntenna.freqList[0];
-          console.log(JSON.stringify(this.checkRawdataAntenna.portList));
-          console.log(JSON.stringify(this.checkRawdataAntenna.freqList));
 
           if (isDownload)
             this.exportAntData();
@@ -6646,11 +6784,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     var horiCell = '';
     var vertCell = '';
 
+    const NEG = -1, POS = 1;
+    let hSign = NEG;
+    let vSign = NEG;
+    let hValueToWrite = 0;
+    let vValueToWrite = 0;
+
     fetch("../../assets/file/ITRI_antenna_template.xlsx")
       .then(res => res.blob()) // returns URL data a blob
       .then((blob) =>
       {
-        console.log(blob);
         const reader: FileReader = new FileReader();
         reader.onload = (e: any) =>
         {
@@ -6668,10 +6811,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
             copy_ws = JSON.parse(JSON.stringify(wb.Sheets[wb.SheetNames[0]]));  //複製樣本sheet
             XLSX.utils.book_append_sheet(wb, copy_ws, `${portName}_${frequency}`);
-            const wsToWrite: XLSX.WorkSheet = wb.Sheets[wb.SheetNames[i]];
-
-            pattern = this.checkNullAngle(this.checkRawdataAntenna.rawData[i].pattern);
-            console.log(pattern);
+            const wsToWrite: XLSX.WorkSheet = wb.Sheets[wb.SheetNames[i+1]];
+            
+            pattern = this.checkRawdataAntenna.rawData[i].pattern;
             // 在 myPromise 被 resolve 時執行
             XLSX.utils.sheet_add_aoa(wsToWrite, [[portName]], { origin: PORT_NAME_CELL });
             XLSX.utils.sheet_add_aoa(wsToWrite, [[frequency]], { origin: FREQ_CELL });
@@ -6680,10 +6822,21 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
             {
               horiCell = HORI_COL + (pattern[j][0] + ANGLE0_ROW);
               vertCell = VERT_COL + (pattern[j][0] + ANGLE0_ROW);
-              XLSX.utils.sheet_add_aoa(wsToWrite, [[pattern[j][1]]], { origin: horiCell });
-              XLSX.utils.sheet_add_aoa(wsToWrite, [[pattern[j][2]]], { origin: vertCell });
+              hSign = Number(pattern[j][3]);
+              vSign = Number(pattern[j][4]);
+
+              if (hSign == POS)
+                hValueToWrite = Math.abs(pattern[j][1]);
+              else
+                hValueToWrite = (pattern[j][1]);
+              if (vSign == POS)
+                vValueToWrite = Math.abs(pattern[j][2]);
+              else
+                vValueToWrite = (pattern[j][2]);
+              
+              XLSX.utils.sheet_add_aoa(wsToWrite, [[hValueToWrite]], { origin: horiCell });
+              XLSX.utils.sheet_add_aoa(wsToWrite, [[vValueToWrite]], { origin: vertCell });
             }
-            console.log(wsToWrite);
           }
 
           //刪除樣本sheet
@@ -6972,17 +7125,47 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     ];
     const algorithmWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(algorithmData);
     XLSX.utils.book_append_sheet(wb, algorithmWS, 'algorithm parameters');
+
     // objective parameters
     let spec;
-    if (this.calculateForm.objectiveIndex == '0') {spec = '4G'} 
-    else if (this.calculateForm.objectiveIndex == '1') {spec = '5G'}
-    else {spec = 'wifi'}
+    if (this.calculateForm.objectiveIndex == '0') { spec = '4G' }
+    else if (this.calculateForm.objectiveIndex == '1') { spec = '5G' }
+    else { spec = 'wifi' }
     const objectiveData = [
       ['objective', 'objectiveStopCondition', 'newBsNum', 'isBsOptm'],
       [spec, '', this.calculateForm.availableNewBsNumber, this.isBsNumberOptimization]
     ];
     const objectiveWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(objectiveData);
     XLSX.utils.book_append_sheet(wb, objectiveWS, 'objective parameters');
+
+    // subfield parameters
+
+    const subData = [
+      ['x', 'y', 'width_px', 'height_px', 'width_real', 'height_real']
+    ];
+    let sub_field_arr = JSON.parse(sessionStorage.getItem('sub_field_coor'));
+
+    for (const item of this.subFieldList)
+    {
+      let wr, hr;
+      for (let i = 0; i < sub_field_arr.length; i++)
+      {
+        if (sub_field_arr[i].id == item)
+        {
+          wr = sub_field_arr[i].width;
+          hr = sub_field_arr[i].height;
+        }
+      }
+      subData.push([
+        this.dragObject[item].x,
+        this.dragObject[item].y,
+        this.subFieldStyle[item].width,
+        this.subFieldStyle[item].height,
+        wr,
+        hr]);
+    }
+    const subWS: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(subData);
+    XLSX.utils.book_append_sheet(wb, subWS, 'subfield parameters');
 
     // MutilFunction Setting
     const mutilFunctionSettingData = [['PlanningIndex',	
@@ -7229,7 +7412,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       const candidateWS: XLSX.WorkSheet = this.wb.Sheets[candidate];
       const candidateData = (XLSX.utils.sheet_to_json(candidateWS, {header: 1}));
       if (candidateData.length > 1) {
-        this.planningIndex = '1';console.log(this.planningIndex);     //if there is any candidate, planning index should be 1 or 2
+        this.planningIndex = '1';     //if there is any candidate, planning index should be 1 or 2
         for (let i = 1; i < candidateData.length; i++) {
           const id = `candidate_${(i - 1)}`;
           this.candidateList.push(id);
@@ -7637,6 +7820,73 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.ognSpanStyle = _.cloneDeep(this.spanStyle);
       this.ognDragObject = _.cloneDeep(this.dragObject);
 
+      /* subfield sheet */
+      this.subFieldList = [];
+      const sub: string = this.wb.SheetNames[sheetNameIndex['subfield parameters']];
+      if (typeof sub !== 'undefined')
+      {
+        const subWS: XLSX.WorkSheet = this.wb.Sheets[sub];
+        const subData = (XLSX.utils.sheet_to_json(subWS, { header: 1 }));
+        if (subData.length > 1)
+        {
+          let sub_field_arr = [];
+          
+          for (let i = 1; i < subData.length; i++)
+          {
+            if (typeof subData[i][0] === 'undefined')
+            {
+              continue;
+            }
+            const id = `subField_${(i - 1)}`;
+            this.subFieldList.push(id);
+            let x = Number(subData[i][0]);
+            let y = Number(subData[i][1]);
+            let width = Number(subData[i][2]);
+            let height = Number(subData[i][3]);
+            let width_real = Number(subData[i][4]);
+            let height_real = Number(subData[i][5]);
+
+
+            this.dragObject[id] = {
+              x: x,
+              y: y,
+              z: 0,
+              width: width,
+              height: height,
+              altitude: 0,
+              rotate: 0,
+              title: this.svgMap['subField'].title,
+              type: this.svgMap['subField'].type,
+              color: 'pink',
+              material: '',
+              element: this.svgMap['subField'].element
+            };
+            this.subFieldStyle[id] = {
+              width: width,
+              height: height,
+              fill: 'pink',
+              fillOpacity: 0.2,
+              stroke: 'pink',
+              strokeWidth: 3,
+            }
+
+
+            sub_field_arr.push({
+              id: id,
+              x: x,
+              y: y,
+              width: width_real,
+              height: height_real,
+              width_px: width,
+              height_px: height
+            });
+
+            
+          }
+          sessionStorage.setItem(`sub_field_coor`, JSON.stringify(sub_field_arr));
+        }
+      }
+
       /* Mutil Function sheets */
       if(this.wb.SheetNames.length >= 9)    // new format
       {
@@ -7840,7 +8090,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           // material = '0';
           // }
           // const color = (typeof baseStationData[i][4] === 'undefined' ? this.DEFAULT_BS_COLOR : baseStationData[i][4]);
-          this.colorList[id] = this.generateRandomColorSet();
+          this.colorList[id] = this.authService.getRandomColorByHsl(this.planningIndex, i-1);
           console.log(`this.colorList = ${JSON.stringify(this.colorList)}`);
           this.dragObject[id] = {
             x: baseStationData[i][0],
@@ -7873,6 +8123,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let antennaType = 0;
           let antennaManufactor = 0;
           let gain = 0;
+          let antenna = null;
+
           if (Object.values(baseStationData[0]).includes("bsTxGain"))
           {
             bsTxGain = baseStationData[i][24 + offset];
@@ -7885,17 +8137,24 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           if (Object.values(baseStationData[0]).includes("AntennaId"))
           {
             AntennaId = baseStationData[i][26 + offset];
-            if (!this.checkAntennaExist(AntennaId))
+            if (!this.checkAntennaExist(AntennaId) && this.allAntennaList.length > 0)
             {
               AntennaId = this.allAntennaList[0].antennaID;
             }
           }
-          else
+          else if (this.allAntennaList.length > 0)
             AntennaId = this.allAntennaList[0].antennaID;
+          else
+            AntennaId = 1;
 
-          isAntennaDefault = this.getAntennaById(AntennaId).property;
-          antennaType = this.getAntennaById(AntennaId).type;
-          antennaManufactor = this.getAntennaById(AntennaId).manufactor;
+          antenna = this.getAntennaById(AntennaId);
+
+          if (antenna != null)
+          {
+            isAntennaDefault = antenna.property;
+            antennaType = antenna.type;
+            antennaManufactor = antenna.manufactor;
+          }
 
           if (Object.values(baseStationData[0]).includes("theta"))
           {
@@ -8125,11 +8384,11 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           const id = `subField_${this.generateString(10)}`;
           const item = sub_field_arr[i];
           this.dragObject[id] = {
-            x: item['x'],
-            y: item['y'],
+            x: Number(item['x']),
+            y: Number(item['y']),
             // z: 0,
-            width: item['width'],
-            height: item['height'],
+            width: Number(item['width_px']),
+            height: Number(item['height_px']),
             // altitude: item[4],
             rotate: 0,
             title: this.translateService.instant('subfield'),
@@ -8140,12 +8399,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           };
           sub_field_arr2.push({
             id: id,
-            x: item['x'],
-            y: item['y'],
-            width: item['width'],
-            height: item['height']
+            x: Number(item['x']),
+            y: Number(item['y']),
+            width: Number(item['width']),
+            height: Number(item['height']),
+            width_px: Number(item['width_px']),
+            height_px: Number(item['height_px']),
           });
           this.subFieldList.push(id);
+          this.subFieldStyle[id] = {
+            width: Number(item['width_px']),
+            height: Number(item['height_px']),
+            fill: 'pink',
+            fillOpacity: 0.2,
+            stroke: 'pink',
+            strokeWidth: 3,
+          }
         }
         sessionStorage.setItem('sub_field_coor',JSON.stringify(sub_field_arr2));
       }
@@ -8317,6 +8586,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
+
+      if (this.calculateForm.isSimulation)
+         this.calculateForm = this.authService.changeOldFormToDASForm(this.calculateForm, this.allAntennaList);
       
       // defaultBs
       if (this.calculateForm.bsList == null || this.calculateForm.bsList.length == 0 || this.calculateForm.bsList.defaultBs == null)     
@@ -8348,7 +8620,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           {
             const item = JSON.parse(defaultBS[i]);
             const id = `defaultBS_${this.generateString(10)}`;
-            this.colorList[id] = this.generateRandomColorSet();
+            this.colorList[id] = this.authService.getRandomColorByHsl(this.planningIndex, this.defaultBSList.indexOf(id));
             this.defaultBSList.push(id);
             const antObj = JSON.parse(defaultAnt[i]);
             //20210521
@@ -8462,6 +8734,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
           }
         }
+        //this.changeOldBsFormatToNew();
       }
       else
       {
@@ -8472,20 +8745,25 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           let svgId = `defaultBS_${this.generateString(10)}`;
           let ulMCS = '';
           let dlMCS = '';
-          let antennaID = -1;
+          let antennaID = 1;
           let bsTxGain = 0;
           let freq = '', bandwith = '', ulBandwidth = '', dlBandwidth = '', ulFreq = '',
             dlFreq = '', scs = '', ulscs = '', dlscs = '', dlMimo = '', ulMimo = '';
 
-          if (this.checkAntennaExist(this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID))
-            antennaID = this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID;
-          else
-            antennaID = this.allAntennaList[0].antennaID;
+          console.log(this.allAntennaList);
 
-          this.colorList[svgId] = this.generateRandomColorSet();
+          if (this.checkAntennaExist(this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID))
+            antennaID = Number(this.calculateForm.bsList.defaultBs[bs].antenna[0].antennaID);
+          else if (this.allAntennaList.length > 0)
+            antennaID = Number(this.allAntennaList[0].antennaID);
+          else
+            antennaID = 1;
+          //this.colorList[svgId] = this.authService.getRandomColorByHsl(this.planningIndex, this.defaultBSList.length);
+          this.colorList[svgId] = this.calculateForm.bsList.defaultBs[bs].color;
 
           if (this.calculateForm.bsList.defaultBs[bs].duplex.isTdd)
           {
+            this.duplexMode = 'tdd';
             ulMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.mcsTable;
             dlMCS = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.dl.mcsTable;
             freq = this.calculateForm.bsList.defaultBs[bs].duplex.tddParam.ul.frequency;
@@ -8499,6 +8777,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
           else
           {
+            this.duplexMode = 'fdd';
             ulMCS = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.ul.mcsTable;
             dlMCS = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.mcsTable;
             dlBandwidth = this.calculateForm.bsList.defaultBs[bs].duplex.fddParam.dl.bandwidth;
@@ -8595,7 +8874,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
           }
         }
       }
-      
+
+
+      for (let bs = 0; bs < this.defaultBSList.length; bs++)
+      {
+        if (this.planningIndex == '3')
+          this.colorList[this.defaultBSList[bs]] = this.authService.getRandomColorByHsl(this.planningIndex, bs);
+        else
+          this.colorList[this.defaultBSList[bs]] = [this.DEFAULT_BS_CIRCLE_COLOR, this.DEFAULT_BS_COLOR];
+        this.dragObject[this.defaultBSList[bs]].color = this.colorList[this.defaultBSList[bs]][1];
+        this.setDefaultBsSize(this.defaultBSList[bs]);
+        this.moveNumber(this.defaultBSList[bs]);
+        for (let a = 0; a < this.bsListRfParam[this.defaultBSList[bs]].antenna.length; a++)
+        {
+          this.setAntSize(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+          this.moveNumber(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+        }
+        if (this.planningIndex != '3')      //規劃模式尚未支援指向性天線
+        {
+          this.bsListRfParam[this.defaultBSList[bs]].AntennaId = 1;
+          this.bsListRfParam[this.defaultBSList[bs]].isAntennaDefault = 'default';
+          this.bsListRfParam[this.defaultBSList[bs]].antennaType = 'Omnidirectional';
+          this.bsListRfParam[this.defaultBSList[bs]].antennaManufactor = 'ITRI';
+        }
+      }
+
+
       // UE
       if (!this.authService.isEmpty(this.calculateForm.ueCoordinate)) {
         const ue = this.calculateForm.ueCoordinate.split('|');
@@ -8809,14 +9113,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.calculateForm.isCoverage = true;
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = false;
-      this.changeAntennaToOmidirectial();
+      //this.changeAntennaToOmidirectial();
       window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else if (this.planningIndex === '2') {
       this.calculateForm.isSimulation = false;
       this.calculateForm.isUeCoverage = false;
       this.calculateForm.isUeAvgThroughput = true;
       this.calculateForm.isCoverage = false;
-      this.changeAntennaToOmidirectial();
+      //this.changeAntennaToOmidirectial();
       window.sessionStorage.setItem(`planningIndex`, this.planningIndex);
     } else {
       if (this.candidateList.length != 0) {
@@ -8839,7 +9143,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     for (let bs = 0; bs < this.defaultBSList.length; bs++)
     {
       if (this.planningIndex == '3')
-        this.colorList[this.defaultBSList[bs]] = this.generateRandomColorSet();
+        this.colorList[this.defaultBSList[bs]] = this.authService.getRandomColorByHsl(this.planningIndex, bs);
       else
         this.colorList[this.defaultBSList[bs]] = [this.DEFAULT_BS_CIRCLE_COLOR, this.DEFAULT_BS_COLOR];
       this.dragObject[this.defaultBSList[bs]].color = this.colorList[this.defaultBSList[bs]][1];
@@ -8849,6 +9153,13 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       {
         this.setAntSize(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
         this.moveNumber(this.bsListRfParam[this.defaultBSList[bs]].antenna[a].svgId);
+      }
+      if (this.planningIndex != '3')      //規劃模式尚未支援指向性天線
+      {
+        this.bsListRfParam[this.defaultBSList[bs]].AntennaId = 1;
+        this.bsListRfParam[this.defaultBSList[bs]].isAntennaDefault = 'default';
+        this.bsListRfParam[this.defaultBSList[bs]].antennaType = 'Omnidirectional';
+        this.bsListRfParam[this.defaultBSList[bs]].antennaManufactor = 'ITRI';        
       }
     }
   }
@@ -8874,6 +9185,14 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.getPlanningIndex();
       // }
       this.matDialog.closeAll();
+
+      for (let bs = 0; bs < this.defaultBSList.length; bs++)
+      {
+        this.colorList[this.defaultBSList[bs]] = [this.DEFAULT_BS_CIRCLE_COLOR, this.DEFAULT_BS_COLOR];
+        this.dragObject[this.defaultBSList[bs]].color = this.colorList[this.defaultBSList[bs]][1];
+        this.setDefaultBsSize(this.defaultBSList[bs]);
+        this.moveNumber(this.defaultBSList[bs]);
+      }
     }
     
   }
@@ -9190,33 +9509,34 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
   setSubFieldSize(id) {
     this.spanStyle[id] = {
       left: `${this.pixelXLinear(this.dragObject[id].x)}px`,
-      top: `${this.chartHeight - this.pixelYLinear(this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
-      width: `${this.pixelXLinear(this.dragObject[id].width)}px`,
-      height: `${this.pixelYLinear(this.dragObject[id].height)}px`,
+      top: `${this.chartHeight - (this.dragObject[id].height) - this.pixelYLinear(this.dragObject[id].y)}px`,
+      width: `${(this.dragObject[id].width)}px`,
+      height: `${(this.dragObject[id].height)}px`,
       // transform: `rotate(${this.dragObject[id].rotate}deg)`,
       opacity: 0
     };
+    console.log(this.spanStyle[id])
     // 延遲轉角度，讓位置正確
     window.setTimeout(() => {
       this.spanStyle[id]['transform'] = `rotate(${this.dragObject[id].rotate}deg)`;
       this.spanStyle[id].opacity = 1;
     }, 0);
 
-    const width = this.pixelXLinear(this.dragObject[id].width);
-    const height = this.pixelYLinear(this.dragObject[id].height);
+    const width = (this.dragObject[id].width);
+    const height = (this.dragObject[id].height);
     this.svgStyle[id] = {
       display: 'inherit',
       width: width,
       height: height
     };
-    this.subFieldStyle[id] = {
+    /*this.subFieldStyle[id] = {
       width: width,
       height: height,
       fill: 'pink',
       fillOpacity:0.2,
       stroke:'pink',
       strokeWidth: 3,
-    };
+    };*/
     
   }
   /**
@@ -9730,7 +10050,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       } else if(duplicate){
         msg += this.translateService.instant('planning.model.name') +': '+ this.modelName +' '+ this.translateService.instant('alreadyexist') + '!'
       } else {
-        msg += this.translateService.instant('plz_import') +' '+ this.translateService.instant('antennaFieldData');
+        msg += this.translateService.instant('plz_import') + ' ' + this.translateService.instant('pathLossModelData');
       }
     } else if(!isCalculate && (!(Number(this.modelDissCoefficient)>-1000) || this.modelDissCoefficient == null || Number(this.modelDissCoefficient>1000) || !(Number(this.modelfieldLoss)>-1000) || this.modelfieldLoss == null || Number(this.modelfieldLoss>1000))){
       pass = false;
@@ -10124,9 +10444,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.bsListRfParam[bsSvgId].dlAntFreq = this.bsListRfParam[bsSvgId].ulAntFreq;
     }
-    
-    let AntULfrequency = this.bsListRfParam[bsSvgId].ulAntFreq;
-    let AntDLfrequency = this.bsListRfParam[bsSvgId].dlAntFreq;
+
+    let AntULfrequency = Number(this.bsListRfParam[this.selectBsSvgId].ulAntFreq);
+    let AntDLfrequency = Number(this.bsListRfParam[this.selectBsSvgId].dlAntFreq);
 
     if (this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).type != 'Omnidirectional' ||
       this.getAntennaById(this.bsListRfParam[this.svgId].AntennaId).property != 'default')
@@ -10701,12 +11021,22 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
     console.log(this.evaluationFuncForm);
     
-    if (isField || isFieldOld)
+    if (isField)
     {
       this.planningIndex = '1';console.log(this.planningIndex);
       return true;
     }
-    else if (isUe || isOldUe)
+    else if (isUe)
+    {
+      this.planningIndex = '2';
+      return true;
+    }
+    else if (isFieldOld)
+    {
+      this.planningIndex = '1'; console.log(this.planningIndex);
+      return true;
+    }
+    else if (isOldUe)
     {
       this.planningIndex = '2';
       return true;
@@ -11018,11 +11348,37 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         {
           msg = this.translateService.instant('antenna.add.failed');
         }
-
+        this.addAntenna = {
+          antennaID: 1,
+          name: "",
+          type: "Directional",
+          band: [],
+          port: 1,
+          model: "",
+          manufactor: "",
+          file: null,
+          fileName: "",
+          sha256sum: "",
+          property: "customized"
+        };
       }
       catch (error)
       {
         msg = this.uploadAntRawdataErrorMsg(true, error);
+
+        if (error.error['statusCode'] == '422_005')
+        {
+          this.addAntenna.band = [];
+        }
+        else if (error.error['statusCode'] == '422_006')
+        {
+          this.addAntenna.port = 1;
+        }
+        else if (error.error['statusCode'] == '422_007')
+        {
+          this.addAntenna.band = [];
+          this.addAntenna.port = 1;
+        }
       }
 
 
@@ -11034,18 +11390,31 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
       this.authService.spinnerHide();
       this.getAntenna();
+
+
     }
     else
     {
       this.thirdLayerDialogRef = this.matDialog.open(this.AntennaWarnMsgModalTable);
     }
-
-
   }
 
   AddAntennaCancel()
   {
     this.closeSecondLayer();
+    this.addAntenna = {
+      antennaID: 1,
+      name: "",
+      type: "Directional",
+      band: [],
+      port: 1,
+      model: "",
+      manufactor: "",
+      file: null,
+      fileName: "",
+      sha256sum: "",
+      property: "customized"
+    };
   }
 
   async delAntenna(index)
@@ -11105,11 +11474,44 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     });
   }
 
+  checkIfAntNameExist(name)
+  {
+    for (let ant of this.allAntennaList)
+    {
+      if (name == ant.name)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   checkAddAntennaForm()
   {
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+
     var isWarn = false;
-    if (this.addAntenna.name == null || this.addAntenna.name == '' || this.addAntenna.name.length > 16) {
+    let isNameIllegal = ((reg_spc.test(this.addAntenna.name) ||
+      reg_tch.test(this.addAntenna.name)) ||
+      (!(reg_ch.test(this.addAntenna.name)) && !(reg_en.test(this.addAntenna.name)) && !(reg_num.test(this.addAntenna.name))));
+    let isManufactorNameIllegal = ((reg_spc.test(this.addAntenna.manufactor) ||
+      reg_tch.test(this.addAntenna.manufactor)) ||
+      (!(reg_ch.test(this.addAntenna.manufactor)) && !(reg_en.test(this.addAntenna.manufactor)) && !(reg_num.test(this.addAntenna.manufactor))));
+    let isModelNameIllegal = ((reg_spc.test(this.addAntenna.model) ||
+      reg_tch.test(this.addAntenna.model)) ||
+      (!(reg_ch.test(this.addAntenna.model)) && !(reg_en.test(this.addAntenna.model)) && !(reg_num.test(this.addAntenna.model))));
+
+    if (this.addAntenna.name == null || this.addAntenna.name == '' || this.addAntenna.name.length > 16 || isNameIllegal) {
       this.antennaWarnMsg.name = this.translateService.instant('antenna.name.fault');
+      isWarn = true;
+    }
+    else if (this.checkIfAntNameExist(this.addAntenna.name ))
+    {
+      this.antennaWarnMsg.name = this.translateService.instant('antenna.name.same');
       isWarn = true;
     }
     else
@@ -11133,7 +11535,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     else {
       this.antennaWarnMsg.port = "";
     }
-    if (this.addAntenna.manufactor == null || this.addAntenna.manufactor == '' || this.addAntenna.manufactor.length > 16)
+    if (this.addAntenna.manufactor == null || this.addAntenna.manufactor == '' ||
+      this.addAntenna.manufactor.length > 16 || isManufactorNameIllegal)
     {
       this.antennaWarnMsg.manufactor = this.translateService.instant('antenna.manufactor.fault');
       isWarn = true;
@@ -11141,7 +11544,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     else {
       this.antennaWarnMsg.manufactor = "";
     }
-    if (this.addAntenna.model == null || this.addAntenna.model == '' || this.addAntenna.model.length > 16)
+    if (this.addAntenna.model == null || this.addAntenna.model == '' || this.addAntenna.model.length > 16 || isModelNameIllegal)
     {
       this.antennaWarnMsg.model = this.translateService.instant('antenna.model.fault');
       isWarn = true;
@@ -11164,10 +11567,32 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
 
   checkEditAntennaForm()
   {
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+
     var isWarn = false;
-    if (this.editAntenna.name == null || this.editAntenna.name == '' || this.editAntenna.name.length > 16)
+    let isNameIllegal = ((reg_spc.test(this.editAntenna.name) ||
+      reg_tch.test(this.editAntenna.name)) ||
+      (!(reg_ch.test(this.editAntenna.name)) && !(reg_en.test(this.editAntenna.name)) && !(reg_num.test(this.editAntenna.name))));
+    let isManufactorNameIllegal = ((reg_spc.test(this.editAntenna.manufactor) ||
+      reg_tch.test(this.editAntenna.manufactor)) ||
+      (!(reg_ch.test(this.editAntenna.manufactor)) && !(reg_en.test(this.editAntenna.manufactor)) && !(reg_num.test(this.editAntenna.manufactor))));
+    let isModelNameIllegal = ((reg_spc.test(this.editAntenna.model) ||
+      reg_tch.test(this.editAntenna.model)) ||
+      (!(reg_ch.test(this.editAntenna.model)) && !(reg_en.test(this.editAntenna.model)) && !(reg_num.test(this.editAntenna.model))));
+
+    if (this.editAntenna.name == null || this.editAntenna.name == '' || this.editAntenna.name.length > 16
+      || isNameIllegal)
     {
       this.antennaWarnMsg.name = this.translateService.instant('antenna.name.fault');
+      isWarn = true;
+    }
+    else if (this.checkIfAntNameExist(this.addAntenna.name))
+    {
+      this.antennaWarnMsg.name = this.translateService.instant('antenna.name.same');
       isWarn = true;
     }
     else
@@ -11193,7 +11618,8 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.antennaWarnMsg.port = "";
     }
-    if (this.editAntenna.manufactor == null || this.editAntenna.manufactor == '' || this.editAntenna.manufactor.length > 16)
+    if (this.editAntenna.manufactor == null || this.editAntenna.manufactor == '' ||
+      this.editAntenna.manufactor.length > 16 || isManufactorNameIllegal)
     {
       this.antennaWarnMsg.manufactor = this.translateService.instant('antenna.manufactor.fault');
       isWarn = true;
@@ -11202,7 +11628,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       this.antennaWarnMsg.manufactor = "";
     }
-    if (this.editAntenna.model == null || this.editAntenna.model == '' || this.editAntenna.model.length > 16)
+    if (this.editAntenna.model == null || this.editAntenna.model == '' || this.editAntenna.model.length > 16 || isModelNameIllegal)
     {
       this.antennaWarnMsg.model = this.translateService.instant('antenna.model.fault');
       isWarn = true;
@@ -11212,8 +11638,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       this.antennaWarnMsg.model = "";
     }
     
-
-
     return isWarn;
   }
 
@@ -11240,7 +11664,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }
       );
     }
-    console.log(JSON.stringify(this.allAntennaList));
   }
   
 
@@ -11288,12 +11711,10 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       res =>
       {
         let result = res;
-        console.log(JSON.stringify(result));
 
         const promise = new Promise((resolve, reject) =>
         {
           this.antennaList = Object.values(result);
-          console.log(JSON.stringify(this.antennaList));
           resolve();
         });
         promise.then(() => new Promise((resolve, reject) =>
@@ -11303,10 +11724,6 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         }).then(() => new Promise((resolve, reject) =>
         {
           this.classifyAntenna();
-          console.log(result);
-          console.log(this.antennaList);
-          console.log(this.defaultAntennaList);
-          console.log(this.customizedAntennaList);
           return true;
         })));
 
@@ -11343,7 +11760,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     this.editAntenna = JSON.parse(window.sessionStorage.getItem(`editAntenna`));
   }
 
-  checkNullAngle(pattern)
+  checkNullAngle(pattern)     //暫時不使用
   {
     let MIN_ANGLE = 0;
     let MAX_ANGLE = 359;
@@ -11364,7 +11781,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     {
       if (i <= changeAngle)
       {
-        retPattern.push([i, hori, vert]);
+        retPattern.push([i, hori, vert, pattern[i][3], pattern[i][4]]);
       }
 
       if (i == changeAngle)
@@ -11904,7 +12321,7 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
         this.evaluationFuncForm.field.sinr.ratio[0].areaRatio == null ||
         this.evaluationFuncForm.field.sinr.ratio[0].value == null)
       {
-        this.evaluationFuncForm.field.rsrp.ratio.push
+        this.evaluationFuncForm.field.sinr.ratio.push
           (
           {
             compliance: "moreThan",
@@ -11930,16 +12347,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.evaluationFuncForm.field.throughput.ratio == null || this.evaluationFuncForm.field.throughput.ratio.length == 0 ||
         this.evaluationFuncForm.field.throughput.ratio[0].compliance == null ||
         this.evaluationFuncForm.field.throughput.ratio[0].areaRatio == null ||
-        this.evaluationFuncForm.field.throughput.ratio[0].ULValue == null ||
-        this.evaluationFuncForm.field.throughput.ratio[0].DLValue == null)
+        (this.evaluationFuncForm.field.throughput.ratio[0].ULValue == null &&
+        this.evaluationFuncForm.field.throughput.ratio[0].DLValue == null))
       {
         this.evaluationFuncForm.field.throughput.ratio.push
           (
           {
-            compliance: "moreThan",
-            areaRatio: this.defaultArea,
-            ULValue: this.isDefaultThroughputSetting,
-            DLValue: this.isDefaultThroughputSetting
+              compliance: "moreThan",
+              areaRatio: this.defaultArea,
+              ULValue: this.defaultULThroughputSetting,
+              DLValue: this.defaultDLThroughputSetting
           }
           )
       }
@@ -11947,16 +12364,16 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
       if (this.evaluationFuncForm.ue.throughputByRsrp.ratio == null || this.evaluationFuncForm.ue.throughputByRsrp.ratio.length == 0 ||
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].compliance == null ||
         this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].countRatio == null ||
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].ULValue == null ||
-        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].DLValue == null)
+        (this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].ULValue == null &&
+        this.evaluationFuncForm.ue.throughputByRsrp.ratio[0].DLValue == null))
       {
         this.evaluationFuncForm.ue.throughputByRsrp.ratio.push
           (
           {
             compliance: "moreThan",
             countRatio: this.defaultArea,
-            ULValue: this.isDefaultThroughputSetting,
-            DLValue: this.isDefaultThroughputSetting
+            ULValue: this.defaultUEULThroughputSetting,
+            DLValue: this.defaultUEDLThroughputSetting
           }
           )
       }
@@ -12044,9 +12461,9 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     let position = JSON.parse(sessionStorage.getItem('position'));
     if (position != null)
     {
-      this.dragObject[svgId].x = position[0];
-      this.dragObject[svgId].y = position[1];
-      this.dragObject[svgId].z = position[2];
+      this.dragObject[svgId].x = Number(position[0]);
+      this.dragObject[svgId].y = Number(position[1]);
+      this.dragObject[svgId].z = Number(position[2]);
     }
 
     if (this.selectAntSvgId != '')
@@ -12094,63 +12511,59 @@ export class SitePlanningComponent implements OnInit, OnDestroy, OnChanges, Afte
     }
     return isExist;
   }
+  
 
-  generateRandomColorSet()
+  changeOldBsFormatToNew()
   {
-    let lightColor = 'rgba(255,255,255,1)';
-    let darkColor = 'rgba(255,255,255,1)';
+    let bs = 0;
+    let bsSvgId = '';
+
     if (this.planningIndex == '3')
-    {
-      let index = this.defaultBSList.length % 3;
-
-      let lrgb = [];
-      let drgb = [];
-
-      let switchColor = Math.floor(Math.random() * 3);
-      let random = Math.floor(Math.random() * 2);
-      let zeroColor = 0;
-      let fullColor = 0;
-
-      console.log(`switchColor = ${switchColor}`);
-
-      lrgb[switchColor] = Math.floor(Math.random() * 85 + index * 85);
-      console.log(`lrgb[switchColor] = ${lrgb[switchColor]}`);
-      drgb[switchColor] = lrgb[switchColor];
-
-      if (random % 2 == 0)
       {
-        zeroColor = switchColor - 1;
-        fullColor = switchColor + 1;
-        if (zeroColor < 0)
-          zeroColor += 3;
-        if (fullColor >= 3)
-          fullColor -= 3;
-      }
-      else
+      for (bs = 0; bs < this.defaultBSList.length; bs++)
       {
-        zeroColor = switchColor + 1;
-        fullColor = switchColor - 1;
-        if (zeroColor >= 3)
-          zeroColor -= 3;
-        if (fullColor < 0)
-          fullColor += 3;
+        bsSvgId = this.defaultBSList[bs];
+        if (this.bsListRfParam[bsSvgId].isAntennaDefault == null)
+        {
+          this.bsListRfParam[bsSvgId].isAntennaDefault = this.allAntennaList[0].property;
+        }
+
+        if (this.bsListRfParam[bsSvgId].AntennaId == null)
+        {
+          this.bsListRfParam[bsSvgId].AntennaId = this.allAntennaList[0].antennaID;
+        }
+
+        if (this.bsListRfParam[bsSvgId].antennaType == null)
+        {
+          this.bsListRfParam[bsSvgId].antennaType = this.allAntennaList[0].type;
+        }
+
+        if (this.bsListRfParam[bsSvgId].antennaManufactor == null)
+        {
+          this.bsListRfParam[bsSvgId].antennaManufactor = this.allAntennaList[0].manufactor;
+        }
+
+        if (this.bsListRfParam[bsSvgId].ulAntFreq == null)
+        {
+          this.bsListRfParam[bsSvgId].ulAntFreq = this.allAntennaList[0].availableFrequency[0].frequency;
+        }
+
+        if (this.bsListRfParam[bsSvgId].dlAntFreq == null)
+        {
+          this.bsListRfParam[bsSvgId].dlAntFreq = this.allAntennaList[0].availableFrequency[0].frequency;
+        }
+
+        if (this.bsListRfParam[bsSvgId].theta == null)
+        {
+          this.bsListRfParam[bsSvgId].theta = 0;
+        }
+
+        if (this.bsListRfParam[bsSvgId].phi == null)
+        {
+          this.bsListRfParam[bsSvgId].phi = 0;
+        }
       }
-      drgb[zeroColor] = Math.floor(Math.random() * 51);
-      lrgb[zeroColor] = drgb[zeroColor] + 50;
-      drgb[fullColor] = 200;
-      lrgb[fullColor] = 200;
 
-      lightColor = `rgba(${lrgb[0]},${lrgb[1]},${lrgb[2]},1)`;
-      darkColor = `rgba(${drgb[0]},${drgb[1]},${drgb[2]},1)`;
-
-      console.log(`lightColor = ${lightColor}`);
-      console.log(`darkColor = ${darkColor}`);
     }
-    else
-    {
-      lightColor = this.DEFAULT_BS_CIRCLE_COLOR;
-      darkColor = this.DEFAULT_BS_COLOR;
-    }
-    return [lightColor, darkColor];
   }
 }

@@ -47,10 +47,15 @@ export class SignalUlThroughputComponent implements OnInit {
     position: 'relative',
     opacity: 0
   };
+  verticalStyle = {
+
+  };
   /** 障礙物顯示 */
   showObstacle = 'visible';
   /** BS顯示 */
-  showBs = 'visible';
+  showBs = true;
+  /** Ant顯示 */
+  showAnt = true; 
   /** AP顯示 */
   showCandidate = true;
   /** slide */
@@ -71,6 +76,8 @@ export class SignalUlThroughputComponent implements OnInit {
   @ViewChildren('obstacleElm') obstacleElm: QueryList<ElementRef>;
   msgDialogConfig: MatDialogConfig = new MatDialogConfig();
 
+  /** 由於在height > width的情況下，xy會長寬每次畫圖時都會有變化，因此設為全域變數只記錄第一次的數值 */
+  layoutOption = null;
 
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
@@ -109,6 +116,17 @@ export class SignalUlThroughputComponent implements OnInit {
       reader.readAsDataURL(this.authService.dataURLtoBlob(this.calculateForm.mapImage));
       reader.onload = (e) => {
 
+        if (this.calculateForm.height > this.calculateForm.width)
+        {
+          this.verticalStyle = {
+            height: '600px'
+          };
+        }
+        else
+        {
+          this.verticalStyle = {
+          };
+        }
         images.push({
           source: reader.result,
           x: 0,
@@ -137,6 +155,17 @@ export class SignalUlThroughputComponent implements OnInit {
    */
   drawChart(isPDF, images, scalemin, scalemax) {
     // draw background image chart
+    if (this.calculateForm.height > this.calculateForm.width)
+    {
+      this.verticalStyle = {
+        height: '600px'
+      };
+    }
+    else
+    {
+      this.verticalStyle = {
+      };
+    }
     const defaultPlotlyConfiguration = {
       displaylogo: false,
       showTips: false,
@@ -249,6 +278,8 @@ export class SignalUlThroughputComponent implements OnInit {
       xIndex++;
     }
 
+
+
     // 取z的最大值
     const zMax = [];
     const zMin = [];
@@ -269,6 +300,7 @@ export class SignalUlThroughputComponent implements OnInit {
       y.push(yval);
       yval += CooUnit;
     }
+    
     const traces = [];
     // UE
     if (this.calculateForm.ueCoordinate !== '') {
@@ -321,10 +353,7 @@ export class SignalUlThroughputComponent implements OnInit {
     let scaleunit = [scalemax, scalemax-unit, scalemax-2*unit, scalemax-3*unit, scalemin];
     scaleunit = scaleunit.map(el => Number(this.financial(el)));
     let scaleunitText = scaleunit.map(el => `${el}Mbps`);
-    console.log(`${JSON.stringify(scaleunit)}`);
-    console.log(`${JSON.stringify(scaleunitText)}`);
 
-    console.log(scalemax);
     const trace = {
       x: x,
       y: y,
@@ -431,7 +460,7 @@ export class SignalUlThroughputComponent implements OnInit {
             x: Number(antData[a].position[0]),
             y: Number(antData[a].position[1]),
             color: item.color[1],
-            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
+            ap: `${this.translateService.instant('antenna.short')}${num}.${a + 1}`,
             style: {
               // visibility: this.showBs,
               visibility: 'hidden',
@@ -622,8 +651,20 @@ export class SignalUlThroughputComponent implements OnInit {
           });
         }
 
-        /*有了天線就不顯示"既有基站"
-        /*for (const item of this.defaultBsList) {
+
+        //有了天線就不顯示"既有基站"
+        if (this.calculateForm.isSimulation && this.antList.length != 0)
+        {
+          this.showAnt = true;
+          this.showBs = false;
+        }
+        else
+        {
+          this.showBs = true;
+          this.showAnt = false;
+        }
+
+        for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',
             xref: 'x',
@@ -650,12 +691,13 @@ export class SignalUlThroughputComponent implements OnInit {
             },
             visible: this.showBs
           });
-        }*/
+        }
 
         for (const item of this.antList)
         {
           this.shapes.push({
             type: 'circle',
+            devType: 'antenna',
             xref: 'x',
             yref: 'y',
             x0: item.x,
@@ -664,12 +706,13 @@ export class SignalUlThroughputComponent implements OnInit {
             y1: item.y + Number(yLinear(18)),
             fillcolor: item.color,
             bordercolor: item.color,
-            visible: this.showBs
+            visible: this.showAnt
           });
 
           this.annotations.push({
             x: item.x + Number(xLinear(35)),
             y: item.y + Number(yLinear(9)),
+            devType: 'antenna',
             xref: 'x',
             yref: 'y',
             text: item.ap,
@@ -678,29 +721,33 @@ export class SignalUlThroughputComponent implements OnInit {
               color: '#fff',
               size: 10
             },
-            visible: this.showBs
+            visible: this.showAnt
           });
         }
       }
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
       this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
-        layoutOption = {
-          width: res[0],
-          height: res[1],
-          shapes: this.shapes,
-          annotations: this.annotations
-        };
+        console.log(this.layoutOption == null)
+        if (this.layoutOption == null)
+        {
+          this.layoutOption = {
+            width: res[0],
+            height: res[1],
+            shapes: this.shapes,
+            annotations: this.annotations
+          };
+        }
         // resize layout
         if (images.length > 0) {
           const image = new Image();
           image.src = images[0].source;
           image.onload = () => {
-            this.reLayout(id, layoutOption, isPDF);
+            this.reLayout(id, this.layoutOption, isPDF);
           };
           
         } else {
-          this.reLayout(id, layoutOption, isPDF);
+          this.reLayout(id, this.layoutOption, isPDF);
         }
       });
 
@@ -939,14 +986,14 @@ export class SignalUlThroughputComponent implements OnInit {
     for (const item of this.shapes)
     {
       // 顏色區分障礙物與BS
-      if (item.type == 'circle' && item.fillcolor === '#3C0000')
+      if (item.devType == 'antenna')
       {
         item.visible = visible;
       }
     }
     for (const item of this.annotations)
     {
-      if (item.text[0] == '天' || item.text[0] == 'A')
+      if (item.devType == 'antenna')
       {
         item.visible = visible;
       }
@@ -977,7 +1024,7 @@ export class SignalUlThroughputComponent implements OnInit {
       }
     }
     for (const item of this.annotations) {
-      if (item.text[0] == '待') {
+      if (item.text[0] == '位') {
         item.visible = visible;
       }
     }

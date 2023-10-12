@@ -142,8 +142,6 @@ export class ResultComponent implements OnInit
   showObstacleArea = false;
   /** 有BS */
   showBsArea = false;
-  /** 有Ant */
-  showAntArea = false;
   /** 有AP */
   showCandidateArea = false;
   /** 障礙物顯示 */
@@ -325,6 +323,9 @@ export class ResultComponent implements OnInit
 
         let antArr = [];
 
+        if (this.calculateForm.isSimulation)
+          this.calculateForm = this.authService.changeOldFormToDASForm(this.calculateForm, this.antennaList);
+
         if (this.calculateForm.defaultBs !== '')
         {
           let candidateNum = 0;
@@ -477,6 +478,7 @@ export class ResultComponent implements OnInit
               {
                 const obj = JSON.parse(item);
                 const antObj = JSON.parse(defaultAnt[i]);
+                let txPower = 0;
                 let antennaId = this.AntennaIdToIndex[antObj[0]];
                 let antennaName = "";
                 let antennaType = "";
@@ -502,17 +504,30 @@ export class ResultComponent implements OnInit
 
                   antennaType = this.antennaList[antennaId]['antennaType'];
                   antennaManufactor = this.antennaList[antennaId]['manufactor'];
-                  if (this.isSimulate && this.calculateForm.bsList != null && this.calculateForm.bsList.defaultBs != null)     //DAS
+                
+
+                  console.log(`${JSON.stringify(this.calculateForm.bsList)}`);
+                  if (this.isSimulate &&
+                    (this.calculateForm.bsList != null && this.calculateForm.bsList.length != 0) &&
+                    (this.calculateForm.bsList.defaultBs != null && this.calculateForm.bsList.defaultBs.length != 0) )
+                  //DAS
                   {
                     for (let a = 0; a < this.calculateForm.bsList.defaultBs[i].antenna.length; a++)
                     {
                       antArr.push(this.calculateForm.bsList.defaultBs[i].antenna[a]);
                     }
-                    if (this.calculateForm.bsList.defaultBs[i].antenna.length > 0)
-                      this.showAntArea = true;
-                    console.log(`this.antennaList = ${JSON.stringify(this.antennaList)}`);
-                    console.log(`antArr = ${JSON.stringify(antArr)}`);
-                    console.log(`antennaType = ${JSON.stringify(antennaType)}`);
+
+                    txPower = Number(this.calculateForm.bsList.defaultBs[i].txPower);
+                  }
+                  else if (this.isSimulate)
+                  {
+                    txPower = Number(JSON.parse(this.calculateForm.txPower)[i]);
+                    antArr.push(this.antennaList[0]);
+                  }
+                  else
+                  {
+                    console.log(`${JSON.stringify(this.calculateForm.txPower)}`);
+                    txPower = Number(this.result['defaultBsPower'][i]);
                   }
                 }
 
@@ -525,7 +540,7 @@ export class ResultComponent implements OnInit
                   x: obj[0],
                   y: obj[1],
                   z: obj[2],
-                  txpower: this.calculateForm.bsList.defaultBs[i].txPower,
+                  txpower: txPower,
                   beamid: beamid[i],
                   frequency: frequency[i + candidateNum],
                   bandwidth: bandwidth[i + candidateNum],
@@ -587,9 +602,7 @@ export class ResultComponent implements OnInit
                     {
                       antArr.push(this.calculateForm.bsList.defaultBs[i].antenna[a]);
                     }
-
-                    if (this.calculateForm.bsList.defaultBs[i].antenna.length > 0)
-                      this.showAntArea = true;
+                    
                     console.log(`this.antennaList = ${JSON.stringify(this.antennaList)}`);
                     console.log(`antArr = ${JSON.stringify(antArr)}`);
                     console.log(`antennaType = ${JSON.stringify(antennaType)}`);
@@ -1167,6 +1180,7 @@ export class ResultComponent implements OnInit
       this.quality.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.quality.showCandidate = this.showCandidate;
       this.quality.opacityValue = this.opacityValue;
+      this.quality.showAnt = this.showAnt;
       if (!getColorScale)
       {
         this.scaleMax = this.scaleMaxSQ;
@@ -1195,6 +1209,7 @@ export class ResultComponent implements OnInit
       this.cover.result = this.result;
       this.cover.showObstacle = this.showObstacle ? 'visible' : 'hidden';
       this.cover.showCandidate = this.showCandidate;
+      this.cover.showAnt = this.showAnt;
       this.cover.opacityValue = this.opacityValue;
       this.cover.coverageCalculateFunction = this.coverageCalculateFunction;
       this.cover.sinrTh = this.sinrTh;
@@ -1224,6 +1239,7 @@ export class ResultComponent implements OnInit
       this.strength.calculateForm = this.calculateForm;
       this.strength.result = this.result;
       this.strength.showObstacle = this.showObstacle ? 'visible' : 'hidden';
+      this.strength.showAnt = this.showAnt;
       this.strength.showCandidate = this.showCandidate;
       this.strength.opacityValue = this.opacityValue;
       if (!getColorScale)
@@ -1260,6 +1276,7 @@ export class ResultComponent implements OnInit
       this.ulThroughputMap.calculateForm = this.calculateForm;
       this.ulThroughputMap.result = this.result;
       this.ulThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
+      this.ulThroughputMap.showAnt = this.showAnt;
       this.ulThroughputMap.showCandidate = this.showCandidate;
       this.ulThroughputMap.opacityValue = this.opacityValue;
       if (!getColorScale)
@@ -1298,6 +1315,7 @@ export class ResultComponent implements OnInit
       this.dlThroughputMap.calculateForm = this.calculateForm;
       this.dlThroughputMap.result = this.result;
       this.dlThroughputMap.showObstacle = this.showObstacle ? 'visible' : 'hidden';
+      this.dlThroughputMap.showAnt = this.showAnt;
       this.dlThroughputMap.showCandidate = this.showCandidate;
       this.dlThroughputMap.opacityValue = this.opacityValue;
       if (!getColorScale)

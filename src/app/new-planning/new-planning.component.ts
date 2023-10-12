@@ -1,8 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalculateForm } from '../form/CalculateForm';
 import { AuthService } from '../service/auth.service';
+import { MsgDialogComponent } from '../utility/msg-dialog/msg-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 import { FormControl, FormGroup, Validators, ValidatorFn, ValidationErrors } from '@angular/forms';
 
 /**
@@ -19,6 +21,7 @@ export class NewPlanningComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private matDialog: MatDialog,
+    private translateService: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data) {
       sessionStorage.removeItem('calculateForm');
       sessionStorage.removeItem('importFile');
@@ -38,6 +41,8 @@ export class NewPlanningComponent implements OnInit {
   timeInterval;
   /** 長寬限制 */
   isExceed = false;
+
+  msgDialogConfig: MatDialogConfig = new MatDialogConfig();
 
   /** 表單-taskName */
   get taskName() { return this.formGroup.get('taskName'); }
@@ -92,6 +97,15 @@ export class NewPlanningComponent implements OnInit {
    */
   fileChange(event) {
     const file = event.target.files[0];
+    if (!/\.(jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name))
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('planning.image.file.error')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
@@ -104,7 +118,28 @@ export class NewPlanningComponent implements OnInit {
   /**
    * OK button，go to 場域page
    */
-  ok() {
+  ok()
+  {
+    let reg_ch = new RegExp('[\u4E00-\u9FFF]+');
+    let reg_tch = new RegExp('[\u3105-\u3129\u02CA\u02C7\u02CB\u02D9]+');
+    let reg_en = new RegExp('[\A-Za-z]+');
+    let reg_num = new RegExp('[\0-9]+');
+    let reg_spc = /[ `!@#$%^&*()+\=\[\]{};':"\\|,<>\/?~《》~！@#￥……&\*（）——\|{}【】‘；：”“'。，、?]/;
+    
+    let isTaskNameIll = ((reg_spc.test(this.calculateForm.taskName) ||
+      reg_tch.test(this.calculateForm.taskName)) ||
+      (!(reg_ch.test(this.calculateForm.taskName)) && !(reg_en.test(this.calculateForm.taskName)) && !(reg_num.test(this.calculateForm.taskName))));
+
+    if (isTaskNameIll)
+    {
+      this.msgDialogConfig.data = {
+        type: 'error',
+        infoMessage: this.translateService.instant('planning.taskname.error')
+      };
+      this.matDialog.open(MsgDialogComponent, this.msgDialogConfig);
+      return;
+    }
+
     const input: NodeListOf<HTMLInputElement> = document.querySelector('.modalContent').querySelectorAll('input[type="text"]');
     for (let i = 0; i < input.length; i++) {
       input[i].focus();

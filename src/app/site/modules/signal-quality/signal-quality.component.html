@@ -1,7 +1,6 @@
-<div [ngStyle]="divStyle">
-  
-  <div class="quality_chart">
-    <input type="hidden" id="is_quality" value="true">
+<div [ngStyle]="divStyle"> 
+  <div class="quality_chart" [ngStyle]="verticalStyle" >
+    <input type="hidden" id="is_quality" value="true" >
     <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
 
     <div class="quality_img" [ngStyle]="style" style="z-index: -1" >

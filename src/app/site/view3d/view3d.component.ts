@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Optional, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Inject, Optional, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CalculateForm } from '../../form/CalculateForm';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as BABYLON from 'babylonjs';
@@ -15,7 +15,7 @@ declare var Plotly: any;
   templateUrl: './view3d.component.html',
   styleUrls: ['./view3d.component.scss']
 })
-export class View3dComponent implements OnInit {
+export class View3dComponent implements OnInit, AfterViewInit {
 
   constructor(
     private matDialog: MatDialog,
@@ -23,9 +23,11 @@ export class View3dComponent implements OnInit {
     @Optional() @Inject(MAT_DIALOG_DATA) public data) {
       if (data != null) {
         // this.isSimulation = data.isSimulation;
+        //console.log(`${JSON.stringify(data)}`);
         this.calculateForm = data.calculateForm;
         this.obstacle = data.obstacleList;
         this.defaultBs = data.defaultBSList;
+        this.dasBsList = data.calculateForm.bsList.defaultBs;
         this.candidate = data.candidateList;
         this.ue = data.ueList;
         this.width = this.calculateForm.width;
@@ -37,6 +39,7 @@ export class View3dComponent implements OnInit {
         this.ary = data.ary;
         window.setTimeout(() => {
           this.mounted();
+          this.switchHeatMap();
         }, 100);
       }
 
@@ -48,6 +51,8 @@ export class View3dComponent implements OnInit {
   obstacleList = [];
   /** 現有基站 */
   defaultBSList = [];
+  /** 現有基站(DAS格式) */
+  dasBsList = []; 
   /** 新增基站 */
   candidateList = [];
   /** 新增ＵＥ */
@@ -64,6 +69,8 @@ export class View3dComponent implements OnInit {
   obstacleGroup = [];
   /** 現有基站 group */
   defaultBsGroup = [];
+  /** Ant */
+  antGroup = [];
   /** 新增AP group */
   candidateGroup = [];
   /** 行動終端 group */
@@ -72,6 +79,8 @@ export class View3dComponent implements OnInit {
   heatmapGroup = {};
   /** 顯示現有基站 */
   showDefaultBs = true;
+  /** 顯示現有基站 */
+  showAnt = true; 
   /** 顯示AP */
   showCandidate = true;
   /** 顯示行動終端 */
@@ -79,7 +88,7 @@ export class View3dComponent implements OnInit {
   /** 顯有障礙物 */
   showObstacle = true;
   /** 0 = SINR, 1 = PCI, 2 = RSRP */
-  heatmapType = 0;
+  heatmapType = "0";
   /** heatmap height */
   planeHeight;
   /** 圖寬 */
@@ -132,6 +141,10 @@ export class View3dComponent implements OnInit {
     // this.draw();
     console.log(this.calculateForm);
     this.coounit = this.calculateForm.resolution;
+  }
+
+  ngAfterViewInit(): void
+  {
   }
 
   /**
@@ -276,56 +289,132 @@ export class View3dComponent implements OnInit {
       this.obstacleGroup.push(obstacle);
     }
 
-    const defaultBsMat = new BABYLON.StandardMaterial('defaultBsMaterial', scene);
-    defaultBsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-    let bsCount = 0;
-    for (const bs of this.defaultBs) {
 
-      if (typeof bs !== 'undefined') {
-        const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', {size: 1}, scene);
-        bsBox.position = new BABYLON.Vector3(bs.x + offsetX, bs.z + offsetY, bs.y + offsetZ);
-        // bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
-        bsBox.material = defaultBsMat;
-  
-        this.defaultBsGroup.push(bsBox);
+    let bsCount = 0;
+    if (!this.calculateForm.isSimulation)
+    {
+
+      const defaultBsMat = new BABYLON.StandardMaterial('defaultBsMaterial', scene);
+      defaultBsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+      for (const bs of this.defaultBs)
+      {
+
+        if (typeof bs !== 'undefined')
+        {
+          const bsBox = BABYLON.BoxBuilder.CreateBox('defaultBs', { size: 1 }, scene);
+          bsBox.position = new BABYLON.Vector3(bs.x + offsetX, bs.z + offsetY, bs.y + offsetZ);
+          // bsBox.position = new BABYLON.Vector3(bs.x + offsetX, 3 + offsetY, bs.y + offsetZ);
+          bsBox.material = defaultBsMat;
+
+          this.defaultBsGroup.push(bsBox);
+          bsCount++;
+        }
+
+      }
+      if (bsCount > 1)
+      {
+        this.isCoverBlue = false;
+      }
+    }
+    else
+    {
+
+      const bsMatArr = Array(this.dasBsList.length);
+      const bsMat = new BABYLON.StandardMaterial('antMaterial', scene);
+      bsMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+      let antCount = 0;
+      bsCount = 0;
+      let color;
+      for (const bs of this.dasBsList)
+      {
+        bsMatArr[bsCount] = new BABYLON.StandardMaterial('antMaterial', scene);
+        if (typeof bs !== 'undefined')
+        {
+          color = String(bs.color[1]);
+          if (typeof color !== 'undefined')
+          {
+            let rgb = [];
+            color = color.toString().replace("hsl(", "").replace(")", "").split(",");
+            //console.log(`${color}`);
+            console.log(`${Number(color[0])}`);
+            console.log(`${Number(color[1].replace("%", ""))}`);
+            console.log(`${Number(color[2].replace("%", ""))}`);
+            //r = Number(Number(color[0]) / 255);
+            //g = Number(color[1].replace("%", "")) / 255;
+            //b = Number(color[2].replace("%", "")) / 255;
+            rgb = this.authService.changeHSLToRGB(Number(color[0]), Number(color[1].replace("%", "")), Number(color[2].replace("%", "")));
+            console.log(`${rgb}`);
+            bsMatArr[bsCount].diffuseColor = new BABYLON.Color3(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+          }
+
+          for (const ant of bs.antenna)
+          {
+            const antBox = BABYLON.BoxBuilder.CreateBox('Ant', { size: 1 }, scene);
+            //不知道為什麼z對y、y對z
+            antBox.position = new BABYLON.Vector3(ant.position[0] + offsetX, ant.position[2] + offsetY, ant.position[1] + offsetZ);
+            antBox.material = bsMatArr[bsCount];
+            this.antGroup.push(antBox);
+            antCount++;
+          }
+
+        }
         bsCount++;
       }
       
     }
 
-    if (bsCount > 1) {
+    //有了天線就不顯示"既有基站"
+    if (this.calculateForm.isSimulation && this.antGroup.length != 0)
+    {
+      //DAS版本覆蓋顏色，不採用"只有一個基站時就用藍色"的規則
       this.isCoverBlue = false;
+      this.showAnt = true;
+      this.showDefaultBs = false;
+    }
+    else
+    {
+      this.showDefaultBs = true;
+      this.showAnt = false;
     }
 
+    let isChoosen = false;
     const candidateMat = new BABYLON.StandardMaterial('candidateMaterial', scene);
     candidateMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
     const chosenMat = new BABYLON.StandardMaterial('chosenMaterial', scene);
     chosenMat.diffuseColor = new BABYLON.Color3(0, 0, 1);
-    for (const candidate of this.candidate) {
-        // const candidate = this.candidate[id];
-        // const candidate = this.dragObject[id];
-        const candBox = BABYLON.BoxBuilder.CreateBox('candidate', {size: 1}, scene);
-        candBox.position = new BABYLON.Vector3(candidate.x + offsetX, candidate.z + offsetY, candidate.y + offsetZ);
-        if (null != this.result['gaResult']) {
-          for (const chosen of this.result['gaResult'].chosenCandidate) {
-            if (candidate.x === chosen[0] && candidate.y === chosen[1] && candidate.z === chosen[2]) {
-              candBox.material = chosenMat;
-              break;
-            } else {
-              candBox.material = candidateMat;
-            }
-          }
-
-          if (this.result['gaResult'].chosenCandidate.length > 1) {
-            this.isCoverBlue = false;
-          }
-
-        } else {
+    for (const candidate of this.candidate)
+    {
+      isChoosen = false;
+      // const candidate = this.candidate[id];
+      // const candidate = this.dragObject[id];
+      const candBox = BABYLON.BoxBuilder.CreateBox('candidate', {size: 1}, scene);
+      candBox.position = new BABYLON.Vector3(candidate.x + offsetX, candidate.z + offsetY, candidate.y + offsetZ);
+      if (null != this.result['gaResult']) {
+        for (const chosen of this.result['gaResult'].chosenCandidate) {
+          if (candidate.x === chosen[0] && candidate.y === chosen[1] && candidate.z === chosen[2]) {
+            candBox.material = chosenMat;
+            candBox.isVisible = true;
+            isChoosen = true;
+            break;
+          } else {
             candBox.material = candidateMat;
+            candBox.isVisible = false;
+          }
         }
 
+        if (this.result['gaResult'].chosenCandidate.length > 1) {
+          this.isCoverBlue = false;
+        }
+
+      } else {
+        candBox.material = candidateMat;
+        candBox.isVisible = false;
+      }
+
+      if (isChoosen)
         this.candidateGroup.push(candBox);
     }
+    console.log(this.candidateGroup.length);
 
     const ueMat = new BABYLON.StandardMaterial('ueMaterial', scene);
     ueMat.diffuseColor = new BABYLON.Color3(1, 1, 0);
@@ -440,6 +529,15 @@ export class View3dComponent implements OnInit {
     }
   }
 
+  /** 切換顯示現有基站 */
+  switchAnt()
+  {
+    for (const id of this.antGroup)
+    {
+      id.isVisible = !id.isVisible;
+    }
+  }
+
   /** 切換顯示新增AP */
   switchCandidate() {
     for (const id of this.candidateGroup){
@@ -492,6 +590,11 @@ export class View3dComponent implements OnInit {
     const min = Plotly.d3.min(ary);
     const zDomain = [];
     const colorRange = [];
+    let isDASFormat = this.calculateForm.isSimulation &&
+      this.calculateForm.bsList != null &&
+      this.calculateForm.bsList.defaultBs != null;
+
+
     for (let k = 0; k < this.colorscale.length; k++) {
       zDomain.push((max - min) * this.colorscale[k][0] + min);
       colorRange.push(this.colorscale[k][1]);
@@ -515,7 +618,15 @@ export class View3dComponent implements OnInit {
               colorMap[n] = 12;
               colorMap[n + 1] = 51;
               colorMap[n + 2] = 131;
-            } else {
+            } else if (isDASFormat)
+            {
+              let color = this.calculateForm.bsList.defaultBs[value].color[0].toString().replace("hsl(", "").replace(")", "").split(",");
+              let rgb = this.authService.changeHSLToRGB(color[0], color[1].replace("%", ""), color[2].replace("%", ""));
+              colorMap[n] = rgb[0];
+              colorMap[n + 1] = rgb[1];
+              colorMap[n + 2] = rgb[2];
+            } else
+            {
               // 跟2D圖一樣用plotly套件提供用range計算顏色的方法
               const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
               const hexColor = colorFN(value);
@@ -902,5 +1013,7 @@ export class View3dComponent implements OnInit {
   close() {
     this.matDialog.closeAll();
   }
+
+
 
 }

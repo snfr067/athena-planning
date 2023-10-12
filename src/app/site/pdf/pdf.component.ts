@@ -40,7 +40,9 @@ export class PdfComponent implements OnInit {
     private jsPDFFontService: JsPDFFontService,
     private translateService: TranslateService,
     private http: HttpClient) { }
-  
+
+  windowLock = null;
+
   /** 測試用taskId */
   taskId = 'task_sel_365aa925-c004-443c-949d-a2eed2d9dd60_1';
   /** 結果form */
@@ -151,7 +153,9 @@ export class PdfComponent implements OnInit {
    * @param scaleMaxDL
    * @param scaleMaxDL
    */
-  async export(taskId, isHst, scaleMinSQ, scaleMaxSQ, scaleMinST, scaleMaxST, scaleMinUL, scaleMaxUL, scaleMinDL, scaleMaxDL) {
+  async export(taskId, isHst, scaleMinSQ, scaleMaxSQ, scaleMinST, scaleMaxST, scaleMinUL, scaleMaxUL, scaleMinDL, scaleMaxDL)
+  {
+    this.windowLock = this.lockScroll();
     const ant = await this.getAntennaList();
     const obs = await this.getObstacleList();
     const pml = await this.getPathLossModelList();
@@ -439,7 +443,7 @@ export class PdfComponent implements OnInit {
                   element.planeHeight = zValue.toString();
                   element.result = this.result;
                   element.isPDF = true;
-                  element.heatmapType = 1;
+                  element.heatmapType = '1';
 
                   element.mounted();
                   element.switchHeatMap();
@@ -463,7 +467,7 @@ export class PdfComponent implements OnInit {
                   element.planeHeight = zValue.toString();
                   element.result = this.result;
                   element.isPDF = true;
-                  element.heatmapType = 2;
+                  element.heatmapType = '2';
       
                   element.mounted();
                   element.switchHeatMap();
@@ -487,7 +491,7 @@ export class PdfComponent implements OnInit {
                   element.planeHeight = zValue.toString();
                   element.result = this.result;
                   element.isPDF = true;
-                  element.heatmapType = 3;
+                  element.heatmapType = '3';
       
                   element.mounted();
                   element.switchHeatMap();
@@ -511,7 +515,7 @@ export class PdfComponent implements OnInit {
                   element.planeHeight = zValue.toString();
                   element.result = this.result;
                   element.isPDF = true;
-                  element.heatmapType = 4;
+                  element.heatmapType = '4';
       
                   element.mounted();
                   element.switchHeatMap();
@@ -862,7 +866,7 @@ export class PdfComponent implements OnInit {
           this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
         {
           compliance = this.translateService.instant(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].compliance);
-          UEThroughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + this.translateService.instant('ue') + 
+          UEThroughputContent += "  " + this.translateService.instant('setCondition') + (x+1) + ". " + this.translateService.instant('ue') + " " +
           (this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].countRatio*100).toFixed(2) + "% ";
           if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue != null)
           {
@@ -870,9 +874,9 @@ export class PdfComponent implements OnInit {
           } 
           else if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
           {
-            UEThroughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+            UEThroughputContent += "DL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
           }   
-          UEThroughputContent += "  " + this.translateService.instant('realCondition') + (x+1) + ". " + this.translateService.instant('ue');
+          UEThroughputContent += "  " + this.translateService.instant('realCondition') + (x + 1) + ". " + this.translateService.instant('ue') + " ";
           if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].ULValue != null)
           {
             UEThroughputContent += (this.realUEULThroughput[x] * 100).toFixed(2) + "% ";
@@ -881,7 +885,7 @@ export class PdfComponent implements OnInit {
           else if(this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue != null)
           {
             UEThroughputContent += (this.realUEDLThroughput[x] * 100).toFixed(2) + "% ";
-            UEThroughputContent += "DL " + compliance + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
+            UEThroughputContent += "DL " + compliance + " " + this.calculateForm.evaluationFunc.ue.throughputByRsrp.ratio[x].DLValue + "Mbps\n";
           }
         }
         
@@ -971,7 +975,7 @@ export class PdfComponent implements OnInit {
       statistics = [
         [this.translateService.instant('pdf.total.defaultBs'),this.defaultBs.length],
         [this.translateService.instant('pdf.total.candidate'),this.inputBsList.length],
-        [this.translateService.instant('pdf.total.chosenCandidate'),this.result['chosenCandidate'].length],
+        [this.translateService.instant('pdf.total.propose.candidate'),this.result['chosenCandidate'].length],
         [this.translateService.instant('pdf.total.ue'),this.ueList.length],
       ];
     }
@@ -1072,8 +1076,25 @@ export class PdfComponent implements OnInit {
         // dlMcsTable = dlMcsTable.slice(-(defaultBs.length))
         // tableTitle = ['基站編號','X/Y','功率(dBm)','波束形','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
         // '下行調變能力','上行資料串流層數','下行資料串流層數'];
-        tableTitle = ['#', 'X/Y', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
-        tableTitle2 = ['#', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+        //tableTitle = ['#', 'X/Y', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
+        //tableTitle2 = ['#', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+        tableTitle = ['#',
+          'X/Y',
+          this.translateService.instant('result.propose.candidateBs.dbm'),
+          this.translateService.instant('tddfrequency') + "(MHz)",
+          this.translateService.instant('tddscs') + "(kHz)",
+          this.translateService.instant('bandwidth'),
+          this.translateService.instant('ulModulationCodScheme'),
+          this.translateService.instant('dlModulationCodScheme')];
+        tableTitle2 = ['#',
+          this.translateService.instant('ulMimolayer'),
+          this.translateService.instant('dlMimolayer'),
+          this.translateService.instant('noise'),
+          this.translateService.instant('antenna.rawdata.ant.name'),
+          this.translateService.instant('theta.pdf'),
+          this.translateService.instant('phi.pdf'),
+          this.translateService.instant('TxGain') + "(dB)"];  
+
         // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
         // 'DL MCStable','UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
         for (let i = 0; i < candidateLen; i++)
@@ -1091,13 +1112,9 @@ export class PdfComponent implements OnInit {
             `${dlMcsTable[0]}`
           ]);
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1170,13 +1187,9 @@ export class PdfComponent implements OnInit {
           ]);
 
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1247,8 +1260,29 @@ export class PdfComponent implements OnInit {
         // 'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
         // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
         // 'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
-        tableTitle = ['#', 'X/Y', 'dBm', 'UL Freq', 'DL Freq', 'UL Bandwidth', 'DL Bandwidth', 'UL MCStable', 'DL MCStable',];
-        tableTitle2 = ['#', 'UL SCS(kHz)', 'DL SCS(kHz)', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+        //tableTitle = ['#', 'X/Y', 'dBm', 'UL Freq', 'DL Freq', 'UL Bandwidth', 'DL Bandwidth', 'UL MCStable', 'DL MCStable',];
+        //tableTitle2 = ['#', 'UL SCS(kHz)', 'DL SCS(kHz)', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+
+        tableTitle = ['#',
+          'X/Y',
+          this.translateService.instant('result.propose.candidateBs.dbm'),
+          this.translateService.instant('ulfrequency') + "(MHz)",
+          this.translateService.instant('dlfrequency') + "(MHz)",
+          this.translateService.instant('uulBandwidth'),
+          this.translateService.instant('ddlBandwidth'),
+          this.translateService.instant('ulModulationCodScheme'),
+          this.translateService.instant('dlModulationCodScheme')];
+        tableTitle2 = ['#',
+          this.translateService.instant('ulscs') + '(kHz)',
+          this.translateService.instant('dlscs') + '(kHz)',
+          this.translateService.instant('ulMimolayer'),
+          this.translateService.instant('dlMimolayer'),
+          this.translateService.instant('noise'),
+          this.translateService.instant('antenna.rawdata.ant.name'),
+          this.translateService.instant('theta.pdf'),
+          this.translateService.instant('phi.pdf'),
+          this.translateService.instant('TxGain') + "(dB)"];        
+          
 
         for (let i = 0; i < candidateLen; i++)
         {
@@ -1266,13 +1300,9 @@ export class PdfComponent implements OnInit {
             `${dlMcsTable[0]}`
           ]);
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1334,13 +1364,9 @@ export class PdfComponent implements OnInit {
             `${dlMcsTable[i + this.inputBsList.length]}`
           ]);
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1387,12 +1413,32 @@ export class PdfComponent implements OnInit {
         let dlmsc = this.calculateForm.dlMcsTable;
         let ulMcsTable = ulmsc.substring(1, (ulmsc.length) - 1).split(',');
         let dlMcsTable = dlmsc.substring(1, (dlmsc.length) - 1).split(',');
-        // tableTitle = ['基站編號','X/Y','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+        // tableTitle = ['基站編號','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
         // '下行調變能力','上行資料串流層數','下行資料串流層數'];
-        tableTitle = ['Bs#', 'X/Y', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
+        tableTitle = ['Bs#', 'dBm', 'Frequency', 'SCS(kHz)', 'Bandwidth', 'UL MCStable', 'DL MCStable'];
         tableTitle2 = ['Bs#', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure'];
 
-        antTableTitle = ['Ant#', 'Name', 'Type', 'Manufacturer', 'X/Y', 'Frequency', 'Theta', 'Phi', 'Gain'];
+        tableTitle = ['Bs#',
+          this.translateService.instant('result.propose.candidateBs.dbm'),
+          this.translateService.instant('tddfrequency')+"(MHz)",
+          this.translateService.instant('subcarrier'),
+          this.translateService.instant('tddBandwidth'),
+          this.translateService.instant('ulModulationCodScheme'),
+          this.translateService.instant('dlModulationCodScheme')];
+        tableTitle2 = ['Bs#',
+          this.translateService.instant('ulMimolayer'),
+          this.translateService.instant('dlMimolayer'),
+          this.translateService.instant('noise')];
+       
+        antTableTitle = ['Ant#',
+          this.translateService.instant('antenna.rawdata.ant.name'),
+          this.translateService.instant('antenna.type.fullname'),
+          this.translateService.instant('manufactor'),
+          'X/Y',
+          this.translateService.instant('tddfrequency') + "(MHz)",
+          this.translateService.instant('theta.pdf'),
+          this.translateService.instant('phi.pdf'),
+          this.translateService.instant('TxGain') + "(dB)"];
         for (let i = 0; i < candidateLen; i++)
         {
           const antObj = JSON.parse(candidateAnt[i]);
@@ -1408,13 +1454,9 @@ export class PdfComponent implements OnInit {
             `${dlMcsTable[0]}`
           ]);
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1439,7 +1481,7 @@ export class PdfComponent implements OnInit {
         
 
 
-        // tableTitle = ['基站編號','X/Y','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
+        // tableTitle = ['基站編號','功率(dBm)','中心頻率','子載波間距(kHz)','頻寬','上行調變能力',
         // '下行調變能力','上行資料串流層數','下行資料串流層數'];
 
         for (let i = 0; i < this.calculateForm.bsList.defaultBs.length; i++)
@@ -1448,7 +1490,7 @@ export class PdfComponent implements OnInit {
           txpower = this.calculateForm.bsList.defaultBs[i].txPower;
           specData.push([
             `${this.translateService.instant('default')}${i + 1}`,
-            `${this.calculateForm.bsList.defaultBs[i].position[0]}/${this.calculateForm.bsList.defaultBs[i].position[1]}`,
+            //`${this.calculateForm.bsList.defaultBs[i].position[0]}/${this.calculateForm.bsList.defaultBs[i].position[1]}`,
             `${txpower}`,
             `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.frequency}`,
             `${this.calculateForm.bsList.defaultBs[i].duplex.tddParam.ul.scs}`,
@@ -1480,11 +1522,7 @@ export class PdfComponent implements OnInit {
             antennaManufactor = this.antennaList[antennaIndex]['manufactor'];
 
           }
-
-          console.log(`antenna = ${JSON.stringify(antenna)}`);
-          console.log(`id = ${antennaIndex}`);
-          console.log(`antennaList = ${JSON.stringify(this.antennaList)}`);
-          console.log(`antennaName = ${antennaName}`);
+          
 
           for (let a = 0; a < antenna.length; a++)
           {
@@ -1561,8 +1599,47 @@ export class PdfComponent implements OnInit {
         // 'DL Bandwidth','UL SCS(kHz)','DL SCS(kHz)','UL MCStable','DL MCStable',
         // 'UL MIMOLayer','DL MIMOLayer','bsTxGain','bsNoiseFigure'];
         // 'UL MIMOLayer','DL MIMOLayer','bsNoiseFigure'];
-        tableTitle = ['#', 'X/Y', 'dBm', 'UL Freq', 'DL Freq', 'UL Bandwidth', 'DL Bandwidth', 'UL MCStable', 'DL MCStable',];
-        tableTitle2 = ['#', 'UL SCS(kHz)', 'DL SCS(kHz)', 'UL MIMOLayer', 'DL MIMOLayer', 'bsNoiseFigure', 'Antenna', 'Theta', 'Phi', 'Txgain'];
+        /*tableTitle = ['#',
+          'X/Y',
+          this.translateService.instant('result.propose.candidateBs.dbm'),
+          this.translateService.instant('ulfrequency'),
+          this.translateService.instant('dlfrequency'),
+          this.translateService.instant('uulBandwidth'),
+          this.translateService.instant('ddlBandwidth'),
+          this.translateService.instant('ddlBandwidth'),
+          this.translateService.instant('ulModulationCodScheme'),
+          this.translateService.instant('dlModulationCodScheme')];
+        tableTitle2 = ['#',
+          this.translateService.instant('ulSubcarrier') + "(kHz)",
+          this.translateService.instant('dlSubcarrier') + "(kHz)",
+          this.translateService.instant('ulMimolayer') + "(kHz)",
+          this.translateService.instant('dlMimolayer') + "(kHz)",
+          this.translateService.instant('noise'),
+          this.translateService.instant('antenna'),
+          this.translateService.instant('theta.pdf'),
+          this.translateService.instant('phi.pdf'),
+          this.translateService.instant('TxGain')];*/
+        tableTitle = ['Bs#',
+          this.translateService.instant('result.propose.candidateBs.dbm'),
+          this.translateService.instant('tddfrequency') + "(MHz)",
+          this.translateService.instant('subcarrier'),
+          this.translateService.instant('tddBandwidth'),
+          this.translateService.instant('ulModulationCodScheme'),
+          this.translateService.instant('dlModulationCodScheme')];
+        tableTitle2 = ['Bs#',
+          this.translateService.instant('ulMimolayer'),
+          this.translateService.instant('dlMimolayer'),
+          this.translateService.instant('noise')];
+
+        antTableTitle = ['Ant#',
+          this.translateService.instant('antenna.rawdata.ant.name'),
+          this.translateService.instant('antenna.type.fullname'),
+          this.translateService.instant('manufactor'),
+          'X/Y',
+          this.translateService.instant('tddfrequency') + "(MHz)",
+          this.translateService.instant('theta.pdf'),
+          this.translateService.instant('phi.pdf'),
+          this.translateService.instant('TxGain') + "(dB)"];
 
         for (let i = 0; i < candidateLen; i++)
         {
@@ -1580,13 +1657,9 @@ export class PdfComponent implements OnInit {
             `${dlMcsTable[0]}`
           ]);
           let antennaName = "";
-          if (this.authService.lang == 'zh-TW')
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['chinese_name'];
-          } else
-          {
-            antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
-          }
+
+          antennaName = this.antennaList[this.AntennaIdToIndex[antObj[0]]]['antennaName'];
+          
           let bsNoiseFigure = 0;
           if (this.calculateForm.bsNoiseFigure != "")
           {
@@ -1610,7 +1683,7 @@ export class PdfComponent implements OnInit {
         let unsortbeamid = [];
         let txpower = [];
         let beamid = [];
-        if (this.calculateForm.isSimulation)
+        /*if (this.calculateForm.isSimulation)
         {
           txpower = JSON.parse(JSON.stringify(this.result['defaultBsPower']));
           beamid = JSON.parse(JSON.stringify(this.result['defaultBeamId']));
@@ -1672,6 +1745,66 @@ export class PdfComponent implements OnInit {
             `${antObj[2]}`,
             `${antObj[3]}`
           ]);
+        }*/
+        for (let i = 0; i < this.calculateForm.bsList.defaultBs.length; i++)
+        {
+          //DAS格式
+          txpower = this.calculateForm.bsList.defaultBs[i].txPower;
+          specData.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            //`${this.calculateForm.bsList.defaultBs[i].position[0]}/${this.calculateForm.bsList.defaultBs[i].position[1]}`,
+            `${txpower}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.ul.frequency}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.ul.scs}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.ul.bandwidth}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.ul.mcsTable}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.dl.mcsTable}`,
+          ]);
+
+
+          let bsNoiseFigure = this.calculateForm.bsList.defaultBs[i].noiseFigure;
+
+          specData2.push([
+            `${this.translateService.instant('default')}${i + 1}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.ul.mimo}`,
+            `${this.calculateForm.bsList.defaultBs[i].duplex.fddParam.dl.mimo}`,
+            `${bsNoiseFigure}`
+          ]);
+
+          let antenna = this.calculateForm.bsList.defaultBs[i].antenna;
+          let antennaIndex = this.getAntIndexById(antenna[0].antennaID);
+          let antennaName = '-';
+          let antennaType = '-';
+          let antennaManufactor = '-';
+
+          if (antennaIndex != -1)
+          {
+            antennaName = this.antennaList[antennaIndex]['antennaName'];
+            antennaType = this.antennaList[antennaIndex]['antennaType'];
+            antennaManufactor = this.antennaList[antennaIndex]['manufactor'];
+
+          }
+
+
+          for (let a = 0; a < antenna.length; a++)
+          {
+            // antTableTitle = ['Ant#', 'Name', 'Type', 'Manufacturer', 'X/Y', 'Frequency', 'Theta', 'Phi', 'Gain'];
+
+
+            antData.push(
+              [
+                `${this.translateService.instant('antenna')}${i + 1}.${a + 1}`,
+                this.formatValue(`${antennaName}`),
+                this.formatValue(`${antennaType}`),
+                this.formatValue(`${antennaManufactor}`),
+                this.formatValue(`${antenna[a].position[0]}/${antenna[a].position[1]}`),
+                this.formatValue(`${antenna[a].ulFrequency}`),
+                this.formatValue(`${antenna[a].theta}`),
+                this.formatValue(`${antenna[a].phi}`),
+                this.formatValue(`${antenna[a].gain}`),
+              ]);
+          }
+
         }
       }
     }
@@ -1792,7 +1925,7 @@ export class PdfComponent implements OnInit {
     };
     const p1Title = [
       this.translateService.instant('result.img.section'),
-      this.translateService.instant('result.coverage'),
+      this.translateService.instant('coverage.calculate.default'),
       this.translateService.instant('result.coverage.usersrp') + this.rsrpTh + 'dBm\n' + this.translateService.instant('result.coverage.calculate'),
       this.translateService.instant('result.coverage.usesinr') + this.sinrTh + 'dB\n' +this.translateService.instant('result.coverage.calculate'),
       this.translateService.instant('result.averageSinr'),
@@ -1941,7 +2074,7 @@ export class PdfComponent implements OnInit {
     });
 
     const p2Title = [
-      this.translateService.instant('result.propose.candidateBs.num'),
+      this.translateService.instant('result.propose.bs.num'),
       this.translateService.instant('result.bs.per.ue'),
       this.translateService.instant('result.bs.all.uedltpt'),
       this.translateService.instant('result.bs.all.ueultpt'),
@@ -1992,11 +2125,11 @@ export class PdfComponent implements OnInit {
           if (this.result['ueCon_perBsUeConnection'][i+candidateNum] == 0) {
             p2Data.push([
               `${this.translateService.instant('result.propose.defaultBs')}${i+1}`,
-              0,
-              0,
-              0,
-              0,
-              0,
+              0 + ' Mbps',
+              0 + ' Mbps',
+              0 + ' Mbps',
+              0 + ' Mbps',
+              0 + ' Mbps',
             ]);
           } else {
             p2Data.push([
@@ -2230,7 +2363,7 @@ export class PdfComponent implements OnInit {
     for (let k = 0; k < this.obstacleList.length; k++) {
       const item = this.obstacleList[k];
       // console.log("-----item------",item);
-      obstacleData.push([(k + 1), item.x, item.rotate, item.y, item.z, item.altitude, item.width, item.height, item.materialName]);
+      obstacleData.push([(k + 1), item.x, item.y, item.rotate, item.z, item.altitude, item.width, item.height, item.materialName]);
     }
     pdf.autoTable(obstacleTitle, obstacleData, {
       styles: { font: 'NotoSansCJKtc', fontStyle: 'normal'},
@@ -2257,11 +2390,11 @@ export class PdfComponent implements OnInit {
       this.translateService.instant('result.propose.candidateBs.x'),
       this.translateService.instant('result.propose.candidateBs.y'),
       this.translateService.instant('result.propose.candidateBs.z'),
-      'RSRP',
-      'SINR',
-      'DL Throughput',
-      'UL Throughput',
-      'RxGain'
+      this.translateService.instant('pdf.rsrp'),
+      this.translateService.instant('pdf.sinr'),
+      this.translateService.instant('dl.throughput'),
+      this.translateService.instant('ul.throughput'),
+      this.translateService.instant('RxGain'),            
     ];
     const ueData = [];
     let uedlTpt = [];
@@ -2374,6 +2507,11 @@ export class PdfComponent implements OnInit {
 
     document.getElementById('pdf_area').style.display = 'none';
     this.authService.spinnerHide();
+    if (this.windowLock != null)
+    {
+      this.windowLock();
+      console.log("unlock");
+    }
     pdf.save(`${taskName}_report.pdf`); // Generated PDF
 
   }
@@ -2417,7 +2555,6 @@ export class PdfComponent implements OnInit {
           let id = this.antennaList[i]['antennaID'];
           this.AntennaIdToIndex[id]=i;
         }
-        // console.log(result);
         return result;
       },err => {
         console.log(err);
@@ -2482,5 +2619,182 @@ export class PdfComponent implements OnInit {
         return a;
     }
     return -1;
+  }
+
+  /*fixWindow(fix)
+  {
+    let body = document.body;
+    //const html: HTMLElement = <HTMLElement>document.querySelector('html');
+    if (fix)
+    {
+      //html.addClass("noscroll");
+      body.classList.add("noscroll");
+    }
+    else
+    {
+      body.classList.remove("noscroll");
+      //html.removeClass("noscroll");
+    }
+  }*/
+
+  lockScroll()
+  {
+    let body = document.body;
+    // 记录了锁定滚动条之前body的属性，以便在解锁后恢复锁定前的样式
+    let originBodyOverflow = body.style.overflow;
+    let originBodyPaddingRight = body.style.paddingRight;
+    let originBodyPaddingBottom = body.style.paddingBottom;
+    let originBodyHasLockClass = body.classList.contains('bs-lock-scroll');
+    let hasScroll = this.hasScroll();
+    let scrollWidth = this.scrollWidth(body);
+    // 标记本次是否锁定了页面
+    let locked = false;
+
+
+    if (!originBodyHasLockClass)
+    {
+      body.classList.add('bs-lock-scroll');
+    }
+    if (originBodyOverflow != 'hidden')
+    {
+      body.style.overflow = 'hidden';
+      locked = true;
+      if (hasScroll.vertical)
+      {
+        body.style.paddingRight = scrollWidth.vertical + 'px';
+      }
+      if (hasScroll.horizontal)
+      {
+        body.style.paddingBottom = scrollWidth.horizontal + 'px';
+      }
+    }
+
+    // 返回一个解除锁定滚动条的函数
+    return function ()
+    {
+      let body = document.body;
+      if (!originBodyHasLockClass)
+      {
+        body.classList.remove('bs-lock-scroll');
+      }
+      if (!locked)
+      {
+        return;
+      }
+      if (originBodyOverflow)
+      {
+        body.style.overflow = originBodyOverflow;
+      } else
+      {
+        body.style.overflow = ''; // 移除body上的overflow属性
+      }
+
+      if (originBodyPaddingRight && parseFloat(originBodyPaddingRight) !== scrollWidth.vertical)
+      {
+        body.style.paddingRight = originBodyPaddingRight;
+      } else
+      {
+        body.style.paddingRight = ''; // 移除body上的paddingRight属性
+      }
+
+      if (originBodyPaddingBottom && parseFloat(originBodyPaddingBottom) !== scrollWidth.horizontal)
+      {
+        body.style.paddingBottom = originBodyPaddingBottom;
+      } else
+      {
+        body.style.paddingBottom = ''; // 移除body上的paddingBottom属性
+      }
+    };
+  }
+
+  unlock()
+  {
+    let body = document.body;
+    // 记录了锁定滚动条之前body的属性，以便在解锁后恢复锁定前的样式
+    let originBodyOverflow = body.style.overflow;
+    let originBodyPaddingRight = body.style.paddingRight;
+    let originBodyPaddingBottom = body.style.paddingBottom;
+    let originBodyHasLockClass = body.classList.contains('bs-lock-scroll');
+    let scrollWidth = this.scrollWidth(body);
+    // 标记本次是否锁定了页面
+    let locked = false;
+    
+    if (!originBodyHasLockClass)
+    {
+      body.classList.remove('bs-lock-scroll');
+    }
+    if (!locked)
+    {
+      return;
+    }
+    if (originBodyOverflow)
+    {
+      body.style.overflow = originBodyOverflow;
+    } else
+    {
+      body.style.overflow = ''; // 移除body上的overflow属性
+    }
+
+    if (originBodyPaddingRight && parseFloat(originBodyPaddingRight) !== scrollWidth.vertical)
+    {
+      body.style.paddingRight = originBodyPaddingRight;
+    } else
+    {
+      body.style.paddingRight = ''; // 移除body上的paddingRight属性
+    }
+
+    if (originBodyPaddingBottom && parseFloat(originBodyPaddingBottom) !== scrollWidth.horizontal)
+    {
+      body.style.paddingBottom = originBodyPaddingBottom;
+    } else
+    {
+      body.style.paddingBottom = ''; // 移除body上的paddingBottom属性
+    }
+  }
+
+  /**
+   * 获取元素或浏览器滚动条的宽高
+   * @param ele dom元素
+   * @returns {{horizontal: number, vertical: number}}
+   */
+  scrollWidth(ele)
+  {
+    var tempDiv;
+    var tempInnerDiv = document.createElement('div');
+    var result = {
+      vertical: 0,
+      horizontal: 0
+    };
+    tempInnerDiv.style.cssText = 'width: 200px;height: 200px';
+    if (!ele || ele.nodeType != 1)
+    { // 未传递dom元素则获取浏览器的滚动条
+      result.vertical = window.innerWidth - document.documentElement.offsetWidth;
+      result.horizontal = window.innerHeight - document.documentElement.clientHeight;
+      return result;
+    }
+
+    tempDiv = ele.cloneNode(true);
+    tempDiv.style.cssText = 'width: 100px;height: 100px;opacity: 0;position:absolute;left: -100px;overflow:auto;';
+    tempDiv.appendChild(tempInnerDiv);
+    document.body.appendChild(tempDiv);
+
+    result.vertical = tempDiv.offsetWidth - tempDiv.clientWidth;
+    result.horizontal = tempDiv.offsetHeight - tempDiv.clientHeight;
+
+    document.body.removeChild(tempDiv);
+    tempDiv = tempInnerDiv = null;
+    return result;
+  }
+
+  /**
+  * 判断浏览器或dom元素是否有滚动条
+  * @returns {{horizontal: boolean, vertical: boolean}}
+  */
+  hasScroll()
+  {
+    return {
+      vertical: document.body.scrollHeight > window.innerHeight,
+      horizontal: document.body.scrollWidth > window.innerWidth
+    };
   }
 }

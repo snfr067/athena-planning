@@ -185,9 +185,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
       </div>
       <!-- <div class="dropDown_area" style="background-image:url({{imageSrc}})">
 
-      </div> -->
+    </div> -->
       <div #chart id="chart" style="position: relative; overflow-x: auto">
-        <img id="north" src="assets/img/north.jpg" style="position: absolute; top: 0px; right: 0px"
+        <img id="north" src="assets/img/north.jpg"
              align="right" [ngStyle]="{'transform': 'rotate(' + calculateForm.geographicalNorth+ 'deg)'}">
         <div #dragArea [ngStyle]="dragStyle">
           <span *ngIf="isShowSubField">
@@ -208,7 +208,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
               </ng-container>
             </span>
             <!-- <span *ngFor="let item of subFieldList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)" >
-    </span> -->
+          </span> -->
           </span>
           <span *ngIf="live" class="msg_label" [ngStyle]="tooltipStyle" [innerHTML]="tooltipStr"></span>
           <span *ngFor="let item of obstacleList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="obstacle" (click)="moveClick(item)" (contextmenu)="onRightClick($event, item, i)">
@@ -302,7 +302,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
                     <rect fill="none" id="canvas_background" height="32" width="32" y="-1" x="-1" />
                   </g>
                   <g transform="translate(0.000000,144.000000) scale(0.100000,-0.100000)"
-                     fill="none" class="drag_rect" [ngStyle]="pathStyle[item]"  stroke="none">
+                     fill="none" class="drag_rect" [ngStyle]="pathStyle[item]" stroke="none">
                     <path d="M530 1325 c-183 -35 -327 -104 -472 -229 l-47 -41 26 -27 c15 -16 31
                     -28 36 -28 5 0 32 21 60 46 74 66 187 130 297 166 91 30 102 32 260 32 143 1
                     176 -2 245 -22 109 -31 246 -100 329 -167 38 -30 72 -55 76 -55 3 0 18 13 33
@@ -323,19 +323,19 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
             </span>
           </span>
 
-            <span *ngFor="let item of candidateList; let i=index" id="{{item}}" style="width: 32px; height:32px"
-                  [ngStyle]="spanStyle[item]"
-                  (mouseover)="hover($event, item, i)"
-                  (mouseout)="hoverout($event)" class="candidate position_icon"
-                  (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)">
-              <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                   width="32" height="32" viewBox="0 0 236.000000 362.000000">
-                <g>
-                  <rect fill="none" id="canvas_background" height="48" width="48" y="-1" x="-1" />
-                </g>
-                <g transform="translate(0.000000,362.000000) scale(0.100000,-0.100000)"
-                   fill="#000000" stroke="none">
-                  <path d="M1110 3513 c-275 -22 -524 -136 -715 -327 -223 -224 -335 -514 -322
+          <span *ngFor="let item of candidateList; let i=index" id="{{item}}" style="width: 32px; height:32px"
+                [ngStyle]="spanStyle[item]"
+                (mouseover)="hover($event, item, i)"
+                (mouseout)="hoverout($event)" class="candidate position_icon"
+                (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)">
+            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                 width="32" height="32" viewBox="0 0 236.000000 362.000000">
+              <g>
+                <rect fill="none" id="canvas_background" height="48" width="48" y="-1" x="-1" />
+              </g>
+              <g transform="translate(0.000000,362.000000) scale(0.100000,-0.100000)"
+                 fill="#000000" stroke="none">
+                <path d="M1110 3513 c-275 -22 -524 -136 -715 -327 -223 -224 -335 -514 -322
 -835 15 -375 210 -828 669 -1560 225 -358 441 -682 449 -674 7 8 293 448 345
 533 15 25 60 95 99 155 325 499 571 1013 640 1335 22 103 30 317 16 410 -60
 387 -290 699 -637 861 -45 22 -91 39 -102 39 -12 0 -24 5 -27 10 -3 6 -19 10
@@ -343,29 +343,29 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
 -409 732 -826 0 -308 -146 -565 -412 -726 -134 -82 -253 -113 -428 -112 -116
 1 -147 5 -223 28 -312 94 -528 329 -593 642 -20 95 -15 289 10 379 40 144 124
 283 239 392 151 143 346 224 557 232 20 0 73 -4 118 -9z" />
-                  <path d="M1050 2944 c-133 -36 -241 -148 -265 -275 -8 -41 -11 -39 130 -55
+                <path d="M1050 2944 c-133 -36 -241 -148 -265 -275 -8 -41 -11 -39 130 -55
 l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
 -87 -93 -156 -130 -199 -200 -199 -327 l0 -58 100 0 100 0 0 50 c0 28 6 63 14
 78 8 15 64 73 125 130 142 133 166 172 166 272 0 64 -4 83 -29 128 -70 126
 -202 193 -379 191 -40 0 -97 -7 -127 -15z" />
-                  <path d="M1080 1930 l0 -110 110 0 110 0 0 110 0 110 -110 0 -110 0 0 -110z" />
-                </g>
-              </svg>
-            </span>
-            <span *ngFor="let item of candidateList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle pink_circle">{{ (i + 1) }}</span>
-            <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)">
-              <svg class="s_ue" xmlns="http://www.w3.org/2000/svg">
-                <g>
-                  <rect fill="none" height="10" width="29" y="-1" x="-1" />
-                </g>
-                <g>
-                  <path class="drag_rect" [ngStyle]="pathStyle[item]" d="M15.88,0H3.12C1.4,0,0,1.47,0,3.27v22.46C0,27.53,1.4,29,3.12,29h12.76C17.6,29,19,27.53,19,25.73V3.27
+                <path d="M1080 1930 l0 -110 110 0 110 0 0 110 0 110 -110 0 -110 0 0 -110z" />
+              </g>
+            </svg>
+          </span>
+          <span *ngFor="let item of candidateList; let i=index" id="{{item}}_circle" [ngStyle]="circleStyle[item]" class="rounded-circle pink_circle">{{ (i + 1) }}</span>
+          <span *ngFor="let item of ueList; let i=index" id="{{item}}" [ngStyle]="spanStyle[item]" (mouseover)="hover($event, item, i)" (mouseout)="hoverout($event)" class="UE" (click)="moveClick(item);" (contextmenu)="onRightClick($event, item, i)">
+            <svg class="s_ue" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <rect fill="none" height="10" width="29" y="-1" x="-1" />
+              </g>
+              <g>
+                <path class="drag_rect" [ngStyle]="pathStyle[item]" d="M15.88,0H3.12C1.4,0,0,1.47,0,3.27v22.46C0,27.53,1.4,29,3.12,29h12.76C17.6,29,19,27.53,19,25.73V3.27
               C19,1.47,17.6,0,15.88,0z M9.5,27.09c-0.48,0-0.86-0.41-0.86-0.91c0-0.5,0.39-0.91,0.86-0.91c0.48,0,0.86,0.41,0.86,0.91
               C10.36,26.69,9.98,27.09,9.5,27.09z M16.71,21.99c0,0.77-0.59,1.39-1.32,1.39H3.61c-0.73,0-1.32-0.62-1.32-1.39V4.11
               c0-0.77,0.59-1.39,1.32-1.39h11.77c0.73,0,1.32,0.62,1.32,1.39V21.99z" />
-                </g>
-              </svg>
-            </span>
+              </g>
+            </svg>
+          </span>
 
         </div>
       </div>
@@ -402,37 +402,38 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
          [matMenuTriggerFor]="rightMenu"></div>
 
     <!-- standard material menu -->
-    <mat-menu #rightMenu="matMenu" id="rightMenu">
-      <ng-template matMenuContent>
-        <button *ngIf="dragObject[svgId].type != 'antenna'" class="rightClickBtnGroup">{{ 'number.no' | translate }}{{ this.svgNum }}</button>
-        <button *ngIf="dragObject[svgId].type == 'antenna'" class="rightClickBtnGroup">{{ 'number.no' | translate }}{{ this.svgAntNum }}</button>
-        <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
-        <button class="rightClickBtnGroup"
-                *ngIf="dragObject[svgId].type === 'obstacle';"
-                (click)="$event.stopPropagation()"
-                [(colorPicker)]="color"
-                (colorPickerChange)="colorChange()">
-          {{ 'planning.changeColor' | translate }}
-        </button>
-        <!--<button class="rightClickBtnGroup" (click)="openHeightSetting()" *ngIf="dragObject[svgId].type !== 'subField' && dragObject[svgId].type !== 'antenna'">
-          <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
-            {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
-          </ng-container>
-          <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
-        </button>-->
-        <button class="rightClickBtnGroup" (click)="openHeightSetting()"
-                *ngIf="dragObject[svgId].type === 'obstacle'">
-          <ng-container >
-            {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
-          </ng-container>
-        </button>
-        <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
-        <button *ngIf="dragObject[svgId].type === 'defaultBS' && planningIndex == '3'" class="rightClickBtnGroup" (click)="openAntRfParamSetting(selectAntSvgId, selectBsSvgId)">{{ 'antenna.param.setting' | translate }}</button>
-        <button *ngIf="dragObject[svgId].type === 'defaultBS' && planningIndex == '3'" class="rightClickBtnGroup" (click)="addBSAntenna(1)">{{ 'add.antenna.to.bs' | translate }}</button>
-        <button *ngIf="dragObject[svgId].type === 'antenna' && planningIndex == '3'"  class="rightClickBtnGroup" (click)="openAntRfParamSetting(selectAntSvgId, selectBsSvgId)">{{ 'antenna.param.setting' | translate }}</button>
-        <button *ngIf="dragObject[svgId].type === 'UE'" class="rightClickBtnGroup" (click)="openUEParamSetting(svgId, svgNum, false)">{{ 'ueParamLink' | translate }}</button>
-        <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
-      </ng-template>
+    <mat-menu #rightMenu="matMenu" id="rightMenu" class="blueborder">
+        <ng-template matMenuContent>
+          <button *ngIf="dragObject[svgId].type != 'antenna'" class="rightClickBtnGroup">{{ 'number.no' | translate }}{{ this.svgNum }}</button>
+          <button *ngIf="dragObject[svgId].type == 'antenna'" class="rightClickBtnGroup">{{ 'number.no' | translate }}{{ this.svgAntNum }}</button>
+          <button class="rightClickBtnGroup" (click)="openDeleteSetting()">{{ 'delete' | translate }}</button>
+          <button class="rightClickBtnGroup"
+                  *ngIf="dragObject[svgId].type === 'obstacle';"
+                  (click)="$event.stopPropagation()"
+                  [(colorPicker)]="color"
+                  (colorPickerChange)="colorChange()">
+            {{ 'planning.changeColor' | translate }}
+          </button>
+          <!--<button class="rightClickBtnGroup" (click)="openHeightSetting()" *ngIf="dragObject[svgId].type !== 'subField' && dragObject[svgId].type !== 'antenna'">
+      <ng-container *ngIf="dragObject[svgId].type === 'obstacle' ; else otherTypeTemp2">
+        {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
+      </ng-container>
+      <ng-template #otherTypeTemp2>{{ 'altitude.setting' | translate }}</ng-template>
+    </button>-->
+          <button class="rightClickBtnGroup" (click)="openHeightSetting()"
+                  *ngIf="dragObject[svgId].type === 'obstacle'">
+            <ng-container>
+              {{ 'altitude.setting' | translate }}/{{ 'material.setting' | translate }}
+            </ng-container>
+          </button>
+          <button *ngIf="dragObject[svgId].type === 'defaultBS'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId, svgNum, false)">{{ 'rfparam.setting' | translate }}</button>
+          <button *ngIf="dragObject[svgId].type === 'defaultBS' && planningIndex == '3'" class="rightClickBtnGroup" (click)="openAntRfParamSetting(selectAntSvgId, selectBsSvgId)">{{ 'antenna.param.setting' | translate }}</button>
+          <button *ngIf="dragObject[svgId].type === 'defaultBS' && planningIndex == '3'" class="rightClickBtnGroup" (click)="addBSAntenna(1)">{{ 'add.antenna.to.bs' | translate }}</button>
+          <button *ngIf="dragObject[svgId].type === 'antenna' && planningIndex == '3'" class="rightClickBtnGroup" (click)="openAntRfParamSetting(selectAntSvgId, selectBsSvgId)">{{ 'antenna.param.setting' | translate }}</button>
+          <button *ngIf="dragObject[svgId].type === 'UE'" class="rightClickBtnGroup" (click)="openUEParamSetting(svgId, svgNum, false)">{{ 'ueParamLink' | translate }}</button>
+          <!-- <button *ngIf="dragObject[svgId].type === 'defaultBS' || dragObject[svgId].type === 'candidate'" class="rightClickBtnGroup" (click)="openRfParamSetting(svgId)">{{ 'rfparam.setting' | translate }}</button> -->
+
+        </ng-template>
     </mat-menu>
     <mat-menu #mater="matMenu">
       <ng-template matMenuContent>
@@ -976,16 +977,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
                 <td>{{ 'ULModulationCodingScheme' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.ulModulationCodScheme" style="width: 150px;">
-                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                      <option value="64QAM-table">64QAM-table</option>
-                      <option value="256QAM-table">256QAM-table</option>
-                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-                    </ng-container>
-                    <ng-template #othterUlModulationCodScheme>
-                      <option value="64QAM-table">64QAM-table</option>
-                      <option value="256QAM-table">256QAM-table</option>
-                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-                    </ng-template>
+                    <option value="64QAM-table">64QAM-table</option>
+                    <option value="256QAM-table">256QAM-table</option>
+                    <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
                   </select>
                 </td>
               </tr>
@@ -993,16 +987,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
                 <td>{{ 'DLModulationCodingScheme' | translate }}</td>
                 <td>
                   <select [(ngModel)]="tempCalParamSet.dlModulationCodScheme" style="width: 150px;">
-                    <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                      <option value="64QAM-table">64QAM-table</option>
-                      <option value="256QAM-table">256QAM-table</option>
-                      <option value="64QAM-Low-SE">64QAM-Low-SE</option>
-                    </ng-container>
-                    <ng-template #othterUlModulationCodScheme>
-                      <option value="64QAM-table">64QAM-table</option>
-                      <option value="256QAM-table">256QAM-table</option>
-                      <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-                    </ng-template>
+                    <option value="64QAM-table">64QAM-table</option>
+                    <option value="256QAM-table">256QAM-table</option>
+                    <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>                    
                   </select>
                 </td>
               </tr>
@@ -1088,7 +1075,8 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
                 <p style="margin-right: 5px;">{{ 'planning.upload' | translate }}</p>
                 <label id="uploadFileLabel" for="upload-file">
                   {{ 'planning.file.upload' | translate }}
-                  <input type="file" id="upload-file" (change)="fileChange($event)" title="" hidden="hidden">
+                  <input type="file" id="upload-file" (change)="fileChange($event)" title="" hidden="hidden" accept="image/jpeg,image/png,image/jpg">
+                  
                 </label>
                 <span style="margin-left: 2em;" *ngIf="showFileName">{{ calculateForm.mapName }}</span>
               </li>
@@ -1452,40 +1440,43 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
 
                     <!--<button class="rfBtns" mat-stroked-button color="primary" (click)="openRfParamSetting(item, i, true)">{{ 'rfparam.setting' | translate }}</button>-->
 
-                    <span *ngFor="let itemAnt of bsListRfParam[item].antenna; let a = index;">
-                      <span>
-                        <font style="padding-right: 0.5em; color: steelblue">{{i+1}}.{{a+2}}</font>
-                      </span>
-                      <span>
-                        <label>X</label>
-                        <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].x"
-                               (select)="tempParamStorage(dragObject[itemAnt.svgId].x)"
-                               (click)="tempParamStorage(dragObject[itemAnt.svgId].x)"
-                               (change)="changePosition('x',itemAnt.svgId)">
-                      </span>
-                      <span>
-                        <label>Y</label>
-                        <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].y"
-                               (select)="tempParamStorage(dragObject[itemAnt.svgId].y)"
-                               (click)="tempParamStorage(dragObject[itemAnt.svgId].y)"
-                               (change)="changePosition('y',itemAnt.svgId)">
-                      </span>
-                      <span>
-                        <label>Z</label>
-                        <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].z"
-                               (select)="tempParamStorage(dragObject[itemAnt.svgId].z)"
-                               (click)="tempParamStorage(dragObject[itemAnt.svgId].z)"
-                               (change)="changeZvalue(itemAnt.svgId)">
-                      </span>
+                    <ng-container *ngIf="planningIndex == '3'">
+                      <span *ngFor="let itemAnt of bsListRfParam[item].antenna; let a = index;">
+                        <span>
+                          <font style="padding-right: 0.5em; color: steelblue">{{i+1}}.{{a+2}}</font>
+                        </span>
+                        <span>
+                          <label>X</label>
+                          <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].x"
+                                 (select)="tempParamStorage(dragObject[itemAnt.svgId].x)"
+                                 (click)="tempParamStorage(dragObject[itemAnt.svgId].x)"
+                                 (change)="changePosition('x',itemAnt.svgId)">
+                        </span>
+                        <span>
+                          <label>Y</label>
+                          <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].y"
+                                 (select)="tempParamStorage(dragObject[itemAnt.svgId].y)"
+                                 (click)="tempParamStorage(dragObject[itemAnt.svgId].y)"
+                                 (change)="changePosition('y',itemAnt.svgId)">
+                        </span>
+                        <span>
+                          <label>Z</label>
+                          <input type="text" [(ngModel)]="dragObject[itemAnt.svgId].z"
+                                 (select)="tempParamStorage(dragObject[itemAnt.svgId].z)"
+                                 (click)="tempParamStorage(dragObject[itemAnt.svgId].z)"
+                                 (change)="changeZvalue(itemAnt.svgId)">
+                        </span>
 
-                      <span class="little_icon clearOne ml-3" (click)="removeObj(itemAnt.svgId)">
-                        <span class="material-icons">clear</span>
-                      </span>
-                      <span class="little_icon clearOne ml-3" (click)="openAntRfParamSetting(itemAnt.svgId, item)">
-                        <span class="material-icons">settings</span>
-                      </span>
+                        <span class="little_icon clearOne ml-3" (click)="removeObj(itemAnt.svgId)">
+                          <span class="material-icons">clear</span>
+                        </span>
+                        <span class="little_icon clearOne ml-3" (click)="openAntRfParamSetting(itemAnt.svgId, item)">
+                          <span class="material-icons">settings</span>
+                        </span>
 
-                    </span>
+                      </span>
+                    </ng-container>
+
 
                   </li>
                 </ol>
@@ -1990,7 +1981,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
       </tr>
       <tr style="border-top: 1px solid #ddd;" *ngIf="calculateForm.pathLossModelId == 999 && createMethod == 'importFile'">
         <td>
-          {{ 'antennaFieldData' | translate }}
+          {{ 'pathLossModelData' | translate }}
           (<a href="../../assets/file/ITRI_pathlossmodel_template.xlsx">{{ 'download' | translate }}</a>)
         </td>
         <td>
@@ -2521,7 +2512,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
         <tr>
           <td>{{ 'antenna.type' | translate }}</td>
           <td>
-            <select step="2"
+            <select step="2" style="width: 100%;"
                     [(ngModel)]="addAntenna.type">
               <option value="Omnidirectional"> {{'Omnidirectional' | translate}} </option>
               <option value="Directional"> {{'Directional' | translate}} </option>
@@ -2540,6 +2531,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
           <td>{{ 'antenna.port' | translate }}</td>
           <td>
             <input type="number" class="inputNum" [(ngModel)]="addAntenna.port">
+            <!--{{addAntenna.port}}-->
           </td>
         </tr>
         <tr>
@@ -2597,7 +2589,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
         <tr>
           <td>{{ 'antenna.type' | translate }}</td>
           <td>
-            <select step="2"
+            <select step="2" style="width: 100%;"
                     [(ngModel)]="editAntenna.type">
               <option value="Omnidirectional"> {{'Omnidirectional' | translate}} </option>
               <option value="Directional"> {{'Directional' | translate}} </option>
@@ -2610,12 +2602,14 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
             <input type="number" class="inputNum" [(ngModel)]="editAntenna.band[0]">
             ~
             <input type="number" class="inputNum" [(ngModel)]="editAntenna.band[1]">
+            <!-- {{editAntenna.band[0]}} ~ {{editAntenna.band[1]}}-->
           </td>
         </tr>
         <tr>
           <td>{{ 'antenna.port' | translate }}</td>
           <td>
             <input type="number" class="inputNum" [(ngModel)]="editAntenna.port">
+            <!--{{editAntenna.port}}-->
           </td>
         </tr>
         <tr>
@@ -2749,11 +2743,11 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
       </tr>
       <tr style="border-bottom-style:none">
         <td style="text-align: center">
-          {{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
+          {{ 'ant.raw.data.phi' | translate }}: {{ 'angleWithXaxis' | translate }}
           (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
         </td>
         <td style="text-align: center">
-          {{ 'phi' | translate }}: {{ 'angleWithXaxis' | translate }}
+          {{ 'ant.raw.data.theta' | translate }}: {{ 'angleWithZaxis' | translate }}
           (<a href="javascript:void(0)" (click)="coordinateInfo()">{{ 'info' | translate }}</a>)
         </td>
       </tr>
@@ -2792,7 +2786,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
             </span>
           </td>
         </tr>
-        <ng-container *ngIf="bsListRfParam[selectBsSvgId].isAntennaDefault != 'default'">
+        <ng-container *ngIf="bsListRfParam[selectBsSvgId].antennaType != 'Omnidirectional'">
           <tr>
             <td>
               {{ 'theta' | translate }}: {{ 'angleWithZaxis' | translate }}
@@ -2837,7 +2831,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
             </td>
           </tr>
         </ng-container>
-        <tr *ngIf="bsListRfParam[selectBsSvgId].isAntennaDefault == 'default'">
+        <tr *ngIf="bsListRfParam[selectBsSvgId].antennaType == 'Omnidirectional'">
           <td>{{ 'TxGain' | translate }}</td>
           <td>
             <!--基站上的天線-->
@@ -3045,7 +3039,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
         <td><input type="text" [(ngModel)]="bsListRfParam[svgId].tddbandwidth"></td>
       </tr> -->
         <tr>
-          <td>{{ 'subcarrier' | translate }}</td>
+          <td>{{ 'tddscs' | translate }}</td>
           <td>
             <select [(ngModel)]="bsListRfParam[svgId].tddscs"
                     (change)="changeScs(bsListRfParam[svgId].tddscs, 'tdd', false)"
@@ -3134,16 +3128,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
           <td>{{ 'ULModulationCodingScheme' | translate }}</td>
           <td>
             <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 175px;">
-              <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                <option value="64QAM-table">64QAM</option>
-                <option value="256QAM-table">256QAM</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-container>
-              <ng-template #othterUlModulationCodScheme>
-                <option value="64QAM-table">64QAM-table</option>
-                <option value="256QAM-table">256QAM-table</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-template>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>              
             </select>
           </td>
         </tr>
@@ -3151,16 +3138,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
           <td>{{ 'DLModulationCodingScheme' | translate }}</td>
           <td>
             <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 175px;">
-              <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                <option value="64QAM-table">64QAM</option>
-                <option value="256QAM-table">256QAM</option>
-                <option value="64QAM-Low-SE">64QAM-Low-SE</option>
-              </ng-container>
-              <ng-template #othterUlModulationCodScheme>
-                <option value="64QAM-table">64QAM-table</option>
-                <option value="256QAM-table">256QAM-table</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-template>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-Low-SE">64QAM-table-Low-SE</option>
             </select>
           </td>
         </tr>
@@ -3343,16 +3323,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
           <td>{{ 'ULModulationCodingScheme' | translate }}</td>
           <td>
             <select [(ngModel)]="bsListRfParam[svgId].ulModulationCodScheme" style="width: 150px;">
-              <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                <option value="64QAM-table">64QAM</option>
-                <option value="256QAM-table">256QAM</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-container>
-              <ng-template #othterUlModulationCodScheme>
-                <option value="64QAM-table">64QAM-table</option>
-                <option value="256QAM-table">256QAM-table</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-template>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
             </select>
           </td>
         </tr>
@@ -3360,16 +3333,9 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
           <td>{{ 'DLModulationCodingScheme' | translate }}</td>
           <td>
             <select [(ngModel)]="bsListRfParam[svgId].dlModulationCodScheme" style="width: 150px;">
-              <ng-container *ngIf="planningIndex == '3' ; else othterUlModulationCodScheme">
-                <option value="64QAM-table">64QAM</option>
-                <option value="256QAM-table">256QAM</option>
-                <option value="64QAM-Low-SE">64QAM-Low-SE</option>
-              </ng-container>
-              <ng-template #othterUlModulationCodScheme>
-                <option value="64QAM-table">64QAM-table</option>
-                <option value="256QAM-table">256QAM-table</option>
-                <option value="64QAM-table-lowSE">64QAM-table-lowSE</option>
-              </ng-template>
+              <option value="64QAM-table">64QAM-table</option>
+              <option value="256QAM-table">256QAM-table</option>
+              <option value="64QAM-table-Low-SE">64QAM-table-Low-SE</option>              
             </select>
           </td>
         </tr>
@@ -3795,7 +3761,7 @@ l60 -6 24 56 c27 67 75 110 139 126 147 37 284 -84 228 -202 -9 -19 -48 -61
       <tr style="border-bottom-style: none;">
         <td>{{ 'bs.antenna.count' | translate }}</td>
         <td>
-          <input type="number" class="inputNum" [(ngModel)]="antCountOfBS">
+          <input type="number" min="1" max="10" step="1" class="inputNum" [(ngModel)]="antCountOfBS">
         </td>
       </tr>
     </tbody>

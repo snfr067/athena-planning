@@ -157,7 +157,10 @@ export class SubFieldComponent implements OnInit {
       let x_start = Math.floor(Number(sub_field_arr[i].x));
       let x_end = Math.ceil(Number(sub_field_arr[i].x)+Number(sub_field_arr[i].width));
       let y_start = Math.floor(Number(sub_field_arr[i].y));
-      let y_end = Math.ceil(Number(sub_field_arr[i].y)+Number(sub_field_arr[i].height));
+      let y_end = Math.ceil(Number(sub_field_arr[i].y) + Number(sub_field_arr[i].height));
+      console.log(Number(sub_field_arr[i].y))
+      console.log(Number(sub_field_arr[i].height))
+      console.log(y_end)
       // 我只是想放N/A: (當x_start < x_end) ,y亦然
       if ((x_start == Math.floor(this.calculateForm.width) || y_start == Math.floor(this.calculateForm.height))){
         if (type === 'coverage' || type === 'coverageRsrp') {
@@ -169,13 +172,15 @@ export class SubFieldComponent implements OnInit {
         if (x_end > Math.floor(this.calculateForm.width)) {
           x_end = x_end - 1;
         }
+        console.log(Math.floor(this.calculateForm.height))
         if (y_end > Math.floor(this.calculateForm.height)) {
           y_end = y_end - 1;
         }
         for (let i = Math.floor(x_start/CooUnit);i < Math.ceil(x_end/CooUnit);i++) {
           for (let j = Math.floor(y_start/CooUnit);j < Math.ceil(y_end/CooUnit);j++) {
             // console.log(`${i} ${j} ${valueArr[i][j][0]}`);
-            if (type === 'coverage') {
+            if (type === 'coverage')
+            {
               if (Number(tempValue[i][j][z]) > covTh) {
                 totalValue+=1;
               } else {
@@ -297,7 +302,7 @@ export class SubFieldComponent implements OnInit {
         }
       });
     }
-    
+    console.log(this.rectList);
     
 
     // candidateBs

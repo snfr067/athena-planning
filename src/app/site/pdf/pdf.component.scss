@@ -190,3 +190,9 @@ table {
   background-color: #fff;
   color: #333;
 }
+
+html.noscroll {
+  position: fixed;
+  overflow-y: scroll;
+  width: 100%;
+}

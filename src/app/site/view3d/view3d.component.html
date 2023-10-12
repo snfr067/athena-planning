@@ -2,9 +2,10 @@
 
 <div *ngIf="!isPDF">
   <label>{{ 'view3d.show.type' | translate }}：</label>
-  <mat-checkbox [(ngModel)]="showDefaultBs" (change)="switchDefaultBs()" *ngIf="defaultBs.length > 0">{{ 'defaultBs' | translate }}</mat-checkbox>
+  <mat-checkbox [(ngModel)]="showDefaultBs" (change)="switchDefaultBs()" *ngIf="!calculateForm.isSimulation && defaultBs.length > 0">{{ 'defaultBs' | translate }}</mat-checkbox>
+  <mat-checkbox [(ngModel)]="showAnt" (change)="switchAnt()" *ngIf="calculateForm.isSimulation && antGroup.length > 0">{{ 'antenna' | translate }}</mat-checkbox>
   <!-- <mat-checkbox [(ngModel)]="showDefaultBs" (change)="switchDefaultBs()" *ngIf="calculateForm.isSimulation === true">{{ 'defaultBs' | translate }}</mat-checkbox> -->
-  <mat-checkbox [(ngModel)]="showCandidate" (change)="switchCandidate()" class="ml-2" *ngIf="candidate.length > 0">{{ 'candidateBs' | translate }}</mat-checkbox>
+  <mat-checkbox [(ngModel)]="showCandidate" (change)="switchCandidate()" class="ml-2" *ngIf="candidate.length > 0">{{ 'propose.candidate' | translate }}</mat-checkbox>
   <!-- <mat-checkbox [(ngModel)]="showCandidate" (change)="switchCandidate()" class="ml-2" *ngIf="calculateForm.isSimulation === false">{{ 'candidateBs' | translate }}</mat-checkbox> -->
   <mat-checkbox [(ngModel)]="showObstacle" (change)="switchObstacle()" class="ml-2">{{ 'obstacleInfo' | translate }}</mat-checkbox>
   <mat-checkbox [(ngModel)]="showUe" (change)="switchUe()" class="ml-2" *ngIf="ue.length > 0">{{ 'ue' | translate }}</mat-checkbox>

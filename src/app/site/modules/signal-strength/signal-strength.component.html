@@ -1,5 +1,5 @@
 <div [ngStyle]="divStyle">
-  <div class="signal_strength">
+  <div class="signal_strength" [ngStyle]="verticalStyle">
     <input type="hidden" id="is_strength" value="true">
     <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
 

@@ -187,7 +187,9 @@ export class SpinnerComponent implements OnInit {
   }
 
   /** show pdfing, 有運算中 */
-  showpdf() {
+  showpdf()
+  {
+    this.isFinish = false;
     this.showLoad = false;
     this.showCal = false;
     this.showPdf = true;
@@ -196,6 +198,7 @@ export class SpinnerComponent implements OnInit {
     this.percentageVal = 0;
     this.showPercentage = false;
     this.showUpFile = false;
+    window.clearTimeout(this.time);
     this.addTime();
     this.spinner.show();
   }

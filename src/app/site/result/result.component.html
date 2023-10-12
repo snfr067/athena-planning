@@ -8,7 +8,7 @@
   <mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
   <mat-button-toggle value="save" (click)="save(false)" style="border-radius: 2px;">{{ 'save' | translate }}</mat-button-toggle>
   <mat-button-toggle value="save" style="visibility: hidden;" disabled></mat-button-toggle>
-  <mat-button-toggle value="caltime" (click)="caltime()" style="border-radius: 2px;">{{ 'com.time.show' | translate }}</mat-button-toggle>
+  <mat-button-toggle *ngIf="false" value="caltime" (click)="caltime()" style="border-radius: 2px;">{{ 'com.time.show' | translate }}</mat-button-toggle>
 </mat-button-toggle-group>
 <!-- <mat-button-toggle-group >
 	<mat-button-toggle value="save" (click)="save(false)">{{ 'save' | translate }}</mat-button-toggle>
@@ -59,12 +59,13 @@
 
             <ng-container *ngIf="chartType == 'PCI'">
               <mat-radio-group [(ngModel)]="coverageCalculateFunction" (change)="drawCover()" aria-label="Select an option">
-                <mat-radio-button value="default">{{ 'coverage.calculate.default' | translate }}</mat-radio-button>
-                <mat-radio-button value="rsrp" style="margin-left: 2em">{{ rsrpThTitle }}</mat-radio-button>
-                <mat-radio-button value="sinr" style="margin-left: 2em">{{ sinrThTitle }}</mat-radio-button>
+                <mat-radio-button value="default" style="font-size: 14px">{{ 'coverage.calculate.default' | translate }}</mat-radio-button>
+                <mat-radio-button value="rsrp" style="font-size: 14px;margin-left: 2em">{{ rsrpThTitle }}</mat-radio-button>
+                <mat-radio-button value="sinr" style="font-size: 14px;margin-left: 2em">{{ sinrThTitle }}</mat-radio-button>
               </mat-radio-group>
+              <br />
             </ng-container>
-            <br />
+
             <ng-container *ngIf="showUEArea">
               <label class="mL_1 displayType">
                 <!-- <input type="checkbox" [(ngModel)]="showUE" (change)="switchShowUE()"> -->
@@ -95,7 +96,7 @@
               </label>
             </ng-container>
 
-            <ng-container *ngIf="showAntArea">
+            <ng-container *ngIf="isSimulate">
               <label class="mL_1 displayType">
                 <mat-checkbox [(ngModel)]="showAnt" [color]="'primary'" (ngModelChange)="switchShowAnt()">
                   {{ 'show.antenna' | translate }}
@@ -107,7 +108,7 @@
               <label class="mL_1 displayType">
                 <!-- <input type="checkbox" [(ngModel)]="showCandidate" (change)="switchShowCandidate()"> -->
                 <mat-checkbox *ngIf="calculateForm.mapProtocol != 'wifi'" [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
-                  {{ 'show.candidate' | translate }}
+                  {{ 'show.propose.candidateBs' | translate }}
                 </mat-checkbox>
                 <mat-checkbox *ngIf="calculateForm.mapProtocol == 'wifi'" [(ngModel)]="showCandidate" [color]="'primary'" (ngModelChange)="switchShowCandidate()">
                   {{ 'show.candidate.ap' | translate }}
@@ -132,18 +133,18 @@
               <span class="scaleMaxMin" *ngIf="scaleInputError" style="color: red; position: absolute; margin-left: 0.5rem; padding:.3rem;">{{ 'numeric.enter' | translate }}</span>
             </ng-container>
 
-            <!-- 訊號品質圖 -->
-            <app-signal-quality *ngIf="showQuality" #quality></app-signal-quality>
-            <!-- 訊號覆蓋圖 -->
-            <app-signal-cover *ngIf="showCover" #cover></app-signal-cover>
-            <!-- 訊號強度圖 -->
-            <app-signal-strength *ngIf="showStrength" #strength></app-signal-strength>
-            <!-- 上行傳輸速率圖 -->
-            <app-signal-ul-throughput *ngIf="showUlThroughputMap" #ulThroughputMap></app-signal-ul-throughput>
-            <!-- 下行傳輸速率圖 -->
-            <app-signal-dl-throughput *ngIf="showDlThroughputMap" #dlThroughputMap></app-signal-dl-throughput>
-
-            <!-- <app-site-planning-map *ngIf="showDlThroughputMap" #sitePlanningMap></app-site-planning-map> -->
+              <!-- 訊號品質圖 -->
+              <app-signal-quality *ngIf="showQuality" #quality ></app-signal-quality>
+              <!-- 訊號覆蓋圖 -->
+              <app-signal-cover *ngIf="showCover" #cover></app-signal-cover>
+              <!-- 訊號強度圖 -->
+              <app-signal-strength *ngIf="showStrength" #strength></app-signal-strength>
+              <!-- 上行傳輸速率圖 -->
+              <app-signal-ul-throughput *ngIf="showUlThroughputMap" #ulThroughputMap></app-signal-ul-throughput>
+              <!-- 下行傳輸速率圖 -->
+              <app-signal-dl-throughput *ngIf="showDlThroughputMap" #dlThroughputMap></app-signal-dl-throughput>
+          
+           
 
             <div>
               <label class="m-0">{{ 'result.opacity' | translate }}</label>
@@ -169,7 +170,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['frequency'] }}</td>
                     <td class="choose">{{ item['bandwidth'] }}</td>
                     <td class="choose">{{ item['mimoNumber'] }}</td>
@@ -180,7 +180,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['frequency'] }}</td>
                     <td class="choose">{{ item['bandwidth'] }}</td>
                     <td class="choose">{{ item['mimoNumber'] }}</td>
@@ -202,7 +201,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['ulFrequency'] }}</td>
                     <td class="choose">{{ item['dlFrequency'] }}</td>
                     <td class="choose">{{ item['ulBandwidth'] }}</td>
@@ -215,7 +213,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['ulFrequency'] }}</td>
                     <td class="choose">{{ item['dlFrequency'] }}</td>
                     <td class="choose">{{ item['ulBandwidth'] }}</td>
@@ -225,10 +222,12 @@
                 </tbody>
                 <tbody *ngIf="calculateForm.objectiveIndex == '1'">
                   <tr *ngIf="calculateForm.duplex == 'tdd'">
-                    <th *ngIf="isSimulate" style="background-color:white !important; border-left-color: white !important;
+                    <th *ngIf="isSimulate &&
+                        calculateForm.bsList != null && calculateForm.bsList.defaultBs != null" style="background-color:white !important; border-left-color: white !important;
                           border-top-color: white !important;
                           border-bottom-color: white !important;"></th>
-                    <th style="border-left: 1.5px solid #0f4e82!important;">{{ 'result.propose.defaultBs' | translate }}</th>
+                    <th style="border-left: 1.5px solid #0f4e82!important;">{{ 'result.propose.bs.num' | translate }}</th>
+                    <th *ngIf="!isSimulate">{{ 'result.propose.candidateBs.xy' | translate }}</th>
                     <th>{{ 'result.propose.candidateBs.dbm' | translate }}</th>
                     <!-- <th>{{ 'result.propose.candidateBs.beamId' | translate }}</th> -->
                     <th *ngIf="!isSimulate" style="width:16em;">{{ 'antenna' | translate }}</th>
@@ -243,7 +242,8 @@
 
                   <ng-container *ngFor="let item of defaultBSList5gTdd let i = index" [attr.data-index]="i">
                     <tr>
-                      <th *ngIf="isSimulate" style="background-color:white !important; border-left-color: white !important;
+                      <th *ngIf="isSimulate &&
+                        calculateForm.bsList != null && calculateForm.bsList.defaultBs != null" style="background-color:white !important; border-left-color: white !important;
                           border-top-color: white !important;
                           border-bottom-color: white !important;">
                         <font (click)="changeShowAntBsId(i, true)" style="cursor:pointer; display: inline-block; transform:rotate(270deg);"
@@ -255,6 +255,7 @@
                         </font>
                       </th>
                       <td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
+                      <td *ngIf="!isSimulate" class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
                       <td class="choose">{{ item['txpower'] }}</td>
                       <!-- <td class="choose">0</td> -->
                       <td *ngIf="!isSimulate" class="choose">{{ item['antennaName'] }}</td>
@@ -267,7 +268,8 @@
                       <td class="choose">{{ item['ulMimoLayer'] }}</td>
                       <td class="choose">{{ item['dlMimoLayer'] }}</td>
                     </tr>
-                    <tr style="background-color: rgb(208, 234, 245)!important" *ngIf="showAntBsIdList[i] && isSimulate && calculateForm.bsList != null && calculateForm.bsList.defaultBs != null">
+                    <tr style="background-color: rgb(208, 234, 245)!important" *ngIf="showAntBsIdList[i] && isSimulate &&
+                        calculateForm.bsList != null && calculateForm.bsList.defaultBs != null">
                       <td style="background-color:white !important; border-left-color: white !important;
                           border-top-color: white !important;
                           border-bottom-color: white !important;"></td>
@@ -347,11 +349,11 @@
 
                   <tr *ngFor="let item of candidateTable5gTdd; let i = index" [attr.data-index]="i">
                     <td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
+                    <td *ngIf="!isSimulate" class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
                     <td class="choose">{{ item['txpower'] }}</td>
                     <!-- <td class="choose">0</td> -->
                     <td class="choose">{{ item['antennaName'] }}</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['frequency'] }}</td>
                     <td class="choose">{{ item['scs'] }}</td>
                     <td class="choose">{{ item['bandwidth'] }}</td>
@@ -365,7 +367,7 @@
                           border-top-color: white !important;
                           border-bottom-color: white !important;"></th>
                     <th>{{ 'result.propose.candidateBs.num' | translate }}</th>
-                    <th>{{ 'result.propose.candidateBs.xy' | translate }}</th>
+                    <th *ngIf="!isSimulate" >{{ 'result.propose.candidateBs.xy' | translate }}</th>
                     <th>{{ 'result.propose.candidateBs.dbm' | translate }}</th>
                     <!-- <th>{{ 'result.propose.candidateBs.beamId' | translate }}</th> -->
                     <th *ngIf="!isSimulate" style="width:16em;">{{ 'antenna' | translate }}</th>
@@ -377,7 +379,6 @@
                     <th>{{ 'dlBandwidth' | translate }}</th>
 
                     <!-- <th>{{ 'subcarrier' | translate }}</th> -->
-                    bc
                     <th>{{ 'ulSubcarrier' | translate }}</th>
                     <th>{{ 'dlSubcarrier' | translate }}</th>
                     <th>{{ 'ULModulationCodingScheme' | translate }}</th>
@@ -400,6 +401,7 @@
                         </font>
                       </th>
                       <td class="choose">{{'result.propose.defaultBs' | translate}}{{ i+1 }}</td>
+                      <td *ngIf="!isSimulate" class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
                       <td class="choose">{{ item['txpower'] }}</td>
 
                       <!-- <td class="choose">0</td> -->
@@ -501,17 +503,16 @@
                   </tr>
                   <tr *ngFor="let item of candidateTable5gFdd; let i = index" [attr.data-index]="i">
                     <td class="choose">{{'result.propose.candidateBs' | translate}}{{ item['num'] }}</td>
+                    <td *ngIf="!isSimulate" class="choose">{{ item['x'] }}/{{ item['y'] }}</td>
                     <td class="choose">{{ item['txpower'] }}</td>
                     <!-- <td class="choose">0</td> -->
                     <td class="choose">{{ item['antennaName'] }}</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['ulFrequency'] }}</td>
                     <td class="choose">{{ item['dlFrequency'] }}</td>
                     <td class="choose">{{ item['ulBandwidth'] }}</td>
                     <td class="choose">{{ item['dlBandwidth'] }}</td>
                     <!-- <td class="choose">{{ item['scs'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['ulScs'] }}</td>
                     <td class="choose">{{ item['dlScs'] }}</td>
                     <td class="choose">{{ item['ulMcsTable'] }}</td>
@@ -538,7 +539,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['frequency'] }}</td>
                     <td class="choose">{{ item['bandwidth'] }}</td>
                     <td class="choose">{{ item['wifiProtocol'] }}</td>
@@ -551,7 +551,6 @@
                     <td class="choose">{{ item['txpower'] }}</td>
                     <td class="choose">0</td>
                     <!-- <td class="choose">{{ item['beamid'] }}</td> -->
-                    ho
                     <td class="choose">{{ item['frequency'] }}</td>
                     <td class="choose">{{ item['bandwidth'] }}</td>
                     <td class="choose">{{ item['wifiProtocol'] }}</td>

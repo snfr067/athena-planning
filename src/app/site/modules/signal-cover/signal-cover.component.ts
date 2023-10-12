@@ -4,6 +4,7 @@ import { CalculateForm } from '../../../form/CalculateForm';
 import { TranslateService } from '@ngx-translate/core';
 import { Options } from '@angular-slider/ngx-slider';
 import { ChartService } from '../../../service/chart.service';
+import { isDataSource } from '@angular/cdk/collections';
 
 declare var Plotly: any;
 
@@ -48,12 +49,17 @@ export class SignalCoverComponent implements OnInit {
     position: 'relative',
     opacity: 0
   };
+  verticalStyle = {
+
+  };
   /** 高度 */
   zValue = '1';
   /** 障礙物顯示 */
   showObstacle = 'visible';
   /** BS顯示 */
-  showBs = 'visible';
+  showBs = true;
+  /** Ant顯示 */
+  showAnt = true; 
   /** AP顯示 */
   showCandidate = true;
   /** slide */
@@ -74,6 +80,9 @@ export class SignalCoverComponent implements OnInit {
   coverageCalculateFunction = 'default';
   sinrTh = 0;
   rsrpTh = 0;
+
+  /** 由於在height > width的情況下，xy會長寬每次畫圖時都會有變化，因此設為全域變數只記錄第一次的數值 */
+  layoutOption = null; 
 
   @HostListener('window:resize') windowResize() {
     Plotly.relayout(this.chartId, {
@@ -100,11 +109,23 @@ export class SignalCoverComponent implements OnInit {
   draw(isPDF, zValue) {
     this.zValue = zValue;
     const images = [];
-    if (!this.authService.isEmpty(this.calculateForm.mapImage)) {
+    if (!this.authService.isEmpty(this.calculateForm.mapImage))
+    {
       const reader = new FileReader();
       reader.readAsDataURL(this.authService.dataURLtoBlob(this.calculateForm.mapImage));
       reader.onload = (e) => {
         // background image
+        if (this.calculateForm.height > this.calculateForm.width)
+        {
+          this.verticalStyle = {
+            height: '600px'
+          };
+        }
+        else
+        {
+          this.verticalStyle = {
+          };
+        }
         images.push({
           source: reader.result.toString(),
           x: 0,
@@ -133,7 +154,9 @@ export class SignalCoverComponent implements OnInit {
    * @param isPDF 
    * @param images 
    */
-  drawChart(isPDF, images) {
+  drawChart(isPDF, images)
+  {
+    //this.calculateForm.width = this.calculateForm.width * 10;
     const defaultPlotlyConfiguration = {
       displaylogo: false,
       showTips: false,
@@ -214,6 +237,7 @@ export class SignalCoverComponent implements OnInit {
         let xdata;
         let ydata;
         let zdata;
+        let antArr = '';
         if (isDASFormat)
         {
           oData = item.position;
@@ -232,6 +256,26 @@ export class SignalCoverComponent implements OnInit {
         defaultBs.push(oData);
         cx.push(xdata);
         cy.push(ydata);
+
+
+        for (let a = 0; a < antData.length; a++)
+        {
+          this.antList.push({
+            x: Number(antData[a].position[0]),
+            y: Number(antData[a].position[1]),
+            color: item.color[1],
+            ap: `${this.translateService.instant('antenna.short')}${num}.${a + 1}`,
+            style: {
+              // visibility: this.showBs,
+              visibility: 'hidden',
+              opacity: 0
+            },
+            circleStyle: {
+              // visibility: this.showBs
+              visibility: 'hidden',
+            }
+          });
+        }
 
         const text = `${this.translateService.instant('defaultBs')}
         X: ${xdata}
@@ -253,24 +297,6 @@ export class SignalCoverComponent implements OnInit {
           }
         });
 
-        for (let a = 0; a < antData.length; a++)
-        {
-          this.antList.push({
-            x: Number(antData[a].position[0]),
-            y: Number(antData[a].position[1]),
-            color: item.color[1],
-            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
-            style: {
-              // visibility: this.showBs,
-              visibility: 'hidden',
-              opacity: 0
-            },
-            circleStyle: {
-              // visibility: this.showBs
-              visibility: 'hidden',
-            }
-          });
-        }
         num++;
       }
     }
@@ -315,6 +341,7 @@ export class SignalCoverComponent implements OnInit {
     let coverageSum = 0;
     let allPosition = 0;
 
+    let isCoverage = false;
     console.log(`${this.rsrpTh}/${this.sinrTh}`);
 
     for (let con = 0; con < this.result['connectionMap'].length; con++)
@@ -322,10 +349,10 @@ export class SignalCoverComponent implements OnInit {
       for (let i = 0; i < zLen; i++)
       {
         // console.log(item)
-        let isCoverage = false;
         let yIndex = 0;
         for (const yData of this.result['connectionMap'][con])
         {
+          isCoverage = false;
           if (typeof zData[i][yIndex] == 'undefined')
           {
             zData[i][yIndex] = [];
@@ -356,18 +383,22 @@ export class SignalCoverComponent implements OnInit {
             zText[i][yIndex][xIndex] = yData[i];
 
             coverageSum++;
-          }
-          else
+            if (!allZ[i].includes(yData[i]) && yData[i] != null)
+            {
+              allZ[i].push(yData[i]);
+            }
+          }  
+          else 
           {
-            zData[i][yIndex][xIndex] = null;
-            zText[i][yIndex][xIndex] = null;
+            zData[i][yIndex][xIndex] = "null";
+            zText[i][yIndex][xIndex] = "null";
+            if (!allZ[i].includes(yData[i]) && yData[i] != null)
+            {
+              allZ[i].push("null");
+            }
           }
           allPosition++;
           yIndex++;
-          if (!allZ[i].includes(yData[i]) && yData[i] != null)
-          {
-            allZ[i].push(yData[i]);
-          }
         }
       }
       xIndex++;
@@ -389,7 +420,11 @@ export class SignalCoverComponent implements OnInit {
 
     const x = [];
     const y = [];
-    let xval = CooUnit/2;
+    let xval = CooUnit / 2;
+    console.log(xval)
+    console.log(CooUnit)
+    console.log(this.calculateForm.width)
+    console.log(this.calculateForm.height)
     while(xval - CooUnit/2 < this.calculateForm.width){
       x.push(xval);
       xval += CooUnit;
@@ -460,6 +495,11 @@ export class SignalCoverComponent implements OnInit {
       }
     }
 
+    let isDASFormat = this.calculateForm.isSimulation &&
+      this.calculateForm.bsList != null &&
+      this.calculateForm.bsList.defaultBs != null;
+    let colorList = [];
+
     // 圖區右邊建議基站
     if (hasBS) {
       
@@ -504,9 +544,8 @@ export class SignalCoverComponent implements OnInit {
               }
               // 套件提供用range計算的方法
               const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-              color = colorFN(j);
+              color =  colorFN(j);
             }
-
             // legend編號有在connectionMap裡的才呈現
             // console.log('hahaha');
             if (allZ[zValues.indexOf(Number(this.zValue))].includes(legendNum)) {
@@ -542,45 +581,81 @@ export class SignalCoverComponent implements OnInit {
           legendNum++;
         }
       }
-      console.log(JSON.stringify(apMap));
 
       const defaultBsLen = defaultBs.length;
+
+
+      if (isDASFormat)
+        colorscale = [];
+
       if (defaultBsLen > 0) {
-        const defaultBsAry = [];
         const mapData = allZ[zValues.indexOf(Number(this.zValue))];
 
         for (let i = 0; i < defaultBsLen; i++) {
           const useNum = legendNum + i;
           
-          if (!mapData.includes(useNum)) {
-            continue;
-          }
+          let antArr = '';
 
           const max = zMax[zValues.indexOf(Number(this.zValue))];
           const min = zMin[zValues.indexOf(Number(this.zValue))];
           // Xean: 07/10 add legend color改用計算的
           let color;
-          if (allZero) {
-            // 都是0的基站指定為藍色
-            color = 'rgb(12,51,131)';
-          } else {
-            const zDomain = [];
-            const colorRange = [];
-            for (let n = 0; n < colorscale.length; n++) {
-              zDomain.push((max - min) * colorscale[n][0] + min);
-              colorRange.push(colorscale[n][1]);
+          if (isDASFormat &&
+            this.calculateForm.bsList.defaultBs[i] != null &&
+            this.calculateForm.bsList.defaultBs[i].color != null)
+          {
+            color = this.calculateForm.bsList.defaultBs[i].color[0];
+
+            if (mapData.includes(useNum))
+              colorList.push(color);
+
+            //colorscale.push([i / (defaultBsLen - 1), color]);
+          }
+          else
+          {
+            if (!mapData.includes(useNum))
+            {
+              continue;
             }
-            // 套件提供用range計算的方法
-            const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
-            console.log(useNum);
-            color = colorFN(useNum);
+
+            if (allZero)
+            {
+              // 都是0的基站指定為藍色
+              color = 'rgb(12,51,131)';
+            } else
+            {
+              const zDomain = [];
+              const colorRange = [];
+              for (let n = 0; n < colorscale.length; n++)
+              {
+                zDomain.push((max - min) * colorscale[n][0] + min);
+                colorRange.push(colorscale[n][1]);
+              }
+              // 套件提供用range計算的方法
+              const colorFN = Plotly.d3.scale.linear().domain(zDomain).range(colorRange);
+              color = colorFN(useNum);
+            }
+          }
+
+          console.log(color);
+
+          if (this.calculateForm.isSimulation)
+          {
+            antArr = `<br\>${this.translateService.instant('antenna')}${i + 1}.${1} ~
+${this.translateService.instant('antenna')}${i + 1}.${this.calculateForm.bsList.defaultBs[i].antenna.length}`;
+          }
+          else
+          {
+            antArr = '';
           }
 
           // legend編號
           this.traces.push({
             x: [0],
             y: [0],
-            name: `${this.translateService.instant('defaultBs')} ${(i + 1)}`,
+            x0: 100,
+            dx: 200,
+            name: `${this.translateService.instant('defaultBs')} ${(i + 1)}${antArr}`,
             marker: {
               color: color,
             },
@@ -681,13 +756,33 @@ export class SignalCoverComponent implements OnInit {
 
     
 
-    if (allZero) {
+    if (allZero && !isDASFormat)
+    {
       colorscale = [
         [0, 'rgb(12,51,131)'],
         [1, 'rgb(12,51,131)']
       ];
     }
+    else if (isDASFormat)
+    {
+      if (colorList.length != 1)
+      {
+        for (let c = 0; c < colorList.length; c++)
+        {
+          colorscale.push([c / (colorList.length - 1), colorList[c]]);
+        }
+      }
+      else
+      {
+        colorscale = [
+          [0, colorList[0]],
+          [1, colorList[0]]
+        ];
+      }
+    }
+    
 
+    console.log(colorscale);
     const trace = {
       x: x,
       y: y,
@@ -703,7 +798,6 @@ export class SignalCoverComponent implements OnInit {
     };
     this.traces.push(trace);
 
-    console.log(this.traces);
 
     this.shapes.length = 0;
 
@@ -768,11 +862,12 @@ export class SignalCoverComponent implements OnInit {
       data: this.traces,
       layout: layout,
       config: defaultPlotlyConfiguration
-    }).then((gd) => {
+    }).then((gd) =>
+    {
       const xy: SVGRectElement = gd.querySelector('.xy').querySelectorAll('rect')[0];
       const rect = xy.getBoundingClientRect();
 
-      let layoutOption = {};
+      //let layoutOption = {};
       this.annotations.length = 0;
       // 新增基站
       if (this.calculateForm.candidateBs !== '' || this.calculateForm.defaultBs !== '') {
@@ -812,8 +907,19 @@ export class SignalCoverComponent implements OnInit {
           });
         }
 
-        /*有了天線就不顯示"既有基站"
-        /*for (const item of this.defaultBsList) {
+        //有了天線就不顯示"既有基站"
+        if (this.calculateForm.isSimulation && this.antList.length != 0)
+        {
+          this.showAnt = true;
+          this.showBs = false;
+        }
+        else
+        {
+          this.showBs = true;
+          this.showAnt = false;
+        }
+
+        for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',
             xref: 'x',
@@ -840,12 +946,13 @@ export class SignalCoverComponent implements OnInit {
             },
             visible: this.showBs
           });
-        }*/
+        }
 
         for (const item of this.antList)
         {
           this.shapes.push({
             type: 'circle',
+            devType: 'antenna',
             xref: 'x',
             yref: 'y',
             x0: item.x,
@@ -854,12 +961,13 @@ export class SignalCoverComponent implements OnInit {
             y1: item.y + Number(yLinear(18)),
             fillcolor: item.color,
             bordercolor: item.color,
-            visible: this.showBs
+            visible: this.showAnt
           });
 
           this.annotations.push({
             x: item.x + Number(xLinear(35)),
             y: item.y + Number(yLinear(9)),
+            devType: 'antenna',
             xref: 'x',
             yref: 'y',
             text: item.ap,
@@ -868,29 +976,34 @@ export class SignalCoverComponent implements OnInit {
               color: '#fff',
               size: 10
             },
-            visible: this.showBs
+            visible: this.showAnt
           });
         }
       }
       // 場域尺寸計算
       const leftArea = <HTMLDivElement> document.querySelector('.leftArea');
       this.chartService.calResultSize(this.calculateForm, gd, leftArea.clientWidth - this.chartService.leftSpace).then(res => {
-        layoutOption = {
-          width: res[0],
-          height: res[1],
-          shapes: this.shapes,
-          annotations: this.annotations
-        };
+
+        console.log(this.layoutOption == null)
+        if (this.layoutOption == null)
+        {
+          this.layoutOption = {
+            width: res[0],
+            height: res[1],
+            shapes: this.shapes,
+            annotations: this.annotations
+          };
+        }
         // resize layout
         if (images.length > 0) {
           const image = new Image();
           image.src = images[0].source;
           image.onload = () => {
-            this.reLayout(id, layoutOption, isPDF);
+            this.reLayout(id, this.layoutOption, isPDF);
           };
           
         } else {
-          this.reLayout(id, layoutOption, isPDF);
+          this.reLayout(id, this.layoutOption, isPDF);
         }
       });    
 
@@ -928,7 +1041,7 @@ export class SignalCoverComponent implements OnInit {
         .range([0, rect2.height]);
 
       for (const item of this.rectList) {
-        // console.log(item)
+        console.log(item)
         // 障礙物加粗，07/20 註解障礙物加粗，避免位置看似偏移
         let width = pixelXLinear(item.width);
         // if (width < 5) {
@@ -1025,6 +1138,7 @@ export class SignalCoverComponent implements OnInit {
         this.showImg = true;
         Plotly.toImage(gd2, {width: layoutOption.width, height: layoutOption.height}).then(dataUri => {
           this.imageSRC = dataUri;
+          console.log(this.imageSRC)
           Plotly.d3.select(gd2.querySelector('.plotly')).remove();
           this.style['z-index'] = 0;
           this.style['opacity'] = 0.2;
@@ -1102,15 +1216,14 @@ export class SignalCoverComponent implements OnInit {
     for (const item of this.shapes)
     {
       // 顏色區分障礙物與BS
-      if (item.type == 'circle' && item.fillcolor === '#3C0000')
+      if (item.devType == 'antenna')
       {
         item.visible = visible;
       }
     }
     for (const item of this.annotations)
     {
-      console.log(JSON.stringify(item));
-      if (item.text[0] == '天' || item.text[0] == 'A')
+      if (item.devType == 'antenna')
       {
         item.visible = visible;
       }
@@ -1141,7 +1254,7 @@ export class SignalCoverComponent implements OnInit {
       }
     }
     for (const item of this.annotations) {
-      if (item.text[0] == '待') {
+      if (item.text[0] == '位') {
         item.visible = visible;
       }
     }

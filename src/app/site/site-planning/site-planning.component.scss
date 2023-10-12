@@ -523,7 +523,7 @@ ul {
     border-bottom: none;
 }
 .rightClickBtnGroup:hover {
-    background-color: #6bc4ff;
+  background-color: #6bc4ff;
 }
 
 // ::ng-deep .mat-menu-content{
@@ -682,6 +682,9 @@ ul {
   cursor: pointer;
 }
 
+::ng-deep .blueborder {
+  border: 1px #6bc4ff solid !important;
+}
 
 
 // #isShowSubField label .mat-checkbox-layout {

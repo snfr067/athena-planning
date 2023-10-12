@@ -1,7 +1,7 @@
 <div [ngStyle]="divStyle">
-  <div class="signal_cover">
-    <input type="hidden" id="is_cover" value="true">
-    <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
+  <div class="signal_cover" [ngStyle]="verticalStyle">
+    <input type="hidden" id="is_cover" value="true" >
+    <img *ngIf="showImg" src="{{ imageSRC }}" alt="" >
 
     <div class="cover_img" [ngStyle]="style" style="z-index: -1;" >
       <!-- 障礙物 -->

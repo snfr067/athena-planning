@@ -48,7 +48,9 @@ export class SitePlanningMapComponent implements OnInit {
   /** AP顯示 */
   showCandidate = true;
   /** BS顯示 */
-  showBs = 'visible';
+  showBs = true;
+  /** Ant顯示 */
+  showAnt = true;
   /** slide */
   opacityValue: number = 0.8;
   /** Max */
@@ -489,13 +491,13 @@ export class SitePlanningMapComponent implements OnInit {
           }
         });
 
-        for (let a = 1; a < antData.length; a++)
+        for (let a = 0; a < antData.length; a++)
         {
           this.antList.push({
             x: Number(antData[a].position[0]),
             y: Number(antData[a].position[1]),
-            color: '#000000',
-            ap: `${this.translateService.instant('antenna')}${num}.${a + 1}`,
+            color: item.color[1],
+            ap: `${this.translateService.instant('antenna.short')}${num}.${a + 1}`,
             style: {
               // visibility: this.showBs,
               visibility: 'hidden',
@@ -649,6 +651,18 @@ export class SitePlanningMapComponent implements OnInit {
           });
         }
 
+        //有了天線就不顯示"既有基站"
+        if (this.calculateForm.isSimulation && this.antList.length != 0)
+        {
+          this.showAnt = true;
+          this.showBs = false;
+        }
+        else
+        {
+          this.showBs = true;
+          this.showAnt = false;
+        }
+
         for (const item of this.defaultBsList) {
           this.shapes.push({
             type: 'circle',
@@ -687,15 +701,15 @@ export class SitePlanningMapComponent implements OnInit {
             yref: 'y',
             x0: item.x,
             y0: item.y,
-            x1: item.x + Number(xLinear(50)),
+            x1: item.x + Number(xLinear(70)),
             y1: item.y + Number(yLinear(18)),
-            fillcolor: '#005959',
-            bordercolor: '#005959',
-            visible: this.showBs
+            fillcolor: item.color,
+            bordercolor: item.color,
+            visible: this.showAnt
           });
 
           this.annotations.push({
-            x: item.x + Number(xLinear(25)),
+            x: item.x + Number(xLinear(35)),
             y: item.y + Number(yLinear(9)),
             xref: 'x',
             yref: 'y',
@@ -703,9 +717,9 @@ export class SitePlanningMapComponent implements OnInit {
             showarrow: false,
             font: {
               color: '#fff',
-              size: 8
+              size: 10
             },
-            visible: this.showBs
+            visible: this.showAnt
           });
         }
       }

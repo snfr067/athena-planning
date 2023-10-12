@@ -1,6 +1,6 @@
 <div [ngStyle]="divStyle">
   
-  <div class="ulThroughputMap_chart">
+  <div class="ulThroughputMap_chart" [ngStyle]="verticalStyle">
     <input type="hidden" id="is_ulThroughputMap" value="true">
     <img *ngIf="showImg" src="{{ imageSRC }}" alt="">
 

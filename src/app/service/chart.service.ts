@@ -141,28 +141,48 @@ export class ChartService {
     // 模擬1個正方形
     const width = Math.ceil(pixelXLinear(100));
     const height = Math.ceil(pixelYLinear(100));
+
+    /*console.log("width = "+width)
+    console.log("height = " +height)
+    console.log("calculateFormwidth = " +calculateForm.width)
+    console.log("gridWidth = " +gridWidth)
+    console.log("calculateFormheight = " +calculateForm.height)
+    console.log("gridHeight = " +gridHeight)
+    console.log("layoutWidth = " +layoutWidth)
+    console.log("layoutHeight = " +layoutHeight)*/
     
     if (width !== height) {
       // 結果非正方形時，每次變更1px場域大小至正方形為止
-      if (width > height) {
+      if (width > height)
+      {
         layoutWidth--;
+        //layoutHeight++;
       } else if (width < height) {
         layoutHeight--;
+        //layoutWidth++;//
+      }
+
+
+      if (layoutWidth <= 0 || layoutHeight <= 0)
+      {
+        layoutWidth = calculateForm.width;
+        layoutHeight = calculateForm.height;
       }
 
       return await Plotly.relayout(gd, {
         width: layoutWidth,
         height: layoutHeight
-      }).then(gd2 => {
+      }).then(gd2 =>
+      {
         // console.log(width, height, layoutWidth, layoutHeight);
         return this.checkSize2(calculateForm, gd2, layoutWidth, layoutHeight);
       });
-
     } else {
       // 結果為正方形
       console.log(width, height, layoutWidth, layoutHeight);
     }
     // console.log(layoutWidth, layoutHeight);
+
     return [layoutWidth, layoutHeight];
   }
 
